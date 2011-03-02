@@ -27,12 +27,19 @@ c_plot <- function(m_vector,cutoff=0){
 
 diversity_in_row <- function(data_vector){
 	res <- 0
+	above <- 0
+	below <- 0
 	for(i in (data_vector)){
-		if(i>=0.05||i<=-0.05){
+		if(i>=0.05){
 			res <- res + 1
+			above <- above + 1
+		}else if(i<=-0.05){
+			res <- res + 1
+			below <- below +1
 		}
 	}
-	res
+	output <- list(res,above,below)
+	output
 }
 
 select_diversed <- function(data_matrix){
@@ -53,7 +60,27 @@ genotype_col <- function(brassica_phenotypes_vector){
 create_genotypes <- function(brassica_phenotypes){
 	geno_matrix <- apply(brassica_phenotypes,2,genotype_col)
 	#geno_matrix <- matrix(geno_matrix,nrow(data_matrix),ncol(data_matrix))
+	colnames(geno_matrix)<-colnames(brassica_phenotypes, do.NULL = FALSE)
+	rownames(geno_matrix)<-rownames(brassica_phenotypes, do.NULL = FALSE)
 	geno_matrix
+}
+
+choose_right <- function(raw_expression_matrix,points_matrix,treshold,margin){
+	output <- NULL
+	for(i in 1:nrow(raw_expression_matrix)){
+		non_zero <- points_matrix[i][[1]][[1]]
+		above_min_below <- abs(points_matrix[i][[1]][[2]]-points_matrix[i][[1]][[3]])/2
+		margin_range <- (non_zero*margin)
+		if(non_zero<treshold){
+			
+		}else{
+			if(above_min_below>margin_range){
+			}else{
+				output <- c(output,i)
+			}
+		}
+	}
+	result <- raw_expression_matrix[output,]
 }
 
 for( i in 1:nrow(qtl)){
@@ -63,8 +90,15 @@ for( j in 1:ncol(qtl)){
 }
 
 setwd("D:/data")
+library(basicQtl)
 brassica <- as.matrix(read.table("Expression_BrassicaRapa_10chr2.txt",sep=""))
 points_matrix <- select_diversed(brassica)
-brassica_phenotypes <- brassica[which(points_matrix>=45),]
+brassica_phenotypes <- choose_right(brassica, points_matrix,46,0.1)
 brassica_genotypes <- create_genotypes(brassica_phenotypes)
+brassica_genotypes_ord_1 <- un_neighbor(t(brassica_genotypes),1,500,10)
+brassica_genotypes_ord_2 <- un_neighbor(brassica_genotypes_ord,1,5000,10)
+brassica_genotypes_ord_3 <- un_neighbor(brassica_genotypes_ord,1,500,1)
+brassica_genotypes_ord_4 <- un_neighbor(brassica_genotypes_ord_3,1,5000,10)
+brassica_genotypes_ord <- un_neighbor(brassica_genotypes_ord,1,1000,10)
+brassica_genotypes_cor <- cor((brassica_genotypes_ord),use="pairwise.complete.obs")
 c_plot(selection[,10])
