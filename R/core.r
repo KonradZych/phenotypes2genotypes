@@ -1,32 +1,37 @@
+check_parameters <- function(functionName, numericParameters, verboseParameter, debugModeParameter){
+	for(i in numericParameters){
+		if(!is.numeric(i)) stop("Data you provide to",functionName,"must be numeric! And you provide it with:",i)
+	}
+	if(verboseParameter!=TRUE && verboseParameter!=FALSE) stop("verbose must be boolean (TRUE/FALSE)")
+	if(!pmatch(debugModeParameter,c(0,1,2,3))) stop("debugMode could be either 0,1,2 or 3")
+}
+
 expressionScores_row <- function(expressionMatrix_row, no_expression_value=0, verbose=FALSE, debugMode=0){
 	#Checkpoints
-	if(!is.numeric(expressionMatrix_row)) stop("Data you provide to expressionScores_row in expressionMatrix_row must be numeric!")
-	if(!is.numeric(no_expression_value)) stop("no_expression_value must be a numeric value")
-	if(verbose!=TRUE && verbose!=FALSE) print("verbose must be boolean (TRUE/FALSE)")
-	if(!pmatch(debugMode,c(0,1,2,3))) print("debugMode could be either 0,1,2 or 3")
+	check_parameters("expressionScores_row",list(expressionMatrix_row,no_expression_value),verbose,debugMode)
 	#Function itself
-	if(debugMode==1) cat("ExpressionScores_row starting withour errors in checkpoint.")
+	if(debugMode==1) cat("ExpressionScores_row starting withour errors in checkpoint.\n")
 	if(debugMode==2||debugMode==3) cat("ExpressionScores_row starting withour errors in checkpoint. Paramteres values - expressionMatrix_row:",expressionMatrix_row,"no_expression_value:",no_expression_value,"verbose:",verbose,"debugMode",debugMode,"\n")
 	s <- proc.time()
 	zeroes <- 0
 	above <- 0
 	below <- 0
-	if(verbose) print("Starting loop.")
-	for(i in 1:length(data_vector)){
+	if(debugMode==3) cat("Starting loop.\n")
+	for(i in 1:length(expressionMatrix_row)){
 		sl <- proc.time()
-		if(i>no_expression_value){
+		if(expressionMatrix_row[i]>no_expression_value){
 			above <- above + 1
-		}else if(i<no_expression_value){
-			below <- below +1
+		}else if(expressionMatrix_row[i]<no_expression_value){
+			below <- below + 1
 		}else{
-			res <- res + 1
+			zeroes <- zeroes + 1
 		}
 		el<-proc.time()
-		if(verbose) cat("Done element:",i,"this took:",(el-sl)[3],"seconds,","left elements:",length(data_vector)-i,"estimated time to finish:",(length(data_vector)-i)*(el-s)[3]/i,"seconds\n.")
+		if(debugMode==3) cat("Done element:",i,"this took:",(el-sl)[3],"seconds,","left elements:",length(expressionMatrix_row)-i,"estimated time to finish:",(length(expressionMatrix_row)-i)*(el-s)[3]/i,"seconds.\n")
 	}
-	output <- list(res,above,below)
+	output <- list(zeroes,above,below)
 	e<-proc.time()
-	if(verbose) cat("Done, expressionScores_row took:",(e-s)[3],"seconds\n.")
+	if(verbose) cat("Done, expressionScores_row took:",(e-s)[3],"seconds.\n")
 	if(debugMode==3) cat("expressionScores_row done, returns output:",output,"\n")
 	output
 }
@@ -34,17 +39,14 @@ expressionScores_row <- function(expressionMatrix_row, no_expression_value=0, ve
 #applies for every row function that counts 0, aboves and belows
 expressionScores <- function(expressionMatrix, no_expression_value=0, verbose=FALSE, debugMode=0){
 	#Checkpoints
-	if(!is.numeric(expressionMatrix)) stop("Data you provide to expressionScores in expressionMatrix must be numeric!")
-	if(!is.numeric(no_expression_value)) stop("no_expression_value must be a numeric value")
-	if(verbose!=TRUE && verbose!=FALSE) print("verbose must be boolean (TRUE/FALSE)")
-	if(!pmatch(debugMode,c(0,1,2,3))) print("debugMode could be either 0,1,2 or 3")
+	check_parameters("expressionScores",list(expressionMatrix,no_expression_value),verbose,debugMode)
 	if(no_expression_value<min(expressionMatrix)) stop("no_expression_value too small, lower than minimal value in matrix")
 	#Function itself
-	if(debugMode==1) cat("ExpressionScores_row starting withour errors in checkpoint.")
-	if(debugMode==2||debugMode==3) cat("ExpressionScores_row starting withour errors in checkpoint. Paramteres values- expressionMatrix:",expressionMatrix,"no_expression_value",no_expression_value,"verbose:",verbose,"debugMode",debugMode,"\n")
+	if(debugMode==1) cat("expressionScores starting withour errors in checkpoint.\n")
+	if(debugMode==2||debugMode==3) cat("expressionScores starting withour errors in checkpoint. Paramteres values- expressionMatrix:",expressionMatrix,"no_expression_value",no_expression_value,"verbose:",verbose,"debugMode",debugMode,"\n")
 	#Function itself
 	s <- proc.time()
-	output <- apply(expressionMatrix,1,expressionScores_row)
+	output <- apply(expressionMatrix,1,expressionScores_row,no_expression_value,verbose,debugMode)
 	e<-proc.time()
 	if(verbose) cat("Done, expressionScores took:",(e-s)[3],"seconds\n.")
 	if(debugMode==3) cat("expressionScores done, returns output:",output,"\n")
@@ -52,33 +54,33 @@ expressionScores <- function(expressionMatrix, no_expression_value=0, verbose=FA
 }
 
 #function that choses form the matrix only appropriate markers with specified rules
-appriopiateMarkers <- function(expressionMatrix, proportion=50, margin=5, zeros_allowed = 0, no_expression_value=0, verbose=FALSE, debugMode=0){
+appriopiateMarkers <- function(expressionMatrix, proportion=50, margin=5, zeros_allowed = 3, no_expression_value=0, genotypeLabel1=0, genotypeLabel2=1, genotypeSplittingValue=0, verbose=FALSE, debugMode=0){
 	#Checkpoints
-	if(!is.numeric(expressionMatrix)) stop("Data you provide to appriopiateMarkers in expressionMatrix must be numeric!")
-	if(!is.numeric(proportion)) stop("proportion must be a numeric value")
-	if(!is.numeric(margin)) stop("proportion must be a numeric value")
-	if(!is.numeric(zeros_allowed)) stop("proportion must be a numeric value")
-	if(!is.numeric(no_expression_value)) stop("no_expression_value must be a numeric value")
-	if(verbose!=TRUE && verbose!=FALSE) print("verbose must be boolean (TRUE/FALSE)")
-	if(!pmatch(debugMode,c(0,1,2,3))) print("debugMode could be either 0,1,2 or 3")	
+	check_parameters("appriopiateMarkers",list(expressionMatrix,no_expression_value,proportion,margin,zeros_allowed),verbose,debugMode)
 	if(proportion < 1 || proportion > 99) stop("Proportion is a percentage (1,99)")
 	if(zeros_allowed < 0 || zeros_allowed > ncol(expressionMatrix)) stop("Zeros_allowed is a number (0,lenght of the row)")
-	if(margin < 0 || margin > proportion)) stop("Margin is a percentage (0,proportion)")
+	if(margin < 0 || margin > proportion) stop("Margin is a percentage (0,proportion)")
 	if(no_expression_value<min(expressionMatrix)) stop("no_expression_value too small, lower than minimal value in matrix")
-	if(debugMode==1) cat("appriopiateMarkers starting withour errors in checkpoint.")
-	if(debugMode==2||debugMode==3) cat("appriopiateMarkers starting withour errors in checkpoint. Paramteres values- expressionMatrix:",expressionMatrix,"proportion",proportion,"margin",margin,"zeros_allowed",zeros_allowed,"no_expression_value",no_expression_value,"verbose:",verbose,"debugMode",debugMode,"\n")
+	if(debugMode==1) cat("appriopiateMarkers starting withour errors in checkpoint.\n")
+	if(debugMode==2||debugMode==3) cat("appriopiateMarkers starting withour errors in checkpoint. Paramteres values- expressionMatrix:",expressionMatrix,"proportion",proportion,"margin",margin,"zeros_allowed",zeros_allowed,"no_expression_value",no_expression_value,"genotypeLabel1",genotypeLabel1,"genotypeLabel2",genotypeLabel2,"genotypeSplittingValue",genotypeSplittingValue,"verbose:",verbose,"debugMode",debugMode,"\n")
 	#Function itself
 	s <- proc.time()
 	#needs function providing points
-	points_vector <- expressionScores(expressionMatrix)
+	points_vector <- expressionScores(expressionMatrix,no_expression_value,verbose,debugMode)
+	print(table(points_vector[[1]][[1]]))
+	output <- NULL
 	for(i in 1:nrow(expressionMatrix)){
 		sl <- proc.time()
-		non_zero <- points_vector[i][[1]][[1]]
-		above_min_below <- abs(points_vector[i][[1]][[2]]-points_vector[i][[1]][[3]])/2
-		margin_range <- (non_zero*margin)
-		if(dim(expressionMatrix)[2]-non_zero < zeros_allowed){
-			if(above_min_below>margin_range){
-			}else{
+		zero <- points_vector[i][[1]][[1]]
+		#print(zero)
+		non_zero <- dim(expressionMatrix)[2]-zero
+		above_min_below <- abs(points_vector[i][[1]][[2]]-points_vector[i][[1]][[3]])
+		margin_range <- (non_zero*margin)/100
+		if(zero <= zeros_allowed){
+		#print(zero)
+		#cat(points_vector[i][[1]][[2]],points_vector[i][[1]][[3]],"above_min_below:",above_min_below,"margin_range:",margin_range,"\n")
+		#print(i)
+			if(above_min_below < margin_range){
 				output <- c(output,i)
 			}
 		}
@@ -86,10 +88,24 @@ appriopiateMarkers <- function(expressionMatrix, proportion=50, margin=5, zeros_
 		if(verbose) cat("Done with element",i,"took:",(el-sl)[3],", estimated time remining:",(nrow(expressionMatrix)-i) * (el-sl)[3],"\n")
 	}
 	result <- expressionMatrix[output,]
+	print(dim(result))
+	geno_matrix <- result
+	ep <- proc.time()
+	if(verbose) cat("Selected proper probes, took:",(ep-s)[3],"seconds. Creating genotype matrix.\n")
+	geno_matrix[which(result<genotypeSplittingValue)] <- genotypeLabel1
+	geno_matrix[which(result>genotypeSplittingValue)] <- genotypeLabel2
+	geno_matrix[which(result==genotypeSplittingValue)] <- NA
+	eg <- proc.time()
+	if(verbose) cat("Created genotype matrix, took:",(eg-ep)[3],"seconds.\n")
 	#we habe now vector which for every row in the matrix says us, how many zeros there are and how many above/below vaules
 	e<-proc.time()
-	if(verbose) cat("Done, expressionScores took:",(e-s)[3],"seconds\n.")
-	if(debugMode==3) cat("expressionScores done, returns result:",result,"\n")
-	result
-
+	if(verbose) cat("Done, appriopiateMarkers took:",(e-s)[3],"seconds.\n")
+	if(debugMode==3) cat("appriopiateMarkers done, returns geno_matrix:",geno_matrix,"\n")
+	geno_matrix	
 }
+
+setwd("D:/data")
+library(basicQtl)
+brassica <- as.matrix(read.table("Expression_BrassicaRapa_10chr2.txt",sep=""))
+brassica_genotypes <- appriopiateMarkers(brassica,zeros_allowed=1, no_expression_value=0.05)
+brassica_genotypes_cor <- cor(t(brassica_genotypes), use="pairwise.complete.obs")

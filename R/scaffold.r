@@ -10,7 +10,7 @@
 
 #utility
 #c_plot - plotting routine, with three colors - three groups divided by cutoff
-plot.c <- function(x,cutoff=0,...){
+c_plot <- function(m_vector,cutoff=0,...){
 	result <- as.vector(matrix("a",1,length(m_vector)))
 	for(i in 1:length(m_vector)){
 		if(m_vector[i]>cutoff){
@@ -23,6 +23,7 @@ plot.c <- function(x,cutoff=0,...){
 		}
 	}
 	plot(m_vector,col=result,...)
+}
 }
 
 
