@@ -112,7 +112,7 @@ appriopriateMarkers <- function(expressionMatrix, proportion=50, margin=5, zeros
 	#we habe now vector which for every row in the matrix says us, how many zeros there are and how many above/below vaules
 	e<-proc.time()
 	if(verbose) cat("Done, appriopiateMarkers took:",(e-s)[3],"seconds.\n")
-	if(is.empty(geno_matrix)) stop("Genotypic matrix for selected conditions is empty, stopping.")
+	if(is.empty(geno_matrix)) warning("Genotypic matrix for selected conditions is empty.\n")
 	if(debugMode==3){ cat("appriopiateMarkers done, returns geno_matrix:\n")
 	print(geno_matrix)}
 	gc()
