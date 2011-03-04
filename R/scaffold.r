@@ -14,7 +14,6 @@ c_plot <- function(m_vector,cutoff=0,...){
 	result <- as.vector(matrix("a",1,length(m_vector)))
 	for(i in 1:length(m_vector)){
 		if(m_vector[i]>cutoff){
-		if(m_vector[i]>cutoff){
 			result[i] <- "red"
 		}else if(m_vector[i]<(-cutoff)){
 			result[i] <- "blue"
@@ -24,7 +23,7 @@ c_plot <- function(m_vector,cutoff=0,...){
 	}
 	plot(m_vector,col=result,...)
 }
-}
+
 
 
 

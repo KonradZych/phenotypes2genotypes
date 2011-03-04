@@ -71,16 +71,16 @@ expressionScores <- function(expressionMatrix, no_expression_value=0, verbose=FA
 }
 
 #function that choses form the matrix only appropriate markers with specified rules
-appriopiateMarkers <- function(expressionMatrix, proportion=50, margin=5, zeros_allowed = 3, no_expression_value=0, genotypeLabel1=0, genotypeLabel2=1, genotypeSplittingValue=0, verbose=FALSE, debugMode=0){
+appriopriateMarkers <- function(expressionMatrix, proportion=50, margin=5, zeros_allowed = 3, no_expression_value=0, genotypeLabel1=0, genotypeLabel2=1, genotypeSplittingValue=0, verbose=FALSE, debugMode=0){
 	#Checkpoints
-	check_parameters("appriopiateMarkers",list(expressionMatrix,no_expression_value,proportion,margin,zeros_allowed),verbose,debugMode,verbose,debugMode)
+	check_parameters("appriopriateMarkers",list(expressionMatrix,no_expression_value,proportion,margin,zeros_allowed),verbose,debugMode,verbose,debugMode)
 	if(proportion < 1 || proportion > 99) stop("Proportion is a percentage (1,99)")
 	if(zeros_allowed < 0 || zeros_allowed > ncol(expressionMatrix)) stop("Zeros_allowed is a number (0,lenght of the row).")
 	if(margin < 0 || margin > proportion) stop("Margin is a percentage (0,proportion)")
 	if(no_expression_value<min(expressionMatrix)) stop("no_expression_value too small, lower than minimal value in matrix")
 	if(no_expression_value>max(expressionMatrix)) stop("no_expression_value too big, higher than maximal value in matrix")
-	if(debugMode==1) cat("appriopiateMarkers starting withour errors in checkpoint.\n")
-	if(debugMode==2||debugMode==3) cat("appriopiateMarkers starting withour errors in checkpoint. Paramteres values- expressionMatrix:",expressionMatrix,"proportion:",proportion,"margin",margin,"zeros_allowed:",zeros_allowed,"no_expression_value:",no_expression_value,"genotypeLabel1:",genotypeLabel1,"genotypeLabel2:",genotypeLabel2,"genotypeSplittingValue:",genotypeSplittingValue,"verbose:",verbose,"debugMode:",debugMode,"\n")
+	if(debugMode==1) cat("appriopriateMarkers starting withour errors in checkpoint.\n")
+	if(debugMode==2||debugMode==3) cat("appriopriateMarkers starting withour errors in checkpoint. Paramteres values- expressionMatrix:",expressionMatrix,"proportion:",proportion,"margin",margin,"zeros_allowed:",zeros_allowed,"no_expression_value:",no_expression_value,"genotypeLabel1:",genotypeLabel1,"genotypeLabel2:",genotypeLabel2,"genotypeSplittingValue:",genotypeSplittingValue,"verbose:",verbose,"debugMode:",debugMode,"\n")
 	#Function itself
 	s <- proc.time()
 	#needs function providing points
@@ -122,6 +122,6 @@ appriopiateMarkers <- function(expressionMatrix, proportion=50, margin=5, zeros_
 setwd("D:/data")
 library(basicQtl)
 brassica <- as.matrix(read.table("Expression_BrassicaRapa_10chr2.txt",sep=""))
-brassica_genotypes <- appriopiateMarkers(brassica,zeros_allowed=1, no_expression_value=0.05)
+brassica_genotypes <- appriopriateMarkers(brassica,zeros_allowed=1, no_expression_value=0.05)
 brassica_genotypes_cor <- cor(t(brassica_genotypes), use="pairwise.complete.obs")
 appriopiateMarkers(m,zeros_allowed=0,verbose=TRUE,debugMode=3)
