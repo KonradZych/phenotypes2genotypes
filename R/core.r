@@ -71,8 +71,9 @@ expressionScores <- function(expressionMatrix, no_expression_value=0, verbose=FA
 }
 
 #function that choses form the matrix only appropriate markers with specified rules
-appriopriateMarkers <- function(expressionMatrix, proportion=50, margin=5, zeros_allowed = 3, no_expression_value=0, genotypeLabel1=0, genotypeLabel2=1, genotypeSplittingValue=0, verbose=FALSE, debugMode=0){
+appriopriateMarkers <- function(fileName, proportion=50, margin=5, zeros_allowed = 3, no_expression_value=0, genotypeLabel1=0, genotypeLabel2=1, genotypeSplittingValue=0, verbose=FALSE, debugMode=0){
 	#Checkpoints
+	expressionMatrix <- as.matrix(read.table("Expression_BrassicaRapa_10chr2.txt",sep=""))
 	check_parameters("appriopriateMarkers",list(expressionMatrix,no_expression_value,proportion,margin,zeros_allowed),verbose,debugMode,verbose,debugMode)
 	if(proportion < 1 || proportion > 99) stop("Proportion is a percentage (1,99)")
 	if(zeros_allowed < 0 || zeros_allowed > ncol(expressionMatrix)) stop("Zeros_allowed is a number (0,lenght of the row).")
@@ -119,9 +120,81 @@ appriopriateMarkers <- function(expressionMatrix, proportion=50, margin=5, zeros
 	geno_matrix	
 }
 
+cleanPlus<-function(matrix_to_be_cleaned){
+	for(h in 1:nrow(matrix_to_be_cleaned)){
+		for(w in 1:ncol(matrix_to_be_cleaned)){
+			if(is.na(matrix_to_be_cleaned[h,w])){
+				matrix_to_be_cleaned[h,w] <- as.character("")
+			}else if(matrix_to_be_cleaned[h,w]==0){
+				matrix_to_be_cleaned[h,w] <- as.character("A")
+			}else{
+				matrix_to_be_cleaned[h,w] <- as.character("B")
+			}
+		}
+	}
+	matrix_to_be_cleaned
+}
+
+crossParser <- function(genotypicMatrix){
+	genotypicMatrix <- cleanPlus(genotypicMatrix)
+	Tfile <- "output.csv"
+	cat("",file=Tfile)
+	cat("phenotype",sep="",file=Tfile,append=T)
+	cat(",,,",sep="",file=Tfile,append=T)
+	cat(paste(runif(48,0,100),collapse=","),sep="",file=Tfile,append=T)
+	cat("\n",sep="",file=Tfile,append=T)
+	for(i in 1:nrow(genotypicMatrix)){
+		cat(rownames(genotypicMatrix)[i],1,i,sep=",",file = Tfile,append=T)
+		for(w in 1:ncol(genotypicMatrix)-1){
+			cat(genotypicMatrix[i,w],sep="",file = Tfile,append=T)
+			cat(",",sep="",file=Tfile,append=T)
+		}
+		cat(genotypicMatrix[i,ncol(genotypicMatrix)],sep="",file = Tfile,append=T)
+		cat("\n",file = Tfile,append=T)
+	}
+}
+
+
+record_format_parser <- function(genotypicMatrix){
+	genotypicMatrix <- cleanPlus(genotypicMatrix)
+	Tfile <- "output.loc"
+	cat("",file=Tfile)
+	cat("name = super\n",file = Tfile,append=T)
+	cat("popt = RI8\n",file = Tfile,append=T)
+	cat("nloc =",ncol(genotypicMatrix),"\n",file = Tfile,append=T)
+	cat("nind =",nrow(genotypicMatrix),"\n\n",file = Tfile,append=T)
+	for(i in 1:nrow(genotypicMatrix)){
+		cat(rownames(genotypicMatrix)[i],"\n",file = Tfile,append=T)
+		len <- ncol(genotypicMatrix)
+		while(len>=50){
+			cat("  ",file = Tfile,append=T)
+			for(j in 1:10){
+				cat(genotypicMatrix[i,(len-4):len],sep="",file = Tfile,append=T)
+				cat(" ",file = Tfile,append=T)
+				len <- len-5
+			}
+			cat("\n",file = Tfile,append=T)
+		}
+		cat("  ",file = Tfile, append=T)
+		while(len>=5){
+			cat(genotypicMatrix[i,(len-4):len],sep="",file = Tfile,append=T)
+			cat(" ",file = Tfile,append=T)
+			len <- len-5
+		}
+		for(w in 1:len){
+			cat(genotypicMatrix[i,w],sep="",file = Tfile,append=T)
+		}
+		cat("\n",file = Tfile,append=T)
+	}
+}
+record_format_parser(brassica_genotypes)
+
 setwd("D:/data")
 library(basicQtl)
-brassica <- as.matrix(read.table("Expression_BrassicaRapa_10chr2.txt",sep=""))
-brassica_genotypes <- appriopriateMarkers(brassica,zeros_allowed=1, no_expression_value=0.05)
+brassica_genotypes <- appriopriateMarkers("Expression_BrassicaRapa_10chr2.txt",zeros_allowed=3, no_expression_value=0.05)
 brassica_genotypes_cor <- cor(t(brassica_genotypes), use="pairwise.complete.obs")
+d <- dist(brassica_genotypes)
+o <- seriate(d)
+brassica_genotypes_cor <- cor((un_ord), use="pairwise.complete.obs")
+brassica_genotypes_cor <- cor(t(brassica_genotypes)[,get_order(o)], use="pairwise.complete.obs")
 appriopiateMarkers(m,zeros_allowed=0,verbose=TRUE,debugMode=3)
