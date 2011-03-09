@@ -32,12 +32,24 @@ check <- function(x, overlapInd, margin_range ,splitVal){
 	r
 }
 
+#switches values from from1 and from2 to to1 and to2
 switchMatrixValues <- function(Matrix,from1,from2,to1,to2){
 	Matrix[which(Matrix==from1)] <- to1
 	Matrix[which(Matrix==from2)] <- to2
 	Matrix
 }
 
+f1 <- function(x,m){
+	apply(m,1,f2,x)
+}
+
+f2 <- function(x,oldx){
+	sum(x!=oldx)
+}
+ #recombination count, structure it!
+res <- apply(brassica_genotypes,1,f1,brassica_genotypes)
+
+#THIS COULD BE USEFUL
 orderGroup <- function(chromMatrix,verbose=FALSE,debugMode=0){
 	if(verbose)cat("   -> Starting un_order_chromosome_by_seriation\n",file="orderMarkers.log",append=T)
 	cur <- abs(cor(chromMatrix,use="pairwise.complete.obs"))
@@ -54,7 +66,16 @@ orderGroup <- function(chromMatrix,verbose=FALSE,debugMode=0){
 
 brassica_genotypes2 <- matrix(as.numeric(switchMatrixValues(brassica_genotypes,"A","B",0,1)),nrow(brassica_genotypes),ncol(brassica_genotypes))
 
-orderMarkers <- function(chrom_matrix,nr_iterations=100,groups=10,verbose=FALSE,debugMode=0,logFile="orderMarkers.log",outputFile="cross2.csv"){
+
+#chrom_matrix - matrix of genotypic data, rows - markers, cols - individuals
+#nr_iterations
+#groups
+#outputFile
+#verbose
+#debugMode
+#logFile
+orderedCross <- function(chrom_matrix,nr_iterations=100,groups=10,outputFile="cross2.csv",verbose=FALSE,debugMode=0,logFile="orderMarkers.log"){
+	
 	#r <- un_best_clustering(chrom_matrix,nr_iterations,groups)
 	cat("",file=logFile)
 	if(verbose){cat("orderMarkers starting.\n\n",file=logFile,append=T)}
@@ -72,8 +93,11 @@ orderMarkers <- function(chrom_matrix,nr_iterations=100,groups=10,verbose=FALSE,
 	start <- 1
 	for(i in 1:groups){
 		sl <- proc.time()
-		if(verbose){cat("   ### Writing chromosome: ",i,"nr of markers:",length(which(r[[1]]==i)),"###\n",file=logFile,append=T)}
-		write.table(cbind( sorted[[1]][which(sorted[[1]]==i)], 1:table(sort(r[[1]]))[i], brassica_genotypes[sorted[[2]][which(sorted[[1]]==i)],]) , file=outputFile , sep="," , quote=F , col.names=F , append=T)
+		if(verbose){
+			cat("   ### Writing chromosome: ",i,"nr of markers:",length(which(r[[1]]==i)),"###\n",file=logFile,append=T)
+			cat(paste("      -> Marker ",colnames(sorted[[1]][which(sorted[[1]]==i)]),"\n",sep=""),file=logFile,append=T)
+		}
+		write.table(cbind(sorted[[1]][which(sorted[[1]]==i)], 1:table(sort(r[[1]]))[i], brassica_genotypes[sorted[[2]][which(sorted[[1]]==i)],]) , file=outputFile , sep="," , quote=F , col.names=F , append=T)
 		el <- proc.time()
 		if(verbose){cat("   ### Writing chromosome:",i,"taken:",(el-sl)[3],"seconds. ###\n\n\n",file=logFile,append=T)}
 	}
@@ -89,9 +113,9 @@ orderMarkers <- function(chrom_matrix,nr_iterations=100,groups=10,verbose=FALSE,
 
 test.appriopriateMarkers <- function(){
 	expressionMatrix <- as.matrix(read.table("Expression_BrassicaRapa_10chr2.txt",sep=""))
-	brassica_genotypes <- appriopriateMarkers(expressionMatrix,margin=2, overlapInd=0, verb=T)
+	brassica_genotypes <- appriopriateMarkers(expressionMatrix,margin=0.5, overlapInd=0, verb=T)
 	dim(brassica_genotypes)
-	cross <- orderMarkers(brassica_genotypes,verbose=T)
+	cross <- orderedCross(brassica_genotypes,verbose=T)
 	plot.rf(formLinkageGroups(cross,reorgMarkers=F))
 
 }
