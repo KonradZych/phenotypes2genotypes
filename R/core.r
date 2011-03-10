@@ -1,54 +1,18 @@
-#WORK here
-check_parameters <- function(functionName, numericParameters, verboseParameter, debugModeParameter, verbose=FALSE, debugMode=0){
-	if(is.empty(verbose)) stop("Verbose must be boolean, but is empty rigth now!")
-	if(is.empty(debugMode)) stop("DebugMode must be 0,1,2 or 3 but is empty rigth now!")
-	if(verbose || debugMode==1 || debugMode==2 || debugMode==3) cat("Checking parameters for:",functionName,"\n")
-	for(i in numericParameters){
-		if(!is.numeric(i)||is.empty(i)) stop("Data you provide to ",functionName," must be numeric! And you provide it with: ", i)
-	}
-	if(verboseParameter!=TRUE && verboseParameter!=FALSE) stop("verbose must be boolean (TRUE/FALSE)")
-	if(!pmatch(debugModeParameter,c(0,1,2,3))) stop("debugMode could be either 0,1,2 or 3")
+#switches values from NA, before1 and before2 to naValue, after1 and after2, respectively
+switchMatrixValues <- function(matrix_to_be_cleaned,naValue=NA,before1,before2,after1,after2){
+	matrix_to_be_cleaned[which(is.na(matrix_to_be_cleaned))]<-naValue
+	matrix_to_be_cleaned[which(matrix_to_be_cleaned==before1)]<-after1
+	matrix_to_be_cleaned[which(matrix_to_be_cleaned==before2)]<-after2
+	matrix_to_be_cleaned
 }
 
-cEquals <- function(x,splitVal){
-	sum(x==splitVal)
-}
 
-cLess <- function(x,splitVal){
-	sum(x>splitVal)
+#recombinationCount - counting recobinations needen to go from one matrix to another
+#genotypicMatrix - rows: markers, cols: individuals
+recombinationCount <- function(genotypicMatrix){
+	res <- apply(genotypicMatrix,1,recombinationCountRow,genotypicMatrix)
 }
-
-cMore <- function(x,splitVal){
-	sum(x<splitVal)
-}
-
-check <- function(x, overlapInd, margin_range ,splitVal){
-	r <- FALSE
-	if(cEquals(x,splitVal) <= overlapInd){
-		if(abs(cMore(x,splitVal)-cLess(x,splitVal)) < margin_range){
-			r <- TRUE
-		}
-	}
-	r
-}
-
-#switches values from from1 and from2 to to1 and to2
-switchMatrixValues <- function(Matrix,from1,from2,to1,to2){
-	Matrix[which(Matrix==from1)] <- to1
-	Matrix[which(Matrix==from2)] <- to2
-	Matrix
-}
-
-f1 <- function(x,m){
-	apply(m,1,f2,x)
-}
-
-f2 <- function(x,oldx){
-	sum(x!=oldx)
-}
- #recombination count, structure it!
-res <- apply(brassica_genotypes,1,f1,brassica_genotypes)
-
+ 
 #THIS COULD BE USEFUL
 orderGroup <- function(chromMatrix,verbose=FALSE,debugMode=0){
 	if(verbose)cat("   -> Starting un_order_chromosome_by_seriation\n",file="orderMarkers.log",append=T)
@@ -112,9 +76,12 @@ orderedCross <- function(chrom_matrix,nr_iterations=100,groups=10,outputFile="cr
 
 
 test.appriopriateMarkers <- function(){
+	setwd("D:/data")
+	library(basicQtl)
+	library(qtl)
 	expressionMatrix <- as.matrix(read.table("Expression_BrassicaRapa_10chr2.txt",sep=""))
 	brassica_genotypes <- appriopriateMarkers(expressionMatrix,margin=0.5, overlapInd=0, verb=T)
-	dim(brassica_genotypes)
+	brassicaReco <- recombinationCount(brassica_genotypes)
 	cross <- orderedCross(brassica_genotypes,verbose=T)
 	plot.rf(formLinkageGroups(cross,reorgMarkers=F))
 
@@ -161,16 +128,8 @@ appriopriateMarkers <- function(expressionMatrix, proportion = 50, margin = 5, s
 	expressionMatrix
 }
 
-#DON"T USE
-cleanPlus<-function(matrix_to_be_cleaned,naValue,genoAValue,genoBValue){
-	matrix_to_be_cleaned[which(is.na(matrix_to_be_cleaned))]<-naValue
-	matrix_to_be_cleaned[which(matrix_to_be_cleaned==0)]<-genoAValue
-	matrix_to_be_cleaned[which(matrix_to_be_cleaned==1)]<-genoBValue
-	matrix_to_be_cleaned
-}
-
 crossParser <- function(genotypicMatrix,outputFile="cross.csv",verbose=FALSE, debugMode=0){
-	genotypicMatrix <- cleanPlus(genotypicMatrix,"-","A","B")
+	genotypicMatrix <- switchMatrixValues(genotypicMatrix,"-",0,1,"A","B")
 	if(verbose){cat("crossParser: startin function.\n")}
 	s <- proc.time()
 	cat("",file=outputFile)
