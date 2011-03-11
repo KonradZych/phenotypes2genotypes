@@ -1,6 +1,6 @@
 #####################################################################
 #
-# appropriateMarkers.R
+# toGenotypes.R
 #
 # Copyright (c) 2011, Konrad Zych
 #
@@ -21,12 +21,12 @@
 #     A copy of the GNU General Public License, version 3, is available
 #     at http://www.r-project.org/Licenses/GPL-3
 #
-# Contains: appropriateMarkers
+# Contains: toGenotypes
 #           transformIndividual, zero, cEquals, cMore, cLess, checkExpression
 #
 #####################################################################
 
-#appriopriateMarkers: Function that chooses from the matrix only appropriate markers with specified rules
+#toGenotypes: Function that chooses from the matrix only appropriate markers with specified rules
 #
 # expressionMatrix -> columns -. indivudlas,rows markers
 # proportion -> Proportion of individuals expected to carrying a certain genotype
@@ -36,13 +36,13 @@
 # genotypes -> User defined genotypes for the output matrix
 # verbose standard
 # debugmode standard ->1 Print our checks, 2 print additional time information
-appriopriateMarkers <- function(expressionMatrix, splitFUN = zero, overlapInd = 0, proportion = 50, margin = 5, genotypes = c(0,1), verbose=FALSE, debugMode=0){
+toGenotypes <- function(expressionMatrix, splitFUN = zero, overlapInd = 0, proportion = 50, margin = 5, genotypes = c(0,1), verbose=FALSE, debugMode=0){
 	s <- proc.time()
 
 	if(proportion < 1 || proportion > 99) stop("Proportion is a percentage (1,99)")
 	if(overlapInd < 0 || overlapInd > ncol(expressionMatrix)) stop("overlapInd is a number (0,lenght of the row).")
 	if(margin < 0 || margin > proportion) stop("Margin is a percentage (0,proportion)")
-	if(verbose && debugMode==1) cat("appriopriateMarkers starting withour errors in checkpoint.\n")
+	if(verbose && debugMode==1) cat("toGenotypes starting withour errors in checkpoint.\n")
 
 	#Selection of the probes matching to the specified parameters
 	suitedRows <- apply(expressionMatrix,1,checkExpression,splitFUN,overlapInd, proportion, margin)
