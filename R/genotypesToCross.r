@@ -35,46 +35,59 @@
 # verbose - standard
 # debugMode - standard
 # genos - argument passed to read.cross (chars describing genotypes)
-# usage cross <- orderedCross(genotypicMatrix)
+# usage cross <- orderedCross(genotypicMatrix,expressionMatrix)
 
 genotypesToCross <- function(genotypeMatrix, expressionMatrix, doClustering=FALSE, groups=10, outputFile="mycross.csv", verbose=FALSE, debugMode=0){
-	if(verbose) cat("genotypesToCross starting.\n\n")
+	###CHECKS
+	
+	if(verbose && debugMode==1) cat("genotypesToCross starting.\n")
 	s <- proc.time()
-	
-	#printing faked phenotype
 	cat("",file=outputFile)
-	cat("phenotype",sep="",file=outputFile,append=TRUE)
-	cat(",,,",sep="",file=outputFile,append=TRUE)
-	cat(paste(runif(48,0,100),collapse=","),sep="",file=outputFile,append=TRUE)
-	cat("\n",sep="",file=outputFile,append=TRUE)
-	
-	#Dividing data in ten groups based on corelation using kmeans
-	cor_matrix <- cor(t(genotypeMatrix), use="pairwise.complete.obs")
+	#saving phenotypic data
+	writePhenotypes(expressionMatrix, outputFile, verbose, debugMode)
+	if(!doClustering){
+		groups <- 1
+	}
 	r <- kmeans(genotypeMatrix,groups)
 	sorted <- sort(r[[1]],index.return=TRUE)
-
-	#printing genotypic data to file in specified format
 	for(i in 1:groups){
 		sl <- proc.time()
-		if(verbose){
-			cat("   ### Writing chromosome: ",i,"nr of markers:",length(which(r[[1]]==i)),"###\n")
-			cat(paste("      -> Marker ",colnames(sorted[[1]][which(sorted[[1]]==i)]),"\n",sep=""))
-		}
-		write.table(cbind(sorted[[1]][which(sorted[[1]]==i)], 1:table(sort(r[[1]]))[i], genotypeMatrix[sorted[[2]][which(sorted[[1]]==i)],]) , file=outputFile , sep="," , quote=FALSE , col.names=FALSE , append=TRUE)
+		if(verbose && debugMode==1) cat("writeGenotypes starting  for chromome",i,"out of",groups,".\n")
+		writeGenotypes(genotypeMatrix[sorted[[2]][which(sorted[[1]]==i)],], i,outputFile, verbose, debugMode)
 		el <- proc.time()
-		if(verbose){cat("   ### Writing chromosome:",i,"taken:",(el-sl)[3],"seconds. ###\n\n\n")}
-	}
-  
+		if(verbose && debugMode==2)cat("writeGenotypes for chromome",i," done in:",(el-sl)[3],"seconds.\n")
+	}  
 	#reading freshly made file to R
-	cross <- read.cross("csvr",file=outputFile,genotypes=c(0,1))
+	cross <- invisible(read.cross("csvr",file=outputFile, genotypes=c(0,1)))
 	#forcing cross time to RIL
 	class(cross)[1] <- "riself"
 	e <- proc.time()
-	if(verbose){cat("Done without errors in:",(e-s)[3],"seconds.\n")}
 	#returning cross
+	if(verbose) cat("genotypesToCross done in",(e-s)[3],"seconds.\n")
 	invisible(cross)
 }
 
+#writePhenotypes - writes to file phenotypic data (cross object format)
+writePhenotypes <- function(expressionMatrix, outputFile, verbose=FALSE, debugMode=TRUE){
+	sl <- proc.time()
+	if(verbose && debugMode==1) cat("writePhenotypes starting.\n")
+	write.table(cbind("","",expressionMatrix),file=outputFile,sep=",",quote=FALSE,col.names=FALSE)
+	el <- proc.time()
+	if(verbose && debugMode==2)cat("Writing genotypes done in:",(el-sl)[3],"seconds.\n")
+}
+
+
+#writeGenotypes - writes to file genotypic data (cross object format)
+#genotypeMatrix - matrix of genotypic data, rows - markers, cols - individuals
+#verbose - standard
+#debugMode - standard 1 -> gives info, that function is starting  2 -> gives additional time information
+writeGenotypes <- function(genotypeMatrix,chr=1,outputFile,verbose=FALSE,debugMode=0){
+	sl <- proc.time()
+	if(verbose && debugMode==1) cat("writeGenotypes starting.\n")
+	write.table(cbind(chr,1:nrow(genotypeMatrix),genotypeMatrix),file=outputFile,sep=",",quote=FALSE,col.names=FALSE,append=TRUE)
+	el <- proc.time()
+	if(verbose && debugMode==2) cat("Writing genotypes done in:",(el-sl)[3],"seconds.\n")
+}
 
 
 test.genotypesToCross <- function(){
