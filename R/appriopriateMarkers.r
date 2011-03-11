@@ -1,13 +1,41 @@
-#function that choses form the matrix only appropriate markers with specified rules
-#Depends on: check
-#expressionMatrix -> columns -. indivudlas,rows markers
-#proportion -> Proportion of individuals expected to carrying a certain genotype
-#margin -> Proportion is allowed to varry between this margin (2 sided)
-#splitFUN -> function used to split values
-#overlapInd -> number of individuals that are allowed to overlap (have splitFUN)
-#genotypes -> User defined genotypes for the output matrix
-#verbose standard
-#debugmode standard ->1 Print our checks, 2 print additional time information
+#####################################################################
+#
+# appropriateMarkers.R
+#
+# Copyright (c) 2011, Konrad Zych
+#
+# Modified by Danny Arends
+# 
+# first written March 2011
+# last modified March 2011
+#
+#     This program is free software; you can redistribute it and/or
+#     modify it under the terms of the GNU General Public License,
+#     version 3, as published by the Free Software Foundation.
+#
+#     This program is distributed in the hope that it will be useful,
+#     but without any warranty; without even the implied warranty of
+#     merchantability or fitness for a particular purpose.  See the GNU
+#     General Public License, version 3, for more details.
+#
+#     A copy of the GNU General Public License, version 3, is available
+#     at http://www.r-project.org/Licenses/GPL-3
+#
+# Contains: appropriateMarkers
+#           transformIndividual, zero, cEquals, cMore, cLess, checkExpression
+#
+#####################################################################
+
+#appriopriateMarkers: Function that chooses from the matrix only appropriate markers with specified rules
+#
+# expressionMatrix -> columns -. indivudlas,rows markers
+# proportion -> Proportion of individuals expected to carrying a certain genotype
+# margin -> Proportion is allowed to varry between this margin (2 sided)
+# splitFUN -> function used to split values
+# overlapInd -> number of individuals that are allowed to overlap (have splitFUN)
+# genotypes -> User defined genotypes for the output matrix
+# verbose standard
+# debugmode standard ->1 Print our checks, 2 print additional time information
 appriopriateMarkers <- function(expressionMatrix, splitFUN = zero, overlapInd = 0, proportion = 50, margin = 5, genotypes = c(0,1), verbose=FALSE, debugMode=0){
 	s <- proc.time()
 
@@ -36,6 +64,10 @@ appriopriateMarkers <- function(expressionMatrix, splitFUN = zero, overlapInd = 
 	invisible(expressionMatrix2)
 }
 
+#transformIndividual: 
+# x
+# r
+# genotypes
 transformIndividual <- function(x,r,genotypes){
 	results <- x
 	results[which(x  > r)] <- genotypes[1]
@@ -44,16 +76,20 @@ transformIndividual <- function(x,r,genotypes){
 	results
 }
 
+#zero: 
+# x
 zero <- function(x){
 	return(0)
 }
 
-#counts how many times x eqauls splitFUN
+#cEquals
+# counts how many times x eqauls splitFUN
 cEquals <- function(x,splitFUN){
 	sum(x==splitFUN(x))
 }
 
-#counts how many times x is less than splitFUN
+#cLess
+# counts how many times x is less than splitFUN
 cLess <- function(x,splitFUN){
 	sum(x>splitFUN(x))
 }
