@@ -28,7 +28,7 @@
 
 #toGenotypes: Function that chooses from the matrix only appropriate markers with specified rules
 #
-# expressionMatrix -> columns -. indivudlas,rows markers
+# expressionMatrix -> columns: individuals, rows: markers
 # proportion -> Proportion of individuals expected to carrying a certain genotype
 # margin -> Proportion is allowed to varry between this margin (2 sided)
 # splitFUN -> function used to split values
@@ -53,7 +53,7 @@ toGenotypes <- function(expressionMatrix, splitFUN = zero, overlapInd = 0, propo
 	
 	#Transform numeric values to genotypes
 	r <- apply(expressionMatrix,1,splitFUN)
-	expressionMatrix2 <- apply(expressionMatrix,2,transformIndividual,r,genotypes)
+	genotypeMatrix <- apply(expressionMatrix,2,transformIndividual,r,genotypes)
 	
 	eg <- proc.time()
 	if(verbose && debugMode==2) cat("Created genotype matrix, took:",(eg-ep)[3],"seconds.\n")
@@ -61,7 +61,7 @@ toGenotypes <- function(expressionMatrix, splitFUN = zero, overlapInd = 0, propo
 	
 	if(verbose) cat("Done, appriopiateMarkers took:",(e-s)[3],"seconds.\n")
 	
-	invisible(expressionMatrix2)
+	invisible(genotypeMatrix)
 }
 
 #transformIndividual: 
@@ -118,19 +118,16 @@ checkExpression <- function(x, splitFUN, overlapInd, proportion, margin){
 }
 
 #test function, doesn't need documenation
-test.appriopriateMarkers <- function(){
-	#invisible(setwd("D:/data")) #-> change to data(bassicaExpression)
-	invisible(library(basicQtl))
-	invisible(library(qtl))
+test.toGenotypes <- function(){
 	data(expressionData)
 	expressionMatrix <- as.matrix(read.table("Expression_BrassicaRapa_10chr2.txt",sep=""))
-	brassica_genotypes <- appriopriateMarkers(expressionMatrix, margin=0.5,genotypes=c(1,0),overlapInd=0, verbose=TRUE, debugMode=2)
+	genotypes <- toGenotypes(expressionMatrix, margin=0.5,genotypes=c(1,0),overlapInd=0, verbose=TRUE, debugMode=2)
 	
 	#Checks
-	if(sum(which(brassica_genotypes[1,1]!=1)))	stop("Element not equal to expected\n")
-	if(sum(which(brassica_genotypes[100,10]!=1)))	stop("Element not equal to expected\n")
-	if(sum(which(brassica_genotypes[1026,20]!=1)))	stop("Element not equal to expected\n")
-	if(sum(dim(brassica_genotypes))!=2063)	stop("Wrong dimensions\n")
+	if(sum(which(genotypes[1,1]!=1)))	stop("Element not equal to expected\n")
+	if(sum(which(genotypes[100,10]!=1)))	stop("Element not equal to expected\n")
+	if(sum(which(genotypes[1026,20]!=1)))	stop("Element not equal to expected\n")
+	if(sum(dim(genotypes))!=2063)	stop("Wrong dimensions\n")
 	
-	invisible(brassica_genotypes)
+	invisible(genotypes)
 }
