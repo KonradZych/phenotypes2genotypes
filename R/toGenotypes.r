@@ -1,4 +1,4 @@
-#####################################################################
+#################################################################################
 #
 # toGenotypes.R
 #
@@ -24,7 +24,7 @@
 # Contains: toGenotypes
 #           transformIndividual, zero, cEquals, cMore, cLess, checkExpression
 #
-#####################################################################
+#################################################################################
 
 #toGenotypes: Function that chooses from the matrix only appropriate markers with specified rules
 #
@@ -50,24 +50,24 @@ toGenotypes <- function(expressionMatrix, splitFUN = zero, overlapInd = 0, propo
 
 	ep <- proc.time()
 	if(verbose && debugMode==2) cat("Selected proper probes, took:",(ep-s)[3],"seconds. Creating genotype matrix.\n")
-	
+
 	#Transform numeric values to genotypes
 	r <- apply(expressionMatrix,1,splitFUN)
 	genotypeMatrix <- apply(expressionMatrix,2,transformIndividual,r,genotypes)
-	
+
 	eg <- proc.time()
 	if(verbose && debugMode==2) cat("Created genotype matrix, took:",(eg-ep)[3],"seconds.\n")
 	e<-proc.time()
-	
-	if(verbose) cat("Done, appriopiateMarkers took:",(e-s)[3],"seconds.\n")
+
+	if(verbose) cat("toGenotypes finished in",(e-s)[3],"seconds.\n")
 	
 	invisible(genotypeMatrix)
 }
 
-#transformIndividual: 
-# x
-# r
-# genotypes
+#transformIndividual: spliting column form expressionMatrix using vector of spliting values
+# x - column of expressionMatrix, containing data 
+# r - vector containing split values (result of applying specified function throughtoutthe rows of expressionMatrix)
+# genotypes - list of 2 values, specifing how genotypes should be named
 transformIndividual <- function(x,r,genotypes){
 	results <- x
 	results[which(x  > r)] <- genotypes[1]
@@ -76,33 +76,34 @@ transformIndividual <- function(x,r,genotypes){
 	results
 }
 
-#zero: 
-# x
+#zero: function returning 0, to use with toGenotypes, when splitting value is exactly 0
+# x - input of any type, when used with toGenotypes - row of an expressionMatrix
 zero <- function(x){
 	return(0)
 }
 
 #cEquals
-# counts how many times x eqauls splitFUN
+# counts how many elements of x eqaul result of splitFUN(x)
 cEquals <- function(x,splitFUN){
 	sum(x==splitFUN(x))
 }
 
 #cLess
-# counts how many times x is less than splitFUN
+# counts how many elements of x are less than result of splitFUN(x)
 cLess <- function(x,splitFUN){
 	sum(x>splitFUN(x))
 }
 
-#counts how many times x is more than splitFUN
+#cMore
+# counts how many elements of x are more than result of splitFUN(x)
 cMore <- function(x,splitFUN){
 	sum(x<splitFUN(x))
 }
 
 #check - checks if x meets specified requirments:
-#splitFUN -> function used to split values
-#overlapInd - how many individuals could be overalpping -> how many elememnts of x are eqaul to splitFUN
-#margin_range - we assume that nr of less and more should be the same, at least difference should be less than margin_range
+# splitFUN -> function used to split values
+# overlapInd - how many individuals could be overalpping -> how many elememnts of x are eqaul to result of splitFUN(x)
+# margin_range - we assume that nr of less and more should be the same, at least difference should be less than margin_range
 checkExpression <- function(x, splitFUN, overlapInd, proportion, margin){
 	r <- FALSE
 	if(cEquals(x,splitFUN) <= overlapInd){
