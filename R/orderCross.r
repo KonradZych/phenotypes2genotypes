@@ -37,12 +37,13 @@ orderedCross <- function(chrom_matrix,nr_iterations=100,groups=10,outputFile="cr
 		el <- proc.time()
 		if(verbose){cat("   ### Writing chromosome:",i,"taken:",(el-sl)[3],"seconds. ###\n\n\n")}
 	}
-	e <- proc.time()
+
 	
 	#reading freshly made file to R
 	cross <- read.cross("csvr",file=outputFile,genotypes=genos)
 	#forcing cross time to RIL
 	class(cross)[1] <- "riself"
+	e <- proc.time()
 	if(verbose){cat("Done without errors in:",(e-s)[3],"seconds.\n")}
 	#returning cross
 	invisible(cross)
