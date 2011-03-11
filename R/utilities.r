@@ -1,3 +1,28 @@
+#c_plot - no documantation yet!!!
+c_plot <- function(m_vector,cutoff=0){
+	result <- as.vector(matrix("a",1,length(m_vector)))
+	for(i in 1:length(m_vector)){
+		if(m_vector[i]>cutoff){
+			result[i] <- "red"
+		}else if(m_vector[i]<(-cutoff)){
+			result[i] <- "blue"
+		}else{
+			result[i] <- "grey"
+		}
+	}
+	plot(m_vector,col=result)
+}
+
+flip_plot <- function(vec,vecf){
+	result <- as.vector(matrix("white",1,length(vec)))
+	for(i in 1:length(vec)){
+		if(vec[i]>vecf[i]){
+			result[i] <- "red"
+		}
+	}
+	plot(vecf,col=result)
+}
+
 crossParser <- function(genotypicMatrix,outputFile="cross.csv",verbose=FALSE, debugMode=0){
 	genotypicMatrix <- switchMatrixValues(genotypicMatrix,"-",0,1,"A","B")
 	if(verbose){cat("crossParser: startin function.\n")}
@@ -53,16 +78,33 @@ record_format_parser <- function(genotypicMatrix){
 }
 
 #switches values from NA, before1 and before2 to naValue, after1 and after2, respectively
-switchMatrixValues <- function(matrix_to_be_cleaned,naValue=NA,before1,before2,after1,after2){
+switchMatrixValues <- function(matrix_to_be_cleaned,naValue=NA,before,after){
 	matrix_to_be_cleaned[which(is.na(matrix_to_be_cleaned))]<-naValue
-	matrix_to_be_cleaned[which(matrix_to_be_cleaned==before1)]<-after1
-	matrix_to_be_cleaned[which(matrix_to_be_cleaned==before2)]<-after2
+	matrix_to_be_cleaned[which(matrix_to_be_cleaned==before[1])]<-after[1]
+	matrix_to_be_cleaned[which(matrix_to_be_cleaned==before[2])]<-after[2]
 	matrix_to_be_cleaned
 }
 
 
 #recombinationCount - counting recobinations needen to go from one matrix to another
 #genotypicMatrix - rows: markers, cols: individuals
-recombinationCount <- function(genotypicMatrix){
-	res <- apply(genotypicMatrix,1,recombinationCountRow,genotypicMatrix)
+recombinationCount <- function(genotypicMatrix,flip=0,verbose=FALSE,debugMode=0){
+	genotypicMatrix <- switchMatrixValues(genotypicMatrix,before=c("A","B"),after=c(0,1))
+	res <- apply(genotypicMatrix,1,recombinationCountRow,genotypicMatrix,flip)
+	res
+}
+
+#c_plot - no documantation yet!!!
+c_plot <- function(m_vector,cutoff=0){
+	result <- as.vector(matrix("a",1,length(m_vector)))
+	for(i in 1:length(m_vector)){
+		if(m_vector[i]>cutoff){
+			result[i] <- "red"
+		}else if(m_vector[i]<(cutoff)){
+			result[i] <- "blue"
+		}else{
+			result[i] <- "grey"
+		}
+	}
+	plot(m_vector,col=result)
 }
