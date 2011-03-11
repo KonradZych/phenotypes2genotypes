@@ -1,30 +1,14 @@
-\name{phenotypes2genotypes-package}
-\alias{phenotypes2genotypes}
-\alias{ph2g}
+\name{pheno2geno-package}
+\alias{pheno2geno}
 \docType{package}
 \title{
-	Basic QTL - very simple qtl mapping and genotype markers ordering of messed data
+	Tools for the construction of genetic maps from phentype data
 }
 \description{
 	Includes the following functionality:
 	\itemize{
-    \item \code{\link{qtlAnalysis}} - All in one, just give it wd, file names and output name for plot image
-    \itemize{
-	  \item \code{\link{heatmapqtl}} - Basic QTL mapping currently done using qtlbyttest for every marker in dataset
-      \item \code{\link{qtlbyttest}} - Single marker mapping by using t-test statistics
-      \item \code{\link{pathway}} - Basic pathway creation using single marker
-    }
-    \item \code{\link{un_neighbor}} - Ordering markers from messed genotypical data
-	\itemize{
-      \item \code{\link{un_drop_markers}} - Removing non-informational markers, that are higly corelated with more than specified percentage of others
-    }
-    \item \code{\link{utilities}} - Ploting routines and helper functions
-	\itemize{
-      \item \code{\link{persp_qtl_map}} - produces nice and highly informative perspective plot of QTL map
-	  \item \code{\link{makebinary}} - Produces binary matrix from dataset by splitting it by specified treshold
-	  \item \code{\link{un_recombination}} - Calculates recombination factor between two markers
-    }
-	}
+    \item \code{\link{appropriateMarkers}} - Function that chooses from the expression matrix only appropriate expression to serve as markers
+  }
 }
 \details{
 TODO
@@ -37,7 +21,7 @@ TODO
 \references{
 TODO
 }
-\keyword{ package,qtl }
+\keyword{ package, qtl }
 
 \seealso{
 TODO

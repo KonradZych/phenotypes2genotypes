@@ -1,10 +1,15 @@
 \name{phenotypes2genotypes-internal}
-\alias{un_intonumeric}
+\alias{transformIndividual}
+\alias{zero}
+\alias{cEquals}
+\alias{cLess}
+\alias{cMore}
+\alias{checkExpression}
 
-\title{Internal phenotypes2genotypes functions}
+\title{Internal pheno2geno functions}
 
 \description{
-  Internal phenotypes2genotypes functions. These are generally not to be called by the user.
+  Internal pheno2geno functions. These are generally not to be called by the user.
 }
 
 \usage{
