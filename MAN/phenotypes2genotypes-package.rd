@@ -7,7 +7,7 @@
 \description{
 	Includes the following functionality:
 	\itemize{
-    \item \code{\link{appropriateMarkers}} - Function that chooses from the expression matrix only appropriate expression to serve as markers
+    \item \code{\link{toGenotypes}} - Convert a phenotypematrix into suitable genotypes
   }
 }
 \details{

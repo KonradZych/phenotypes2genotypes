@@ -37,7 +37,7 @@ toGenotypes(expressionMatrix, splitFUN = zero, overlapInd = 0, proportion = 50, 
 }
 
 \examples{
-
+  #TODO
 }
 
 \seealso{

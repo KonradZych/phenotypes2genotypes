@@ -5,6 +5,8 @@
 \alias{cLess}
 \alias{cMore}
 \alias{checkExpression}
+\alias{test.genotypesToCross}
+\alias{test.toGenotypes}
 
 \title{Internal pheno2geno functions}
 
