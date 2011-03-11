@@ -8,7 +8,7 @@
   Gene expression data on Brassica Rapa
 } 
 
-\usage{data(hyper)}
+\usage{data(expression_ratio)}
 
 \format{
   Matrix with expression values with: columns, individuals and opn the rows, markers
