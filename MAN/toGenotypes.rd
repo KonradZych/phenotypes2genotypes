@@ -8,7 +8,7 @@
 }
 
 \usage{
-toGenotypes(expressionMatrix, splitFUN = zero, overlapInd = 0, proportion = 50, margin = 5, genotypes = c(0,1), verbose=FALSE, debugMode=0){
+toGenotypes(expressionMatrix, splitFUN = zero, overlapInd = 0, proportion = 50, margin = 5, genotypes = c(0,1), verbose=FALSE, debugMode=0)
 }
 
 \arguments{
