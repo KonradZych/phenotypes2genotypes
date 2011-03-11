@@ -37,7 +37,14 @@ toGenotypes(expressionMatrix, splitFUN = zero, overlapInd = 0, proportion = 50, 
 }
 
 \examples{
-  #TODO
+	data(expression_ratio)
+	genotypes <- toGenotypes(expression_ratio, margin=0.5,genotypes=c(1,0),overlapInd=0, verbose=TRUE, debugMode=2)
+	
+	#Checks
+	if(sum(which(genotypes[1,1]!=1)))	stop("Element not equal to expected\n")
+	if(sum(which(genotypes[100,10]!=1)))	stop("Element not equal to expected\n")
+	if(sum(which(genotypes[101,20]!=1)))	stop("Element not equal to expected\n")
+	if(sum(dim(genotypes)) != 168)	stop("Wrong dimensions\n")
 }
 
 \seealso{

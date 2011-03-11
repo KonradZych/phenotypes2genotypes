@@ -116,17 +116,3 @@ checkExpression <- function(x, splitFUN, overlapInd, proportion, margin){
 	}
 	r
 }
-
-#test function, doesn't need documenation
-test.toGenotypes <- function(){
-	data(expression_ratio)
-	genotypes <- toGenotypes(expression_ratio, margin=0.5,genotypes=c(1,0),overlapInd=0, verbose=TRUE, debugMode=2)
-	
-	#Checks
-	if(sum(which(genotypes[1,1]!=1)))	stop("Element not equal to expected\n")
-	if(sum(which(genotypes[100,10]!=1)))	stop("Element not equal to expected\n")
-	if(sum(which(genotypes[1026,20]!=1)))	stop("Element not equal to expected\n")
-	if(sum(dim(genotypes))!=2063)	stop("Wrong dimensions\n")
-	
-	invisible(genotypes)
-}
