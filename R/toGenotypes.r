@@ -119,9 +119,8 @@ checkExpression <- function(x, splitFUN, overlapInd, proportion, margin){
 
 #test function, doesn't need documenation
 test.toGenotypes <- function(){
-	data(expressionData)
-	expressionMatrix <- as.matrix(read.table("Expression_BrassicaRapa_10chr2.txt",sep=""))
-	genotypes <- toGenotypes(expressionMatrix, margin=0.5,genotypes=c(1,0),overlapInd=0, verbose=TRUE, debugMode=2)
+	data(expression_ratio)
+	genotypes <- toGenotypes(expression_ratio, margin=0.5,genotypes=c(1,0),overlapInd=0, verbose=TRUE, debugMode=2)
 	
 	#Checks
 	if(sum(which(genotypes[1,1]!=1)))	stop("Element not equal to expected\n")
