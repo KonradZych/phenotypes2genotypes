@@ -1,0 +1,61 @@
+
+"To do" list
+----------------------------------------------------------------------
+This file is intended to contain a list of many of the additions and
+revisions that are planned for the package.  
+----------------------------------------------------------------------
+ 
+SHORT TERM:
+
+o Add data set for single color microarray data
+
+o Add parent expression data
+
+o Add functionality to plot statistics about the expression data
+
+o Set up analysis of expression data projected on a known genetic map
+
+o Prepare a ppt presentation on genetic map reconstruction and our plan
+
+----------------------------------------------------------------------
+
+MEDIUM-SHORT TERM:
+
+o Add basic linkage group detection based on recombinations
+
+o Add method to find optimal placement of markers within a chromosome
+
+o Construct generic data structures (and define class functions for them plot, summary, print)
+
+o Add help files for all major functions
+
+o Roadmap:
+  - 0.1 Known sequence / genetic map and expression data
+  - 0.2 Comparable sequence / genetic map and expression data
+
+o Add tests for all major functions
+
+----------------------------------------------------------------------
+
+MEDIUM TERM:
+
+o Add tests for all internal functions
+
+o Write initial draft article
+
+o Roadmap:
+  - 0.3 Expression data only (RIL and Parental)
+
+----------------------------------------------------------------------
+
+LONG TERM:
+
+o Finish article
+
+o Roadmap:
+  - 1.0 Expression data only (RIL) and package on CRAN
+
+o Add method to find number of linkage groups (chromosomes) when unknown
+  
+----------------------------------------------------------------------
+end of TODO.txt
