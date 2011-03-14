@@ -1,10 +1,10 @@
 \name{genotypesToCross}
 \alias{genotypesToCross}
 
-\title{Convert a phenotypematrix into suitable genotypes}
+\title{Cross object from genotypic data.}
 
 \description{
-  Convert a phenotypematrix into suitable genotypes
+  Produces from genotypic matrix file containing object of type cross, reads it into R a returns.
 }
 
 \usage{
