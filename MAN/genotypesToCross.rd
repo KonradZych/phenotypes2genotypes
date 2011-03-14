@@ -36,7 +36,9 @@ genotypesToCross(genotypeMatrix, expressionMatrix, doClustering=FALSE, groups=10
 }
 
 \examples{
-  #TODO
+  	data(genotypes)
+	data(expression_ratio)
+	genotypesToCross(genotypes,expression_ratio)
 }
 
 \seealso{
