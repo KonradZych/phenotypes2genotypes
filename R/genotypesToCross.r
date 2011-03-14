@@ -88,8 +88,3 @@ writeGenotypes <- function(genotypeMatrix,chr=1,outputFile,verbose=FALSE,debugMo
 	el <- proc.time()
 	if(verbose && debugMode==2) cat("Writing genotypes done in:",(el-sl)[3],"seconds.\n")
 }
-
-
-test.genotypesToCross <- function(){
-
-}
