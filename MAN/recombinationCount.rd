@@ -1,5 +1,8 @@
 \name{recombinationCount}
 \alias{recombinationCount}
+\alias{flip}
+\alias{verbose}
+\alias{debugMode}
 
 \title{Recombination factor count.}
 
@@ -8,7 +11,7 @@
 }
 
 \usage{
-recombinationCount <- function(genotypicMatrix,flip=0,verbose=FALSE,debugMode=0)
+recombinationCount(genotypeMatrix,flip=0,verbose=FALSE,debugMode=0)
 }
 
 \arguments{

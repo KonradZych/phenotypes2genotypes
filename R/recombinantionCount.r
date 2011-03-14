@@ -27,15 +27,15 @@
 ##################################################################################################
 
 #recombinationCount - counting recobinations needen to go from one matrix to another
-#genotypicMatrix - rows: markers, cols: individuals
+#genotypeMatrix - rows: markers, cols: individuals
 #flip - specifies whether one of the rows that are being compared should be flipped(1) or not(0)
 #verbose - standard
 #debugMode - standard
-recombinationCount <- function(genotypicMatrix,flip=0,verbose=FALSE,debugMode=0){
-	#genotypicMatrix <- switchMatrixValues(genotypicMatrix,before=c("A","B"),after=c(0,1))
+recombinationCount <- function(genotypeMatrix,flip=0,verbose=FALSE,debugMode=0){
+	#genotypeMatrix <- switchMatrixValues(genotypeMatrix,before=c("A","B"),after=c(0,1))
 	s<-proc.time()
 	if(verbose && debugMode==1) cat("recombinationCount starting.\n")
-	res <- apply(genotypicMatrix,1,recombinationCountRow,genotypicMatrix,flip)
+	res <- apply(genotypeMatrix,1,recombinationCountRow,genotypeMatrix,flip)
 	e<-proc.time()
 	if(verbose) cat("recombinationCount done in",(e-s)[3],"seconds.\n")
 	invisible(res)
@@ -46,11 +46,11 @@ recombinationCount <- function(genotypicMatrix,flip=0,verbose=FALSE,debugMode=0)
 #flip - specifies whether one of the rows that are being compared should be flipped(1) or not(0)
 #verbose - standard
 #debugMode - standard
-recombinationCountRow <- function(genotypicMatrixRow,genotypicMatrix,flip=0,verbose=FALSE,debugMode=0){
+recombinationCountRow <- function(genotypicMatrixRow,genotypeMatrix,flip=0,verbose=FALSE,debugMode=0){
 	s<-proc.time()
 	if(verbose && debugMode==1) cat("recombinationCountRow starting.\n")
-	if(flip==0){output <- apply(genotypicMatrix,1,recombinationCountRowSub,genotypicMatrixRow)}
-	if(flip==1){output <- apply(genotypicMatrix,1,recombinationCountRowFlipSub,genotypicMatrixRow)}
+	if(flip==0){output <- apply(genotypeMatrix,1,recombinationCountRowSub,genotypicMatrixRow)}
+	if(flip==1){output <- apply(genotypeMatrix,1,recombinationCountRowFlipSub,genotypicMatrixRow)}
 	e<-proc.time()
 	if(verbose && debugMode==2) cat("recombinationCountRow done in:",(e-s)[3],"seconds.\n")
 	output
