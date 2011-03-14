@@ -39,7 +39,7 @@ recombinationCount <- function(genotypicMatrix,flip=0,verbose=FALSE,debugMode=0)
 	if(reco[1]!=0)	stop("Element not equal to expected\n")
 	if(reco[34]!=30)	stop("Element not equal to expected\n")
 	if(reco[445]!=24)	stop("Element not equal to expected\n")
-	if(sum(dim(genotypes)) != 240)	stop("Wrong dimensions\n")
+	if(sum(dim(reco)) != 240)	stop("Wrong dimensions\n")
 }
 
 \seealso{
