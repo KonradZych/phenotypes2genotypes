@@ -37,7 +37,7 @@
 # genos - argument passed to read.cross (chars describing genotypes)
 # usage cross <- orderedCross(genotypicMatrix,expressionMatrix)
 
-genotypesToCross <- function(genotypeMatrix, expressionMatrix, doClustering=FALSE, groups=10, outputFile="mycross.csv", verbose=FALSE, debugMode=0){
+genotypesToCross <- function(genotypeMatrix, expressionMatrix, doClustering=FALSE, groups=10, iterations = 100, outputFile="mycross.csv", verbose=FALSE, debugMode=0){
 	###CHECKS
 	
 	if(verbose && debugMode==1) cat("genotypesToCross starting.\n")
@@ -48,7 +48,12 @@ genotypesToCross <- function(genotypeMatrix, expressionMatrix, doClustering=FALS
 	if(!doClustering){
 		groups <- 1
 	}
-	r <- kmeans(genotypeMatrix,groups)
+	if(groups>1){
+		r <- bestClustering(genotypeMatrix,groups,iterations,verbose,debugMode)
+		r <- kmeans(r,groups)
+	}else{
+		r <- kmeans(genotypeMatrix,groups)
+	}
 	sorted <- sort(r[[1]],index.return=TRUE)
 	for(i in 1:groups){
 		sl <- proc.time()
