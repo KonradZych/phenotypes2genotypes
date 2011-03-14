@@ -7,7 +7,7 @@
 \title{Recombination factor count.}
 
 \description{
-  Counting number of recombination events between two markers.
+  Counting number of recombination events between markers in genotypic matrix.
 }
 
 \usage{
