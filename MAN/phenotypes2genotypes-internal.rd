@@ -5,8 +5,13 @@
 \alias{cLess}
 \alias{cMore}
 \alias{checkExpression}
-\alias{test.genotypesToCross}
-\alias{test.toGenotypes}
+\alias{recombinationCountRow}
+\alias{recombinationCountRowSub}
+\alias{recombinationCountRowFlipSub}
+\alias{writePhenotypes}
+\alias{writeGenotypes}
+
+
 
 \title{Internal pheno2geno functions}
 
