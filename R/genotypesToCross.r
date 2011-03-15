@@ -51,17 +51,20 @@ genotypesToCross <- function(genotypeMatrix, expressionMatrix, doClustering=FALS
 	if(groups>1){
 		r <- bestClustering(genotypeMatrix,groups,iterations,verbose,debugMode)
 		r <- kmeans(r,groups)
+		sorted <- sort(r[[1]],index.return=TRUE)
+		for(i in 1:groups){
+			sl <- proc.time()
+			if(verbose && debugMode==1) cat("writeGenotypes starting  for chromome",i,"out of",groups,".\n")
+			writeGenotypes(genotypeMatrix[sorted[[2]][which(sorted[[1]]==i)],], i,outputFile, verbose, debugMode)
+			el <- proc.time()
+			if(verbose && debugMode==2)cat("writeGenotypes for chromome",i," done in:",(el-sl)[3],"seconds.\n")
+		}  
 	}else{
-		r <- kmeans(genotypeMatrix,groups)
+			sl <- proc.time()
+			writeGenotypes(genotypeMatrix, 1,outputFile, verbose, debugMode)
+			el <- proc.time()
+			if(verbose && debugMode==2)cat("writeGenotypes for chromome",i," done in:",(el-sl)[3],"seconds.\n")
 	}
-	sorted <- sort(r[[1]],index.return=TRUE)
-	for(i in 1:groups){
-		sl <- proc.time()
-		if(verbose && debugMode==1) cat("writeGenotypes starting  for chromome",i,"out of",groups,".\n")
-		writeGenotypes(genotypeMatrix[sorted[[2]][which(sorted[[1]]==i)],], i,outputFile, verbose, debugMode)
-		el <- proc.time()
-		if(verbose && debugMode==2)cat("writeGenotypes for chromome",i," done in:",(el-sl)[3],"seconds.\n")
-	}  
 	#reading freshly made file to R
 	cross <- invisible(read.cross("csvr",file=outputFile, genotypes=c(0,1)))
 	#forcing cross time to RIL
@@ -78,7 +81,7 @@ writePhenotypes <- function(expressionMatrix, outputFile, verbose=FALSE, debugMo
 	if(verbose && debugMode==1) cat("writePhenotypes starting.\n")
 	write.table(cbind("","",expressionMatrix),file=outputFile,sep=",",quote=FALSE,col.names=FALSE)
 	el <- proc.time()
-	if(verbose && debugMode==2)cat("Writing genotypes done in:",(el-sl)[3],"seconds.\n")
+	if(verbose && debugMode==2)cat("Writing phenotypes done in:",(el-sl)[3],"seconds.\n")
 }
 
 
