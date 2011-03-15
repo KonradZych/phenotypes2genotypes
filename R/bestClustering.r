@@ -21,18 +21,29 @@
 #     A copy of the GNU General Public License, version 3, is available
 #     at http://www.r-project.org/Licenses/GPL-3
 #
-# Contains: genotypesToCross
+# Contains: bestClustering
+#				bestClusteringSub, bestClusteringSubSub
 #
 #####################################################################
 
 #bestClustering
-bestClustering <- function(genotypeMatrix, groups, iterations, verbose=FALSE, debugMode=0){
+bestClustering <- function(genotypeMatrix, groups, iterations, use="r", flip=0, verbose=FALSE, debugMode=0){
 	#CHECKS
 	s <- proc.time()
-	if(verbose && debugMode==1) cat("genotypesToCross starting.\n")
+	if(verbose && debugMode==1) cat("bestClustering starting.\n")
 	
 	#clustering
-	recoMatrix <- recombinationCount(genotypeMatrix,flip=1)
+	if(use=="r"){
+		sr <- proc.time()
+		recoMatrix <- recombinationCount(genotypeMatrix,flip=flip)
+		er <- proc.time()
+		if(verbose && debugMode==2)cat("Recombination matrix created, done in:",(er-sr)[3],"seconds.\n")
+	}else if(use=="c"){
+		sr <- proc.time()
+		recoMatrix <- cor(genotypeMatrix,use="pairwise.complete.obs")
+		er <- proc.time()
+		if(verbose && debugMode==2)cat("Corelation matrix created, done in:",(er-sr)[3],"seconds.\n")
+	}
 	groupsMatrix <- NULL
 	si <- proc.time()
 	for(i in 1:iterations){
