@@ -60,10 +60,7 @@ genotypesToCross <- function(genotypeMatrix, expressionMatrix, doClustering=FALS
 			if(verbose && debugMode==2)cat("writeGenotypes for chromome",i," done in:",(el-sl)[3],"seconds.\n")
 		}  
 	}else{
-			sl <- proc.time()
-			writeGenotypes(genotypeMatrix, 1,outputFile, verbose, debugMode)
-			el <- proc.time()
-			if(verbose && debugMode==2)cat("writeGenotypes for chromome",i," done in:",(el-sl)[3],"seconds.\n")
+		writeGenotypes(genotypeMatrix, 1,outputFile, verbose, debugMode)
 	}
 	#reading freshly made file to R
 	cross <- invisible(read.cross("csvr",file=outputFile, genotypes=c(0,1)))
