@@ -10,6 +10,8 @@
 \alias{recombinationCountRowFlipSub}
 \alias{writePhenotypes}
 \alias{writeGenotypes}
+\alias{bestClusteringSub}
+\alias{bestClusteringSubSub}
 
 
 

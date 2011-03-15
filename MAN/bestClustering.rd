@@ -1,29 +1,31 @@
-\name{genotypesToCross}
-\alias{genotypesToCross}
+\name{bestClustering}
+\alias{bestClustering}
+\alias{groups}
+\alias{iterations}
+\alias{use}
 
-\title{Cross object from genotypic data.}
+\title{Iterational clustering using kmeans.}
 
 \description{
-  Produces from genotypic matrix file containing object of type cross, reads it into R a returns.
+  Perform clustering using kmeans in specified iteriations number.
 }
 
 \usage{
-genotypesToCross(genotypeMatrix, expressionMatrix, doClustering=FALSE, groups=10, iterations = 100, outputFile="mycross.csv", verbose=FALSE, debugMode=0)
+bestClustering(genotypeMatrix, groups, iterations, use="r", flip=0, verbose=FALSE, debugMode=0)
 }
 
 \arguments{
  \item{genotypeMatrix}{ Matrix with genotype values with: columns, individuals and on the rows, markers }
- \item{expressionMatrix}{ Matrix with expression values with: columns, individuals and on the rows, markers }
- \item{doClustering}{ Cluster the chromosomes into groups }
- \item{groups}{ Number of expected chromosomes }
+ \item{groups}{ number of groups data should be splitted to }
  \item{iterations}{ how many times clustering should be performed }
- \item{outputFile}{ Filename to save the created cross object to }
+ \item{use}{ r -> use recombination matrix for clustering, c -> corelation matrix }
+ \item{flip}{ specifies whether one of the rows that are being compared should be flipped(1) or not(0) }
  \item{verbose}{ Be verbose}
  \item{debugMode}{ 1: Print our checks, 2: print additional time information }
 }
 
 \value{
-  A matrix with genotypes
+  A square matrix with numberes (0-iterations)
 }
 
 \details{
