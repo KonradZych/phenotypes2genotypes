@@ -7,15 +7,15 @@ revisions that are planned for the package.
  
 SHORT TERM:
 
-x Add data set for single color microarray data
+x --------------------DONE--------------------
 
-x Add parent expression data
+x --------------------DONE--------------------
 
 o Add functionality to plot statistics about the expression data
 
 o Set up analysis of expression data projected on a known genetic map
 
-o Prepare a ppt presentation on genetic map reconstruction and our plan
+> Prepare a ppt presentation on genetic map reconstruction and our plan >>> IN PROGRESS
 
 ----------------------------------------------------------------------
 
@@ -27,13 +27,13 @@ o Add method to find optimal placement of markers within a chromosome
 
 o Construct generic data structures (and define class functions for them plot, summary, print)
 
-o Add help files for all major functions
+> Add help files for all major functions >>> IN PROGRESS
 
 o Roadmap:
   - 0.1 Known sequence / genetic map and expression data
   - 0.2 Comparable sequence / genetic map and expression data
 
-o Add tests for all major functions
+> Add tests for all major functions  >>> IN PROGRESS
 
 ----------------------------------------------------------------------
 
