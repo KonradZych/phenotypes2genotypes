@@ -7,9 +7,9 @@ revisions that are planned for the package.
  
 SHORT TERM:
 
-o Add data set for single color microarray data
+x Add data set for single color microarray data
 
-o Add parent expression data
+x Add parent expression data
 
 o Add functionality to plot statistics about the expression data
 
