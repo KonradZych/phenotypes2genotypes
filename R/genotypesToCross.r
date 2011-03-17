@@ -41,8 +41,8 @@ genotypesToCross <- function(genotypeMatrix, expressionMatrix, doClustering=FALS
 	###CHECKS
 	if(verbose && debugMode==1) cat("genotypesToCross starting.\n")
 	s <- proc.time()
-	genotypeMatrix <- genotypeMatrix[which(colnames(genotypeMatrix) %in% colnames(expressionMatrix))]
-	expressionMatrix <- expressionMatrix[which(colnames(genotypeMatrix) %in% colnames(expressionMatrix))]
+	genotypeMatrix <- genotypeMatrix[,which(colnames(genotypeMatrix) %in% colnames(expressionMatrix))]
+	expressionMatrix <- expressionMatrix[,which(colnames(genotypeMatrix) %in% colnames(expressionMatrix))]
 	cat("",file=outputFile)
 	#saving phenotypic data
 	writePhenotypes(expressionMatrix, outputFile, verbose, debugMode)
