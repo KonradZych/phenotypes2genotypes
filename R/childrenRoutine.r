@@ -31,7 +31,7 @@
 # reading data in, corrects it and uses output from parental function
 # to select genes to further analysis
 
-childrenRoutine <- function(childrenFile="Gene_quant.txt",genotypeMatrix,correction=TRUE,expressionParental=NULL,verbose=FALSE,debugMode=0){
+childrenRoutine <- function(childrenFile="Gene_quant.txt",genotypeFile="Genotypes.txt",correction=TRUE,expressionParental=NULL,verbose=FALSE,debugMode=0){
 	s<-proc.time()
 	if(verbose && debugMode==1) cat("readChildrenExpression starting.\n")
 	setwd("D:/data/parental")
@@ -40,9 +40,12 @@ childrenRoutine <- function(childrenFile="Gene_quant.txt",genotypeMatrix,correct
 	library(iqtl)
 	library(RankProd)
 	
+	genotypeMatrix <- readChildrenGenotypes(genotypeFile)
 	childrenExpression <- readChildrenExpression(childrenFile,verbose,debugMode)
 	childrenExpression <- mapMarkers(childrenExpression,genotypeMatrix)
+	print(dim(childrenExpression))
 	genotypeMatrix <- mapMarkers(genotypeMatrix,childrenExpression)
+	print(dim(genotypeMatrix))
 	
 	if(correction) childrenExpression <- correctChildrenExpression(childrenExpression,genotypeMatrix,verbose,debugMode)
 	if(expressionParental!=NULL) childrenExpression <- selectChildrenExpression(childrenExpression,expressionParental,verbose,debugMode)
@@ -57,11 +60,12 @@ readChildrenExpression <- function(childrenFile,verbose=FALSE,debugMode=0){
 	expressionChildren <- as.matrix(read.table(childrenFile,sep=""))
 	e1<-proc.time()
 	if(verbose && debugMode==2)cat("Reading children file:",childrenFile,"done in:",(e1-s1)[3],"seconds.\n")
+	invisible(expressionChildren)
 }
 
 mapMarkers <- function(expressionMatrix1, expressionMatrix2){
 	expressionMatrix1 <- expressionMatrix1[,which(colnames(expressionMatrix1) %in% colnames(expressionMatrix2))]
-	expressionMatrix1
+	invisible(expressionMatrix1)
 }
 
 correctChildrenExpression <- function(childrenExpression,genotypeMatrix,verbose=FALSE,debugMode=0){
@@ -69,6 +73,7 @@ correctChildrenExpression <- function(childrenExpression,genotypeMatrix,verbose=
 	expressionChildren <- expressionChildren + t(correctExpression(expressionChildren,genotypeMatrix,verbose,debugMode))
 	e2<-proc.time()
 	if(verbose && debugMode==2)cat("Correcting expression data done in:",(e2-s2)[3],"seconds.\n")
+	invisible(expressionChildren)
 }
 
 selectChildrenExpression <- function(expressionChildren,expressionParental,verbose=FALSE,debugMode=0){
@@ -76,9 +81,10 @@ selectChildrenExpression <- function(expressionChildren,expressionParental,verbo
 	expressionChildren <- expressionChildren[which(rownames(expressionParental) %in% rownames(expressionChildren)),]
 	e2<-proc.time()
 	if(verbose && debugMode==2)cat("Selecting expression data done in:",(e2-s2)[3],"seconds.\n")
+	invisible(expressionChildren)
 }
 
-readChildrenGenotypes <- function(filename="Genotypes.txt"){
+readChildrenGenotypes <- function(filename){
 	res1 <- as.matrix(read.table(filename,sep="\t",header=T))
 	res1 <- t(res1)
 	res2 <- matrix(as.character("-"),nrow(res1)-1,ncol(res1))
