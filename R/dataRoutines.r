@@ -56,8 +56,10 @@ readParentalExpression <- function(parentalFile="Gene_parental.txt",groupLabels=
 	
 	expressionParental <- expressionParental[c(which(rankParental$pval[1]<treshold),which(rankParental$pval[2]<treshold)),]
 	output <- matrix(0,nrow(expressionParental),2)
-	output[,1] <- apply(expressionParental[,which(groupLabels==0)],2,mean)
-	output[,2] <- apply(expressionParental[,which(groupLabels==1)],2,mean)
+	output[,1] <- apply(expressionParental[,which(groupLabels==0)],1,mean)
+	output[,2] <- apply(expressionParental[,which(groupLabels==1)],1,mean)
+	rownames(output) <- rownames(expressionParental)
+	colnames(output) <- c("Parental_group_0","Parental_group_1")
 	
 	e<-proc.time()
 	if(verbose) cat("recombinationCount done in",(e-s)[3],"seconds.\n")
