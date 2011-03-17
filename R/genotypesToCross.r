@@ -39,9 +39,10 @@
 
 genotypesToCross <- function(genotypeMatrix, expressionMatrix, doClustering=FALSE, groups=10, iterations = 100, outputFile="mycross.csv", verbose=FALSE, debugMode=0){
 	###CHECKS
-	
 	if(verbose && debugMode==1) cat("genotypesToCross starting.\n")
 	s <- proc.time()
+	genotypeMatrix <- genotypeMatrix[which(colnames(genotypeMatrix) %in% colnames(expressionMatrix))]
+	expressionMatrix <- expressionMatrix[which(colnames(genotypeMatrix) %in% colnames(expressionMatrix))]
 	cat("",file=outputFile)
 	#saving phenotypic data
 	writePhenotypes(expressionMatrix, outputFile, verbose, debugMode)
@@ -64,7 +65,7 @@ genotypesToCross <- function(genotypeMatrix, expressionMatrix, doClustering=FALS
 	}
 	#reading freshly made file to R
 	cross <- invisible(read.cross("csvr",file=outputFile, genotypes=c(0,1)))
-	#forcing cross time to RIL
+	#forcing cross type to RIL
 	class(cross)[1] <- "riself"
 	e <- proc.time()
 	#returning cross
