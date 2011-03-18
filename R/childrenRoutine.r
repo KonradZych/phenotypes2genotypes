@@ -31,7 +31,7 @@
 # reading data in, corrects it and uses output from parental function
 # to select genes to further analysis
 
-childrenRoutine <- function(childrenFile="Gene_quant.txt",genotypeFile="Genotypes.txt",correction=TRUE,expressionParental=NULL,verbose=FALSE,debugMode=0){
+childrenRoutine <- function(childrenFile="Gene_quant.txt",genotypeFile="Genotypes.txt",correction=TRUE,expressionParental,verbose=FALSE,debugMode=0){
 	s<-proc.time()
 	if(verbose && debugMode==1) cat("readChildrenExpression starting.\n")
 	setwd("D:/data/parental")
@@ -61,7 +61,7 @@ mapMarkers <- function(expressionMatrix1, expressionMatrix2){
 correctChildrenExpression <- function(expressionChildren,genotypeMatrix,verbose=FALSE,debugMode=0){
 	s2<-proc.time()
 	correction <- correctExpression(expressionChildren,genotypeMatrix,verbose,debugMode)
-	expressionChildren <- expressionChildren + t(correction)
+	expressionChildren <- expressionChildren - t(correction)
 	e2<-proc.time()
 	if(verbose && debugMode==2)cat("Correcting expression data done in:",(e2-s2)[3],"seconds.\n")
 	invisible(expressionChildren)
