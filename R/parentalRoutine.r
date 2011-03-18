@@ -39,16 +39,16 @@ parentalRoutine <- function(parentalFile="Gene_parental.txt",groupLabels=c(0,0,1
 	s<-proc.time()
 	if(verbose && debugMode==1) cat("readParentalExpression starting.\n")
 	setwd("D:/data/parental")
-	library(pheno2geno)
-	library(qtl)
-	library(iqtl)
-	library(RankProd)
+	invisible(library(pheno2geno))
+	invisible(library(qtl))
+	invisible(library(iqtl))
+	invisible(library(RankProd))
 	
-	expressionParental <- readParentalData(parentalFile,verbose,debugMode)
+	expressionParental <- readParentalExpression(parentalFile,verbose,debugMode)
 	
-	rankParental <- rankParentalData(expressionParental,groupLabels,verbose,debugMode,...)
+	rankParental <- rankParentalExpression(expressionParental,groupLabels,verbose,debugMode,...)
 	
-	output <- filterParentalData(expressionParental,rankParental,treshold,verbose,debugMode)
+	output <- filterParentalExpression(expressionParental,rankParental,groupLabels,treshold,verbose,debugMode)
 	
 	e<-proc.time()
 	if(verbose) cat("readParentalExpression done in",(e-s)[3],"seconds.\n")
@@ -71,7 +71,7 @@ rankParentalExpression <- function(expressionParental,groupLabels=c(0,0,1,1),ver
 	invisible(rankParental)
 }
 
-filterParentalExpression <- function(expressionParental,rankParental,treshold=0.01,verbose=FALSE,debugMode=0,...){
+filterParentalExpression <- function(expressionParental,rankParental,groupLabels,treshold=0.01,verbose=FALSE,debugMode=0,...){
 	s2<-proc.time()
 	expressionParental <- expressionParental[c(which(rankParental$pval[1]<treshold),which(rankParental$pval[2]<treshold)),]
 	output <- matrix(0,nrow(expressionParental),2)
@@ -80,6 +80,6 @@ filterParentalExpression <- function(expressionParental,rankParental,treshold=0.
 	rownames(output) <- rownames(expressionParental)
 	colnames(output) <- c("Parental_group_0","Parental_group_1")
 	e2<-proc.time()
-	if(verbose && debugMode==2)cat("Product Rank done in:",(e2-s2)[3],"seconds.\n")
+	if(verbose && debugMode==2)cat("Filtering data with treshold:",treshold,"done in:",(e2-s2)[3],"seconds.\n")
 	invisible(output)
 }
