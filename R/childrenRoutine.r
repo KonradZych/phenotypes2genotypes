@@ -33,7 +33,7 @@
 
 childrenRoutine <- function(childrenFile="Gene_quant.txt",genotypeFile="Genotypes.txt",correction=TRUE,expressionParental,verbose=FALSE,debugMode=0){
 	s<-proc.time()
-	if(verbose && debugMode==1) cat("readChildrenExpression starting.\n")
+	if(verbose && debugMode==1) cat("childrenRoutine starting.\n")
 	setwd("D:/data/parental")
 	library(pheno2geno)
 	library(qtl)
@@ -60,6 +60,7 @@ mapMarkers <- function(expressionMatrix1, expressionMatrix2){
 
 correctChildrenExpression <- function(expressionChildren,genotypeMatrix,verbose=FALSE,debugMode=0){
 	s2<-proc.time()
+	if(verbose && debugMode==1) cat("correctChildrenExpression starting.\n")
 	correction <- correctExpression(expressionChildren,genotypeMatrix,verbose,debugMode)
 	expressionChildren <- expressionChildren - t(correction)
 	e2<-proc.time()
@@ -69,6 +70,7 @@ correctChildrenExpression <- function(expressionChildren,genotypeMatrix,verbose=
 
 selectChildrenExpression <- function(expressionChildren,expressionParental,verbose=FALSE,debugMode=0){
 	s2<-proc.time()
+	if(verbose && debugMode==1) cat("selectChildrenExpression starting.\n")
 	expressionChildren <- expressionChildren[which(rownames(expressionParental) %in% rownames(expressionChildren)),]
 	e2<-proc.time()
 	if(verbose && debugMode==2)cat("Selecting expression data done in:",(e2-s2)[3],"seconds.\n")
