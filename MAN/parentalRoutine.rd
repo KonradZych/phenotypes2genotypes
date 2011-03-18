@@ -38,11 +38,11 @@
 }
 
 \examples{
-	expressionParental <- readParentalExpression()
+	
 }
 
 \seealso{
-  \code{\link{readParentalExpression}}
+  \code{\link{readExpression}}
   \code{\link{rankParentalExpression}}
   \code{\link{filterParentalExpression}}
 }

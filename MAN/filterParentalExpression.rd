@@ -41,7 +41,7 @@
 \seealso{
   \code{\link{parentalRoutine}}
   \code{\link{rankParentalExpression}}
-  \code{\link{readParentalExpression}}
+  \code{\link{readExpression}}
 }
 
 \keyword{manip}

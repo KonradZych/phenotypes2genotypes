@@ -1,5 +1,5 @@
-\name{readParentalExpression}
-\alias{readParentalExpression}
+\name{rankParentalExpression}
+\alias{rankParentalExpression}
 
 \title{Product Rank parental expression data.}
 
@@ -39,7 +39,7 @@
 
 \seealso{
   \code{\link{parentalRoutine}}
-  \code{\link{readParentalExpression}}
+  \code{\link{readExpression}}
   \code{\link{filterParentalExpression}}
 }
 
