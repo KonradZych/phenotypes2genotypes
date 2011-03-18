@@ -44,7 +44,7 @@ parentalRoutine <- function(parentalFile="Gene_parental.txt",groupLabels=c(0,0,1
 	invisible(library(iqtl))
 	invisible(library(RankProd))
 	
-	expressionParental <- readParentalExpression(parentalFile,verbose,debugMode)
+	expressionParental <- readExpression(parentalFile,verbose,debugMode)
 	
 	rankParental <- rankParentalExpression(expressionParental,groupLabels,verbose,debugMode,...)
 	
@@ -55,12 +55,12 @@ parentalRoutine <- function(parentalFile="Gene_parental.txt",groupLabels=c(0,0,1
 	invisible(output)
 }
 
-readParentalExpression <- function(parentalFile="Gene_parental.txt",verbose=FALSE,debugMode=0){
+readExpression <- function(expressionFile="Gene_parental.txt",verbose=FALSE,debugMode=0){
 	s1<-proc.time()
-	expressionParental <- as.matrix(read.table(parentalFile,sep=""))
+	expressionMatrix <- as.matrix(read.table(expressionFile,sep=""))
 	e1<-proc.time()
-	if(verbose && debugMode==2)cat("Reading parental file:",parentalFile,"done in:",(e1-s1)[3],"seconds.\n")
-	invisible(expressionParental)
+	if(verbose && debugMode==2)cat("Reading expression file:",expressionFile,"done in:",(e1-s1)[3],"seconds.\n")
+	invisible(expressionMatrix)
 }
 
 rankParentalExpression <- function(expressionParental,groupLabels=c(0,0,1,1),verbose=FALSE,debugMode=0,...){
