@@ -71,7 +71,7 @@ rankParentalExpression <- function(expressionParental,groupLabels=c(0,0,1,1),ver
 	invisible(rankParental)
 }
 
-filterParentalExpression <- function(expressionParental,rankParental,groupLabels,treshold=0.01,verbose=FALSE,debugMode=0,...){
+filterParentalExpression <- function(expressionParental,rankParental,groupLabels,treshold=0.01,verbose=FALSE,debugMode=0){
 	s2<-proc.time()
 	expressionParental <- expressionParental[c(which(rankParental$pval[1]<treshold),which(rankParental$pval[2]<treshold)),]
 	output <- matrix(0,nrow(expressionParental),2)
