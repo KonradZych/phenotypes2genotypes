@@ -12,6 +12,8 @@
 \alias{writeGenotypes}
 \alias{bestClusteringSub}
 \alias{bestClusteringSubSub}
+\alias{correctExpression}
+\alias{mapMarkers}
 
 
 
