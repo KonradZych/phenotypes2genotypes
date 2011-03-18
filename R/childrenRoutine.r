@@ -92,7 +92,6 @@ correctExpression <- function(expressionMatrix,genotypeMatrix,verbose=FALSE,debu
 	s<-proc.time()
 	if(verbose && debugMode==1) cat("correctExpression starting.\n")
 	cross <- genotypesToCross(genotypeMatrix,expressionMatrix,verbose=verbose,debugMode=debugMode)
-	cross <- genotypesToCross(genotypeMatrix,childrenExpression)
 	batchlist <- batcheffectcheck(cross,2,0)
 	corrected <- batcheffectcorrect(cross,batchlist,0)
 	e<-proc.time()
