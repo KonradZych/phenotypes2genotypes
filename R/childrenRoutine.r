@@ -22,7 +22,7 @@
 #     at http://www.r-project.org/Licenses/GPL-3
 #
 # Contains: childrenRoutine, readChildrenGenotypes, 
-# 				readChildrenExpression, mapMarkers, correctChildrenExpression, selectChildrenExpression, correctExpression
+# 				mapMarkers, correctChildrenExpression, selectChildrenExpression, correctExpression
 #
 #################################################################################
 
@@ -41,25 +41,15 @@ childrenRoutine <- function(childrenFile="Gene_quant.txt",genotypeFile="Genotype
 	library(RankProd)
 	
 	genotypeMatrix <- readChildrenGenotypes(genotypeFile)
-	childrenExpression <- readChildrenExpression(childrenFile,verbose,debugMode)
-	childrenExpression <- mapMarkers(childrenExpression,genotypeMatrix)
-	print(dim(childrenExpression))
-	genotypeMatrix <- mapMarkers(genotypeMatrix,childrenExpression)
-	print(dim(genotypeMatrix))
+	expressionChildren <- readExpression(childrenFile,verbose,debugMode)
+	expressionChildren <- mapMarkers(expressionChildren,genotypeMatrix)
+	genotypeMatrix <- mapMarkers(genotypeMatrix,expressionChildren)
 	
-	if(correction) childrenExpression <- correctChildrenExpression(childrenExpression,genotypeMatrix,verbose,debugMode)
-	if(expressionParental!=NULL) childrenExpression <- selectChildrenExpression(childrenExpression,expressionParental,verbose,debugMode)
+	if(correction) expressionChildren <- correctChildrenExpression(expressionChildren,genotypeMatrix,verbose,debugMode)
+	if(expressionParental!=NULL) expressionChildren <- selectChildrenExpression(expressionChildren,expressionParental,verbose,debugMode)
 	
 	e<-proc.time()
 	if(verbose) cat("readChildrenExpression done in",(e-s)[3],"seconds.\n")
-	invisible(expressionChildren)
-}
-
-readChildrenExpression <- function(childrenFile,verbose=FALSE,debugMode=0){
-	s1<-proc.time()
-	expressionChildren <- as.matrix(read.table(childrenFile,sep=""))
-	e1<-proc.time()
-	if(verbose && debugMode==2)cat("Reading children file:",childrenFile,"done in:",(e1-s1)[3],"seconds.\n")
 	invisible(expressionChildren)
 }
 
@@ -68,9 +58,10 @@ mapMarkers <- function(expressionMatrix1, expressionMatrix2){
 	invisible(expressionMatrix1)
 }
 
-correctChildrenExpression <- function(childrenExpression,genotypeMatrix,verbose=FALSE,debugMode=0){
+correctChildrenExpression <- function(expressionChildren,genotypeMatrix,verbose=FALSE,debugMode=0){
 	s2<-proc.time()
-	expressionChildren <- expressionChildren + t(correctExpression(expressionChildren,genotypeMatrix,verbose,debugMode))
+	correction <- correctExpression(expressionChildren,genotypeMatrix,verbose,debugMode)
+	expressionChildren <- expressionChildren + t(correction)
 	e2<-proc.time()
 	if(verbose && debugMode==2)cat("Correcting expression data done in:",(e2-s2)[3],"seconds.\n")
 	invisible(expressionChildren)
@@ -101,6 +92,7 @@ correctExpression <- function(expressionMatrix,genotypeMatrix,verbose=FALSE,debu
 	s<-proc.time()
 	if(verbose && debugMode==1) cat("correctExpression starting.\n")
 	cross <- genotypesToCross(genotypeMatrix,expressionMatrix,verbose=verbose,debugMode=debugMode)
+	cross <- genotypesToCross(genotypeMatrix,childrenExpression)
 	batchlist <- batcheffectcheck(cross,2,0)
 	corrected <- batcheffectcorrect(cross,batchlist,0)
 	e<-proc.time()
