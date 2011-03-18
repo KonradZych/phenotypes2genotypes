@@ -46,7 +46,7 @@ childrenRoutine <- function(childrenFile="Gene_quant.txt",genotypeFile="Genotype
 	genotypeMatrix <- mapMarkers(genotypeMatrix,expressionChildren)
 	
 	if(correction) expressionChildren <- correctChildrenExpression(expressionChildren,genotypeMatrix,verbose,debugMode)
-	if(expressionParental!=NULL) expressionChildren <- selectChildrenExpression(expressionChildren,expressionParental,verbose,debugMode)
+	expressionChildren <- selectChildrenExpression(expressionChildren,expressionParental,verbose,debugMode)
 	
 	e<-proc.time()
 	if(verbose) cat("readChildrenExpression done in",(e-s)[3],"seconds.\n")
