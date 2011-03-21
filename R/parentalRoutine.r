@@ -35,24 +35,25 @@
 # verbose - standard
 # debugMode - standard
 
-parentalRoutine <- function(parentalFile="Gene_parental.txt",groupLabels=c(0,0,1,1),treshold=0.01,verbose=FALSE,debugMode=0,...){
+
+
+parentalRoutine <- function(){
 	s<-proc.time()
 	if(verbose && debugMode==1) cat("readParentalExpression starting.\n")
 	setwd("D:/data/parental")
-	invisible(library(pheno2geno))
-	invisible(library(qtl))
-	invisible(library(iqtl))
-	invisible(library(RankProd))
-	
-	expressionParental <- readExpression(parentalFile,verbose,debugMode)
-	
-	rankParental <- rankParentalExpression(expressionParental,groupLabels,verbose,debugMode,...)
-	
-	output <- filterParentalExpression(expressionParental,rankParental,groupLabels,treshold,verbose,debugMode)
-	
+	invisible(required(iqtl))
+	invisible(required(pheno2geno))
+	invisible(required(RankProd))
+
+	expressionParental <- readExpression("Gene_parental.txt",verbose=TRUE,debugMode=2)
+
+	rankParental <- rankParentalExpression(expressionParental,groupLabels=c(0,0,1,1),verbose=TRUE,debugMode=2)
+
+	parental <- filterParentalExpression(expressionParental,rankParental,groupLabels=c(0,0,1,1),treshold=0.01,verbose=TRUE,debugMode=2)
+
 	e<-proc.time()
 	if(verbose) cat("readParentalExpression done in",(e-s)[3],"seconds.\n")
-	invisible(output)
+	invisible(list(expressionParental,parental))
 }
 
 readExpression <- function(expressionFile="Gene_parental.txt",verbose=FALSE,debugMode=0){
@@ -65,7 +66,12 @@ readExpression <- function(expressionFile="Gene_parental.txt",verbose=FALSE,debu
 
 rankParentalExpression <- function(expressionParental,groupLabels=c(0,0,1,1),verbose=FALSE,debugMode=0,...){
 	s2<-proc.time()
-	rankParental <- invisible(RP(expressionParental,groupLabels,...))
+	if(file.exists("RP.Rdata")){
+		load("RP.Rdata")
+	}else{
+		rankParental <- invisible(RP(expressionParental,groupLabels,...))
+		save("RP.Rdata",rankParental)
+	}
 	e2<-proc.time()
 	if(verbose && debugMode==2)cat("Product Rank done in:",(e2-s2)[3],"seconds.\n")
 	invisible(rankParental)
@@ -73,13 +79,12 @@ rankParentalExpression <- function(expressionParental,groupLabels=c(0,0,1,1),ver
 
 filterParentalExpression <- function(expressionParental,rankParental,groupLabels,treshold=0.01,verbose=FALSE,debugMode=0){
 	s2<-proc.time()
-	expressionParental <- expressionParental[c(which(rankParental$pval[1]<treshold),which(rankParental$pval[2]<treshold)),]
-	output <- matrix(0,nrow(expressionParental),2)
-	output[,1] <- apply(expressionParental[,which(groupLabels==0)],1,mean)
-	output[,2] <- apply(expressionParental[,which(groupLabels==1)],1,mean)
-	rownames(output) <- rownames(expressionParental)
-	colnames(output) <- c("Parental_group_0","Parental_group_1")
+	up <- which(rankParental$pval[1] < 0.01)
+	down <- which(rankParental$pval[2] < 0.01)
+	parental <- rep(NA,nrow(expressionChildren))
+	parental[up] <- 1
+	parental[down] <- -1
 	e2<-proc.time()
 	if(verbose && debugMode==2)cat("Filtering data with treshold:",treshold,"done in:",(e2-s2)[3],"seconds.\n")
-	invisible(output)
+	invisible(parental)
 }
