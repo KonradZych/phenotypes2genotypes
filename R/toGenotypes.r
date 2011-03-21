@@ -36,7 +36,7 @@
 # genotypes -> User defined genotypes for the output matrix
 # verbose standard
 # debugmode standard ->1 Print our checks, 2 print additional time information
-toGenotypes <- function(expressionMatrix, splitMode="p", splitFUN = zero, parentalExpression=NULL, overlapInd = 0, proportion = 50, margin = 5, genotypes = c(0,1), verbose=FALSE, debugMode=0){
+toGenotypes <- function(expressionMatrix, splitMode="p", splitFUN = zero, expressionParental=NULL, overlapInd = 0, proportion = 50, margin = 5, genotypes = c(0,1), verbose=FALSE, debugMode=0){
 	s <- proc.time()
 
 	if(proportion < 1 || proportion > 99) stop("Proportion is a percentage (1,99)")
@@ -45,7 +45,9 @@ toGenotypes <- function(expressionMatrix, splitMode="p", splitFUN = zero, parent
 	if(verbose && debugMode==1) cat("toGenotypes starting withour errors in checkpoint.\n")
 
 	if(splitMode=="p"){
-		genotypeMatrix <- apply(expressionMatrix,1,parentalSplit,parentalExpression)
+		genotypeMatrix <- matrix(lapply(c(1:nrow(expressionMatrix)),parentalSplit,expressionMatrix,expressionParental,verbose,debugMode),nrow(expressionMatrix),ncol(expressionMatrix))
+		colnames(genotypeMatrix) <- colnames(expressionMatrix)
+		rownames(genotypeMatrix) <- rownames(expressionMatrix)
 		eg <- proc.time()
 		if(verbose && debugMode==2) cat("Created genotype matrix, took:",(eg-s)[3],"seconds.\n")
 		
@@ -82,17 +84,17 @@ transformIndividual <- function(x,r,genotypes){
 	results
 }
 
-parentalSplit <- function(expressionChildrenRow,expressionParental){
-	genotypeMatrix <- apply(expressionParental,1,parentalSplitSub,expressionChildrenRow)
-	invisible(genotypeMatrix)
-}
-
-parentalSplitSub <- function(expressionParentalRow,expressionChildrenRow){
-	genotypeMatrixRow <- lapply(expressionChildrenRow,parentalSplitSubSub,expressionParentalRow)
+parentalSplit <- function(x,expressionChildren,expressionParental,verbose=FALSE, debugMode=0){
+	if(verbose && debugMode==1)if(x%%100==0)cat("parentalSplit starting withour errors in checkpoint for row:",x,"\n")
+	s <- proc.time()
+	expressionParentalRow <- expressionParental[which(rownames(expressionParental) %in% rownames(expressionChildren)[x]),]
+	genotypeMatrixRow <- lapply(expressionChildren[x,],parentalSplitSub,expressionParentalRow)
+	e <- proc.time()
+	if(verbose && debugMode==2)if(x%%100==0)cat("parentalSplit for row:",x,"done in:",(e-s)[3],"seconds.\n")
 	invisible(genotypeMatrixRow)
 }
 
-parentalSplitSubSub <- function(expressionChildrenElement,expressionParentalRow){
+parentalSplitSub <- function(expressionChildrenElement,expressionParentalRow){
 	distance1 <- abs(expressionChildrenElement-expressionParentalRow[1])
 	distance2 <- abs(expressionChildrenElement-expressionParentalRow[2])
 	if(distance1<=distance2){
