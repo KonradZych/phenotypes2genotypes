@@ -53,7 +53,7 @@ childrenRoutine <- function(childrenFile="Gene_quant.txt",genotypeFile="Genotype
 	invisible(expressionChildren)
 }
 
-mapMarkers <- function(expressionMatrix1, expressionMatrix2, mapMode=0){
+mapMarkers <- function(expressionMatrix1, expressionMatrix2, mapMode=2){
 	if(mode==1) expressionMatrix1 <- expressionMatrix1[,which(rownames(expressionMatrix1) %in% rownames(expressionMatrix2))]
 	else if(mode==2) expressionMatrix1 <- expressionMatrix1[,which(colnames(expressionMatrix1) %in% colnames(expressionMatrix2))]
 	invisible(expressionMatrix1)
