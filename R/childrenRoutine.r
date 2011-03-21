@@ -45,11 +45,11 @@ childrenRoutine <- function(){
 	genotypeMatrix <- mapMarkers(genotypeMatrix,expressionChildren)
 	
 	expressionChildren <- correctChildrenExpression(expressionChildren,genotypeMatrix,verbose=TRUE,debugMode=2)
-	expressionChildren <- selectChildrenExpression(expressionChildren,expressionParental,verbose=TRUE,debugMode=2)
+	expressionChildrenSel <- selectChildrenExpression(expressionChildren,expressionParental,verbose=TRUE,debugMode=2)
 	
 	e<-proc.time()
 	cat("readChildrenExpression done in",(e-s)[3],"seconds.\n")
-	invisible(expressionChildren)
+	invisible(list(expressionChildren,expressionChildrenSel[[1]],expressionChildrenSel[[2]]))
 }
 
 mapMarkers <- function(expressionMatrix1, expressionMatrix2, mapMode=2){
@@ -71,10 +71,11 @@ correctChildrenExpression <- function(expressionChildren,genotypeMatrix,verbose=
 selectChildrenExpression <- function(expressionChildren,expressionParental,verbose=FALSE,debugMode=0){
 	s2<-proc.time()
 	if(verbose && debugMode==1) cat("selectChildrenExpression starting.\n")
-	expressionChildren <- mapMarkers(expressionChildren,expressionParental,mapMode=1)
+	expressionChildrenUp <- expressionChildren[which(rownames(expressionChildren) %in% expressionParental[[2]]),]
+	expressionChildrenDown <- expressionChildren[which(rownames(expressionChildren) %in% expressionParental[[3]]),]
 	e2<-proc.time()
 	if(verbose && debugMode==2)cat("Selecting expression data done in:",(e2-s2)[3],"seconds.\n")
-	invisible(expressionChildren)
+	invisible(list(expressionChildrenUp,expressionChildrenDown))
 }
 
 readChildrenGenotypes <- function(filename,verbose=FALSE,debugMode=0){
