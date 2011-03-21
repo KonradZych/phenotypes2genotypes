@@ -36,7 +36,7 @@
 # genotypes -> User defined genotypes for the output matrix
 # verbose standard
 # debugmode standard ->1 Print our checks, 2 print additional time information
-toGenotypes <- function(expressionMatrix, splitMode="p", splitFUN = zero, expressionParental=NULL, overlapInd = 0, proportion = 50, margin = 5, genotypes = c(0,1), verbose=FALSE, debugMode=0){
+toGenotypes <- function(expressionMatrix,  splitFUN = zero, overlapInd = 0, proportion = 50, margin = 5, genotypes = c(0,1), verbose=FALSE, debugMode=0){
 	s <- proc.time()
 
 	if(proportion < 1 || proportion > 99) stop("Proportion is a percentage (1,99)")
@@ -44,28 +44,20 @@ toGenotypes <- function(expressionMatrix, splitMode="p", splitFUN = zero, expres
 	if(margin < 0 || margin > proportion) stop("Margin is a percentage (0,proportion)")
 	if(verbose && debugMode==1) cat("toGenotypes starting withour errors in checkpoint.\n")
 
-	if(splitMode=="p"){
-		genotypeMatrix <- matrix(lapply(c(1:nrow(expressionMatrix)),parentalSplit,expressionMatrix,expressionParental,verbose,debugMode),nrow(expressionMatrix),ncol(expressionMatrix))
-		colnames(genotypeMatrix) <- colnames(expressionMatrix)
-		rownames(genotypeMatrix) <- rownames(expressionMatrix)
-		eg <- proc.time()
-		if(verbose && debugMode==2) cat("Created genotype matrix, took:",(eg-s)[3],"seconds.\n")
-		
-	}else if(splitMode=="f"){
-		#Selection of the probes matching to the specified parameters
-		suitedRows <- apply(expressionMatrix,1,checkExpression,splitFUN,overlapInd, proportion, margin)
-		expressionMatrix <- expressionMatrix[which(suitedRows),]
+	#Selection of the probes matching to the specified parameters
+	suitedRows <- apply(expressionMatrix,1,checkExpression,splitFUN,overlapInd, proportion, margin)
+	expressionMatrix <- expressionMatrix[which(suitedRows),]
 
-		ep <- proc.time()
-		if(verbose && debugMode==2) cat("Selected proper probes, took:",(ep-s)[3],"seconds. Creating genotype matrix.\n")
+	ep <- proc.time()
+	if(verbose && debugMode==2) cat("Selected proper probes, took:",(ep-s)[3],"seconds. Creating genotype matrix.\n")
 
-		#Transform numeric values to genotypes
-		r <- apply(expressionMatrix,1,splitFUN)
-		genotypeMatrix <- apply(expressionMatrix,2,transformIndividual,r,genotypes)
+	#Transform numeric values to genotypes
+	r <- apply(expressionMatrix,1,splitFUN)
+	genotypeMatrix <- apply(expressionMatrix,2,transformIndividual,r,genotypes)
 
-		eg <- proc.time()
-		if(verbose && debugMode==2) cat("Created genotype matrix, took:",(eg-ep)[3],"seconds.\n")
-	}
+	eg <- proc.time()
+	if(verbose && debugMode==2) cat("Created genotype matrix, took:",(eg-ep)[3],"seconds.\n")
+
 	e<-proc.time()
 	if(verbose) cat("toGenotypes finished in",(e-s)[3],"seconds.\n")
 	
