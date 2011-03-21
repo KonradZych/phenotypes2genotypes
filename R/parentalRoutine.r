@@ -51,7 +51,7 @@ parentalRoutine <- function(){
 
 	e<-proc.time()
 	cat("readParentalExpression done in",(e-s)[3],"seconds.\n")
-	invisible(list(expressionParental,parental))
+	invisible(list(expressionParental,parental[[1]],parental[[2]]))
 }
 
 readExpression <- function(expressionFile="Gene_parental.txt",verbose=FALSE,debugMode=0){
