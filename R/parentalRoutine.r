@@ -35,8 +35,6 @@
 # verbose - standard
 # debugMode - standard
 
-
-
 parentalRoutine <- function(){
 	s<-proc.time()
 	if(verbose && debugMode==1) cat("readParentalExpression starting.\n")
@@ -49,7 +47,7 @@ parentalRoutine <- function(){
 
 	rankParental <- rankParentalExpression(expressionParental,groupLabels=c(0,0,1,1),verbose=TRUE,debugMode=2)
 
-	parental <- filterParentalExpression(expressionParental,rankParental,groupLabels=c(0,0,1,1),treshold=0.01,verbose=TRUE,debugMode=2)
+	parental <- filterParentalExpression(expressionParental,rankParental,treshold=0.01,verbose=TRUE,debugMode=2)
 
 	e<-proc.time()
 	if(verbose) cat("readParentalExpression done in",(e-s)[3],"seconds.\n")
@@ -70,21 +68,18 @@ rankParentalExpression <- function(expressionParental,groupLabels=c(0,0,1,1),ver
 		load("RP.Rdata")
 	}else{
 		rankParental <- invisible(RP(expressionParental,groupLabels,...))
-		save("RP.Rdata",rankParental)
+		save(file="RP.Rdata",rankParental)
 	}
 	e2<-proc.time()
 	if(verbose && debugMode==2)cat("Product Rank done in:",(e2-s2)[3],"seconds.\n")
 	invisible(rankParental)
 }
 
-filterParentalExpression <- function(expressionParental,rankParental,groupLabels,treshold=0.01,verbose=FALSE,debugMode=0){
+filterParentalExpression <- function(expressionParental,rankParental,treshold=0.01,verbose=FALSE,debugMode=0){
 	s2<-proc.time()
-	up <- which(rankParental$pval[1] < 0.01)
-	down <- which(rankParental$pval[2] < 0.01)
-	parental <- rep(NA,nrow(expressionChildren))
-	parental[up] <- 1
-	parental[down] <- -1
+	up <- rownames(expressionParental[which(rankParental$pval[1] < treshold),])
+	down <- rownames(expressionParental[which(rankParental$pval[2] < treshold),])
 	e2<-proc.time()
 	if(verbose && debugMode==2)cat("Filtering data with treshold:",treshold,"done in:",(e2-s2)[3],"seconds.\n")
-	invisible(parental)
+	invisible(list(up,down))
 }
