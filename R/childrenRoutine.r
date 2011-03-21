@@ -72,7 +72,7 @@ correctChildrenExpression <- function(expressionChildren,genotypeMatrix,verbose=
 selectChildrenExpression <- function(expressionChildren,expressionParental,verbose=FALSE,debugMode=0){
 	s2<-proc.time()
 	if(verbose && debugMode==1) cat("selectChildrenExpression starting.\n")
-	expressionChildren <- expressionChildren[which(rownames(expressionParental) %in% rownames(expressionChildren)),]
+	expressionChildren <- mapMarkers(expressionChildren,expressionParental,mapMode=1)
 	e2<-proc.time()
 	if(verbose && debugMode==2)cat("Selecting expression data done in:",(e2-s2)[3],"seconds.\n")
 	invisible(expressionChildren)
