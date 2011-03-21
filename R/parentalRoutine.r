@@ -37,11 +37,11 @@
 
 parentalRoutine <- function(){
 	s<-proc.time()
-	if(verbose && debugMode==1) cat("readParentalExpression starting.\n")
+	cat("readParentalExpression starting.\n")
 	setwd("D:/data/parental")
-	invisible(required(iqtl))
-	invisible(required(pheno2geno))
-	invisible(required(RankProd))
+	invisible(require(iqtl))
+	invisible(require(pheno2geno))
+	invisible(require(RankProd))
 
 	expressionParental <- readExpression("Gene_parental.txt",verbose=TRUE,debugMode=2)
 
@@ -50,7 +50,7 @@ parentalRoutine <- function(){
 	parental <- filterParentalExpression(expressionParental,rankParental,treshold=0.01,verbose=TRUE,debugMode=2)
 
 	e<-proc.time()
-	if(verbose) cat("readParentalExpression done in",(e-s)[3],"seconds.\n")
+	cat("readParentalExpression done in",(e-s)[3],"seconds.\n")
 	invisible(list(expressionParental,parental))
 }
 
@@ -65,6 +65,7 @@ readExpression <- function(expressionFile="Gene_parental.txt",verbose=FALSE,debu
 rankParentalExpression <- function(expressionParental,groupLabels=c(0,0,1,1),verbose=FALSE,debugMode=0,...){
 	s2<-proc.time()
 	if(file.exists("RP.Rdata")){
+		if(verbose) cat("File RP.Rdata already exists, reading it.\n")
 		load("RP.Rdata")
 	}else{
 		rankParental <- invisible(RP(expressionParental,groupLabels,...))
