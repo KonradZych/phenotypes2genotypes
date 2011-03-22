@@ -62,10 +62,12 @@ correctChildrenExpression <- function(expressionChildren,genotypeMatrix,verbose=
 	s2<-proc.time()
 	if(verbose && debugMode==1) cat("correctChildrenExpression starting.\n")
 	correction <- correctExpression(expressionChildren,genotypeMatrix,verbose,debugMode)
-	expressionChildren <- expressionChildren - (correction)
+	expressionChildren2 <- expressionChildren - (correction)
+	colnames(expressionChildren2) <- colnames(expressionChildren)
+	rownames(expressionChildren2) <- rownames(expressionChildren)
 	e2<-proc.time()
 	if(verbose && debugMode==2)cat("Correcting expression data done in:",(e2-s2)[3],"seconds.\n")
-	invisible(expressionChildren)
+	invisible(expressionChildren2)
 }
 
 selectChildrenExpression <- function(expressionChildren,expressionParental,verbose=FALSE,debugMode=0){
