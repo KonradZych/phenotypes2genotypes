@@ -64,6 +64,13 @@ toGenotypes <- function(expressionMatrix,  splitFUN = zero, overlapInd = 0, prop
 	invisible(genotypeMatrix)
 }
 
+childrenSplit <- function(expressionChildren){
+	genoUp <- toGenotypes(expressionChildren[[2]],splitFUN=mean)
+	genoDown <- toGenotypes(expressionChildren[[3]],splitFUN=mean)
+	genotypesChildren <- rbind(genoUp,1-genoDown)
+	invisible(genotypesChildren)
+}
+
 #transformIndividual: spliting column form expressionMatrix using vector of spliting values
 # x - column of expressionMatrix, containing data 
 # r - vector containing split values (result of applying specified function throughtoutthe rows of expressionMatrix)
