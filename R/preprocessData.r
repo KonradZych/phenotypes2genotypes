@@ -27,18 +27,18 @@
 #################################################################################
 
 #preprocessData
-preprocessData <- function(expressionParental,groupLabels=c(0,0,1,1),verbose=FALSE,debugMode=0,...){
+preprocessData <- function(ril,groupLabels=c(0,0,1,1),verbose=FALSE,debugMode=0,...){
 	s2<-proc.time()
-	if(file.exists("RP.Rdata")){
-		if(verbose) cat("File RP.Rdata already exists, reading it.\n")
-		load("RP.Rdata")
+	if(file.exists("rilRP.Rdata")){
+		if(verbose) cat("File rilRP.Rdata already exists, reading it.\n")
+		load("rilRP.Rdata")
 	}else{
-		rankParental <- invisible(RP(expressionParental,groupLabels,...))
-		save(file="RP.Rdata",rankParental)
+		ril$parental$RP <- invisible(RP(expressionParental,groupLabels,...))
+		save(file="rilRP.Rdata",ril$parental$RP)
 	}
 	e2<-proc.time()
 	if(verbose && debugMode==2)cat("Data preprocessing done in:",(e2-s2)[3],"seconds.\n")
-	invisible(rankParental)
+	invisible(ril)
 }
 
 
