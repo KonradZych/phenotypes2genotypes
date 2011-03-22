@@ -50,7 +50,7 @@ genotypesToCross <- function(genotypeMatrix, expressionMatrix, doClustering=FALS
 		groups <- 1
 	}
 	if(groups>1){
-		r <- bestClustering(genotypeMatrix,groups,iterations,verbose,debugMode)
+		r <- bestClustering(genotypeMatrix,groups,iterations,verbose=verbose,debugMode=debugMode)
 		r <- kmeans(r,groups)
 		sorted <- sort(r[[1]],index.return=TRUE)
 		for(i in 1:groups){
