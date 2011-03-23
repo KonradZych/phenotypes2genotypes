@@ -86,8 +86,20 @@ splitRow <- function(x,rils,parental){
 	invisible(result)
 }
 
+filterGenotypes <- function(ril, overlapInd, proportion, margin, verbose=FALSE,debugMode=0){
+	result <- apply(ril$rils$genotypes$simulated,1,filterRow,overlapInd, proportion, margin)
+	ril$rils$genotypes$simulated <- ril$rils$genotypes$simulated[which(result==1),]
+	invisible(ril)
+}
 
-
-filterGenotypes <- function(ril, overlapInd, proportion, margin, verbose, debugMode){
-	
+filterRow <- function(genotypeRow, overlapInd, proportion, margin){
+	if(sum(is.na(genotypeRow))!=0) return(0)
+	above <- sum(genotypeRow==1)
+	bellow <- sum(genotypeRow==0)
+	if((above < (proportion+(margin/2))) && (above > (proportion-(margin/2)))){
+		if((bellow < ((100-proportion)+(margin/2))) && (bellow > ((100-proportion)-(margin/2)))){
+			return(1)
+		}
+	}
+	return(0)
 }
