@@ -40,7 +40,7 @@ readFiles <- function(rils="children",parental="parental",verbose=FALSE,debugMod
 	
 	filename <- paste(rils,"_genotypes.txt")
 	if(file.exists(filename)){
-		ril$rils$genotypes <- readFile(filename,verbose,debugMode)
+		ril$rils$genotypes$read <- readFile(filename,verbose,debugMode)
 		if(verbose) cat("Found genotypic file for rils:",filename,"and stored it in ril$rils$genotypes\n")
 	}else{
 		if(verbose) cat("There is no genotypic file for rils:",filename,"genotypic data for rils will be simulated\n")
