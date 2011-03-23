@@ -29,12 +29,16 @@
 #preprocessData
 preprocessData <- function(ril,groupLabels=c(0,0,1,1),verbose=FALSE,debugMode=0,...){
 	s2<-proc.time()
+	require(RankProd)
 	if(file.exists("rilRP.Rdata")){
 		if(verbose) cat("File rilRP.Rdata already exists, reading it.\n")
 		load("rilRP.Rdata")
 	}else{
-		ril$parental$RP <- invisible(RP(expressionParental,groupLabels,...))
+		#wasting memory here because of Rbug
+		res <- invisible(RP(ril$parental$phenotypes,groupLabels,...))
+		print(ril$parental$RP$pval[[1]][2])
 		save(file="rilRP.Rdata",ril$parental$RP)
+		ril$parental$RP <- res
 	}
 	e2<-proc.time()
 	if(verbose && debugMode==2)cat("Data preprocessing done in:",(e2-s2)[3],"seconds.\n")
