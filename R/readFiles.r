@@ -30,15 +30,15 @@ readFiles <- function(rils="children",parental="parental",verbose=FALSE,debugMod
 	s <- proc.time()
 	ril <- NULL
 	
-	filename <- paste(rils,"_phenotypes.txt")
+	filename <- paste(rils,"_phenotypes.txt",sep="")
 	if(file.exists(filename)){
 		ril$rils$phenotypes <- readFile(filename,verbose,debugMode)
 		if(verbose) cat("Found phenotypic file for rils:",filename,"and stored it in ril$rils$phenotypes\n")
 	}else{
-		stop("There is no phenotypic file for rils:",filename,"this file is essentiall, you have to provide it\n")
+		stop("There is no phenotypic file for rils: ",filename," this file is essentiall, you have to provide it\n")
 	}
 	
-	filename <- paste(rils,"_genotypes.txt")
+	filename <- paste(rils,"_genotypes.txt",sep="")
 	if(file.exists(filename)){
 		ril$rils$genotypes$read <- readFile(filename,verbose,debugMode)
 		if(verbose) cat("Found genotypic file for rils:",filename,"and stored it in ril$rils$genotypes\n")
@@ -46,7 +46,7 @@ readFiles <- function(rils="children",parental="parental",verbose=FALSE,debugMod
 		if(verbose) cat("There is no genotypic file for rils:",filename,"genotypic data for rils will be simulated\n")
 	}
 	
-	filename <- paste(parental,"_phenotypes.txt")
+	filename <- paste(parental,"_phenotypes.txt",sep="")
 	if(file.exists(filename)){
 		ril$parental$phenotypes <- readFile(filename,verbose,debugMode)
 		if(verbose) cat("Found phenotypic file for parents:",filename,"and stored it in ril$parental$phenotypes\n")
@@ -55,14 +55,15 @@ readFiles <- function(rils="children",parental="parental",verbose=FALSE,debugMod
 	}
 	
 	e <- proc.time()
+	return(ril)
 }
 
 readFile <- function(filename,verbose=FALSE,debugMode=0){
 	#CRUCIAL CHECKS
 	s1<-proc.time()
-	expressionMatrix <- as.matrix(read.table(expressionFile,sep=""))
+	expressionMatrix <- as.matrix(read.table(filename,sep=""))
 	e1<-proc.time()
-	if(verbose && debugMode==2)cat("Reading expression file:",expressionFile,"done in:",(e1-s1)[3],"seconds.\n")
+	if(verbose && debugMode==2)cat("Reading expression file:",filename,"done in:",(e1-s1)[3],"seconds.\n")
 	invisible(expressionMatrix)
 }
 
