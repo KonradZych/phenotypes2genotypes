@@ -28,5 +28,19 @@
 
 #toGenotypes: Function that chooses from the matrix only appropriate markers with specified rules
 
-toGenotypes <- function(){
+toGenotypes <- function(ril, treshold=0.01,verbose=FALSE,debugMode=0){
+	ril <- selectDifferentiallyExpressed(ril)
+}
+
+selectDifferentiallyExpressed( <- function(ril,treshold=0.01,verbose=FALSE,debugMode=0){
+	s2<-proc.time()
+	ril$parental$up$val <- ril$parental$phenotypes[which(ril$parental$RP$pval[1] < treshold),]
+	ril$parental$up$means <- apply(ril$parental$up$val,1,mean)
+	ril$parental$down$val <- ril$parental$phenotypes[which(ril$parental$RPpval[2] < treshold),]
+	ril$parental$down$means <- apply(ril$parental$up$val,1,mean)
+	ril$rils$up <- ril$rils$phenotypes[which(rownames(ril$rils$phenotypes) %in% rownames(ril$parental$up$val))]
+	ril$rils$down <- ril$rils$phenotypes[which(rownames(ril$rils$phenotypes) %in% rownames(ril$parental$down$val))]
+	e2<-proc.time()
+	if(verbose && debugMode==2)cat("Filtering data with treshold:",treshold,"done in:",(e2-s2)[3],"seconds.\n")
+	invisible(ril)
 }
