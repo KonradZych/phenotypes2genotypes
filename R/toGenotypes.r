@@ -28,8 +28,33 @@
 
 #toGenotypes: Function that chooses from the matrix only appropriate markers with specified rules
 
-toGenotypes <- function(ril, treshold=0.01,verbose=FALSE,debugMode=0){
-	ril <- selectDifferentiallyExpressed(ril)
+toGenotypes <- function(ril, treshold=0.01, overlapInd = 0, proportion = 50, margin = 5, verbose=FALSE, debugMode=0){
+	#*******CHECKS*******
+	if(proportion < 1 || proportion > 99) stop("Proportion is a percentage (1,99)")
+	if(overlapInd < 0 || overlapInd > ncol(expressionMatrix)) stop("overlapInd is a number (0,lenght of the row).")
+	if(margin < 0 || margin > proportion) stop("Margin is a percentage (0,proportion)")
+	if(verbose && debugMode==1) cat("toGenotypes starting withour errors in checkpoint.\n")
+	
+	s <- proc.time()
+	#*******SELECTING DIFFERENTIALLY EXPRESSED GENES*******
+	s1 <- proc.time()
+	ril <- selectDifferentiallyExpressed(ril,treshold,verbose,debugMode)
+	e1 <- proc.time()
+	if(verbose && debugMode==2)cat("Selecting diff. expressed genes done in:",(e1-s1)[3],"seconds.\n")
+	
+	#*******CONVERTING CHILDREN PHENOTYPIC DATA TO GENOTYPES*******
+	s1 <- proc.time()
+	ril <- convertToGenotypes(ril, verbose, debugMode)
+	ril <- filterGenotypes(ril, overlapInd, proportion, margin, verbose, debugMode)
+	e1 <- proc.time()
+	if(verbose && debugMode==2)cat("Converting children phenotypic data to genotypes done in:",(e1-s2)[3],"seconds.\n")
+	
+	#*******SAVING CROSS OBJECT*******
+	s1 <- proc.time()
+	ril <- genotypesToCross(ril,verbose,debugMode)
+	e1 <- proc.time()
+	if(verbose && debugMode==2)cat("Converting children phenotypic data to genotypes done in:",(e1-s2)[3],"seconds.\n")
+	
 }
 
 selectDifferentiallyExpressed( <- function(ril,treshold=0.01,verbose=FALSE,debugMode=0){
@@ -43,4 +68,26 @@ selectDifferentiallyExpressed( <- function(ril,treshold=0.01,verbose=FALSE,debug
 	e2<-proc.time()
 	if(verbose && debugMode==2)cat("Filtering data with treshold:",treshold,"done in:",(e2-s2)[3],"seconds.\n")
 	invisible(ril)
+}
+
+convertToGenotypes <- function(ril,verbose=FALSE,debugMode=0){
+	up <- lapply(rownames(ril$rils$up),splitRow,ril$rils$up,ril$parental$up)
+	down <- lapply(rownames(ril$rils$down),splitRow,ril$rils$down,ril$parental$down)
+	ril$rils$genotypes$simulated <- rbind(up,1-down)
+	invisible(ril)
+}
+
+splitRow <- function(x,rils,parental){
+	result <- rils[x,]
+	splitVal <- parental$means[which(rownames(parental$val %in% x)),]
+	result[which(rils[x,] > splitVal)] <- 0
+	result[which(rils[x,] < splitVal)] <- 1
+	result[which(rils[x,] == splitVal)] <- NA
+	invisible(result)
+}
+
+
+
+filterGenotypes <- function(ril, overlapInd, proportion, margin, verbose, debugMode){
+	
 }
