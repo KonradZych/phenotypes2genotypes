@@ -64,7 +64,7 @@ genotypesToCross <- function(ril, doClustering=FALSE, groups=10, iterations = 10
 	#**********WRITING PHENOTYPIC DATA TO FILE*************
 	if(!is.null(ril$rils$phenotypes)){
 		#there is phenotypic matrix
-		writePhenotypes(expressionMatrix, outputFile, verbose, debugMode)
+		writePhenotypes(ril$rils$phenotypes,outputFile, verbose, debugMode)
 	}else if(crossMode!=3){
 		#there is no phenotypic matrix, but there is genotypic matrix
 		fakePhenotypes(outputFile, verbose, debugMode)
