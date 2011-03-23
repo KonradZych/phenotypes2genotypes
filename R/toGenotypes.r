@@ -62,7 +62,7 @@ selectDifferentiallyExpressed <- function(ril,treshold=0.01,verbose=FALSE,debugM
 	if(verbose && debugMode==1) cat("selectDifferentiallyExpressed starting.\n")
 	ril$parental$up$val <- ril$parental$phenotypes[which(ril$parental$RP$pval[1] < treshold),]
 	ril$parental$up$means <- apply(ril$parental$up$val,1,mean)
-	ril$parental$down$val <- ril$parental$phenotypes[which(ril$parental$RPpval[2] < treshold),]
+	ril$parental$down$val <- ril$parental$phenotypes[which(ril$parental$RP$pval[2] < treshold),]
 	ril$parental$down$means <- apply(ril$parental$up$val,1,mean)
 	ril$rils$up <- ril$rils$phenotypes[which(rownames(ril$rils$phenotypes) %in% rownames(ril$parental$up$val)),]
 	ril$rils$down <- ril$rils$phenotypes[which(rownames(ril$rils$phenotypes) %in% rownames(ril$parental$down$val)),]
@@ -73,8 +73,13 @@ selectDifferentiallyExpressed <- function(ril,treshold=0.01,verbose=FALSE,debugM
 
 convertToGenotypes <- function(ril,verbose=FALSE,debugMode=0){
 	if(verbose && debugMode==1) cat("convertToGenotypes starting.\n")
-	up <- lapply(rownames(ril$rils$up),splitRow,ril$rils$up,ril$parental$up,c(0,1))
-	down <- lapply(rownames(ril$rils$down),splitRow,ril$rils$down,ril$parental$down,c(1,0))
+	up <- matrix(lapply(rownames(ril$rils$up),splitRow,ril$rils$up,ril$parental$up,c(0,1)),nrow(ril$rils$up),ncol(ril$rils$up))
+	print(dim(up))
+	colnames(up) <- colnames(ril$rils$up)
+	rownames(up) <- rownames(ril$rils$up)
+	down <- matrix(lapply(rownames(ril$rils$down),splitRow,ril$rils$down,ril$parental$down,c(1,0)),nrow(ril$rils$down),ncol(ril$rils$down))
+	colnames(down) <- colnames(ril$rils$down)
+	rownames(down) <- rownames(ril$rils$down)
 	ril$rils$genotypes$simulated <- rbind(up,down)
 	invisible(ril)
 }
@@ -96,7 +101,6 @@ filterGenotypes <- function(ril, overlapInd, proportion, margin, verbose=FALSE,d
 }
 
 filterRow <- function(genotypeRow, overlapInd, proportion, margin){
-	print(genotypeRow)
 	if(sum(is.na(genotypeRow))!=0) return(0)
 	above <- sum(genotypeRow==1)
 	bellow <- sum(genotypeRow==0)
