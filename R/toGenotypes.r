@@ -73,11 +73,11 @@ selectDifferentiallyExpressed <- function(ril,treshold=0.01,verbose=FALSE,debugM
 
 convertToGenotypes <- function(ril,verbose=FALSE,debugMode=0){
 	if(verbose && debugMode==1) cat("convertToGenotypes starting.\n")
-	up <- matrix(lapply(rownames(ril$rils$up),splitRow,ril$rils$up,ril$parental$up,c(0,1)),nrow(ril$rils$up),ncol(ril$rils$up))
+	up <- matrix(lapply(rownames(ril$rils$up),splitRow,ril$rils$up,ril$parental$up,c(0,1))[[1]],nrow(ril$rils$up),ncol(ril$rils$up))
 	print(dim(up))
 	colnames(up) <- colnames(ril$rils$up)
 	rownames(up) <- rownames(ril$rils$up)
-	down <- matrix(lapply(rownames(ril$rils$down),splitRow,ril$rils$down,ril$parental$down,c(1,0)),nrow(ril$rils$down),ncol(ril$rils$down))
+	down <- matrix(lapply(rownames(ril$rils$down),splitRow,ril$rils$down,ril$parental$down,c(1,0))[[1]],nrow(ril$rils$down),ncol(ril$rils$down))
 	colnames(down) <- colnames(ril$rils$down)
 	rownames(down) <- rownames(ril$rils$down)
 	ril$rils$genotypes$simulated <- rbind(up,down)
