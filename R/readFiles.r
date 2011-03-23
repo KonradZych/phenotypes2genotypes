@@ -29,7 +29,7 @@
 readFiles <- function(rils="children",parental="parental",verbose=FALSE,debugMode=0){
 	s <- proc.time()
 	invisible(require(iqtl))
-	if(verbose) cat("loaded rewquired libraries.\n")
+	if(verbose) cat("loaded required libraries.\n")
 	ril <- NULL
 	
 	filename <- paste(rils,"_phenotypes.txt",sep="")
