@@ -1,6 +1,6 @@
 #################################################################################
 #
-# parentalRoutine.R
+# preprocessData.R
 #
 # Copyright (c) 2011, Konrad Zych
 #
@@ -21,8 +21,8 @@
 #     A copy of the GNU General Public License, version 3, is available
 #     at http://www.r-project.org/Licenses/GPL-3
 #
-# Contains: parentalRoutine 
-# 				readParentalExpression, rankParentalExpression, filterParentalExpression
+# Contains: preprocessData 
+# 				mapMarkers
 #
 #################################################################################
 
@@ -41,4 +41,8 @@ preprocessData <- function(ril,groupLabels=c(0,0,1,1),verbose=FALSE,debugMode=0,
 	invisible(ril)
 }
 
-
+mapMarkers <- function(expressionMatrix1, expressionMatrix2, mapMode=2){
+	if(mapMode==1) expressionMatrix1 <- expressionMatrix1[which(rownames(expressionMatrix1) %in% rownames(expressionMatrix2)),]
+	else if(mapMode==2) expressionMatrix1 <- expressionMatrix1[,which(colnames(expressionMatrix1) %in% colnames(expressionMatrix2))]
+	invisible(expressionMatrix1)
+}
