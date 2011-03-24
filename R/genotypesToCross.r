@@ -71,8 +71,7 @@ genotypesToCross <- function(ril, use=c("real","simulated"), limit=10, doCluster
 			writeGenotypes(ril$rils$genotypes$simulated, 1,outputFile, verbose, debugMode)
 		}
 	}
-}
-
+	
 
 #**********READING CROSS FILE TO R*************
 	cross <- invisible(read.cross("csvr",file=outputFile, genotypes=c(0,1)))
