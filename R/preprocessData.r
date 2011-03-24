@@ -33,11 +33,11 @@ preprocessData <- function(ril,groupLabels=c(0,0,1,1),verbose=FALSE,debugMode=0,
 	if(file.exists("rilRP.Rdata")){
 		if(verbose) cat("File rilRP.Rdata already exists, reading it.\n")
 		load("rilRP.Rdata")
+		ril$parental$RP <- res
 	}else{
 		#wasting memory here because of Rbug
 		res <- invisible(RP(ril$parental$phenotypes,groupLabels,...))
-		print(ril$parental$RP$pval[[1]][2])
-		save(file="rilRP.Rdata",ril$parental$RP)
+		save(file="rilRP.Rdata",res)
 		ril$parental$RP <- res
 	}
 	e2<-proc.time()
