@@ -38,7 +38,7 @@
 # genos - argument passed to read.cross (chars describing genotypes)
 # usage cross <- orderedCross(genotypicMatrix,expressionMatrix)
 
-genotypesToCross <- function(ril, use=c("real","simulated"), doClustering=FALSE, groups=10, iterations = 100, outputFile="mycross.csv", verbose=FALSE, debugMode=0){
+genotypesToCross <- function(ril, use=c("real","simulated"), limit=10, doClustering=FALSE, groups=10, iterations = 100, outputFile="mycross.csv", verbose=FALSE, debugMode=0){
 	###CHECKS
 	if(verbose && debugMode==1) cat("genotypesToCross starting.\n")
 	s <- proc.time()
@@ -48,14 +48,13 @@ genotypesToCross <- function(ril, use=c("real","simulated"), doClustering=FALSE,
 	if(!is.null(ril$rils$phenotypes)){
 		#there is phenotypic matrix
 		cat("Writing phenotypic data to cross file\n")
-		writePhenotypes(ril$rils$phenotypes,outputFile, verbose, debugMode)
+		writePhenotypes(ril$rils$phenotypes,limit,outputFile, verbose, debugMode)
 	}else{
 		#there is no phenotypic matrix, neither the genotypic matrix
 		stop("genotypesToCross not provided with phenotypic matrix, stopping\n")
 	}
 	
 	#**********WRITING GENOTYPIC DATA TO FILE*************
-	cat("",file=outputFile)
 	if(use=="real"){
 		if(is.null(ril$rils$genotypes$read)){
 			stop("Use = real chosen, but there is no real genotypic data in ril$rils$genotypes$read\n")
@@ -72,6 +71,7 @@ genotypesToCross <- function(ril, use=c("real","simulated"), doClustering=FALSE,
 			writeGenotypes(ril$rils$genotypes$simulated, 1,outputFile, verbose, debugMode)
 		}
 	}
+}
 
 
 #**********READING CROSS FILE TO R*************
@@ -83,10 +83,10 @@ genotypesToCross <- function(ril, use=c("real","simulated"), doClustering=FALSE,
 }
 
 #writePhenotypes - writes to file phenotypic data (cross object format)
-writePhenotypes <- function(expressionMatrix, outputFile, verbose=FALSE, debugMode=TRUE){
+writePhenotypes <- function(expressionMatrix, limit=10, outputFile, verbose=FALSE, debugMode=TRUE){
 	sl <- proc.time()
 	if(verbose && debugMode==1) cat("writePhenotypes starting.\n")
-	write.table(cbind("","",expressionMatrix),file=outputFile,sep=",",quote=FALSE,col.names=FALSE)
+	write.table(cbind("","",expressionMatrix[1:limit,]),file=outputFile,sep=",",quote=FALSE,col.names=FALSE)
 	el <- proc.time()
 	if(verbose && debugMode==2)cat("Writing phenotypes done in:",(el-sl)[3],"seconds.\n")
 }
