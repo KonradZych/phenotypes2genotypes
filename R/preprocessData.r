@@ -45,8 +45,28 @@ preprocessData <- function(ril,groupLabels=c(0,0,1,1),verbose=FALSE,debugMode=0,
 	invisible(ril)
 }
 
-mapMarkers <- function(expressionMatrix1, expressionMatrix2, mapMode=2){
-	if(mapMode==1) expressionMatrix1 <- expressionMatrix1[which(rownames(expressionMatrix1) %in% rownames(expressionMatrix2)),]
-	else if(mapMode==2) expressionMatrix1 <- expressionMatrix1[,which(colnames(expressionMatrix1) %in% colnames(expressionMatrix2))]
+mapMarkers.internal <- function(expressionMatrix1, expressionMatrix2, mapMode=2,verbose=FALSE,debugMode=0){
+	if(mapMode==1) {
+		nrRows <- nrow(expressionMatrix1)
+		#warnings when names are mismatching
+		if(verbose && debugMode==2)if(nrRows!=nrow(expressionMatrix2)){
+			cat("Following markers will be removed:\n")
+			cat(paste(rownames(expressionMatrix1)[which(!(rownames(expressionMatrix1) %in% rownames(expressionMatrix2)))],"\n"))
+		}
+		#mapping itself
+		expressionMatrix1 <- expressionMatrix1[which(rownames(expressionMatrix1) %in% rownames(expressionMatrix2)),]
+		if(verbose) cat("Because of names mismatch,",nrRows-nrow(expressionMatrix1),"markers were removed, run function with verbose=T debugMode=2 to print their names out.\n")
+	}
+	else if(mapMode==2){
+		nrCols <- ncol(expressionMatrix1)
+		#warnings when names are mismatching
+		if(verbose && debugMode==2)if(nrCols!=ncol(expressionMatrix2)){
+			cat("Following individuals will be removed:\n")
+			paste(colnames(expressionMatrix1)[which(!(colnames(expressionMatrix1) %in% colnames(expressionMatrix2)))],"\n")
+		}
+		#mapping itself
+		expressionMatrix1 <- expressionMatrix1[,which(colnames(expressionMatrix1) %in% colnames(expressionMatrix2))]
+		if(verbose) cat("Because of names mismatch,",nrCols-ncol(expressionMatrix1),"individuals were removed, run function with verbose=T debugMode=2 to print their names out.\n")
+	}
 	invisible(expressionMatrix1)
 }
