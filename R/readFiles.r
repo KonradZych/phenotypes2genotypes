@@ -37,8 +37,8 @@ readFiles <- function(rils="children",parental="parental",sep="",verbose=FALSE,d
 	#**********READING CHILDREN PHENOTYPIC DATA*************
 	filename <- paste(rils,"_phenotypes.txt",sep="")
 	if(file.exists(filename)){
+		if(verbose) cat("Found phenotypic file for rils:",filename,"and will store  it in ril$rils$phenotypes\n")
 		ril$rils$phenotypes <- readFile.internal(filename,sep,verbose,debugMode)
-		if(verbose) cat("Found phenotypic file for rils:",filename,"and stored it in ril$rils$phenotypes\n")
 	}else{
 		stop("There is no phenotypic file for rils: ",filename," this file is essentiall, you have to provide it\n")
 	}
@@ -46,8 +46,8 @@ readFiles <- function(rils="children",parental="parental",sep="",verbose=FALSE,d
 	#**********READING CHILDREN GENOTYPIC DATA*************
 	filename <- paste(rils,"_genotypes.txt",sep="")
 	if(file.exists(filename)){
+		if(verbose) cat("Found genotypic file for rils:",filename,"and will store  it in ril$rils$genotypes$read\n")
 		ril$rils$genotypes$read <- readFile.internal(filename,sep,verbose,debugMode)
-		if(verbose) cat("Found genotypic file for rils:",filename,"and stored it in ril$rils$genotypes\n")
 	}else{
 		cat("WARNING: There is no genotypic file for rils:",filename,"genotypic data for rils will be simulated\n")
 	}
@@ -55,8 +55,10 @@ readFiles <- function(rils="children",parental="parental",sep="",verbose=FALSE,d
 	#**********READING PARENTAL PHENOTYPIC DATA*************
 	filename <- paste(parental,"_phenotypes.txt",sep="")
 	if(file.exists(filename)){
+		if(verbose) cat("Found phenotypic file for parents:",filename,"and will store it in ril$parental$phenotypes\n")
 		ril$parental$phenotypes <- readFile.internal(filename,sep,verbose,debugMode)
-		if(verbose) cat("Found phenotypic file for parents:",filename,"and stored it in ril$parental$phenotypes\n")
+		#removing from parental probes that are not in children:
+		ril$parental$phenotypes <- mapMarkers.internal(ril$parental$phenotypes,ril$rils$phenotypes ,mapMode=1,verbose=verbose)
 	}else{
 		cat("WARNING: There is no phenotypic file for parents:",filename,"further processing will take place without taking into account parental data\n")
 	}
@@ -71,11 +73,11 @@ readFile.internal <- function(filename,sep="",verbose=FALSE,debugMode=0){
 	if(!file.exists(filename)) stop("File: ",filename,"doesn't exist.\n")
 	s1<-proc.time()
 	currentFile <- read.table(filename,sep=sep)
-	if(verbose) cat("File:",filename,"was loaded into R enviroment containing",nrow(currentFile),"markers and",ncol(currentFile),"individuals.\n")
-	if(!(sum(apply(currentFile,c(1,2),is.numeric))!=nrow(currentFile)*ncol(currentFile))) stop("Not all elements of the file are numeric, check help files for rigth input file format. \n")
 	currentFile <- as.matrix(currentFile)
+	if(!is.numeric(currentFile)) stop("Not all elements of the file:",filename," are numeric, check help files for rigth input file format. \n")
+	if(verbose) cat("File:",filename,"was loaded into R enviroment containing",nrow(currentFile),"markers and",ncol(currentFile),"individuals.\n")
 	e1<-proc.time()
-	if(verbose && debugMode==2)cat("Reading expression file:",filename,"done in:",(e1-s1)[3],"seconds.\n")
+	if(verbose && debugMode==2)cat("Reading file:",filename,"done in:",(e1-s1)[3],"seconds.\n")
 	invisible(currentFile)
 }
 
