@@ -4,19 +4,10 @@
 \alias{genotypesToCross.internal}
 \alias{writePhenotypes.internal}
 \alias{writeGenotypes.internal}
-\alias{checkExpression}
-\alias{recombinationCountRow}
-\alias{recombinationCountRowSub}
-\alias{recombinationCountRowFlipSub}
-\alias{writePhenotypes}
-\alias{writeGenotypes}
-\alias{bestClusteringSub}
-\alias{bestClusteringSubSub}
-\alias{correctExpression}
-\alias{mapMarkers}
-\alias{parentalSplit}
-
-
+\alias{convertToGenotypes.internal}
+\alias{splitRow.internal}
+\alias{filterGenotypes.internal}
+\alias{filterRow.internal}
 
 \title{Internal pheno2geno functions}
 
