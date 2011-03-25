@@ -21,8 +21,8 @@
 #     A copy of the GNU General Public License, version 3, is available
 #     at http://www.r-project.org/Licenses/GPL-3
 #
-# Contains: genotypesToCross
-#				writePhenotypes, doClustering, writeGenotypes, fakeGenotypes, fakePhenotypes
+# Contains: genotypesToCross.internal 
+#				writePhenotypes.internal, writeGenotypes.internal
 #
 #####################################################################
 
@@ -38,29 +38,29 @@
 # genos - argument passed to read.cross (chars describing genotypes)
 # usage cross <- orderedCross(genotypicMatrix,expressionMatrix)
 
-genotypesToCross <- function(ril, use=c("real","simulated"), limit=10, doClustering=FALSE, groups=10, iterations = 100, outputFile="mycross.csv", verbose=FALSE, debugMode=0){
+genotypesToCross.internal <- function(ril, use=c("real","simulated"), limit=10, doClustering=FALSE, groups=10, iterations = 100, outputFile="mycross.csv", verbose=FALSE, debugMode=0){
 	###CHECKS
 	if(verbose && debugMode==1) cat("genotypesToCross starting.\n")
 	s <- proc.time()
 	
 	
-	#**********WRITING PHENOTYPIC DATA TO FILE*************
+#**********WRITING PHENOTYPIC DATA TO FILE*************
 	if(!is.null(ril$rils$phenotypes)){
 		#there is phenotypic matrix
 		cat("Writing phenotypic data to cross file\n")
-		writePhenotypes(ril$rils$phenotypes,limit,outputFile, verbose, debugMode)
+		writePhenotypes.internal(ril$rils$phenotypes,limit,outputFile, verbose, debugMode)
 	}else{
-		#there is no phenotypic matrix, neither the genotypic matrix
+		#there is no phenotypic matrix
 		stop("genotypesToCross not provided with phenotypic matrix, stopping\n")
 	}
 	
-	#**********WRITING GENOTYPIC DATA TO FILE*************
+#**********WRITING GENOTYPIC DATA TO FILE*************
 	if(use=="real"){
 		if(is.null(ril$rils$genotypes$read)){
 			stop("Use = real chosen, but there is no real genotypic data in ril$rils$genotypes$read\n")
 		}else{
 			cat("Cross object will be written using real genotypic data\n")
-			writeGenotypes(ril$rils$genotypes$read, 1,outputFile, verbose, debugMode)
+			writeGenotypes.internal(ril$rils$genotypes$read, 1,outputFile, verbose, debugMode)
 		}
 	}
 	else if(use=="simulated"){
@@ -68,7 +68,7 @@ genotypesToCross <- function(ril, use=c("real","simulated"), limit=10, doCluster
 			stop("Use = simulated chosen, but there is no simulated genotypic data in ril$rils$genotypes$simulated\n")
 		}else{
 			cat("Cross object will be written using simulated genotypic data\n")
-			writeGenotypes(ril$rils$genotypes$simulated, 1,outputFile, verbose, debugMode)
+			writeGenotypes.internal(ril$rils$genotypes$simulated, 1,outputFile, verbose, debugMode)
 		}
 	}
 	
@@ -82,7 +82,7 @@ genotypesToCross <- function(ril, use=c("real","simulated"), limit=10, doCluster
 }
 
 #writePhenotypes - writes to file phenotypic data (cross object format)
-writePhenotypes <- function(expressionMatrix, limit=10, outputFile, verbose=FALSE, debugMode=TRUE){
+writePhenotypes.internal <- function(expressionMatrix, limit=10, outputFile, verbose=FALSE, debugMode=TRUE){
 	sl <- proc.time()
 	if(verbose && debugMode==1) cat("writePhenotypes starting.\n")
 	write.table(cbind("","",expressionMatrix[1:limit,]),file=outputFile,sep=",",quote=FALSE,col.names=FALSE)
@@ -94,7 +94,7 @@ writePhenotypes <- function(expressionMatrix, limit=10, outputFile, verbose=FALS
 #genotypeMatrix - matrix of genotypic data, rows - markers, cols - individuals
 #verbose - standard
 #debugMode - standard 1 -> gives info, that function is starting  2 -> gives additional time information
-writeGenotypes <- function(genotypeMatrix,chr=1,outputFile,verbose=FALSE,debugMode=0){
+writeGenotypes.internal <- function(genotypeMatrix,chr=1,outputFile,verbose=FALSE,debugMode=0){
 	sl <- proc.time()
 	if(verbose && debugMode==1) cat("writeGenotypes starting.\n")
 	write.table(cbind(chr,1:nrow(genotypeMatrix),genotypeMatrix),file=outputFile,sep=",",quote=FALSE,col.names=FALSE,append=TRUE)
