@@ -35,22 +35,15 @@ toGenotypes <- function(ril, use=c("real","simulated"), treshold=0.01, overlapIn
 	if(margin < 0 || margin > proportion) stop("Margin is a percentage (0,proportion)")
 	if(verbose && debugMode==1) cat("toGenotypes starting withour errors in checkpoint.\n")
 	
-	s <- proc.time()
-	#*******SELECTING DIFFERENTIALLY EXPRESSED GENES*******
-	s1 <- proc.time()
-	ril <- selectDifferentiallyExpressed(ril,treshold,verbose,debugMode)
-	e1 <- proc.time()
-	if(verbose && debugMode==2)cat("Selecting diff. expressed genes in:",(e1-s1)[3],"seconds.\n")
-	
 	#*******CONVERTING CHILDREN PHENOTYPIC DATA TO GENOTYPES*******
 	s1 <- proc.time()
-	ril <- convertToGenotypes(ril, verbose, debugMode)
+	ril <- convertToGenotypes.internal(ril, treshold,verbose, debugMode)
 	e1 <- proc.time()
 	if(verbose && debugMode==2)cat("Converting phenotypes to genotypes in:",(e1-s1)[3],"seconds.\n")
 	
 	#*******CONVERTING CHILDREN PHENOTYPIC DATA TO GENOTYPES*******
 	s1 <- proc.time()
-	ril <- filterGenotypes(ril, overlapInd, proportion, margin, verbose, debugMode)
+	ril <- filterGenotypes.internal(ril, overlapInd, proportion, margin, verbose, debugMode)
 	e1 <- proc.time()
 	if(verbose && debugMode==2)cat("Selecting markers using specified parameters done in:",(e1-s1)[3],"seconds.\n")
 	
@@ -62,7 +55,7 @@ toGenotypes <- function(ril, use=c("real","simulated"), treshold=0.01, overlapIn
 	invisible(cross)
 }
 
-convertToGenotypes.internal <- function(ril,verbose=FALSE,debugMode=0){
+convertToGenotypes.internal <- function(ril,treshold,verbose=FALSE,debugMode=0){
 	if(verbose && debugMode==1) cat("convertToGenotypes starting.\n")
 	m <- NULL
 	upParental <- ril$parental$phenotypes[which(ril$parental$RP$pval[1] < treshold),]
@@ -70,11 +63,11 @@ convertToGenotypes.internal <- function(ril,verbose=FALSE,debugMode=0){
 	upRils <- ril$rils$phenotypes[which(rownames(ril$rils$phenotypes) %in% rownames(upParental)),]
 	downRils <- ril$rils$phenotypes[which(rownames(ril$rils$phenotypes) %in% rownames(downParental)),]
 	for(x in rownames(upRils)){
-		m <- rbind(m,splitRow(x,upRils,upParental,c(0,1)))
+		m <- rbind(m,splitRow.internal(x,upRils,upParental,c(0,1)))
 	}
 	c<-0
 	for(x in rownames(downRils)){
-		m <- rbind(m,splitRow(x,downRils,downParental,c(1,0)))
+		m <- rbind(m,splitRow.internal(x,downRils,downParental,c(1,0)))
 	}
 	colnames(m) <- colnames(ril$rils$up)
 	rownames(m) <- c(rownames(ril$rils$up),rownames(ril$rils$down))
@@ -84,7 +77,7 @@ convertToGenotypes.internal <- function(ril,verbose=FALSE,debugMode=0){
 
 splitRow.internal <- function(x,rils,parental,genotypes){
 	result <- rep(0,length(rils[x,]))
-	splitVal <- mean(parental[which(names(parental) == x)])
+	splitVal <- mean(parental[which(rownames(parental) == x),])
 	result[which(rils[x,] > splitVal)] <- genotypes[1]
 	result[which(rils[x,] < splitVal)] <- genotypes[2]
 	result[which(rils[x,] == splitVal)] <- NA
@@ -93,7 +86,7 @@ splitRow.internal <- function(x,rils,parental,genotypes){
 
 filterGenotypes.internal <- function(ril, overlapInd=0, proportion=50, margin=5, verbose=FALSE,debugMode=0){
 	if(verbose && debugMode==1) cat("filterGenotypes starting.\n")
-	result <- apply(ril$rils$genotypes$simulated,1,filterRow,overlapInd=overlapInd,proportion=proportion, margin=margin)
+	result <- apply(ril$rils$genotypes$simulated,1,filterRow.internal,overlapInd=overlapInd,proportion=proportion, margin=margin)
 	ril$rils$genotypes$simulated <- ril$rils$genotypes$simulated[which(result==1),]
 	invisible(ril)
 }
