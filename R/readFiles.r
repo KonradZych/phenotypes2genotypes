@@ -22,7 +22,7 @@
 #     at http://www.r-project.org/Licenses/GPL-3
 #
 # Contains: readFiles 
-# 				readFile.internal
+# 				readFile.internal, mapMarkers.internal
 #
 #################################################################################
 
@@ -79,5 +79,31 @@ readFile.internal <- function(filename,sep="",verbose=FALSE,debugMode=0){
 	e1<-proc.time()
 	if(verbose && debugMode==2)cat("Reading file:",filename,"done in:",(e1-s1)[3],"seconds.\n")
 	invisible(currentFile)
+}
+
+mapMarkers.internal <- function(expressionMatrix1, expressionMatrix2, mapMode=2,verbose=FALSE,debugMode=0){
+	if(mapMode==1) {
+		nrRows <- nrow(expressionMatrix1)
+		#warnings when names are mismatching
+		if(verbose && debugMode==2)if(nrRows!=nrow(expressionMatrix2)){
+			cat("Following markers will be removed:\n")
+			cat(paste(rownames(expressionMatrix1)[which(!(rownames(expressionMatrix1) %in% rownames(expressionMatrix2)))],"\n"))
+		}
+		#mapping itself
+		expressionMatrix1 <- expressionMatrix1[which(rownames(expressionMatrix1) %in% rownames(expressionMatrix2)),]
+		if(verbose) cat("Because of names mismatch,",nrRows-nrow(expressionMatrix1),"markers were removed, run function with verbose=T debugMode=2 to print their names out.\n")
+	}
+	else if(mapMode==2){
+		nrCols <- ncol(expressionMatrix1)
+		#warnings when names are mismatching
+		if(verbose && debugMode==2)if(nrCols!=ncol(expressionMatrix2)){
+			cat("Following individuals will be removed:\n")
+			paste(colnames(expressionMatrix1)[which(!(colnames(expressionMatrix1) %in% colnames(expressionMatrix2)))],"\n")
+		}
+		#mapping itself
+		expressionMatrix1 <- expressionMatrix1[,which(colnames(expressionMatrix1) %in% colnames(expressionMatrix2))]
+		if(verbose) cat("Because of names mismatch,",nrCols-ncol(expressionMatrix1),"individuals were removed, run function with verbose=T debugMode=2 to print their names out.\n")
+	}
+	invisible(expressionMatrix1)
 }
 
