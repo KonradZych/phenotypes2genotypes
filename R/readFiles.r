@@ -69,9 +69,10 @@ readFiles <- function(rils="children",parental="parental",sep="",verbose=FALSE,d
 
 readFile.internal <- function(filename,sep="",verbose=FALSE,debugMode=0){
 	if(!file.exists(filename)) stop("File: ",filename,"doesn't exist.\n")
-	
 	s1<-proc.time()
 	currentFile <- read.table(filename,sep=sep)
+	if(verbose) cat("File:",filename,"was loaded into R enviroment containing",nrow(currentFile),"markers and",ncol(currentFile),"individuals.\n")
+	if(!(sum(apply(currentFile,c(1,2),is.numeric))!=nrow(currentFile)*ncol(currentFile))) stop("Not all elements of the file are numeric, check help files for rigth input file format. \n")
 	currentFile <- as.matrix(currentFile)
 	e1<-proc.time()
 	if(verbose && debugMode==2)cat("Reading expression file:",filename,"done in:",(e1-s1)[3],"seconds.\n")
