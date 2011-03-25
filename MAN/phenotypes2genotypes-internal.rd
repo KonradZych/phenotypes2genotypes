@@ -1,9 +1,9 @@
 \name{phenotypes2genotypes-internal}
-\alias{transformIndividual}
-\alias{zero}
-\alias{cEquals}
-\alias{cLess}
-\alias{cMore}
+\alias{readFile.internal}
+\alias{mapMarkers.internal}
+\alias{genotypesToCross.internal}
+\alias{writePhenotypes.internal}
+\alias{writeGenotypes.internal}
 \alias{checkExpression}
 \alias{recombinationCountRow}
 \alias{recombinationCountRowSub}
@@ -14,6 +14,7 @@
 \alias{bestClusteringSubSub}
 \alias{correctExpression}
 \alias{mapMarkers}
+\alias{parentalSplit}
 
 
 
