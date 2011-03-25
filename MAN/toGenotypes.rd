@@ -1,29 +1,28 @@
 \name{toGenotypes}
 \alias{toGenotypes}
 
-\title{Convert a phenotypematrix into suitable genotypes}
+\title{Creating genotypes from children phenotypes.}
 
 \description{
-  Convert a phenotypematrix into suitable genotypes
+  Creating genotypes from children phenotypes using parental data and saving cross object.
 }
 
 \usage{
-toGenotypes(expressionMatrix, splitFUN = zero, overlapInd = 0, proportion = 50, margin = 5, genotypes = c(0,1), verbose=FALSE, debugMode=0)
+	toGenotypes(ril, use=c("real","simulated"), treshold=0.01, overlapInd = 0, proportion = 50, margin = 5, verbose=FALSE, debugMode=0)
 }
 
 \arguments{
- \item{expressionMatrix}{ Matrix with expression values with: columns, individuals and opn the rows, markers }
- \item{splitFUN}{ function used to split values }
+ \item{ril}{ Ril type object, must contain parental phenotypic data.}
+ \item{use}{ Which genotypic matrix should be saved to file, real - supported by user and read from file, simulated - made by toGenotypes..}
  \item{overlapInd}{ Number of individuals that are allowed in the overlap }
  \item{proportion}{ Proportion of individuals expected to carrying a certain genotype }
  \item{margin}{ Proportion is allowed to varry between this margin (2 sided) }
- \item{genotypes}{ User defined genotypes for the output matrix }
  \item{verbose}{ Be verbose}
  \item{debugMode}{ 1: Print our checks, 2: print additional time information }
 }
 
 \value{
-  A matrix with genotypes
+  Cross type object.
 }
 
 \details{
@@ -37,18 +36,12 @@ toGenotypes(expressionMatrix, splitFUN = zero, overlapInd = 0, proportion = 50, 
 }
 
 \examples{
-	data(expression_ratio)
-	genotypes <- toGenotypes(expression_ratio, margin=0.5,genotypes=c(1,0),overlapInd=0, verbose=TRUE, debugMode=2)
-	
-	#Checks
-	if(genotypes[1,1]!=1)	stop("Element not equal to expected\n")
-	if(genotypes[100,10]!=1)	stop("Element not equal to expected\n")
-	if(genotypes[101,20]!=1)	stop("Element not equal to expected\n")
-	if(sum(dim(genotypes)) != 168)	stop("Wrong dimensions\n")
+	#ril <- readFiles()
 }
 
 \seealso{
-  TODO
+  \code{\link{readFiles}}
+  \code{\link{preprocessData}}
 }
 
 \keyword{manip}
