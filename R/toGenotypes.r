@@ -53,6 +53,10 @@ toGenotypes <- function(ril, use=c("real","simulated"), treshold=0.01, overlapIn
 	e1 <- proc.time()
 	if(verbose && debugMode==2)cat("Creating cross object done in:",(e1-s1)[3],"seconds.\n")
 	invisible(cross)
+	
+	#FormLinkage groups
+	
+	#Order markers
 }
 
 convertToGenotypes.internal <- function(ril,treshold,verbose=FALSE,debugMode=0){
@@ -69,9 +73,9 @@ convertToGenotypes.internal <- function(ril,treshold,verbose=FALSE,debugMode=0){
 	for(x in rownames(downRils)){
 		m <- rbind(m,splitRow.internal(x,downRils,downParental,c(1,0)))
 	}
-	colnames(m) <- colnames(ril$rils$up)
-	rownames(m) <- c(rownames(ril$rils$up),rownames(ril$rils$down))
 	ril$rils$genotypes$simulated <- m
+	colnames(ril$rils$genotypes$simulated) <- colnames(upRils)
+	rownames(ril$rils$genotypes$simulated) <- c(rownames(upRils),rownames(downRils))
 	invisible(ril)
 }
 
