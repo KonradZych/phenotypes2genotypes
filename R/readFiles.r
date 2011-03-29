@@ -26,6 +26,15 @@
 #
 #################################################################################
 
+############################################################################################################
+#readFiles: eads geno/phenotypic files into R environment into special object.
+# 
+# rils - Core used to specify names of children phenotypic ("rils_phenotypes.txt") and genotypic ("rils_genotypes.txt") files.
+# parental - Core used to specify names of parental phenotypic ("parental_phenotypes.txt") file.
+# sep - Separator of values in files. Passed directly to read.table, so "" is a wildcard meaning whitespace.
+# verbose - Be verbose
+# debugMode - 1: Print our checks, 2: print additional time information
+############################################################################################################
 readFiles <- function(rils="children",parental="parental",sep="",verbose=FALSE,debugMode=0){
 	#**********INITIALIZING FUNCTION*************
 	s <- proc.time()
@@ -69,6 +78,14 @@ readFiles <- function(rils="children",parental="parental",sep="",verbose=FALSE,d
 	invisible(ril)
 }
 
+############################################################################################################
+#readFile.internal: sub function of readFiles, reads file in and transforms into matrix tahn returning it
+# 
+# filename - Name of the file to be read.
+# sep - Separator of values in files. Passed directly to read.table, so "" is a wildcard meaning whitespace.
+# verbose - Be verbose
+# debugMode - 1: Print our checks, 2: print additional time information
+############################################################################################################
 readFile.internal <- function(filename,sep="",verbose=FALSE,debugMode=0){
 	if(!file.exists(filename)) stop("File: ",filename,"doesn't exist.\n")
 	s1<-proc.time()
@@ -81,6 +98,14 @@ readFile.internal <- function(filename,sep="",verbose=FALSE,debugMode=0){
 	invisible(currentFile)
 }
 
+############################################################################################################
+#mapMarkers.internal: removes from matrix1 cols or rows, which are not present in second (coparing using col/rownames)
+# 
+# expressionMatrix1, expressionMatrix2 - matrices with data of any type
+# mapMode - 1 - map rows, 2 - map cols
+# verbose - Be verbose
+# debugMode - 1: Print our checks, 2: print additional time information
+############################################################################################################
 mapMarkers.internal <- function(expressionMatrix1, expressionMatrix2, mapMode=2,verbose=FALSE,debugMode=0){
 	if(mapMode==1) {
 		nrRows <- nrow(expressionMatrix1)
