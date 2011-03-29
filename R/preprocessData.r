@@ -22,11 +22,17 @@
 #     at http://www.r-project.org/Licenses/GPL-3
 #
 # Contains: preprocessData 
-# 				mapMarkers
 #
 #################################################################################
 
-#preprocessData
+############################################################################################################
+#toGenotypes: Using Rank Product analysis to select differentially expressed genes.
+# 
+# ril - Ril type object, must contain parental phenotypic data.
+# groupLabels - Specify which column of parental data belongs to group 0 and which to group 1.
+# verbose - Be verbose
+# debugMode - 1: Print our checks, 2: print additional time information
+############################################################################################################
 preprocessData <- function(ril,groupLabels=c(0,0,1,1),verbose=FALSE,debugMode=0,...){
 	s2<-proc.time()
 	require(RankProd)
