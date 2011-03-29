@@ -13,7 +13,8 @@
 
 \arguments{
  \item{ril}{ Ril type object, must contain parental phenotypic data.}
- \item{use}{ Which genotypic matrix should be saved to file, real - supported by user and read from file, simulated - made by toGenotypes..}
+ \item{treshold}{ If Rank Product pval for gene is lower that this value, we assume it is being diff. expressed.}
+ \item{use}{ Which genotypic matrix should be saved to file, real - supported by user and read from file, simulated - made by toGenotypes.}
  \item{overlapInd}{ Number of individuals that are allowed in the overlap }
  \item{proportion}{ Proportion of individuals expected to carrying a certain genotype }
  \item{margin}{ Proportion is allowed to varry between this margin (2 sided) }
