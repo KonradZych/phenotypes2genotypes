@@ -27,14 +27,14 @@
 ##################################################################################################
 
 
-plotParental <- function(parentalExpression,groupLabels=c(0,1),plotMode="rank",rankParental=NULL,treshold=0.05,verbose=FALSE,debugMode=0){
+plotParental <- function(ril,plotMode=c("rank","compare"),treshold=0.05,groupLabels=c(0,0,1,1),verbose=FALSE,debugMode=0){
 	if(plotMode=="rank"){
-		colPal <- matrix("gray",nrow(parentalExpression),ncol(parentalExpression))
-		colPal[which(rankParental$pval[1]<treshold),] <- "red"
-		colPal[which(rankParental$pval[2]<treshold),] <- "black"
-	}else{
-		colPal <- matrix("black",nrow(parentalExpression),ncol(parentalExpression))
-		colPal[which(groupLabels==1),] <- "red"
+		colPal <- matrix("gray",nrow(ril$parental$phenotypes),ncol(ril$parental$phenotypes))
+		colPal[which(ril$parental$pval[1]<treshold),] <- "red"
+		colPal[which(ril$parental$pval[2]<treshold),] <- "black"
+	}else if(plotMode=="compare"){
+		colPal <- matrix("black",nrow(ril$parental$phenotypes),ncol(ril$parental$phenotypes))
+		colPal[,which(groupLabels==1)] <- "red"
 	}
-	plot(parentalExpression,col=colPal)
+	plot(ril$parental$phenotypes[1,],col=colPal[1,])
 }
