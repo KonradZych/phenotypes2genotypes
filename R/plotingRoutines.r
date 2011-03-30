@@ -28,24 +28,29 @@
 
 
 ############################################################################################################
-#plotParental: not that useful, but stays for now
-# 
+#plotParental: plot red points for expression values for parent of type 0, blue for parent 1 and green lines
+# for means of rows
+#
+# ril - Ril type object, must contain parental phenotypic data.
+# markers - markers to be printed numbers or names 
+# groupLabels - Specify which column of parental data belongs to group 0 and which to group 1
+#
 ############################################################################################################
-plotParental <- function(ril, markers=1:100, groupLabels=c(0,0,1,1), verbose=FALSE, debugMode=0){
-	stop("due to stupid R bug, no you shouldn't use it\n")
+plotParentalExpression <- function(ril, markers=1:100, groupLabels=c(0,0,1,1)){
 	parental <- ril$parental$phenotypes[markers,]
-	# R BUG - really stupid, xlim should be (x1,x2), but if I put it this way I get error that there is "," that
-	# is not allowed...
-	#plot(x=markers[1], y=parental[which(groupLabels==0)[1]], xlim=(1,length(markers)), col="red" )
-	for(i in 1:length(markers)){
-		for(j in 1:ncol(parental[,which(groupLabels==0)])){
-			points(x=i,y=parental[j],col="red")
+	plot(x=markers[1], y=parental[1,1], xlim=c(min(markers),max(markers)), ylim=c(min(parental),max(parental)), col="red",
+	xlab="Marker", ylab="Expression value", main="Parental gene expression data")
+	for(i in 1:nrow(parental)){
+		for(j in which(groupLabels==0)){
+			if(i%%50==0) cat(i,j,parental[i,j],"\n")
+			points(x=markers[i],y=parental[i,j],col="red")
 		}
-		for(j in 1:ncol(parental[,which(groupLabels==1)])){
-			points(x=i,y=parental[j],col="blue")
+		for(k in which(groupLabels==1)){
+			if(i%%50==0) cat(i,k,parental[i,k],"\n")
+			points(x=markers[i],y=parental[i,k],col="blue")
 		}
 	}
-	points(apply(parental,1,mean),col="green", pch=95, cex=3)
+	points(x=markers,y=apply(parental,1,mean),col="green", pch=95, cex=3)
 }
 
 ############################################################################################################
@@ -53,11 +58,13 @@ plotParental <- function(ril, markers=1:100, groupLabels=c(0,0,1,1), verbose=FAL
 # 
 # ril - Ril type object, must contain parental phenotypic data.
 # markers - markers to be printed numbers or names 
-# ... - passed to boxplot
+#
 ############################################################################################################
-plotChildrenExpression <- function(ril, markers=1:100, ...){
-	boxplot(t(ril$rils$phenotypes[markers,]))
-	parental <- ril$parental$phenotypes[which(rownames(ril$parental$phenotypes) %in% rownames(ril$rils$phenotypes[markers,])),]
+plotChildrenExpression <- function(ril, markers=1:100){
+	children <- ril$rils$phenotypes[markers,]
+	parental <- ril$parental$phenotypes[which(rownames(ril$parental$phenotypes) %in% rownames(children)),]
+	rownames(children) <- markers
+	boxplot(t(children), ylim=c(min(children), max(children)),	xlab="Marker", ylab="Expression value", main="Children gene expression data")
 	points(apply(parental,1,mean),col="green", pch=95, cex=3)
 	points(apply(parental,1,max),col="blue", pch=24, cex=1)
 	points(apply(parental,1,min),col="red", pch=25, cex=1)
