@@ -8,6 +8,7 @@
 \alias{splitRow.internal}
 \alias{filterGenotypes.internal}
 \alias{filterRow.internal}
+\alias{correctRow.internal}
 
 \title{Internal pheno2geno functions}
 

@@ -22,7 +22,7 @@
 #     at http://www.r-project.org/Licenses/GPL-3
 #
 # Contains: readFiles 
-# 				readFile.internal, mapMarkers.internal
+# 				readFile.internal, mapMarkers.internal, gffParser, correctRow.internal
 #
 #################################################################################
 
@@ -157,7 +157,7 @@ gffParser <- function(ril, filename="gene_map.gff",verbose=FALSE,debugMode=0){
 }
 
 ############################################################################################################
-#gffParser: gffParser sub function, calculating mean possition of the gene and puts its identifier alone in
+#correctRow.internal: gffParser sub function, calculating mean possition of the gene and puts its identifier alone in
 # last column
 # 
 # genesRow - currently processed row
