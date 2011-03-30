@@ -34,6 +34,7 @@
 # sep - Separator of values in files. Passed directly to read.table, so "" is a wildcard meaning whitespace.
 # verbose - Be verbose
 # debugMode - 1: Print our checks, 2: print additional time information
+#
 ############################################################################################################
 readFiles <- function(rils="children",parental="parental",sep="",verbose=FALSE,debugMode=0){
 	#**********INITIALIZING FUNCTION*************
@@ -85,6 +86,7 @@ readFiles <- function(rils="children",parental="parental",sep="",verbose=FALSE,d
 # sep - Separator of values in files. Passed directly to read.table, so "" is a wildcard meaning whitespace.
 # verbose - Be verbose
 # debugMode - 1: Print our checks, 2: print additional time information
+#
 ############################################################################################################
 readFile.internal <- function(filename,sep="",verbose=FALSE,debugMode=0){
 	if(!file.exists(filename)) stop("File: ",filename,"doesn't exist.\n")
@@ -105,6 +107,7 @@ readFile.internal <- function(filename,sep="",verbose=FALSE,debugMode=0){
 # mapMode - 1 - map rows, 2 - map cols
 # verbose - Be verbose
 # debugMode - 1: Print our checks, 2: print additional time information
+#
 ############################################################################################################
 mapMarkers.internal <- function(expressionMatrix1, expressionMatrix2, mapMode=2,verbose=FALSE,debugMode=0){
 	if(mapMode==1) {
@@ -132,3 +135,38 @@ mapMarkers.internal <- function(expressionMatrix1, expressionMatrix2, mapMode=2,
 	invisible(expressionMatrix1)
 }
 
+############################################################################################################
+#gffParser: reads gff file and transfroms it into nice matrix!
+# 
+# ril - 
+# filename - name of gff file
+# verbose - Be verbose
+# debugMode - 1: Print our checks, 2: print additional time information
+#
+############################################################################################################
+gffParser <- function(ril, filename="gene_map.gff",verbose=FALSE,debugMode=0){
+	s1<-proc.time()
+	geneMap <- read.table(filename,sep="\t")
+	genes <- geneMap[which(geneMap[,3]=="gene"),]
+	genes <- genes[,c(1,4,5,9)]
+	genes <- apply(genes,1,correctRow.internal)
+	e1<-proc.time()
+	if(verbose && debugMode==2)cat("Parsing gff file:",filename,"done in:",(e1-s1)[3],"seconds.\n")
+	ril$rils$gff <- genes
+	invisible(ril)
+}
+
+############################################################################################################
+#gffParser: gffParser sub function, calculating mean possition of the gene and puts its identifier alone in
+# last column
+# 
+# genesRow - currently processed row
+#
+############################################################################################################
+correctRow.internal <- function(genesRow){
+	genesRow[4] <- toString(strsplit(toString(genesRow[4]),";")[[1]][1])
+	genesRow[4] <- substr(genesRow[4],4,12)
+	correctedRow <- genesRow[-3]
+	correctedRow[2] <- mean(as.numeric(genesRow[c(2,3)]))
+	invisible(correctedRow)
+}
