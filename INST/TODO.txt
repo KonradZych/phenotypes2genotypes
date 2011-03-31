@@ -11,11 +11,17 @@ x --------------------DONE--------------------
 
 x --------------------DONE--------------------
 
-o Add functionality to plot statistics about the expression data
+x --------------------DONE--------------------
 
-o Set up analysis of expression data projected on a known genetic map
+o Set up analysis of expression data projected on a known genetic map >>> IN PROGRESS
 
 > Prepare a ppt presentation on genetic map reconstruction and our plan >>> IN PROGRESS
+
+o Ordering markers in geno file using real geno map >>> IN PROGRESS
+
+o Documentation - make nice and clean documentation inside code
+
+o Documentation - think if gff parsers should be internal, add all internal functions aliases to internal file >>> IN PROGRESS
 
 ----------------------------------------------------------------------
 
