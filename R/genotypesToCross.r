@@ -29,20 +29,23 @@
 
 
 ############################################################################################################
-#genotypesToCross - produces from genotypic matrix file containing object of type cross, reads it into R a returns
+#genotypesToCross.internal- produces from genotypic matrix file containing object of type cross, reads it 
+# into R a returns
 # 
-# genotypeMatrix - matrix of genotypic data, rows - markers, cols - individuals
-# expressionMatrix - columns: individuals, rows: markers
-# nr_iterations - not yet used, maybe never will be
-# groups - nr of groups we are dividing our dataset to, hopefully coresponds to nr of chromosomes
+# ril - Ril type object, must contain parental phenotypic data.
+# use - save "real" gentypes, "simulated" genotypes otr simulated genotypes ordered using "map" from gff file
+# limit - how many phenotypes should be written
 # outputFile - file where object of type cross is being saved
-# verbose - standard
-# debugMode - standard
-# genos - argument passed to read.cross (chars describing genotypes)
-# usage cross <- orderedCross(genotypicMatrix,expressionMatrix)
+# verbose - Be verbose
+# debugMode - 1: Print our checks, 2: print additional time information
+#
+# #doClustering - this three to be used in the future
+# #groups 
+# #iterations 
 #
 ############################################################################################################
-genotypesToCross.internal <- function(ril, use=c("real","simulated","map"), limit=10, doClustering=FALSE, groups=10, iterations = 100, outputFile="mycross.csv", verbose=FALSE, debugMode=0){
+#genotypesToCross.internal <- function(ril, use=c("real","simulated","map"), limit=10, doClustering=FALSE, groups=10, iterations = 100, outputFile="mycross.csv", verbose=FALSE, debugMode=0){
+genotypesToCross.internal <- function(ril, use=c("real","simulated","map"), limit=10, outputFile="mycross.csv", verbose=FALSE, debugMode=0){
 	###CHECKS
 	if(verbose && debugMode==1) cat("genotypesToCross starting.\n")
 	s <- proc.time()
@@ -92,8 +95,17 @@ genotypesToCross.internal <- function(ril, use=c("real","simulated","map"), limi
 	invisible(cross)
 }
 
-#writePhenotypes - writes to file phenotypic data (cross object format)
-writePhenotypes.internal <- function(expressionMatrix, limit=10, outputFile, verbose=FALSE, debugMode=TRUE){
+############################################################################################################
+#writePhenotypes.internal - sub function of genotypesToCross - writes phenotypes to file
+# 
+# expressionMatrix - columns: individuals, rows: markers
+# limit - how many phenotypes should be written
+# outputFile - file where object of type cross is being saved
+# verbose - Be verbose
+# debugMode - 1: Print our checks, 2: print additional time information
+#
+############################################################################################################
+writePhenotypes.internal <- function(expressionMatrix, limit=10, outputFile, verbose=FALSE, debugMode=0){
 	sl <- proc.time()
 	if(verbose && debugMode==1) cat("writePhenotypes starting.\n")
 	write.table(cbind("","",expressionMatrix[1:limit,]),file=outputFile,sep=",",quote=FALSE,col.names=FALSE)
@@ -101,20 +113,41 @@ writePhenotypes.internal <- function(expressionMatrix, limit=10, outputFile, ver
 	if(verbose && debugMode==2)cat("Writing phenotypes done in:",(el-sl)[3],"seconds.\n")
 }
 
-#writeGenotypes - writes to file genotypic data (cross object format)
-#genotypeMatrix - matrix of genotypic data, rows - markers, cols - individuals
-#verbose - standard
-#debugMode - standard 1 -> gives info, that function is starting  2 -> gives additional time information
-writeGenotypes.internal <- function(genotypeMatrix,chr=1,outputFile,verbose=FALSE,debugMode=0){
+############################################################################################################
+#writeGenotypesMap.internal - sub function of genotypesToCross - orders markers using map and writes them to
+# file using writeGenotypes.internal 
+# 
+# ril - Ril type object, must contain parental phenotypic data.
+# outputFile - file where object of type cross is being saved
+# verbose - Be verbose
+# debugMode - 1: Print our checks, 2: print additional time information
+#
+############################################################################################################
+writeGenotypesMap.internal <- function(ril, outputFile, verbose=FALSE, debugMode=0){
+	#TODO: use map to sort out the genotype, then also comparing reco map with physical
 	sl <- proc.time()
-	if(verbose && debugMode==1) cat("writeGenotypes starting.\n")
-	write.table(cbind(chr,1:nrow(genotypeMatrix),genotypeMatrix),file=outputFile,sep=",",quote=FALSE,col.names=FALSE,append=TRUE)
+	if(verbose && debugMode==1) cat("writeGenotypesMap.internal starting.\n")
+	for(i in 1:length(table(ril$rils$map[,1]))){
+		selectedMap <- ril$rils$map[which(ril$rils$map[,1]==i),]
+		selectedGenes <- ril$rils$genotypes$simulated[which(rownames(ril$rils$genotypes$simulated) %in% rownames(selectedMap)),]
+		write.table(cbind(i,1:nrow(selectedGenes),selectedGenes),file=outputFile,sep=",",quote=FALSE,col.names=FALSE,append=TRUE)
+	}
 	el <- proc.time()
 	if(verbose && debugMode==2) cat("Writing genotypes done in:",(el-sl)[3],"seconds.\n")
 }
 
-writeGenotypesMap.internal <- function(genotypeMatrix, genotypeMap, outputFile, verbose=FALSE, debugMode=0){
-	#TODO: use map to sort out the genotype, then also comparing reco map with physical
+############################################################################################################
+#writeGenotypes.internal - sub function of genotypesToCross and writeGenotypesMap - writes genotypes 
+# (one chromosome at the time) to file
+# 
+# genotypeMatrix - matrix of genotypic data, rows - markers, cols - individuals
+# chr - chromosome currently being written
+# outputFile - file where object of type cross is being saved
+# verbose - Be verbose
+# debugMode - 1: Print our checks, 2: print additional time information
+#
+############################################################################################################
+writeGenotypes.internal <- function(genotypeMatrix,chr=1,outputFile,verbose=FALSE,debugMode=0){
 	sl <- proc.time()
 	if(verbose && debugMode==1) cat("writeGenotypes starting.\n")
 	write.table(cbind(chr,1:nrow(genotypeMatrix),genotypeMatrix),file=outputFile,sep=",",quote=FALSE,col.names=FALSE,append=TRUE)
