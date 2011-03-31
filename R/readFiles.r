@@ -102,6 +102,7 @@ readFile.internal <- function(filename,sep="",verbose=FALSE,debugMode=0){
 	s1<-proc.time()
 	currentFile <- read.table(filename,sep=sep)
 	currentFile <- as.matrix(currentFile)
+	rownames(currentFile) <- toupper(rownames(currentFile))
 	if(!is.numeric(currentFile)) stop("Not all elements of the file:",filename," are numeric, check help files for rigth input file format. \n")
 	if(verbose) cat("File:",filename,"was loaded into R enviroment containing",nrow(currentFile),"markers and",ncol(currentFile),"individuals.\n")
 	e1<-proc.time()
@@ -173,7 +174,7 @@ gffParser <- function(filename="gene_map.gff",verbose=FALSE,debugMode=0){
 ############################################################################################################
 correctRow.internal <- function(genesRow){
 	genesRow[4] <- toString(strsplit(toString(genesRow[4]),";")[[1]][1])
-	genesRow[4] <- substr(genesRow[4],4,12)
+	genesRow[4] <- toupper(substr(genesRow[4],4,12))
 	correctedRow <- genesRow[-3]
 	correctedRow[2] <- mean(as.numeric(genesRow[c(2,3)]))
 	invisible(correctedRow)
