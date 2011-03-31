@@ -77,7 +77,7 @@ readFiles <- function(rils="children",parental="parental",sep="",verbose=FALSE,d
 	filename <- paste(rils,"_map.gff",sep="")
 	if(file.exists(filename)){
 		if(verbose) cat("Found gff map file for children:",filename,"and will store it in ril$rils$map\n")
-		ril$rils$map <- gffParser(filename,verbose,debugMode)
+		ril$rils$map <- gffParser.internal(filename,verbose,debugMode)
 	}else{
 		cat("WARNING: There is no map file for rils:",filename,"further processing will take place without taking it into account\n")
 	}
@@ -154,7 +154,7 @@ mapMarkers.internal <- function(expressionMatrix1, expressionMatrix2, mapMode=2,
 # debugMode - 1: Print our checks, 2: print additional time information
 #
 ############################################################################################################
-gffParser <- function(filename="children_map.gff",verbose=FALSE,debugMode=0){
+gffParser.internal <- function(filename="children_map.gff",verbose=FALSE,debugMode=0){
 	if(!file.exists(filename)) stop("File: ",filename,"doesn't exist.\n")
 	s1<-proc.time()
 	geneMap <- read.table(filename,sep="\t")
