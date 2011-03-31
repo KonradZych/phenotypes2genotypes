@@ -37,9 +37,9 @@
 # margin - Proportion is allowed to varry between this margin (2 sided)
 # verbose - Be verbose
 # debugMode - 1: Print our checks, 2: print additional time information
+#
 ############################################################################################################
 toGenotypes <- function(ril, use=c("real","simulated","map"), treshold=0.01, overlapInd = 0, proportion = 50, margin = 15, verbose=FALSE, debugMode=0){
-	#!!!!!!!!!!!!!! use=map -> markers are ordered as in the physical map (ril$rils$map)
 	#*******CHECKS*******
 	if(proportion < 1 || proportion > 99) stop("Proportion is a percentage (1,99)")
 	#if(overlapInd < 0 || overlapInd > ncol(expressionMatrix)) stop("overlapInd is a number (0,lenght of the row).")
