@@ -1,14 +1,20 @@
 \name{phenotypes2genotypes-internal}
+
 \alias{readFile.internal}
 \alias{mapMarkers.internal}
+\alias{gffParser.internal}
+\alias{correctRow.internal}
+
 \alias{genotypesToCross.internal}
 \alias{writePhenotypes.internal}
 \alias{writeGenotypes.internal}
+\alias{writeGenotypesMap.internal}
+
 \alias{convertToGenotypes.internal}
 \alias{splitRow.internal}
 \alias{filterGenotypes.internal}
 \alias{filterRow.internal}
-\alias{correctRow.internal}
+
 
 \title{Internal pheno2geno functions}
 
