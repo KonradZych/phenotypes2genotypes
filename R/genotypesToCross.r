@@ -27,7 +27,10 @@
 #####################################################################
 
 
+
+############################################################################################################
 #genotypesToCross - produces from genotypic matrix file containing object of type cross, reads it into R a returns
+# 
 # genotypeMatrix - matrix of genotypic data, rows - markers, cols - individuals
 # expressionMatrix - columns: individuals, rows: markers
 # nr_iterations - not yet used, maybe never will be
@@ -37,8 +40,9 @@
 # debugMode - standard
 # genos - argument passed to read.cross (chars describing genotypes)
 # usage cross <- orderedCross(genotypicMatrix,expressionMatrix)
-
-genotypesToCross.internal <- function(ril, use=c("real","simulated"), limit=10, doClustering=FALSE, groups=10, iterations = 100, outputFile="mycross.csv", verbose=FALSE, debugMode=0){
+#
+############################################################################################################
+genotypesToCross.internal <- function(ril, use=c("real","simulated","map"), limit=10, doClustering=FALSE, groups=10, iterations = 100, outputFile="mycross.csv", verbose=FALSE, debugMode=0){
 	###CHECKS
 	if(verbose && debugMode==1) cat("genotypesToCross starting.\n")
 	s <- proc.time()
@@ -70,6 +74,13 @@ genotypesToCross.internal <- function(ril, use=c("real","simulated"), limit=10, 
 			cat("Cross object will be written using simulated genotypic data\n")
 			writeGenotypes.internal(ril$rils$genotypes$simulated, 1,outputFile, verbose, debugMode)
 		}
+	}else if(use=="map"){
+		if(is.null(ril$rils$map)){
+			stop("Use = map chosen, but there is no map data in ril$rils$map\n")
+		}else{
+			cat("Cross object will be written using simulated genotypic data orderd by gff map\n")
+			writeGenotypesMap.internal(ril$rils$genotypes$simulated, ril$rils$map, outputFile, verbose, debugMode)
+		}
 	}
 	
 
@@ -95,6 +106,15 @@ writePhenotypes.internal <- function(expressionMatrix, limit=10, outputFile, ver
 #verbose - standard
 #debugMode - standard 1 -> gives info, that function is starting  2 -> gives additional time information
 writeGenotypes.internal <- function(genotypeMatrix,chr=1,outputFile,verbose=FALSE,debugMode=0){
+	sl <- proc.time()
+	if(verbose && debugMode==1) cat("writeGenotypes starting.\n")
+	write.table(cbind(chr,1:nrow(genotypeMatrix),genotypeMatrix),file=outputFile,sep=",",quote=FALSE,col.names=FALSE,append=TRUE)
+	el <- proc.time()
+	if(verbose && debugMode==2) cat("Writing genotypes done in:",(el-sl)[3],"seconds.\n")
+}
+
+writeGenotypesMap.internal <- function(genotypeMatrix, genotypeMap, outputFile, verbose=FALSE, debugMode=0){
+	#TODO: use map to sort out the genotype, then also comparing reco map with physical
 	sl <- proc.time()
 	if(verbose && debugMode==1) cat("writeGenotypes starting.\n")
 	write.table(cbind(chr,1:nrow(genotypeMatrix),genotypeMatrix),file=outputFile,sep=",",quote=FALSE,col.names=FALSE,append=TRUE)
