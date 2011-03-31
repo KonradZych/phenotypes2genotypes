@@ -82,7 +82,7 @@ genotypesToCross.internal <- function(ril, use=c("real","simulated","map"), limi
 			stop("Use = map chosen, but there is no map data in ril$rils$map\n")
 		}else{
 			cat("Cross object will be written using simulated genotypic data orderd by gff map\n")
-			writeGenotypesMap.internal(ril$rils$genotypes$simulated, ril$rils$map, outputFile, verbose, debugMode)
+			writeGenotypesMap.internal(ril, outputFile, verbose, debugMode)
 		}
 	}
 	
