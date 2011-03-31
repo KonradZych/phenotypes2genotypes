@@ -73,6 +73,15 @@ readFiles <- function(rils="children",parental="parental",sep="",verbose=FALSE,d
 		cat("WARNING: There is no phenotypic file for parents:",filename,"further processing will take place without taking into account parental data\n")
 	}
 	
+	#**********READING GFF GENETIC MAP*************
+	filename <- paste(rils,"_map.gff",sep="")
+	if(file.exists(filename)){
+		if(verbose) cat("Found phenotypic file for parents:",filename,"and will store it in ril$rils$map\n")
+		ril$rils$map <- gffParser(filename,verbose,debugMode)
+	}else{
+		cat("WARNING: There is no map file for rils:",filename,"further processing will take place without taking it into account\n")
+	}
+	
 	#**********FINALIZING FUNCTION*************
 	e <- proc.time()
 	if(verbose) cat("readFiles done in",(e-s)[3],"seconds.\n")
@@ -144,7 +153,7 @@ mapMarkers.internal <- function(expressionMatrix1, expressionMatrix2, mapMode=2,
 # debugMode - 1: Print our checks, 2: print additional time information
 #
 ############################################################################################################
-gffParser <- function(ril, filename="gene_map.gff",verbose=FALSE,debugMode=0){
+gffParser <- function(filename="gene_map.gff",verbose=FALSE,debugMode=0){
 	s1<-proc.time()
 	geneMap <- read.table(filename,sep="\t")
 	genes <- geneMap[which(geneMap[,3]=="gene"),]
@@ -152,8 +161,7 @@ gffParser <- function(ril, filename="gene_map.gff",verbose=FALSE,debugMode=0){
 	genes <- apply(genes,1,correctRow.internal)
 	e1<-proc.time()
 	if(verbose && debugMode==2)cat("Parsing gff file:",filename,"done in:",(e1-s1)[3],"seconds.\n")
-	ril$rils$gff <- genes
-	invisible(ril)
+	invisible(t(genes))
 }
 
 ############################################################################################################
