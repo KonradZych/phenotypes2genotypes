@@ -129,8 +129,8 @@ writeGenotypesMap.internal <- function(ril, outputFile, verbose=FALSE, debugMode
 	if(verbose && debugMode==1) cat("writeGenotypesMap.internal starting.\n")
 	for(i in 1:length(table(ril$rils$map[,1]))){
 		selectedMap <- ril$rils$map[which(ril$rils$map[,1]==i),]
-		selectedGenes <- ril$rils$genotypes$simulated[which(rownames(ril$rils$genotypes$simulated) %in% rownames(selectedMap)),]
-		write.table(cbind(i,1:nrow(selectedGenes),selectedGenes),file=outputFile,sep=",",quote=FALSE,col.names=FALSE,append=TRUE)
+		selectedGenes <- ril$rils$genotypes$simulated[which(rownames(ril$rils$genotypes$simulated) %in% (selectedMap[,3])),]
+		writeGenotypes.internal (selectedGenes,i,outputFile,verbose,debugMode)
 	}
 	el <- proc.time()
 	if(verbose && debugMode==2) cat("Writing genotypes done in:",(el-sl)[3],"seconds.\n")
