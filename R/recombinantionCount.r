@@ -26,44 +26,64 @@
 #
 ##################################################################################################
 
-#recombinationCount - counting recobinations needen to go from one matrix to another
-#genotypeMatrix - rows: markers, cols: individuals
-#flip - specifies whether one of the rows that are being compared should be flipped(1) or not(0)
-#verbose - standard
-#debugMode - standard
+############################################################################################################
+#recombinationCount - counting recobinations values
+# 
+# genotypeMatrix - rows: markers, cols: individuals
+# flip - specifies whether one of the rows that are being compared should be flipped(1) or not(0)
+# verbose - Be verbose
+# debugMode - 1: Print our checks, 2: print additional time information
+#
+############################################################################################################
 recombinationCount <- function(genotypeMatrix,flip=0,verbose=FALSE,debugMode=0){
 	#genotypeMatrix <- switchMatrixValues(genotypeMatrix,before=c("A","B"),after=c(0,1))
 	s<-proc.time()
 	if(verbose && debugMode==1) cat("recombinationCount starting.\n")
-	res <- apply(genotypeMatrix,1,recombinationCountRow,genotypeMatrix,flip)
+	res <- apply(genotypeMatrix,1,recombinationCountRow.internal,genotypeMatrix,flip)
 	e<-proc.time()
 	if(verbose) cat("recombinationCount done in",(e-s)[3],"seconds.\n")
 	invisible(res)
 }
 
-#recombinationCountRow - using recombinationCountRowSub to apply comparison between every two rows
-#genotypicMatrixRow - data for single marker
-#flip - specifies whether one of the rows that are being compared should be flipped(1) or not(0)
-#verbose - standard
-#debugMode - standard
-recombinationCountRow <- function(genotypicMatrixRow,genotypeMatrix,flip=0,verbose=FALSE,debugMode=0){
+############################################################################################################
+#recombinationCountRow.internal - subfunction of recombinationCount, using recombinationCountRowSub to 
+# apply comparison between every two rows
+# 
+# genotypicMatrixRow - vector of data for single marker
+# flip - specifies whether one of the rows that are being compared should be flipped(1) or not(0)
+# verbose - Be verbose
+# debugMode - 1: Print our checks, 2: print additional time information
+#
+############################################################################################################
+recombinationCountRow.internal <- function(genotypicMatrixRow,genotypeMatrix,flip=0,verbose=FALSE,debugMode=0){
 	s<-proc.time()
 	if(verbose && debugMode==1) cat("recombinationCountRow starting.\n")
-	if(flip==0){output <- apply(genotypeMatrix,1,recombinationCountRowSub,genotypicMatrixRow)}
-	if(flip==1){output <- apply(genotypeMatrix,1,recombinationCountRowFlipSub,genotypicMatrixRow)}
+	if(flip==0){output <- apply(genotypeMatrix,1,recombinationCountRowSub.internal,genotypicMatrixRow)}
+	if(flip==1){output <- apply(genotypeMatrix,1,recombinationCountRowFlipSub.internal,genotypicMatrixRow)}
 	e<-proc.time()
 	if(verbose && debugMode==2) cat("recombinationCountRow done in:",(e-s)[3],"seconds.\n")
 	output
 }
 
-#recombinationCountRowSub - comparing two rows
-#genotypicMatrixRow1 & genotypicMatrixRow2 - data for single marker
-recombinationCountRowSub <- function(genotypicMatrixRow1,genotypicMatrixRow2){
+############################################################################################################
+#recombinationCountRowSub.internal - sub function of recombinationCountRow.internal - compares two vectors
+# 
+# genotypicMatrixRow1 - vector of data for single marker
+# genotypicMatrixRow2 - vector of data for single marker
+#
+############################################################################################################
+recombinationCountRowSub.internal <- function(genotypicMatrixRow1,genotypicMatrixRow2){
 	sum((genotypicMatrixRow1)!=(genotypicMatrixRow2))
 }
 
-#recombinationCountRowFlipSub - comparing two rows
-#genotypicMatrixRow1 & genotypicMatrixRow2 - data for single marker
-recombinationCountRowFlipSub <- function(genotypicMatrixRow1,genotypicMatrixRow2){
+############################################################################################################
+#recombinationCountRowSub.internal - sub function of recombinationCountRow.internal - compares two vectors
+# (second one is flipped)
+# 
+# genotypicMatrixRow1 - vector of data for single marker
+# genotypicMatrixRow2 - vector of data for single marker (will be flipped before comparing)
+#
+############################################################################################################
+recombinationCountRowFlipSub.internal <- function(genotypicMatrixRow1,genotypicMatrixRow2){
 	sum((genotypicMatrixRow1)!=(1-(genotypicMatrixRow2)))
 }
