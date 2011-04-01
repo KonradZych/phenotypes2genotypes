@@ -77,9 +77,9 @@ plotChildrenExpression <- function(ril, markers=1:100){
 # markers - markers to be printed numbers or names 
 #
 ############################################################################################################
-plotMap <- function(cross){
-	stop("Not yet working, sorry!\n")
-	# I' m not yet sure what will fit here best,  will start with colorful map for each individul
-	plot(x=1, y=cross$geno[[1]]$data[1], xlim=c(min(markers),max(markers)), ylim=c(min(parental),max(parental)), col="red",
-	xlab="Individual", ylab="Position", main="Map")
-}
+#plotMap <- function(cross){
+#	stop("Not yet working, sorry!\n")
+#	# I' m not yet sure what will fit here best,  will start with colorful map for each individul
+#	plot(x=1, y=cross$geno[[1]]$data[1], xlim=c(min(markers),max(markers)), ylim=c(min(parental),max(parental)), col="red",
+#	xlab="Individual", ylab="Position", main="Map")
+#}
