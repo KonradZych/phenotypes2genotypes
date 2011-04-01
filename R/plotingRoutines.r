@@ -42,7 +42,7 @@ plotParentalExpression <- function(ril, markers=1:100, groupLabels=c(0,0,1,1)){
 		markers <- 1:nrow(ril$parental$phenotypes)
 	}
 	for(i in markers) if(!(i %in% 1:nrow(ril$parental$phenotypes))){
-		stop("ERROR: There is no marker number: ",i,", stopping n")
+		stop("ERROR: There is no marker number: ",i,", stopping \n")
 	}
 	parental <- ril$parental$phenotypes[markers,]
 	plot(x=markers[1], y=parental[1,1], xlim=c(min(markers),max(markers)), ylim=c(min(parental),max(parental)), col="red",
@@ -77,18 +77,18 @@ plotChildrenExpression <- function(ril, markers=1:100){
 		markers <- 1:nrow(ril$parental$phenotypes)
 	}
 	for(i in markers) if(!(i %in% 1:nrow(ril$rils$phenotypes))){
-		stop("ERROR: There is no marker number: ",i,", stopping n")
+		stop("ERROR: There is no marker number: ",i,", stopping \n")
 	}
 	for(i in markers) if(!(i %in% 1:nrow(ril$parental$phenotypes))){
-		stop("ERROR: There is no marker number: ",i,", stopping n")
+		stop("ERROR: There is no marker number: ",i,", stopping \n")
 	}
 	children <- ril$rils$phenotypes[markers,]
 	parental <- ril$parental$phenotypes[which(rownames(ril$parental$phenotypes) %in% rownames(children)),]
 	rownames(children) <- markers
 	boxplot(t(children), ylim=c(min(children), max(children)),	xlab="Marker", ylab="Expression value", main="Children gene expression data")
 	points(apply(parental,1,mean),col="green", pch=95, cex=3)
-	points(apply(parental,1,max),col="blue", pch=24, cex=1)
-	points(apply(parental,1,min),col="red", pch=25, cex=1)
+	points(apply(parental,1,max),col="red", pch=24, cex=1)
+	points(apply(parental,1,min),col="blue", pch=25, cex=1)
 }
 
 ############################################################################################################
