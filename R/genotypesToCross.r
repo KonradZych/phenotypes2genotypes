@@ -55,7 +55,7 @@ genotypesToCross.internal <- function(ril, use=c("real","simulated","map"), limi
 	if(!is.null(ril$rils$phenotypes)){
 		#there is phenotypic matrix
 		cat("Writing phenotypic data to cross file\n")
-		writePhenotypes.internal(ril,use,limit,outputFile, verbose, debugMode)
+		writePhenotypes.internal(ril, use, outputFile, verbose, debugMode)
 	}else{
 		#there is no phenotypic matrix
 		stop("genotypesToCross not provided with phenotypic matrix, stopping\n")
