@@ -40,7 +40,6 @@ readFiles <- function(rils="children",parental="parental",sep="",verbose=FALSE,d
 	#**********INITIALIZING FUNCTION*************
 	s <- proc.time()
 	if(verbose && debugMode==1) cat("readFiles starting.\n")
-	invisible(require(iqtl))
 	if(verbose) cat("Loaded required libraries.\n")
 	ril <- NULL
 	
@@ -159,12 +158,11 @@ gffParser.internal <- function(filename="children_map.gff",verbose=FALSE,debugMo
 	s1<-proc.time()
 	geneMap <- read.table(filename,sep="\t")
 	genes <- geneMap[which(geneMap[,3]=="gene"),]
-	print(dim(genes))
 	genes <- genes[which(genes[,1]!="ChrM"),]
 	genes <- genes[which(genes[,1]!="ChrC"),]
-	print(dim(genes))
 	genes <- genes[,c(1,4,5,9)]
 	genes <- apply(genes,1,correctRow.internal)
+	if(verbose) cat("Map file contains",nrow(genes),"from",length(table(genes[,1])),"chromosomes.\n")
 	e1<-proc.time()
 	if(verbose && debugMode==2)cat("Parsing gff file:",filename,"done in:",(e1-s1)[3],"seconds.\n")
 	invisible(t(genes))
