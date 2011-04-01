@@ -69,3 +69,17 @@ plotChildrenExpression <- function(ril, markers=1:100){
 	points(apply(parental,1,max),col="blue", pch=24, cex=1)
 	points(apply(parental,1,min),col="red", pch=25, cex=1)
 }
+
+############################################################################################################
+#plotChildrenExpression: boxplot of data for selected markers + points of parental mean for each marker
+# 
+# ril - Ril type object, must contain parental phenotypic data.
+# markers - markers to be printed numbers or names 
+#
+############################################################################################################
+plotMap <- function(cross){
+	stop("Not yet working, sorry!\n")
+	# I' m not yet sure what will fit here best,  will start with colorful map for each individul
+	plot(x=1, y=cross$geno[[1]]$data[1], xlim=c(min(markers),max(markers)), ylim=c(min(parental),max(parental)), col="red",
+	xlab="Individual", ylab="Position", main="Map")
+}
