@@ -15,6 +15,15 @@
 \alias{filterGenotypes.internal}
 \alias{filterRow.internal}
 
+\alias{bestClustering.internal}
+\alias{bestClusteringSub.internal}
+\alias{bestClusteringSubSub.internal}
+
+\alias{recombinationCountRow.internal}
+\alias{recombinationCountRowSub.internal}
+\alias{recombinationCountRowFlipSub.internal}
+
+
 
 \title{Internal pheno2geno functions}
 

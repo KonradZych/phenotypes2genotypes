@@ -1,5 +1,7 @@
 \name{preprocessData}
 \alias{preprocessData}
+\alias{ril}
+\alias{groupLabels}
 
 \title{RankProduct analysis.}
 
@@ -16,7 +18,7 @@
  \item{groupLabels}{ Specify which column of parental data belongs to group 0 and which to group 1.}
  \item{verbose}{ Be verbose}
  \item{debugMode}{ 1: Print out checks, 2: print additional time information }
- \item{...)}{ Additional arguments passed to RP function. }
+ \item{...}{ Additional arguments passed to RP function. }
 }
 
 \value{
@@ -34,7 +36,9 @@
 }
 
 \examples{
-	#ril <- readFiles()
+	setwd(paste(.Library,"pheno2geno/data",sep="/"))
+	ril <- readFiles()
+	ril <- preprocessData(ril)
 }
 
 \seealso{

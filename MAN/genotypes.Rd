@@ -33,8 +33,6 @@
 
 \seealso{ 
   \code{\link{toGenotypes}}
-  \code{\link{recombinationCount}}
-  \code{\link{genotypesToCross}}
-} 
+  \code{\link{readFiles}}} 
 
 \keyword{datasets}

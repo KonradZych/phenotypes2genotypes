@@ -19,7 +19,9 @@ x --------------------DONE--------------------
 
 x --------------------DONE--------------------
 
-> Documentation - make nice and clean documentation inside code >>> IN PROGRESS
+x --------------------DONE--------------------
+
+> Documentation - make nice and clean examples >>> IN PROGRESS
 
 x --------------------DONE--------------------
 
