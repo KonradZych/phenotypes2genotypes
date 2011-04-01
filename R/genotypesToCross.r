@@ -67,7 +67,7 @@ genotypesToCross.internal <- function(ril, use=c("real","simulated","map"), limi
 			stop("Use = real chosen, but there is no real genotypic data in ril$rils$genotypes$read\n")
 		}else{
 			cat("Cross object will be written using real genotypic data\n")
-			writeGenotypes.internal(ril$rils$genotypes$read, 1,outputFile, verbose, debugMode)
+			writeGenotypes.internal(ril$rils$genotypes$read, chr=1,outputFile=outputFile, verbose=verbose, debugMode=debugMode)
 		}
 	}
 	else if(use=="simulated"){
@@ -75,7 +75,7 @@ genotypesToCross.internal <- function(ril, use=c("real","simulated","map"), limi
 			stop("Use = simulated chosen, but there is no simulated genotypic data in ril$rils$genotypes$simulated\n")
 		}else{
 			cat("Cross object will be written using simulated genotypic data\n")
-			writeGenotypes.internal(ril$rils$genotypes$simulated, 1,outputFile, verbose, debugMode)
+			writeGenotypes.internal(ril$rils$genotypes$simulated, chr=1,outputFile=outputFile, verbose=verbose, debugMode=debugMode)
 		}
 	}else if(use=="map"){
 		if(is.null(ril$rils$map)){
@@ -130,7 +130,8 @@ writeGenotypesMap.internal <- function(ril, outputFile, verbose=FALSE, debugMode
 	for(i in 1:length(table(ril$rils$map[,1]))){
 		selectedMap <- ril$rils$map[which(ril$rils$map[,1]==i),]
 		selectedGenes <- ril$rils$genotypes$simulated[which(rownames(ril$rils$genotypes$simulated) %in% (selectedMap[,3])),]
-		writeGenotypes.internal (selectedGenes,i,outputFile,verbose,debugMode)
+		selectedMap <- selectedMap[which(rownames(ril$rils$genotypes$simulated) %in% (selectedMap[,3])),]
+		writeGenotypes.internal (selectedGenes,i,selectedMap[,2],outputFile,verbose,debugMode)
 	}
 	el <- proc.time()
 	if(verbose && debugMode==2) cat("Writing genotypes done in:",(el-sl)[3],"seconds.\n")
@@ -147,10 +148,13 @@ writeGenotypesMap.internal <- function(ril, outputFile, verbose=FALSE, debugMode
 # debugMode - 1: Print our checks, 2: print additional time information
 #
 ############################################################################################################
-writeGenotypes.internal <- function(genotypeMatrix,chr=1,outputFile,verbose=FALSE,debugMode=0){
+writeGenotypes.internal <- function(genotypeMatrix,chr=1,positions=NULL,outputFile,verbose=FALSE,debugMode=0){
 	sl <- proc.time()
+	if(is.null(positions)) positions <- 1:nrow(genotypeMatrix)
+	else if(length(positions)!=length(1:nrow(genotypeMatrix))) stop("Posistions object is not correct, check help files.\n")
 	if(verbose && debugMode==1) cat("writeGenotypes starting.\n")
-	write.table(cbind(chr,1:nrow(genotypeMatrix),genotypeMatrix),file=outputFile,sep=",",quote=FALSE,col.names=FALSE,append=TRUE)
+	write.table(cbind(rownames(genotypeMatrix),chr,positions,genotypeMatrix),file=outputFile,sep=",",quote=FALSE,
+		col.names=FALSE,append=TRUE,row.names=FALSE)
 	el <- proc.time()
 	if(verbose && debugMode==2) cat("Writing genotypes done in:",(el-sl)[3],"seconds.\n")
 }
