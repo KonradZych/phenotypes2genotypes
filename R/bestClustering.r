@@ -7,7 +7,7 @@
 # Modified by Danny Arends
 # 
 # first written March 2011
-# last modified March 2011
+# last modified April 2011
 #
 #     This program is free software; you can redistribute it and/or
 #     modify it under the terms of the GNU General Public License,
@@ -26,7 +26,18 @@
 #
 #####################################################################
 
-#bestClustering
+############################################################################################################
+#bestClustering- performs clustering using kmeans in specified iteriations number.
+# 
+# genotypeMatrix - Matrix with genotype values with: columns, individuals and on the rows, markers
+# groups - number of groups data should be splitted to
+# iterations - ow many times clustering should be performed
+# use - r -> use recombination matrix for clustering, c -> corelation matrix
+# flip - specifies whether one of the rows that are being compared should be flipped(1) or not(0)
+# verbose - Be verbose
+# debugMode - 1: Print our checks, 2: print additional time information
+#
+############################################################################################################
 bestClustering <- function(genotypeMatrix, groups, iterations, use="r", flip=0, verbose=FALSE, debugMode=0){
 	#CHECKS
 	s <- proc.time()
@@ -56,7 +67,7 @@ bestClustering <- function(genotypeMatrix, groups, iterations, use="r", flip=0, 
 	
 	#marking
 	sp <- proc.time()
-	pointsMatrix <- apply(groupsMatrix,2,bestClusteringSub,groupsMatrix)
+	pointsMatrix <- apply(groupsMatrix,2,bestClusteringSub.internal,groupsMatrix)
 	ep <- proc.time()
 	if(verbose && debugMode==2)cat("Pointing done in:",(ep-sp)[3],"seconds.\n")
 	
@@ -65,18 +76,34 @@ bestClustering <- function(genotypeMatrix, groups, iterations, use="r", flip=0, 
 	invisible(pointsMatrix)
 }
 
-
-bestClusteringSub <- function(groupsMatrixCol, groupsMatrix, verbose=FALSE, debugMode=0){
+############################################################################################################
+#bestClusteringSub - sub function of bestClustering - comparing single column vs all the others using 
+# bestClusteringSubSub
+# 
+# genotypeMatrixCol - Vector with genotype values for single individual
+# groupsMatrix - Matrix cols: individuals, rows: clustering iterations 
+# verbose - Be verbose
+# debugMode - 1: Print our checks, 2: print additional time information
+#
+############################################################################################################
+bestClusteringSub.internal <- function(groupsMatrixCol, groupsMatrix, verbose=FALSE, debugMode=0){
 	#CHECKS
 	s <- proc.time()
 	if(verbose && debugMode==1) cat("genotypesToCross starting.\n")
-	pointsMatrixCol <- apply(groupsMatrix,2,bestClusteringSubSub,groupsMatrixCol)
+	pointsMatrixCol <- apply(groupsMatrix,2,bestClusteringSubSub.internal,groupsMatrixCol)
 	e <- proc.time()
 	if(verbose) cat("bestClusteringSub done in",(e-s)[3],"seconds.\n")
 	invisible(pointsMatrixCol)
 }
 
-bestClusteringSubSub <- function(groupsMatrixCol1,groupsMatrixCol2){
+############################################################################################################
+#bestClusteringSubSub - comparing two vectors
+# 
+# genotypeMatrixCol1 - Vector with genotype values for single individual
+# genotypeMatrixCol2 - Vector with genotype values for single individual
+#
+############################################################################################################
+bestClusteringSubSub.internal <- function(groupsMatrixCol1,groupsMatrixCol2){
 	point <- sum(groupsMatrixCol1==groupsMatrixCol2)
 	invisible(point)
 }
