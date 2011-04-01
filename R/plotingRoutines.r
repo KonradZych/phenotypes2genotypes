@@ -38,8 +38,11 @@
 ############################################################################################################
 plotParentalExpression <- function(ril, markers=1:100, groupLabels=c(0,0,1,1)){
 	if(ncol(ril$parental$phenotypes)<length(markers)){
-		cat("WARNING: There are only",ncol(ril$parental$phenotypes),"markers in ril$parental$phenotypes, function will plot them all.\n")\
+		cat("WARNING: There are only",ncol(ril$parental$phenotypes),"markers in ril$parental$phenotypes, function will plot them all.\n")
 		markers <- 1:ncol(ril$parental$phenotypes)
+	}
+	for(i in markers) if!(i %in% 1:ncol(ril$parental$phenotypes)){
+		stop("ERROR: There is no marker number: ",i,", stopping n")
 	}
 	parental <- ril$parental$phenotypes[markers,]
 	plot(x=markers[1], y=parental[1,1], xlim=c(min(markers),max(markers)), ylim=c(min(parental),max(parental)), col="red",
@@ -66,12 +69,18 @@ plotParentalExpression <- function(ril, markers=1:100, groupLabels=c(0,0,1,1)){
 ############################################################################################################
 plotChildrenExpression <- function(ril, markers=1:100){
 	if(ncol(ril$rils$phenotypes)<length(markers)){
-		cat("WARNING: There are only",ncol(ril$rils$phenotypes),"markers in ril$rils$phenotypes, function will plot them all.\n")\
+		cat("WARNING: There are only",ncol(ril$rils$phenotypes),"markers in ril$rils$phenotypes, function will plot them all.\n")
 		markers <- 1:ncol(ril$rils$phenotypes)
 	}
 	if(ncol(ril$parental$phenotypes)<length(markers)){
-		cat("WARNING: There are only",ncol(ril$parental$phenotypes),"markers in ril$parental$phenotypes, function will plot them all.\n")\
+		cat("WARNING: There are only",ncol(ril$parental$phenotypes),"markers in ril$parental$phenotypes, function will plot them all.\n")
 		markers <- 1:ncol(ril$parental$phenotypes)
+	}
+	for(i in markers) if!(i %in% 1:ncol(ril$rils$phenotypes)){
+		stop("ERROR: There is no marker number: ",i,", stopping n")
+	}
+	for(i in markers) if!(i %in% 1:ncol(ril$parental$phenotypes)){
+		stop("ERROR: There is no marker number: ",i,", stopping n")
 	}
 	children <- ril$rils$phenotypes[markers,]
 	parental <- ril$parental$phenotypes[which(rownames(ril$parental$phenotypes) %in% rownames(children)),]
