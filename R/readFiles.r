@@ -27,7 +27,7 @@
 #################################################################################
 
 ############################################################################################################
-#readFiles: eads geno/phenotypic files into R environment into special object.
+#readFiles: reads geno/phenotypic files into R environment into special object.
 # 
 # rils - Core used to specify names of children phenotypic ("rils_phenotypes.txt") and genotypic ("rils_genotypes.txt") files.
 # parental - Core used to specify names of parental phenotypic ("parental_phenotypes.txt") file.
