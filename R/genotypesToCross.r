@@ -116,12 +116,17 @@ writePhenotypes.internal <- function(ril, use, outputFile, verbose=FALSE, debugM
 		}else{
 			chosenLabels <- rownames(ril$rils$genotypes$read)
 		}
-	}
-	else if(use=="simulated" || use=="map"){
+	}else if(use=="simulated"){
 		if(is.null(ril$rils$genotypes$simulated)){
 			stop("Use = simulated or map chosen, but there is no simulated genotypic data in ril$rils$genotypes$simulated\n")
 		}else{
 			chosenLabels <- rownames(ril$rils$genotypes$simulated)
+		}
+	}else if(use=="map"){
+		if(is.null(ril$rils$genotypes$simulated)||is.null(ril$rils$map)){
+			stop("Use =  map chosen, but there is no simulated genotypic data or map data\n")
+		}else{
+			chosenLabels <- rownames(ril$rils$genotypes$simulated[which(rownames(ril$rils$genotypes$simulated[,]) %in% ril$rils$map[,3]),])
 		}
 	}
 	
