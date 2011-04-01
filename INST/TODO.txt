@@ -13,15 +13,19 @@ x --------------------DONE--------------------
 
 x --------------------DONE--------------------
 
-o Set up analysis of expression data projected on a known genetic map >>> IN PROGRESS
+> Set up analysis of expression data projected on a known genetic map >>> IN PROGRESS
 
 > Prepare a ppt presentation on genetic map reconstruction and our plan >>> IN PROGRESS
 
-o Ordering markers in geno file using real geno map >>> IN PROGRESS
+x --------------------DONE--------------------
 
-o Documentation - make nice and clean documentation inside code
+> Documentation - make nice and clean documentation inside code >>> IN PROGRESS
 
-o Documentation - think if gff parsers should be internal, add all internal functions aliases to internal file >>> IN PROGRESS
+x --------------------DONE--------------------
+
+o Start writting article
+
+o Plotting routine to compare maps
 
 ----------------------------------------------------------------------
 
