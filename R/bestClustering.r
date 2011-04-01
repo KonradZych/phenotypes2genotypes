@@ -38,7 +38,7 @@
 # debugMode - 1: Print our checks, 2: print additional time information
 #
 ############################################################################################################
-bestClustering <- function(genotypeMatrix, groups, iterations, use="r", flip=0, verbose=FALSE, debugMode=0){
+bestClustering.internal <- function(genotypeMatrix, groups, iterations, use="r", flip=0, verbose=FALSE, debugMode=0){
 	#CHECKS
 	s <- proc.time()
 	if(verbose && debugMode==1) cat("bestClustering starting.\n")
