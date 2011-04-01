@@ -41,6 +41,7 @@
 ############################################################################################################
 toGenotypes <- function(ril, use=c("real","simulated","map"), treshold=0.01, overlapInd = 0, proportion = 50, margin = 15, verbose=FALSE, debugMode=0){
 	#*******CHECKS*******
+	require(qtl)
 	if(proportion < 1 || proportion > 99) stop("Proportion is a percentage (1,99)")
 	#if(overlapInd < 0 || overlapInd > ncol(expressionMatrix)) stop("overlapInd is a number (0,lenght of the row).")
 	if(margin < 0 || margin > proportion) stop("Margin is a percentage (0,proportion)")
