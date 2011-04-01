@@ -7,10 +7,10 @@
 \description{
 	Includes the following functionality:
 	\itemize{
-    \item \code{\link{toGenotypes}} - Convert a phenotypematrix into suitable genotypes
-    \item \code{\link{recombinationCount}} - Counting number of recombination events between markers in genotypic matrix.
-    \item \code{\link{genotypesToCross}} - Produces from genotypic matrix file containing object of type cross, reads it into R a returns.
-  }
+        \item \code{\link{readFiles}} - Reading geno/phenotypoc files into R.
+		\item \code{\link{preprocessData}} - Using Rank Prod to select differentially expressed genes.
+		\item \code{\link{toGenotypes}} - Convert a phenotypematrix into suitable genotypes and save it into R/qtl cross object.
+		}
 }
 \details{
 TODO
