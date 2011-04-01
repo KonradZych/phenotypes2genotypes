@@ -30,7 +30,7 @@
 #toGenotypes: Function that chooses from the matrix only appropriate markers with specified rules
 # 
 # ril - Ril type object, must contain parental phenotypic data.
-# use - Which genotypic matrix should be saved to file, real - supported by user and read from file, simulated - made by toGenotypes.s
+# use - Which genotypic matrix should be saved to file, real - supported by user and read from file, simulated - made by toGenotypes, ap - simulated data orderd using gff map
 # treshold - If Rank Product pval for gene is lower that this value, we assume it is being diff. expressed.
 # overlapInd - Number of individuals that are allowed in the overlap
 # proportion - Proportion of individuals expected to carrying a certain genotype 
