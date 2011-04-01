@@ -162,7 +162,7 @@ gffParser.internal <- function(filename="children_map.gff",verbose=FALSE,debugMo
 	genes <- genes[which(genes[,1]!="ChrC"),]
 	genes <- genes[,c(1,4,5,9)]
 	genes <- apply(genes,1,correctRow.internal)
-	if(verbose) cat("Map file contains",nrow(genes),"from",length(table(genes[,1])),"chromosomes.\n")
+	if(verbose) cat("Map file contains",ncol(genes),"markers from",length(table(genes[,1])),"chromosomes.\n")
 	e1<-proc.time()
 	if(verbose && debugMode==2)cat("Parsing gff file:",filename,"done in:",(e1-s1)[3],"seconds.\n")
 	invisible(t(genes))
