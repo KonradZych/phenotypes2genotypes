@@ -27,7 +27,13 @@ x --------------------DONE--------------------
 
 o Start writting article
 
+o Enhancing cross object with parental data, physical and geno map
+
 o Plotting routine to compare maps
+
+o Heuristic to remove chromosome that have distance which is smaller than X (optional)
+
+o Map chromosomes (recombination - majority rule for physicall map), genetic map - use it
 
 ----------------------------------------------------------------------
 
