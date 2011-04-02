@@ -66,17 +66,17 @@ toGenotypes <- function(ril, use=c("real","simulated","map"), treshold=0.01, ove
 	if(verbose && debugMode==2)cat("Creating cross object done in:",(e1-s1)[3],"seconds.\n")
 	
 	#*******ENHANCING CROSS OBJECT*******
-	if(use!="map"){
-		#FormLinkage groups
-		cross <- invisible(formLinkageGroups(cross,reorgMarkers=TRUE))
-		#Remove shitty chromosomes
-		cross <- removeChromosomes.internal(cross)
-		#Order markers
-		cross <- orderMarkers(cross, use.ripple=FALSE)
-		#Adding real maps
-		if(is.null(ril$rils$map)) cross$maps$physical <- ril$rils$map
-		#cross$maps$geno <-  
-	}
+	#if(use!="map"){
+	#	#FormLinkage groups
+	#	cross <- invisible(formLinkageGroups(cross,reorgMarkers=TRUE))
+	#	#Remove shitty chromosomes
+	#	cross <- removeChromosomes.internal(cross)
+	#	#Order markers
+	#	cross <- orderMarkers(cross, use.ripple=FALSE)
+	#	#Adding real maps
+	#	if(is.null(ril$rils$map)) cross$maps$physical <- ril$rils$map
+	#	#cross$maps$geno <-  
+	#} - working, but commented out to get rid of warning
 	
 	#*******RETURNING CROSS OBJECT*******
 	invisible(cross)

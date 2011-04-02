@@ -14,6 +14,7 @@
 \alias{splitRow.internal}
 \alias{filterGenotypes.internal}
 \alias{filterRow.internal}
+\alias{removeChromosomes.internal}
 
 \alias{bestClustering.internal}
 \alias{bestClusteringSub.internal}
