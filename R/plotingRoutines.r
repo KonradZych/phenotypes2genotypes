@@ -98,9 +98,9 @@ plotChildrenExpression <- function(ril, markers=1:100){
 # markers - markers to be printed numbers or names 
 #
 ############################################################################################################
-plotMapComparison <- function(crossSimulated, crossMap){
-	stop("Not yet working, sorry!\n")
-	# I' m not yet sure what will fit here best,  will start with colorful map for each individul
-	reco <- pull.geno(crossSimulated)
-	physical <- pull.geno(crossMap)
-}
+#plotMapComparison <- function(crossSimulated, crossMap){
+#	stop("Not yet working, sorry!\n")
+#	# I' m not yet sure what will fit here best,  will start with colorful map for each individul
+#	reco <- pull.geno(crossSimulated)
+#	physical <- pull.geno(crossMap)
+#}
