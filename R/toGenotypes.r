@@ -64,11 +64,22 @@ toGenotypes <- function(ril, use=c("real","simulated","map"), treshold=0.01, ove
 	cross <- genotypesToCross.internal(ril,use=use,verbose=verbose,debugMode=debugMode)
 	e1 <- proc.time()
 	if(verbose && debugMode==2)cat("Creating cross object done in:",(e1-s1)[3],"seconds.\n")
+	
+	#*******ENHANCING CROSS OBJECT*******
+	if(use!="map"){
+		#FormLinkage groups
+		cross <- invisible(formLinkageGroups(cross,reorgMarkers=TRUE))
+		#Remove shitty chromosomes
+		cross <- removeChromosomes.internal(cross)
+		#Order markers
+		cross <- orderMarkers(cross, use.ripple=FALSE)
+		#Adding real maps
+		if(is.null(ril$rils$map)) cross$maps$physical <- ril$rils$map
+		#cross$maps$geno <-  
+	}
+	
+	#*******RETURNING CROSS OBJECT*******
 	invisible(cross)
-	
-	#FormLinkage groups
-	
-	#Order markers
 }
 
 ############################################################################################################
@@ -151,4 +162,22 @@ filterRow.internal <- function(genotypeRow, overlapInd, proportion, margin){
 		}
 	}
 	return(0)
+}
+
+############################################################################################################
+#filterRow.internal: subfunction of filterGenotypes.internal, filtering one row
+# 
+# genotypeRow - currently processed row
+# overlapInd - Number of individuals that are allowed in the overlap
+# proportion - Proportion of individuals expected to carrying a certain genotype 
+# margin - Proportion is allowed to varry between this margin (2 sided)
+############################################################################################################
+removeChromosomes.internal <- function(cross){
+	 for(i in length(cross$geno):1){
+		if(max(cross$geno[[i]]$map)<3){
+			cross <- drop.markers(cross, names(cross$geno[[i]]$map))
+			names(cross$geno) <- 1:length(cross$geno)
+		}
+	}
+	invisible(cross)
 }
