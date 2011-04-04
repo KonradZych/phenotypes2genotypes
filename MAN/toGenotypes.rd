@@ -24,6 +24,7 @@
  \item{proportion}{ Proportion of individuals expected to carrying a certain genotype }
  \item{margin}{ Proportion is allowed to varry between this margin (2 sided) }
  \item{minChrLength}{ If maximal distance between the markers in the chromosome is lower than this value, whole chromosome will be dropped. }
+ \item{...}{ Parameters passed to formLinkageGroups. }
  \item{verbose}{ Be verbose}
  \item{debugMode}{ 1: Print our checks, 2: print additional time information }
 }
