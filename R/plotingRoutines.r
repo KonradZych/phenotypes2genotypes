@@ -98,9 +98,77 @@ plotChildrenExpression <- function(ril, markers=1:100){
 # markers - markers to be printed numbers or names 
 #
 ############################################################################################################
-#plotMapComparison <- function(crossSimulated, crossMap){
-#	stop("Not yet working, sorry!\n")
-#	# I' m not yet sure what will fit here best,  will start with colorful map for each individul
-#	reco <- pull.geno(crossSimulated)
-#	physical <- pull.geno(crossMap)
-#}
+plotMapComparison <- function(cross1, cross2, chr=NULL){
+	nchrom1 <- length(cross1$geno)
+	chrom1 <- as.numeric(names(cross1$geno))
+	nchrom2 <- length(cross2$geno)
+	chrom2 <- as.numeric(names(cross2$geno))
+	nchrom <- which(chrom1 %in% chrom2)
+	cat("Object cross1 contains chromosomes:",paste(chrom1,sep=", "),"and cross2 contains chromosomes:",paste(chrom2,sep=", "),".\n")
+	nchromX <- 1:nchrom1
+	if(!is.null(chr)){
+		nchromX <- NULL
+		while(length(chr)>=1){
+			if(!(chr[1] %in% nchrom)){
+				stop("There are only chromosomes: ",paste(nchrom,sep=", ")," chromosome: ",chr," not found.\n")
+			}else{
+				nchromX <- c(nchromX,chr[1])
+			}
+			chr <- chr[-1]
+		}
+	}
+	genes <- compareGeneLocation.internal(cross1,cross2)
+	plotChromosomeMap.internal(genes,nchromX,nchromY)
+
+}
+
+compareGeneLocation.internal <- function(cross1, cross2){
+	genes1 <- compareGeneLocationSub.internal(cross1)
+	print(genes1[1,])
+	genes2 <- compareGeneLocationSub.internal(cross2)
+	print(genes2[1,])
+	genes1 <- mapMarkers.internal(genes1,genes2,mapMode=1)
+	genes2 <- mapMarkers.internal(genes2,genes1,mapMode=1)
+	result <- matrix(0,nrow(genes1),6)
+	rownames(result) <- rownames(genes1)
+	for(i in rownames(result)){
+		result[i,c(1,2,3)] <- genes1[i,c(1,2,3)]
+		result[i,c(4,5,6)] <- genes2[i,c(1,2,3)]
+	}
+	invisible(result)
+}
+
+compareGeneLocationSub.internal <- function(cross){
+	genes <- matrix(1,sum(nmar(cross)),3)
+	rownames(genes) <- markernames(cross)
+	genes[,1] <- rep(1:length(nmar(cross)),nmar(cross))
+	chromosomes <- chrlen(cross)
+	genes <- genePosition.internal(genes,cross,chromosomes)
+	invisible(genes)
+}
+
+genePosition.internal <- function(genes,cross,chromosomes){
+	for(i in rownames(genes)){
+		chr <- genes[i,1]
+		if(chr>1){ 
+			prev <- sum(chromosomes[1:(chr-1)]) + (0.13* max(chromosomes) * (chr-1))
+		}else{ 
+			prev <- 0
+		}
+		genes[i,2] <- pull.map(cross)[[chr]][i]
+		genes[i,3] <- genes[i,2] + prev
+	}
+	invisible(genes)
+}
+
+plotChromosomeMap.internal <- function(geneLocationMatrix,nchromX,nchromY){
+	genes <- geneLocationMatrix[which(geneLocationMatrix[,1] %in% nchromX),]
+	plot(x=genes[1,3], y=genes[1,6], xlim=c(min(genes[,3]),max(genes[,3])), ylim=c(min(genes[,6]),max(genes[,6])), col="red",
+		xlab="Cross 1", ylab="Cross 2", main="Comparison of genetic maps")
+	cl <- topo.colors(max(nchromX))
+	for(i in rownames(genes)){
+		mark <- 0+genes[i,1]
+		color <- cl[genes[i,4]]
+		points(x=genes[i,3], y=genes[i,6],col=color,pch=mark)
+	}
+}
