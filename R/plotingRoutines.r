@@ -101,7 +101,7 @@ plotChildrenExpression <- function(ril, markers=1:100){
 plotMapComparison <- function(cross1, cross2, chr=NULL){
 	nchrom1 <- length(cross1$geno)
 	chrom1 <- as.numeric(names(cross1$geno))
-	nchrom2 <- length(cross2$geno)
+	nchromY <- length(cross2$geno)
 	chrom2 <- as.numeric(names(cross2$geno))
 	nchrom <- which(chrom1 %in% chrom2)
 	cat("Object cross1 contains chromosomes:",paste(chrom1,sep=", "),"and cross2 contains chromosomes:",paste(chrom2,sep=", "),".\n")
@@ -110,15 +110,14 @@ plotMapComparison <- function(cross1, cross2, chr=NULL){
 		nchromX <- NULL
 		while(length(chr)>=1){
 			if(!(chr[1] %in% nchrom)){
-				stop("There are only chromosomes: ",paste(nchrom,sep=", ")," chromosome: ",chr," not found.\n")
+				warning("There are only chromosomes: ",paste(nchrom,sep=", ")," chromosome: ",chr[1]," not found.\n")
 			}else{
 				nchromX <- c(nchromX,chr[1])
 			}
 			chr <- chr[-1]
 		}
 	}
-	genes <- compareGeneLocation.internal(cross1,cross2)
-	plotChromosomeMap.internal(genes,nchromX,nchromY)
+	plotChromosomeMap.internal(cross1,cross2,nchromX,nchromY)
 
 }
 
@@ -142,16 +141,15 @@ compareGeneLocationSub.internal <- function(cross){
 	genes <- matrix(1,sum(nmar(cross)),3)
 	rownames(genes) <- markernames(cross)
 	genes[,1] <- rep(1:length(nmar(cross)),nmar(cross))
-	chromosomes <- chrlen(cross)
-	genes <- genePosition.internal(genes,cross,chromosomes)
+	genes <- genePosition.internal(genes,cross)
 	invisible(genes)
 }
 
-genePosition.internal <- function(genes,cross,chromosomes){
+genePosition.internal <- function(genes,cross){
 	for(i in rownames(genes)){
 		chr <- genes[i,1]
 		if(chr>1){ 
-			prev <- sum(chromosomes[1:(chr-1)]) + (0.13* max(chromosomes) * (chr-1))
+			prev <- sum(chrlen(cross)[1:(chr-1)]) + (0.13* max(chrlen(cross)) * (chr-1))
 		}else{ 
 			prev <- 0
 		}
@@ -161,14 +159,23 @@ genePosition.internal <- function(genes,cross,chromosomes){
 	invisible(genes)
 }
 
-plotChromosomeMap.internal <- function(geneLocationMatrix,nchromX,nchromY){
-	genes <- geneLocationMatrix[which(geneLocationMatrix[,1] %in% nchromX),]
-	plot(x=genes[1,3], y=genes[1,6], xlim=c(min(genes[,3]),max(genes[,3])), ylim=c(min(genes[,6]),max(genes[,6])), col="red",
-		xlab="Cross 1", ylab="Cross 2", main="Comparison of genetic maps")
-	cl <- topo.colors(max(nchromX))
+plotChromosomeMap.internal <- function(cross1,cross2,nchromX,nchromY){
+	genes <- compareGeneLocation.internal(cross1,cross2)[which(geneLocationMatrix[,1] %in% nchromX),]
+	plot(x=genes[1,3], y=genes[1,6], xlim=c(min(genes[,3]),max(genes[,3])), ylim=c(min(genes[,6]),max(genes[,6])), col="red", xlab="Cross 1", ylab="Cross 2", main="Comparison of genetic maps")
+	if(max(nchromY) < max(nchromX)){
+		cl <- topo.colors(max(nchromX))
+	}else{
+		cl <- c(topo.colors(max(nchromX)),rep("red",(max(nchromY) - max(nchromX))))
+	}
 	for(i in rownames(genes)){
-		mark <- 0+genes[i,1]
+		mark <- 0 + genes[i,1]
 		color <- cl[genes[i,4]]
 		points(x=genes[i,3], y=genes[i,6],col=color,pch=mark)
+	}
+	for(x in nchromX){
+		if(x > 1) abline(v=sum(chrlen(cross1)[1:(x-1)]) + (0.13* max(chrlen(cross1)) * (x-1)),lty=2)
+	}
+	for(y in 1:nchromY){
+		if(y > 1) abline(h=sum(chrlen(cross2)[1:(y-1)]) + (0.13* max(chrlen(cross2)) * (y-1)),lty=2)
 	}
 }
