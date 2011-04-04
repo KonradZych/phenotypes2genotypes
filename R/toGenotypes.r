@@ -38,11 +38,12 @@
 # margin - Proportion is allowed to varry between this margin (2 sided)
 # minChrLength -if maximal distance between the markers in the chromosome is lower than this value,
 #	whole chromosome will be dropped
+# ... - Parameters passed to formLinkageGroups.
 # verbose - Be verbose
 # debugMode - 1: Print our checks, 2: print additional time information
 #
 ############################################################################################################
-toGenotypes <- function(ril, use=c("real","simulated","map"), treshold=0.01, overlapInd = 0, proportion = 50, margin = 15, minChrLength = 0, verbose=FALSE, debugMode=0){
+toGenotypes <- function(ril, use=c("real","simulated","map"), treshold=0.01, overlapInd = 0, proportion = 50, margin = 15, minChrLength = 0, verbose=FALSE, debugMode=0,...){
 	#*******CHECKS*******
 	require(qtl)
 	if(proportion < 1 || proportion > 99) stop("Proportion is a percentage (1,99)")
@@ -71,7 +72,7 @@ toGenotypes <- function(ril, use=c("real","simulated","map"), treshold=0.01, ove
 	#*******ENHANCING CROSS OBJECT*******
 	if(use!="map"){
 		#FormLinkage groups
-		cross <- invisible(formLinkageGroups(cross,reorgMarkers=TRUE))
+		cross <- invisible(formLinkageGroups(cross,reorgMarkers=TRUE,...))
 		#Remove shitty chromosomes
 		cross <- removeChromosomes.internal(cross,minChrLength)
 		#Order markers
