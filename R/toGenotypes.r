@@ -30,16 +30,19 @@
 #toGenotypes: Function that chooses from the matrix only appropriate markers with specified rules
 # 
 # ril - Ril type object, must contain parental phenotypic data.
-# use - Which genotypic matrix should be saved to file, real - supported by user and read from file, simulated - made by toGenotypes, ap - simulated data orderd using gff map
+# use - Which genotypic matrix should be saved to file, real - supported by user and read from file, 
+#	simulated - made by toGenotypes, ap - simulated data orderd using gff map
 # treshold - If Rank Product pval for gene is lower that this value, we assume it is being diff. expressed.
 # overlapInd - Number of individuals that are allowed in the overlap
 # proportion - Proportion of individuals expected to carrying a certain genotype 
 # margin - Proportion is allowed to varry between this margin (2 sided)
+# minChrLength -if maximal distance between the markers in the chromosome is lower than this value,
+#	whole chromosome will be dropped
 # verbose - Be verbose
 # debugMode - 1: Print our checks, 2: print additional time information
 #
 ############################################################################################################
-toGenotypes <- function(ril, use=c("real","simulated","map"), treshold=0.01, overlapInd = 0, proportion = 50, margin = 15, verbose=FALSE, debugMode=0){
+toGenotypes <- function(ril, use=c("real","simulated","map"), treshold=0.01, overlapInd = 0, proportion = 50, margin = 15, minChrLength = 0, verbose=FALSE, debugMode=0){
 	#*******CHECKS*******
 	require(qtl)
 	if(proportion < 1 || proportion > 99) stop("Proportion is a percentage (1,99)")
@@ -66,17 +69,17 @@ toGenotypes <- function(ril, use=c("real","simulated","map"), treshold=0.01, ove
 	if(verbose && debugMode==2)cat("Creating cross object done in:",(e1-s1)[3],"seconds.\n")
 	
 	#*******ENHANCING CROSS OBJECT*******
-	#if(use!="map"){
-	#	#FormLinkage groups
-	#	cross <- invisible(formLinkageGroups(cross,reorgMarkers=TRUE))
-	#	#Remove shitty chromosomes
-	#	cross <- removeChromosomes.internal(cross)
-	#	#Order markers
-	#	cross <- orderMarkers(cross, use.ripple=FALSE)
-	#	#Adding real maps
-	#	if(is.null(ril$rils$map)) cross$maps$physical <- ril$rils$map
-	#	#cross$maps$geno <-  
-	#} - working, but commented out to get rid of warning
+	if(use!="map"){
+		#FormLinkage groups
+		cross <- invisible(formLinkageGroups(cross,reorgMarkers=TRUE))
+		#Remove shitty chromosomes
+		cross <- removeChromosomes.internal(cross,minChrLength)
+		#Order markers
+		cross <- orderMarkers(cross, use.ripple=FALSE)
+		#Adding real maps
+		if(is.null(ril$rils$map)) cross$maps$physical <- ril$rils$map
+		#cross$maps$geno <-  
+	}
 	
 	#*******RETURNING CROSS OBJECT*******
 	invisible(cross)
@@ -89,6 +92,7 @@ toGenotypes <- function(ril, use=c("real","simulated","map"), treshold=0.01, ove
 # treshold - If Rank Product pval for gene is lower that this value, we assume it is being diff. expressed.
 # verbose - Be verbose
 # debugMode - 1: Print our checks, 2: print additional time information 
+#
 ############################################################################################################
 convertToGenotypes.internal <- function(ril,treshold,verbose=FALSE,debugMode=0){
 	if(verbose && debugMode==1) cat("convertToGenotypes starting.\n")
@@ -117,6 +121,7 @@ convertToGenotypes.internal <- function(ril,treshold,verbose=FALSE,debugMode=0){
 # rils - matrix of up/down regulated genes in rils
 # parental - matrix of up/down regulated genes in parents
 # genotypes - values genotypic matrix will be filled with
+#
 ############################################################################################################
 splitRow.internal <- function(x,rils,parental,genotypes){
 	result <- rep(0,length(rils[x,]))
@@ -136,6 +141,7 @@ splitRow.internal <- function(x,rils,parental,genotypes){
 # margin - Proportion is allowed to varry between this margin (2 sided)
 # verbose - Be verbose
 # debugMode - 1: Print our checks, 2: print additional time information
+
 ############################################################################################################
 filterGenotypes.internal <- function(ril, overlapInd=0, proportion=50, margin=5, verbose=FALSE,debugMode=0){
 	if(verbose && debugMode==1) cat("filterGenotypes starting.\n")
@@ -151,6 +157,7 @@ filterGenotypes.internal <- function(ril, overlapInd=0, proportion=50, margin=5,
 # overlapInd - Number of individuals that are allowed in the overlap
 # proportion - Proportion of individuals expected to carrying a certain genotype 
 # margin - Proportion is allowed to varry between this margin (2 sided)
+#
 ############################################################################################################
 filterRow.internal <- function(genotypeRow, overlapInd, proportion, margin){
 	if(sum(is.na(genotypeRow))>overlapInd) return(0)
@@ -165,16 +172,16 @@ filterRow.internal <- function(genotypeRow, overlapInd, proportion, margin){
 }
 
 ############################################################################################################
-#filterRow.internal: subfunction of filterGenotypes.internal, filtering one row
+#removeChromosomes.internal: subfunction of filterGenotypes.internal, filtering one row
 # 
-# genotypeRow - currently processed row
-# overlapInd - Number of individuals that are allowed in the overlap
-# proportion - Proportion of individuals expected to carrying a certain genotype 
-# margin - Proportion is allowed to varry between this margin (2 sided)
+# cross - object of R/qtl cross type
+# minChrLength -if maximal distance between the markers in the chromosome is lower than this value,
+#	whole chromosome will be dropped
+#
 ############################################################################################################
-removeChromosomes.internal <- function(cross){
+removeChromosomes.internal <- function(cross, minChrLength){
 	 for(i in length(cross$geno):1){
-		if(max(cross$geno[[i]]$map)<3){
+		if(max(cross$geno[[i]]$map)<minChrLength){
 			cross <- drop.markers(cross, names(cross$geno[[i]]$map))
 			names(cross$geno) <- 1:length(cross$geno)
 		}
