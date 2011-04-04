@@ -57,11 +57,14 @@ toGenotypes <- function(ril, use=c("real","simulated","map"), treshold=0.01, ove
 	e1 <- proc.time()
 	if(verbose && debugMode==2)cat("Converting phenotypes to genotypes in:",(e1-s1)[3],"seconds.\n")
 	
-	#*******CONVERTING CHILDREN PHENOTYPIC DATA TO GENOTYPES*******
+	#*******FILTERING GENOTYPES*******
 	s1 <- proc.time()
 	ril <- filterGenotypes.internal(ril, overlapInd, proportion, margin, verbose, debugMode)
 	e1 <- proc.time()
 	if(verbose && debugMode==2)cat("Selecting markers using specified parameters done in:",(e1-s1)[3],"seconds.\n")
+	
+	#*******MAPPING GENOTYPES AND PHENOTYPES*******
+	
 	
 	#*******SAVING CROSS OBJECT*******
 	s1 <- proc.time()
@@ -72,11 +75,11 @@ toGenotypes <- function(ril, use=c("real","simulated","map"), treshold=0.01, ove
 	#*******ENHANCING CROSS OBJECT*******
 	if(use!="map"){
 		#FormLinkage groups
-		cross <- invisible(formLinkageGroups(cross,reorgMarkers=TRUE,...))
+		cross <- orderMarkers(cross, use.ripple=FALSE, verbose=verbose)
+		cross <- invisible(formLinkageGroups(cross,reorgMarkers=TRUE,verbose=verbose,...))
 		#Remove shitty chromosomes
 		cross <- removeChromosomes.internal(cross,minChrLength)
-		#Order markers
-		cross <- orderMarkers(cross, use.ripple=FALSE)
+		#Order markers - ripple in our case often produces errors, so turning it off by default
 		#Adding real maps
 		if(is.null(ril$rils$map)) cross$maps$physical <- ril$rils$map
 		#cross$maps$geno <-  
