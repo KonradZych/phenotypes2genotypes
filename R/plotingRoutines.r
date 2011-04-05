@@ -123,9 +123,7 @@ plotMapComparison <- function(cross1, cross2, chr=NULL){
 
 compareGeneLocation.internal <- function(cross1, cross2){
 	genes1 <- compareGeneLocationSub.internal(cross1)
-	print(genes1[1,])
 	genes2 <- compareGeneLocationSub.internal(cross2)
-	print(genes2[1,])
 	genes1 <- mapMarkers.internal(genes1,genes2,mapMode=1)
 	genes2 <- mapMarkers.internal(genes2,genes1,mapMode=1)
 	result <- matrix(0,nrow(genes1),6)
