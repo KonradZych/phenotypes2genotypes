@@ -75,14 +75,16 @@ toGenotypes <- function(ril, use=c("real","simulated","map"), treshold=0.01, ove
 	#*******ENHANCING CROSS OBJECT*******
 	if(use!="map"){
 		#FormLinkage groups
-		cross <- orderMarkers(cross, use.ripple=FALSE, verbose=verbose)
 		cross <- invisible(formLinkageGroups(cross,reorgMarkers=TRUE,verbose=verbose,...))
 		#Remove shitty chromosomes
 		cross <- removeChromosomes.internal(cross,minChrLength)
 		#Order markers - ripple in our case often produces errors, so turning it off by default
+		cross <- orderMarkers(cross, use.ripple=FALSE, verbose=verbose)
 		#Adding real maps
-		if(is.null(ril$rils$map)) cross$maps$physical <- ril$rils$map
-		#cross$maps$geno <-  
+		ril$rils$map <- sortMap.internal(ril$rils$map)
+		if(!(is.null(ril$rils$map))) cross$maps$physical <- ril$rils$map
+		#Majority rule
+		#cross <- segragateChromosomes.internal(cross)
 	}
 	
 	#*******RETURNING CROSS OBJECT*******
@@ -191,4 +193,62 @@ removeChromosomes.internal <- function(cross, minChrLength){
 		}
 	}
 	invisible(cross)
+}
+
+segragateChromosomes.internal <- function(cross){
+	chrtable <- table(cross$maps$physical[,1])
+	result <- matrix(0,nchr(cross),length(chrtable))
+	rownames(result) <- chrnames(cross)
+	colnames(result) <- names(chrtable)
+	genes <- matrix(1,sum(nmar(cross)),1)
+	rownames(genes) <- markernames(cross)
+	genes[,1] <- rep(1:length(nmar(cross)),nmar(cross))
+	for(i in markernames(cross)){
+		chr1 <- genes[i,1]
+		chr2 <- cross$maps$physical[which(cross$maps$physical[,3]==i),1]
+		result[chr1,chr2] <- result[chr1,chr2] + 1
+	}
+	newO <- newOrder.internal(result)
+	geno <- cross$geno
+	for(j in 1:length(geno)){
+		cross$geno[[j]] <- geno[[newO[j]]]
+	}
+	names(cross$geno) <- 1:length(newO)
+	invisible(cross)
+}
+
+newOrder.internal <- function(result){
+	newO <- result
+	for(i in 1:nrow(result)){
+		newO[i,] <- as.numeric(names(sort(result[i,],decreasing=TRUE)))
+	}
+	print(newO)
+	if(length(table(newO[,1]))==nrow(result)){
+		invisible(newO[,1])
+	}else{
+		notUniqueN <- which(newO[,1] %in% names(which(table(newO[,1])>1)))
+		notUniqueN <- notUniqueN[-(which(result[notUniqueN,1]==max(result[notUniqueN,1])))]
+		notUnique <- newO[notUniqueN,]
+		print(notUniqueN)
+		print(notUnique)
+		rownames(notUnique) <- notUniqueN
+		i <- 2
+		while(length(notUniqueN)>1+abs(nrow(result)-ncol(result))){
+			if(i>ncol(notUnique)) stop("Cannot order chromosomes./n")
+			Unique <- newO[-notUniqueN,1]
+			Missing <- rownames(result[which(!(Unique %in% rownames(result))),])
+			for(j in Missing){
+				if(!is.null(which(notUnique[,i]==j))){
+					current <- rownames(which(notUnique[,i]==j))
+					newO[,1] <- notUnique[which(result[current,i]==max(result[current,i])),i]
+					notUnique <- notUnique[-which(result[current,i]==max(result[current,i])),]
+					Missing <- Missing[-j]
+					notUniqueN <- notUniqueN[-which(result[current,i]==max(result[current,i]))]
+				}
+			i <- i+1
+			}
+		}
+		print(newO)
+		invisible(newO[,1])
+	}
 }
