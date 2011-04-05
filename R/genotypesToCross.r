@@ -130,7 +130,6 @@ writePhenotypes.internal <- function(ril, use, outputFile, verbose=FALSE, debugM
 		}
 	}
 	
-	chosenLabels <- 
 	toWrite <- ril$rils$phenotypes[chosenLabels,]
 	if(verbose && debugMode==1) cat("writePhenotypes starting.\n")
 	write.table(cbind("","",toWrite),file=outputFile,sep=",",quote=FALSE,col.names=FALSE)

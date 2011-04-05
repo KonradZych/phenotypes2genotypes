@@ -72,11 +72,11 @@ readFiles <- function(rils="children",parental="parental",sep="",verbose=FALSE,d
 		cat("WARNING: There is no phenotypic file for parents:",filename,"further processing will take place without taking into account parental data\n")
 	}
 	
-	#**********READING GFF GENETIC MAP*************
-	filename <- paste(rils,"_map.gff",sep="")
+	#**********READING LOC GENETIC MAP*************
+	filename <- paste(rils,"_probes.txt",sep="")
 	if(file.exists(filename)){
 		if(verbose) cat("Found gff map file for children:",filename,"and will store it in ril$rils$map\n")
-		ril$rils$map <- gffParser.internal(filename,verbose,debugMode)
+		ril$rils$map <- probesLocation.internal(filename,verbose,debugMode)
 	}else{
 		cat("WARNING: There is no map file for rils:",filename,"further processing will take place without taking it into account\n")
 	}
@@ -161,11 +161,15 @@ gffParser.internal <- function(filename="children_map.gff",verbose=FALSE,debugMo
 	genes <- genes[which(genes[,1]!="ChrM"),]
 	genes <- genes[which(genes[,1]!="ChrC"),]
 	genes <- genes[,c(1,4,5,9)]
-	genes <- apply(genes,1,correctRow.internal)
+	genes <- apply(genes,1,correctRowGff.internal)
+	genes <- t(genes)
+	rownames(genes) <- genes[,3]
+	genes <- as.numeric(genes[,-3])
+	colnames(genes) <- c("Chromosome","Location")
 	if(verbose) cat("Map file contains",ncol(genes),"markers from",length(table(genes[1,])),"chromosomes.\n")
 	e1<-proc.time()
 	if(verbose && debugMode==2)cat("Parsing gff file:",filename,"done in:",(e1-s1)[3],"seconds.\n")
-	invisible(t(genes))
+	invisible(genes)
 }
 
 ############################################################################################################
@@ -175,11 +179,65 @@ gffParser.internal <- function(filename="children_map.gff",verbose=FALSE,debugMo
 # genesRow - currently processed row
 #
 ############################################################################################################
-correctRow.internal <- function(genesRow){
+correctRowGff.internal <- function(genesRow){
 	genesRow[1] <- substr(genesRow[1],4,4)
 	genesRow[4] <- toString(strsplit(toString(genesRow[4]),";")[[1]][1])
 	genesRow[4] <- toupper(substr(genesRow[4],4,12))
 	correctedRow <- genesRow[-3]
 	correctedRow[2] <- mean(as.numeric(genesRow[c(2,3)]))
 	invisible(correctedRow)
+}
+
+############################################################################################################
+#gffParser: reads gff file and transfroms it into nice matrix!
+# 
+# ril - 
+# filename - name of gff file
+# verbose - Be verbose
+# debugMode - 1: Print our checks, 2: print additional time information
+#
+############################################################################################################
+probesLocation.internal <- function(filename="children_probes.txt",verbose=FALSE,debugMode=0){
+	if(!file.exists(filename)) stop("File: ",filename,"doesn't exist.\n")
+	s1<-proc.time()
+	geneMap <- read.table(filename,sep="\t",header=TRUE)
+	genes <- geneMap[which(toupper(geneMap[,8])=="GENE"),]
+	genes <- genes[which(genes[,2]!="M"),]
+	genes <- genes[which(genes[,2]!="C"),]
+	rownames(genes) <- toupper(genes[,10])
+	genes <- genes[,c(2,3,4)]
+	genes <- apply(genes,1,correctRowLoc.internal)
+	genes <- t(genes)
+	colnames(genes) <- c("Chromosome","Location")
+	genes <- sortMap.internal(genes)
+	if(verbose) cat("Map file contains",nrow(genes),"markers from",length(table(genes[1,])),"chromosomes.\n")
+	e1<-proc.time()
+	if(verbose && debugMode==2)cat("Parsing gff file:",filename,"done in:",(e1-s1)[3],"seconds.\n")
+	invisible(genes)
+}
+
+############################################################################################################
+#correctRow.internal: gffParser sub function, calculating mean possition of the gene and puts its identifier alone in
+# last column
+# 
+# genesRow - currently processed row
+#
+############################################################################################################
+correctRowLoc.internal <- function(genesRow){
+	genesRow[2] <- mean(as.numeric(genesRow[c(2,3)]))
+	genesRow <- genesRow[-3]
+	invisible(genesRow)
+}
+
+sortMap.internal <- function(genes){
+	result <- NULL
+	nchr <- length(table(genes[,1]))
+	lengths <- vector(nchr)
+	for(i in 1:nchr){
+		current <- genes[which(genes[,1]==i),]
+		lengths[i] <- c(lengths,max(current[,2]))
+		current <- current[names(sort(current[,2])),] + sum(lengths[0:i-1])
+		result <- rbind(result,current)
+	}
+	invisible(list(result,lengths))
 }
