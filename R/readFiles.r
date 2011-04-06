@@ -228,16 +228,3 @@ correctRowLoc.internal <- function(genesRow){
 	genesRow <- genesRow[-3]
 	invisible(genesRow)
 }
-
-sortMap.internal <- function(genes){
-	result <- NULL
-	nchr <- length(table(genes[,1]))
-	lengths <- vector(nchr)
-	for(i in 1:nchr){
-		current <- genes[which(genes[,1]==i),]
-		lengths[i] <- c(lengths,max(current[,2]))
-		current <- current[names(sort(current[,2])),] + sum(lengths[0:i-1])
-		result <- rbind(result,current)
-	}
-	invisible(list(result,lengths))
-}
