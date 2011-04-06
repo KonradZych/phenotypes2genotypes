@@ -101,7 +101,7 @@ plotChildrenExpression <- function(ril, markers=1:100){
 plotMapComparison <- function(cross){
 	referenceLocs <- getXlocs.internal(cross)
 	predictedLocs <- getYLocs.internal(cross)
-	plot(x=referenceLocs[[1]], y=predictedLocs[[1]], xlim=c(min(x=referenceLocs[[1]]),max(x=referenceLocs[[1]]), ylim=c(min(predictedLocs[[1]]),max(predictedLocs[[1]])),
+	plot(x=referenceLocs[[1]], y=predictedLocs[[1]], xlim=c(min(x=referenceLocs[[1]]),max(x=referenceLocs[[1]])), ylim=c(min(predictedLocs[[1]]),max(predictedLocs[[1]])),
 		col="red", xlab="Reference map", ylab="Predicted map", main="Comparison of genetic maps")
 	for(x in 2:length(referenceLocs[[2]])){
 		abline(v=sum(referenceLocs[[2]][1:(x-1)]) + (0.13* max(referenceLocs[[2]]) * (x-1)),lty=2)
@@ -128,6 +128,6 @@ getYLocs.internal <- function(cross){
 	invisible(list(result,chrlength))
 }
 
-getXlocs.internal (cross,markers){
+getXlocs.internal <- function(cross,markers){
 	cross$maps$physical 
 }
