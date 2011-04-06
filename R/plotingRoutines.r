@@ -99,15 +99,24 @@ plotChildrenExpression <- function(ril, markers=1:100){
 #
 ############################################################################################################
 plotMapComparison <- function(cross){
-	referenceLocs <- getXlocs.internal(cross)
-	predictedLocs <- getYLocs.internal(cross)
-	plot(x=referenceLocs[[1]], y=predictedLocs[[1]], xlim=c(min(x=referenceLocs[[1]]),max(x=referenceLocs[[1]])), ylim=c(min(predictedLocs[[1]]),max(predictedLocs[[1]])),
-		col="red", xlab="Reference map", ylab="Predicted map", main="Comparison of genetic maps")
-	for(x in 2:length(referenceLocs[[2]])){
-		abline(v=sum(referenceLocs[[2]][1:(x-1)]) + (0.13* max(referenceLocs[[2]]) * (x-1)),lty=2)
+	ys <- getYLocs.internal(cross)
+	predictedLocs <- ys[[1]][,-1]
+	predictedChrom <- ys[[2]]
+	predictedChromLabels <- names(table(ys[[1]][,1]))
+	xs <- cross$maps$physical[[1]][rownames(ys[[1]]),]
+	referenceLocs <- xs[,-1]
+	referenceChrom <- cross$maps$physical[[2]]
+	referenceChromLabels <- names(table(xs[,1]))
+	color <- makeChromPal.internal(ys[[1]],xs)
+	plot(x=referenceLocs, y=predictedLocs, xlim=c(min(referenceLocs),max(referenceLocs)), ylim=c(min(predictedLocs),max(predictedLocs)),
+		xaxt="n", yaxt="n", col=color[[1]], pch=color[[2]], xlab="Reference map", ylab="Predicted map", main="Comparison of genetic maps")
+	axis(1, at = referenceChrom[-1],labels=FALSE)
+	axis(2, at = predictedChrom[-1],labels=FALSE)
+	for(x in 2:length(referenceChrom)){
+		abline(v=sum(referenceChrom[x]),lty=2)
 	}
-	for(y in 2:length(predictedLocs[[2]])){
-		abline(h=sum(predictedLocs[[2]][1:y-1]) + (0.13* max(predictedLocs[[2]]) * (y-1)),lty=2)
+	for(y in 2:length(predictedChrom)){
+		abline(h=predictedChrom[y],lty=2)
 	}
 }
 
@@ -117,17 +126,31 @@ getChromosome.internal <- function(cross){
 
 getYLocs.internal <- function(cross){
 	locs <- lapply(cross$geno,function(x){as.numeric(x$map)})
-	chrlength <- lapply(locs,max)
+	chrlength <- as.vector(unlist(lapply(locs,max)),mode="numeric")
+	locs <- as.numeric(unlist(locs))
 	summaryLengths <- rep(0,length(chrlength))
 	for(x in 2:length(chrlength)){
-		summaryLengths[x] <- max(chrlength[[x-1]]) + summaryLengths[x-1] + 1000
+		summaryLengths[x] <- max(chrlength[x-1]) + summaryLengths[x-1] + 0.15 * max((chrlength))
 	}
-	chrids <- getChromosome(cross)
-	result <- as.matrix(summaryLengths[chrids]+as.numeric(unlist(locs)))
+	chrids <- getChromosome.internal(cross)
+	result <- matrix(0,length(locs),2)
+	result[,1] <- chrids
+	result[,2] <- summaryLengths[chrids]+locs
 	rownames(result) <- markernames(cross)
-	invisible(list(result,chrlength))
+	invisible(list(result,summaryLengths))
 }
 
-getXlocs.internal <- function(cross,markers){
-	cross$maps$physical 
+makeChromPal.internal <- function(ys,xs){
+	color <- vector(mode="character",nrow(ys))
+	names(color) <- rownames(ys)
+	symbol <- vector(mode="numeric",nrow(xs))
+		cat(length(color),length(symbol),"\n")
+	names(symbol) <- rownames(xs)
+	cat(length(color),length(symbol),"\n")
+	cl <- topo.colors(length(table(ys[,1])))
+	for(i in rownames(ys)){
+		color[i] <- cl[ys[i,1]]
+		symbol[i] <- xs[i,1]
+	}
+	invisible(list(color, symbol))
 }

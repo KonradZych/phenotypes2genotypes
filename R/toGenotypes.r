@@ -196,15 +196,16 @@ removeChromosomes.internal <- function(cross, minChrLength){
 sortMap.internal <- function(genes){
 	result <- NULL
 	nchr <- length(table(genes[,1]))
-	lengths <- vector(length=nchr)
+	lengths <- vector(mode="numeric",length=nchr+1)
+	lengths[1] <- 0
 	for(i in 1:nchr){
 		current <- genes[which(genes[,1]==i),]
-		print(dim(current))
-		lengths[i] <- max(current[,2])
-		current <- current[names(sort(current[,2])),] + sum(lengths[0:(i-1)])
+		lengths[i+1] <- max(current[,2]) + lengths[i] + 20000
+		current <- current[names(sort(current[,2])),]
+		current[,2] <- current[,2] + lengths[i]
 		result <- rbind(result,current)
 	}
-	invisible(list(result,lengths))
+	invisible(list(result,lengths[-length(lengths)]))
 }
 
 
