@@ -140,15 +140,14 @@ getYLocs.internal <- function(cross){
 	invisible(list(result,summaryLengths))
 }
 
-makeChromPal.internal <- function(ys,xs){
-	color <- vector(mode="character",nrow(ys))
-	names(color) <- rownames(ys)
+makeChromPal.internal <- function(ys1,xs){
+	color <- vector(mode="character",nrow(ys1))
+	names(color) <- rownames(ys1)
 	symbol <- vector(mode="numeric",nrow(xs))
-		cat(length(color),length(symbol),"\n")
 	names(symbol) <- rownames(xs)
-	cl <- topo.colors(length(table(ys[,1])))
-	for(i in rownames(ys)){
-		color[i] <- cl[ys[i,1]]
+	cl <- rainbow(length(table(ys1[,1])))
+	for(i in rownames(ys1)){
+		color[i] <- cl[ys1[i,1]]
 		symbol[i] <- xs[i,1]
 	}
 	invisible(list(color, symbol))
