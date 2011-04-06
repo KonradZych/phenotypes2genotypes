@@ -63,9 +63,6 @@ toGenotypes <- function(ril, use=c("real","simulated","map"), treshold=0.01, ove
 	e1 <- proc.time()
 	if(verbose && debugMode==2)cat("Selecting markers using specified parameters done in:",(e1-s1)[3],"seconds.\n")
 	
-	#*******MAPPING GENOTYPES AND PHENOTYPES*******
-	
-	
 	#*******SAVING CROSS OBJECT*******
 	s1 <- proc.time()
 	cross <- genotypesToCross.internal(ril,use=use,verbose=verbose,debugMode=debugMode)
@@ -202,8 +199,9 @@ sortMap.internal <- function(genes){
 	lengths <- vector(length=nchr)
 	for(i in 1:nchr){
 		current <- genes[which(genes[,1]==i),]
-		lengths[i] <- c(lengths,max(current[,2]))
-		current <- current[names(sort(current[,2])),] + sum(lengths[0:i-1])
+		print(dim(current))
+		lengths[i] <- max(current[,2])
+		current <- current[names(sort(current[,2])),] + sum(lengths[0:(i-1)])
 		result <- rbind(result,current)
 	}
 	invisible(list(result,lengths))
