@@ -146,7 +146,6 @@ makeChromPal.internal <- function(ys,xs){
 	symbol <- vector(mode="numeric",nrow(xs))
 		cat(length(color),length(symbol),"\n")
 	names(symbol) <- rownames(xs)
-	cat(length(color),length(symbol),"\n")
 	cl <- topo.colors(length(table(ys[,1])))
 	for(i in rownames(ys)){
 		color[i] <- cl[ys[i,1]]
