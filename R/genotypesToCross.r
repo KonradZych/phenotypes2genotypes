@@ -34,18 +34,24 @@
 # 
 # ril - Ril type object, must contain parental phenotypic data.
 # use - save "real" gentypes, "simulated" genotypes otr simulated genotypes ordered using "map" from gff file
-# limit - how many phenotypes should be written
 # outputFile - file where object of type cross is being saved
 # verbose - Be verbose
 # debugMode - 1: Print our checks, 2: print additional time information
 #
+#### Not yet in use:
 # #doClustering - this three to be used in the future
 # #groups 
 # #iterations 
 #
+#### To be removed:
+# #use=map - now map is saved in every cross, so we can use it
+#
+#### No longer in use:
+# #limit - how many phenotypes should be written
+#
 ############################################################################################################
 #genotypesToCross.internal <- function(ril, use=c("real","simulated","map"), limit=10, doClustering=FALSE, groups=10, iterations = 100, outputFile="mycross.csv", verbose=FALSE, debugMode=0){
-genotypesToCross.internal <- function(ril, use=c("real","simulated","map"), limit=10, outputFile="mycross.csv", verbose=FALSE, debugMode=0){
+genotypesToCross.internal <- function(ril, use=c("real","simulated","map"), outputFile="mycross.csv", verbose=FALSE, debugMode=0){
 	###CHECKS
 	if(verbose && debugMode==1) cat("genotypesToCross starting.\n")
 	s <- proc.time()
@@ -114,20 +120,28 @@ writePhenotypes.internal <- function(ril, use, outputFile, verbose=FALSE, debugM
 		if(is.null(ril$rils$genotypes$read)){
 			stop("Use = real chosen, but there is no real genotypic data in ril$rils$genotypes$read\n")
 		}else{
+			ril$rils$phenotypes <- mapMarkers.internal(ril$rils$phenotypes,ril$rils$genotypes$read,mapMode=2)
+			ril$rils$genotypes$read <- mapMarkers.internal(ril$rils$genotypes$read,ril$rils$phenotypes,mapMode=2)
 			chosenLabels <- rownames(ril$rils$genotypes$read)
 		}
-	}else if(use=="simulated"){
+	}else if(use=="simulated" || use=="map"){
 		if(is.null(ril$rils$genotypes$simulated)){
 			stop("Use = simulated or map chosen, but there is no simulated genotypic data in ril$rils$genotypes$simulated\n")
 		}else{
-			chosenLabels <- rownames(ril$rils$genotypes$simulated)
+			ril$rils$phenotypes <- mapMarkers.internal(ril$rils$phenotypes,ril$rils$genotypes$simulated,mapMode=2)
+			ril$rils$genotypes$simulated <- mapMarkers.internal(ril$rils$genotypes$simulated,ril$rils$phenotypes,mapMode=2)
 		}
-	}else if(use=="map"){
-		if(is.null(ril$rils$genotypes$simulated)||is.null(ril$rils$map)){
-			stop("Use =  map chosen, but there is no simulated genotypic data or map data\n")
-		}else{
-			chosenLabels <- rownames(ril$rils$genotypes$simulated[which(rownames(ril$rils$genotypes$simulated[,]) %in% ril$rils$map[,3]),])
+		
+		if(use=="simulated"){
+				chosenLabels <- rownames(ril$rils$genotypes$simulated)
+		}else if(use=="map"){
+			if(is.null(ril$rils$genotypes$simulated)||is.null(ril$rils$map)){
+				stop("Use =  map chosen, but there is no simulated genotypic data or map data\n")
+			}else{
+				chosenLabels <- rownames(ril$rils$genotypes$simulated[which(rownames(ril$rils$genotypes$simulated[,]) %in% rownames(ril$rils$map)),])
+			}
 		}
+		
 	}
 	
 	toWrite <- ril$rils$phenotypes[chosenLabels,]
@@ -153,8 +167,8 @@ writeGenotypesMap.internal <- function(ril, outputFile, verbose=FALSE, debugMode
 	if(verbose && debugMode==1) cat("writeGenotypesMap.internal starting.\n")
 	for(i in 1:length(table(ril$rils$map[,1]))){
 		selectedMap <- ril$rils$map[which(ril$rils$map[,1]==i),]
-		selectedGenes <- ril$rils$genotypes$simulated[which(rownames(ril$rils$genotypes$simulated) %in% (selectedMap[,3])),]
-		selectedMap <- selectedMap[which(rownames(ril$rils$genotypes$simulated) %in% (selectedMap[,3])),]
+		selectedGenes <- ril$rils$genotypes$simulated[which(rownames(ril$rils$genotypes$simulated) %in% rownames(selectedMap)),]
+		selectedMap <- selectedMap[which(rownames(ril$rils$genotypes$simulated) %in% rownames(selectedMap)),]
 		writeGenotypes.internal (selectedGenes,i,selectedMap[,2],outputFile,verbose,debugMode)
 	}
 	el <- proc.time()
