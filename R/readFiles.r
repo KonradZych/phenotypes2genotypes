@@ -209,7 +209,6 @@ probesLocation.internal <- function(filename="children_probes.txt",verbose=FALSE
 	genes <- apply(genes,1,correctRowLoc.internal)
 	genes <- t(genes)
 	colnames(genes) <- c("Chromosome","Location")
-	genes <- sortMap.internal(genes)
 	if(verbose) cat("Map file contains",nrow(genes),"markers from",length(table(genes[1,])),"chromosomes.\n")
 	e1<-proc.time()
 	if(verbose && debugMode==2)cat("Parsing gff file:",filename,"done in:",(e1-s1)[3],"seconds.\n")
