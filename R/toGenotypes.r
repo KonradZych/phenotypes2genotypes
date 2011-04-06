@@ -81,6 +81,7 @@ toGenotypes <- function(ril, use=c("real","simulated","map"), treshold=0.01, ove
 		ril$rils$map <- sortMap.internal(ril$rils$map)
 		if(!(is.null(ril$rils$map))) cross$maps$physical <- ril$rils$map
 		#Majority rule
+		###********IMPORTANT BUT NOT YET OPERATIVE!!!********
 		#cross <- segragateChromosomes.internal(cross)
 	}
 	
@@ -210,7 +211,8 @@ sortMap.internal <- function(genes){
 
 
 segragateChromosomes.internal <- function(cross){
-	chrtable <- table(cross$maps$physical[,1])
+	map <- cross$maps$physical[[1]]
+	chrtable <- table(map[,1])
 	result <- matrix(0,nchr(cross),length(chrtable))
 	rownames(result) <- chrnames(cross)
 	colnames(result) <- names(chrtable)
@@ -219,7 +221,7 @@ segragateChromosomes.internal <- function(cross){
 	genes[,1] <- rep(1:length(nmar(cross)),nmar(cross))
 	for(i in markernames(cross)){
 		chr1 <- genes[i,1]
-		chr2 <- cross$maps$physical[which(cross$maps$physical[,3]==i),1]
+		chr2 <- map[which(rownames(map)==i),1]
 		result[chr1,chr2] <- result[chr1,chr2] + 1
 	}
 	newO <- newOrder.internal(result)
