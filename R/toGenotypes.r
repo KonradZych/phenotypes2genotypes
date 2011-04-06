@@ -195,6 +195,21 @@ removeChromosomes.internal <- function(cross, minChrLength){
 	invisible(cross)
 }
 
+
+sortMap.internal <- function(genes){
+	result <- NULL
+	nchr <- length(table(genes[,1]))
+	lengths <- vector(length=nchr)
+	for(i in 1:nchr){
+		current <- genes[which(genes[,1]==i),]
+		lengths[i] <- c(lengths,max(current[,2]))
+		current <- current[names(sort(current[,2])),] + sum(lengths[0:i-1])
+		result <- rbind(result,current)
+	}
+	invisible(list(result,lengths))
+}
+
+
 segragateChromosomes.internal <- function(cross){
 	chrtable <- table(cross$maps$physical[,1])
 	result <- matrix(0,nchr(cross),length(chrtable))
