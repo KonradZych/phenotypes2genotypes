@@ -74,6 +74,8 @@ toGenotypes <- function(ril, use=c("real","simulated","map"), treshold=0.01, ove
 	if(use!="map"){
 		#FormLinkage groups
 		cross <- invisible(formLinkageGroups(cross,reorgMarkers=TRUE,verbose=verbose,...))
+		### remove shitty chromosomes
+		#cross <- removeChromosomes.internal(cross,minChrLength)
 		#Order markers - ripple in our case often produces errors, so turning it off by default
 		cross <- orderMarkers(cross, use.ripple=TRUE, verbose=verbose)
 		#Adding real maps

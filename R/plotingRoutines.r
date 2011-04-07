@@ -101,7 +101,7 @@ plotChildrenExpression <- function(ril, markers=1:100){
 plotMapComparison <- function(cross, coloringMode=1, minChrLength=5){
 	### remove shitty chromosomes
 	#cross <- removeChromosomes.internal(cross,minChrLength)
-	removed <- cross$maps$physical[[1]][rownames(cross$rmv),-1]
+	removed <- cross$maps$physical[[1]][colnames(cross$rmv),-1]
 	
 	### objects containing all information needen for function execution(well...;p)
 	ys <- getYLocs.internal(cross)
@@ -256,7 +256,8 @@ makeTransPal.internal <- function(ys1,xs){
 removeChromosomes.internal <- function(cross, minChrLength){
 	 for(i in length(cross$geno):1){
 		if(length(cross$geno[[i]]$map)<minChrLength){
-			cross$rmv <- names(cross$geno[[i]]$map)
+			cat("removing markers:",names(cross$geno[[i]]$map),"\n")
+			cross$rmv <- cbind(cross$rmv,cross$geno[[i]]$data)
 			cross <- drop.markers(cross, names(cross$geno[[i]]$map))
 			names(cross$geno) <- 1:length(cross$geno)
 		}
