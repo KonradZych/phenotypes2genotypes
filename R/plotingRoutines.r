@@ -98,7 +98,7 @@ plotChildrenExpression <- function(ril, markers=1:100){
 # markers - markers to be printed numbers or names 
 #
 ############################################################################################################
-plotMapComparison <- function(cross){
+plotMapComparison <- function(cross, coloringMode=1){
 	ys <- getYLocs.internal(cross)
 	predictedLocs <- ys[[1]][,-1]
 	predictedChrom <- ys[[2]]
@@ -107,7 +107,11 @@ plotMapComparison <- function(cross){
 	referenceLocs <- xs[,-1]
 	referenceChrom <- cross$maps$physical[[2]]
 	referenceChromLabels <- names(table(xs[,1]))
-	color <- makeChromPal.internal(ys[[1]],xs)
+	if(coloringMode==1){ 
+		color <- makeChromPal.internal(ys[[1]],xs)
+	}else if(coloringMode==2){
+		color <- makeTransPal.internal(ys[[1]],xs)
+	}
 	plot(x=referenceLocs, y=predictedLocs, xlim=c(min(referenceLocs),max(referenceLocs)), ylim=c(min(predictedLocs),max(predictedLocs)),
 		xaxt="n", yaxt="n", col=color[[1]], pch=color[[2]], xlab="Reference map", ylab="Predicted map", main="Comparison of genetic maps")
 	axis(1, at = referenceChrom[-1],labels=FALSE)
@@ -149,6 +153,23 @@ makeChromPal.internal <- function(ys1,xs){
 	for(i in rownames(ys1)){
 		color[i] <- cl[ys1[i,1]]
 		symbol[i] <- xs[i,1]
+	}
+	invisible(list(color, symbol))
+}
+
+makeTransPal.internal <- function(ys1,xs){
+	color <- vector(mode="character",nrow(ys1))
+	names(color) <- rownames(ys1)
+	symbol <- vector(mode="numeric",nrow(xs))
+	names(symbol) <- rownames(xs)
+	for(i in rownames(ys1)){
+		if(ys1[i,1]==xs[i,1]){
+			color[i] <- "black"
+		}else{
+			color[i] <- "red"
+		}
+		
+		symbol[i] <- 1
 	}
 	invisible(list(color, symbol))
 }
