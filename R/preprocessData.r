@@ -46,6 +46,7 @@ preprocessData <- function(ril,groupLabels=c(0,0,1,1),verbose=FALSE,debugMode=0,
 		save(file="rilRP.Rdata",res)
 		ril$parental$RP <- res
 	}
+	ril$parental$groups <- groupLabels
 	e2<-proc.time()
 	if(verbose && debugMode==2)cat("Data preprocessing done in:",(e2-s2)[3],"seconds.\n")
 	invisible(ril)
