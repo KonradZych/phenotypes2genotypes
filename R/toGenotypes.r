@@ -44,7 +44,7 @@
 # debugMode - 1: Print our checks, 2: print additional time information
 #
 ############################################################################################################
-toGenotypes <- function(ril, use=c("real","simulated","map"), treshold=0.01, overlapInd = 0, proportion = 50, margin = 15, minChrLength = 0, splitMode=2, verbose=FALSE, debugMode=0,...){
+toGenotypes <- function(ril, use=c("real","simulated","map"), treshold=0.01, overlapInd = 0, proportion = 50, margin = 15, minChrLength = 0, splitMode=1, verbose=FALSE, debugMode=0,...){
 	#*******CHECKS*******
 	require(qtl)
 	if(proportion < 1 || proportion > 99) stop("Proportion is a percentage (1,99)")
@@ -74,10 +74,8 @@ toGenotypes <- function(ril, use=c("real","simulated","map"), treshold=0.01, ove
 	if(use!="map"){
 		#FormLinkage groups
 		cross <- invisible(formLinkageGroups(cross,reorgMarkers=TRUE,verbose=verbose,...))
-		#Remove shitty chromosomes
-		cross <- removeChromosomes.internal(cross,minChrLength)
 		#Order markers - ripple in our case often produces errors, so turning it off by default
-		cross <- orderMarkers(cross, use.ripple=FALSE, verbose=verbose)
+		cross <- orderMarkers(cross, use.ripple=TRUE, verbose=verbose)
 		#Adding real maps
 		ril$rils$map <- sortMap.internal(ril$rils$map)
 		if(!(is.null(ril$rils$map))) cross$maps$physical <- ril$rils$map
@@ -180,24 +178,6 @@ filterRow.internal <- function(genotypeRow, overlapInd, proportion, margin){
 		}
 	}
 	return(0)
-}
-
-############################################################################################################
-#removeChromosomes.internal: subfunction of filterGenotypes.internal, filtering one row
-# 
-# cross - object of R/qtl cross type
-# minChrLength -if maximal distance between the markers in the chromosome is lower than this value,
-#	whole chromosome will be dropped
-#
-############################################################################################################
-removeChromosomes.internal <- function(cross, minChrLength){
-	 for(i in length(cross$geno):1){
-		if(length(cross$geno[[i]]$map)<minChrLength){
-			cross <- drop.markers(cross, names(cross$geno[[i]]$map))
-			names(cross$geno) <- 1:length(cross$geno)
-		}
-	}
-	invisible(cross)
 }
 
 
