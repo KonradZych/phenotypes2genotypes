@@ -98,12 +98,15 @@ plotChildrenExpression <- function(ril, markers=1:100){
 # markers - markers to be printed numbers or names 
 #
 ############################################################################################################
-plotMapComparison <- function(cross, coloringMode=1){
+plotMapComparison <- function(cross, coloringMode=1, minChrLength=5){
+	#Remove shitty chromosomes
+	cross <- removeChromosomes.internal(cross,minChrLength)
 	ys <- getYLocs.internal(cross)
 	predictedLocs <- ys[[1]][,-1]
 	predictedChrom <- ys[[2]]
 	predictedChromLabels <- names(table(ys[[1]][,1]))
 	xs <- cross$maps$physical[[1]][rownames(ys[[1]]),]
+	removed <- cross$maps$physical[[1]][rownames(cross$rmv),]
 	referenceLocs <- xs[,-1]
 	referenceChrom <- cross$maps$physical[[2]]
 	referenceChromLabels <- names(table(xs[,1]))
@@ -172,4 +175,22 @@ makeTransPal.internal <- function(ys1,xs){
 		symbol[i] <- 1
 	}
 	invisible(list(color, symbol))
+}
+
+############################################################################################################
+#removeChromosomes.internal: subfunction of filterGenotypes.internal, filtering one row
+# 
+# cross - object of R/qtl cross type
+# minChrLength -if maximal distance between the markers in the chromosome is lower than this value,
+#	whole chromosome will be dropped
+#
+############################################################################################################
+removeChromosomes.internal <- function(cross, minChrLength){
+	 for(i in length(cross$geno):1){
+		if(length(cross$geno[[i]]$map)<minChrLength){
+			cross <- drop.markers(cross, names(cross$geno[[i]]$map))
+			names(cross$geno) <- 1:length(cross$geno)
+		}
+	}
+	invisible(cross)
 }
