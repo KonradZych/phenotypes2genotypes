@@ -38,12 +38,13 @@
 # margin - Proportion is allowed to varry between this margin (2 sided)
 # minChrLength -if maximal distance between the markers in the chromosome is lower than this value,
 #	whole chromosome will be dropped
+# splitMode - how to split phenotypes to get genotypes 1 - mean of means, 2 - median
 # ... - Parameters passed to formLinkageGroups.
 # verbose - Be verbose
 # debugMode - 1: Print our checks, 2: print additional time information
 #
 ############################################################################################################
-toGenotypes <- function(ril, use=c("real","simulated","map"), treshold=0.01, overlapInd = 0, proportion = 50, margin = 15, minChrLength = 0, verbose=FALSE, debugMode=0,...){
+toGenotypes <- function(ril, use=c("real","simulated","map"), treshold=0.01, overlapInd = 0, proportion = 50, margin = 15, minChrLength = 0, splitMode=2, verbose=FALSE, debugMode=0,...){
 	#*******CHECKS*******
 	require(qtl)
 	if(proportion < 1 || proportion > 99) stop("Proportion is a percentage (1,99)")
@@ -53,7 +54,7 @@ toGenotypes <- function(ril, use=c("real","simulated","map"), treshold=0.01, ove
 	
 	#*******CONVERTING CHILDREN PHENOTYPIC DATA TO GENOTYPES*******
 	s1 <- proc.time()
-	ril <- convertToGenotypes.internal(ril, treshold, verbose, debugMode)
+	ril <- convertToGenotypes.internal(ril, treshold, splitMode, verbose, debugMode)
 	e1 <- proc.time()
 	if(verbose && debugMode==2)cat("Converting phenotypes to genotypes in:",(e1-s1)[3],"seconds.\n")
 	
@@ -98,7 +99,7 @@ toGenotypes <- function(ril, use=c("real","simulated","map"), treshold=0.01, ove
 # debugMode - 1: Print our checks, 2: print additional time information 
 #
 ############################################################################################################
-convertToGenotypes.internal <- function(ril,treshold,verbose=FALSE,debugMode=0){
+convertToGenotypes.internal <- function(ril,treshold,splitMode,verbose=FALSE,debugMode=0){
 	if(verbose && debugMode==1) cat("convertToGenotypes starting.\n")
 	m <- NULL
 	upParental <- ril$parental$phenotypes[which(ril$parental$RP$pval[1] < treshold),]
@@ -106,11 +107,11 @@ convertToGenotypes.internal <- function(ril,treshold,verbose=FALSE,debugMode=0){
 	upRils <- ril$rils$phenotypes[which(rownames(ril$rils$phenotypes) %in% rownames(upParental)),]
 	downRils <- ril$rils$phenotypes[which(rownames(ril$rils$phenotypes) %in% rownames(downParental)),]
 	for(x in rownames(upRils)){
-		m <- rbind(m,splitRow.internal(x,upRils,upParental,c(0,1)))
+		m <- rbind(m,splitRow.internal(x,upRils,upParental,ril$parental$groups,c(0,1),splitMode))
 	}
 	c<-0
 	for(x in rownames(downRils)){
-		m <- rbind(m,splitRow.internal(x,downRils,downParental,c(1,0)))
+		m <- rbind(m,splitRow.internal(x,downRils,downParental,ril$parental$groups,c(1,0),splitMode))
 	}
 	ril$rils$genotypes$simulated <- m
 	colnames(ril$rils$genotypes$simulated) <- colnames(upRils)
@@ -127,9 +128,15 @@ convertToGenotypes.internal <- function(ril,treshold,verbose=FALSE,debugMode=0){
 # genotypes - values genotypic matrix will be filled with
 #
 ############################################################################################################
-splitRow.internal <- function(x,rils,parental,genotypes){
+splitRow.internal <- function(x,rils,parental,groupLabels,genotypes,splitMode=0){
 	result <- rep(0,length(rils[x,]))
-	splitVal <- mean(parental[which(rownames(parental) == x),])
+	if(splitMode==1){
+		A <- parental[which(rownames(parental) == x),which(groupLabels==0)]
+		B <- parental[which(rownames(parental) == x),which(groupLabels==1)]
+		splitVal <- mean(mean(A),mean(B))
+	}else if(splitMode==2){
+		splitVal <- median(parental[which(rownames(parental) == x),])
+	}
 	result[which(rils[x,] > splitVal)] <- genotypes[1]
 	result[which(rils[x,] < splitVal)] <- genotypes[2]
 	result[which(rils[x,] == splitVal)] <- NA
@@ -185,7 +192,7 @@ filterRow.internal <- function(genotypeRow, overlapInd, proportion, margin){
 ############################################################################################################
 removeChromosomes.internal <- function(cross, minChrLength){
 	 for(i in length(cross$geno):1){
-		if(max(cross$geno[[i]]$map)<minChrLength){
+		if(length(cross$geno[[i]]$map)<minChrLength){
 			cross <- drop.markers(cross, names(cross$geno[[i]]$map))
 			names(cross$geno) <- 1:length(cross$geno)
 		}
