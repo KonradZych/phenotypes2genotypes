@@ -151,7 +151,7 @@ plotMapComparison <- function(cross, coloringMode=1){
 		a <- ys[[1]][which(ys[[1]][,1]==i),-1]
 		b <- xs[which(rownames(xs) %in% names(a)),-1]
 		l[[i]] <- lm(a~b)$coefficients 
-		cat("Chromosome",i,"lr coefficients",l[[i]],"\n")
+		cat("Chromosome",i,"lr coefficients",l[[i]],"corected by length diff",l[[i]][2]*((max(b)-min(b))/(max(a)-min(a))),"\n")
 	}
 	
 	#*******plotting points*******

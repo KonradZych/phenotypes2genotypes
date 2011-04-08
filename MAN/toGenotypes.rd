@@ -47,7 +47,7 @@
 	setwd(paste(.Library,"pheno2geno/data",sep="/"))
 	ril <- readFiles()
 	ril <- preprocessData(ril)
-	cross <- toGenotypes(ril,use="simulated",minChrLength=0)
+	#cross <- toGenotypes(ril,use="simulated",minChrLength=0,treshold=0.5,margin=50,max.rf=10)
 }
 
 \seealso{
