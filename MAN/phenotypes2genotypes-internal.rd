@@ -14,7 +14,7 @@
 \alias{splitRow.internal}
 \alias{filterGenotypes.internal}
 \alias{filterRow.internal}
-\alias{removeChromosomes.internal}
+\alias{sortMap.internal}
 
 \alias{bestClustering.internal}
 \alias{bestClusteringSub.internal}
@@ -29,6 +29,7 @@
 \alias{makeChromPal.internal}
 \alias{makeTransPal.internal}
 \alias{switchChromosomes.internal}
+\alias{removeChromosomes.internal}
 
 \title{Internal pheno2geno functions}
 

@@ -7,7 +7,7 @@
 # Modified by Danny Arends
 # 
 # first written March 2011
-# last modified March 2011
+# last modified April 2011
 #
 #     This program is free software; you can redistribute it and/or
 #     modify it under the terms of the GNU General Public License,
@@ -22,7 +22,8 @@
 #     at http://www.r-project.org/Licenses/GPL-3
 #
 # Contains: toGenotypes
-#           convertToGenotypes.internal, splitRow.internal, filterGenotypes.internal, filterRow.internal 
+#           convertToGenotypes.internal, splitRow.internal, filterGenotypes.internal, filterRow.internal
+#			sortMap.internal 
 #
 ############################################################################################################
 
@@ -79,7 +80,7 @@ toGenotypes <- function(ril, use=c("real","simulated","map"), treshold=0.01, ove
 		#Order markers - ripple in our case often produces errors, so turning it off by default
 		cross <- orderMarkers(cross, use.ripple=TRUE, verbose=verbose)
 		#Adding real maps
-		ril$rils$map <- sortMap.internal(ril$rils$map)
+		ril <- sortMap.internal(ril)
 		if(!(is.null(ril$rils$map))) cross$maps$physical <- ril$rils$map
 		#Majority rule
 		###********IMPORTANT BUT NOT YET OPERATIVE!!!********
@@ -182,8 +183,14 @@ filterRow.internal <- function(genotypeRow, overlapInd, proportion, margin){
 	return(0)
 }
 
-
-sortMap.internal <- function(genes){
+############################################################################################################
+#sortMap.internal: subfunction of filterGenotypes.internal, filtering one row
+# 
+# ril - Ril type object
+#
+############################################################################################################
+sortMap.internal <- function(ril){
+	genes <- ril$rils$map
 	result <- NULL
 	nchr <- length(table(genes[,1]))
 	lengths <- vector(mode="numeric",length=nchr+1)
@@ -195,5 +202,6 @@ sortMap.internal <- function(genes){
 		current[,2] <- current[,2] + lengths[i]
 		result <- rbind(result,current)
 	}
-	invisible(list(result,lengths[-length(lengths)]))
+	ril$rils$map <- list(result,lengths[-length(lengths)])
+	invisible(ril)
 }
