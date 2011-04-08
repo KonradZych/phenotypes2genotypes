@@ -13,7 +13,7 @@
 }
 
 \arguments{
- \item{cross1}{ R/qtl cross type object.}
+ \item{cross}{ R/qtl cross type object.}
  \item{coloringMode}{ 1 - rainbow colors 2 - black for cis and red for trans located markers. }
 }
 
@@ -32,7 +32,11 @@
 }
 
 \examples{
-
+	setwd(paste(.Library,"pheno2geno/data",sep="/"))
+	ril <- readFiles()
+	ril <- preprocessData(ril)
+	#cross <- toGenotypes(ril,use="simulated",minChrLength=0,treshold=1,margin=50,max.rf=1,min.lod=0)
+	#plotMapComparison(cross)
 }
 
 \seealso{
