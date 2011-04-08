@@ -24,12 +24,11 @@
 \alias{recombinationCountRowSub.internal}
 \alias{recombinationCountRowFlipSub.internal}
 
-\alias{compareGeneLocation.internal}
-\alias{compareGeneLocationSub.internal}
-\alias{genePosition.internal}
-\alias{plotChromosomeMap.internal}
-
-
+\alias{getChromosome.internal}
+\alias{getYLocs.internal}
+\alias{makeChromPal.internal}
+\alias{makeTransPal.internal}
+\alias{switchChromosomes.internal}
 
 \title{Internal pheno2geno functions}
 

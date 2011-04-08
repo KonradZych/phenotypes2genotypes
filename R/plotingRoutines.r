@@ -7,7 +7,7 @@
 # Modified by Danny Arends
 # 
 # first written March 2011
-# last modified March 2011
+# last modified April 2011
 #
 #     This program is free software; you can redistribute it and/or
 #     modify it under the terms of the GNU General Public License,
@@ -21,14 +21,16 @@
 #     A copy of the GNU General Public License, version 3, is available
 #     at http://www.r-project.org/Licenses/GPL-3
 #
-# Contains: 
+# Contains: plotParentalExpression, plotChildrenExpression, plotMapComparison
+#				getChromosome.internal, getYLocs.internal, makeChromPal.internal,
+#				makeTransPal.internal, removeChromosomes.internal, switchChromosomes.internal
 #           
 #
 ##################################################################################################
 
 
 ############################################################################################################
-#plotParental: plot red points for expression values for parent of type 0, blue for parent 1 and green lines
+#plotParentalExpression: plot red points for expression values for parent of type 0, blue for parent 1 and green lines
 # for means of rows
 #
 # ril - Ril type object, must contain parental phenotypic data.
@@ -94,32 +96,36 @@ plotChildrenExpression <- function(ril, markers=1:100){
 ############################################################################################################
 #plotMapComparison: boxplot of data for selected markers + points of parental mean for each marker
 # 
-# ril - Ril type object, must contain parental phenotypic data.
-# markers - markers to be printed numbers or names 
+# cross - object of R/qtl cross type
+# coloringMode - 1 - rainbow colors 2 - black for cis and red for trans located markers
 #
 ############################################################################################################
-plotMapComparison <- function(cross, coloringMode=1, minChrLength=5){
-	### remove shitty chromosomes
+plotMapComparison <- function(cross, coloringMode=1){ 
+	
+	#*******remove too short chromosomes*******
 	#cross <- removeChromosomes.internal(cross,minChrLength)
 	removed <- cross$maps$physical[[1]][colnames(cross$rmv),-1]
 	
-	### objects containing all information needen for function execution(well...;p)
+	#*******order chromosomes*******
+	cross <- orderChromosomes.internal(cross)
+	
+	#*******objects containing all information needen for function execution*******
 	ys <- getYLocs.internal(cross)
 	xs <- cross$maps$physical[[1]][rownames(ys[[1]]),]
 	
-	### positions of markers
+	#*******positions of markers*******
 	predictedLocs <- ys[[1]][,-1]
 	referenceLocs <- xs[,-1]
 	
-	### chromosomes lengths
+	#*******chromosomes lengths*******
 	predictedChrom <- ys[[2]]
 	referenceChrom <- cross$maps$physical[[2]]
 	
-	### chromosome labels
+	#*******chromosome labels*******
 	predictedChromLabels <- names(table(ys[[1]][,1]))
 	referenceChromLabels <- names(table(xs[,1]))
 	
-	### chromosome labels positions
+	#*******chromosome labels positions*******
 	predictedChromPos <- vector(mode="numeric",length(predictedChrom)-1)
 	for(i in 1:length(predictedChrom)-1){
 		predictedChromPos[i] <- (predictedChrom[i] + predictedChrom[i+1])/2
@@ -132,14 +138,14 @@ plotMapComparison <- function(cross, coloringMode=1, minChrLength=5){
 	}
 	referenceChromPos[length(referenceChrom)] <- (referenceChrom[length(referenceChrom)] + max(referenceLocs))/2
 	
-	### color palette
+	#*******color palette*******
 	if(coloringMode==1){ 
 		color <- makeChromPal.internal(ys[[1]],xs)
 	}else if(coloringMode==2){
 		color <- makeTransPal.internal(ys[[1]],xs)
 	}
 	
-	### results of lin regr for each chromosome
+	#*******results of lin regr for each chromosome*******
 	l <- vector(mode="list",length(table(ys[[1]][,1])))
 	for(i in 1:length(table(ys[[1]][,1]))){
 		a <- ys[[1]][which(ys[[1]][,1]==i),-1]
@@ -148,22 +154,22 @@ plotMapComparison <- function(cross, coloringMode=1, minChrLength=5){
 		cat("Chromosome",i,"lr coefficients",l[[i]],"\n")
 	}
 	
-	### plotting points
+	#*******plotting points*******
 	plot(x=referenceLocs, y=predictedLocs, xlim=c(min(referenceLocs),max(referenceLocs)), ylim=c(min(predictedLocs),max(predictedLocs)),
 		xaxt="n", yaxt="n", col=color[[1]], pch=color[[2]], xlab="Reference map", ylab="Predicted map", main="Comparison of genetic maps")
 	
-	### adding chromosome labels and tics
+	#*******adding chromosome labels and tics*******
 	axis(1, at = referenceChrom[-1],labels = FALSE)
 	axis(1, at = referenceChromPos,labels = referenceChromLabels, lwd = 0, tick = FALSE)
 	axis(2, at = predictedChrom[-1],labels = FALSE)
 	axis(2, at = predictedChromPos,labels = predictedChromLabels, lwd = 0, tick = FALSE)
 	
-	### adding marker tics
+	#*******adding marker tics*******
 	axis(1, at = referenceLocs,labels = FALSE)
 	axis(1, at = removed,labels = FALSE, col.ticks = "red")
 	axis(2, at = predictedLocs,labels = FALSE)
 	
-	### adding lines marking chromosomes ends
+	#*******adding lines marking chromosomes ends*******
 	for(x in 2:length(referenceChrom)){
 		abline(v=sum(referenceChrom[x]),lty=2)
 	}
@@ -173,11 +179,10 @@ plotMapComparison <- function(cross, coloringMode=1, minChrLength=5){
 }
 
 ############################################################################################################
-#removeChromosomes.internal: subfunction of filterGenotypes.internal, filtering one row
+#getChromosome.internal: subfunction of plotMapComparison, returning list of chromosome numbers for all
+# markers in cross
 # 
 # cross - object of R/qtl cross type
-# minChrLength -if maximal distance between the markers in the chromosome is lower than this value,
-#	whole chromosome will be dropped
 #
 ############################################################################################################
 getChromosome.internal <- function(cross){
@@ -185,11 +190,9 @@ getChromosome.internal <- function(cross){
 }
 
 ############################################################################################################
-#removeChromosomes.internal: subfunction of filterGenotypes.internal, filtering one row
+#getYLocs.internal: subfunction of plotMapComparison, returning list of location of all markers in cross
 # 
 # cross - object of R/qtl cross type
-# minChrLength -if maximal distance between the markers in the chromosome is lower than this value,
-#	whole chromosome will be dropped
 #
 ############################################################################################################
 getYLocs.internal <- function(cross){
@@ -209,11 +212,10 @@ getYLocs.internal <- function(cross){
 }
 
 ############################################################################################################
-#removeChromosomes.internal: subfunction of filterGenotypes.internal, filtering one row
+#makeChromPal.internal: subfunction of plotMapComparison, returning color pallete (rainbow colors)
 # 
-# cross - object of R/qtl cross type
-# minChrLength -if maximal distance between the markers in the chromosome is lower than this value,
-#	whole chromosome will be dropped
+# ys1 - object of plotMapComparison, containing info about predicted map
+# xs - object of plotMapComparison, containing info about reference map
 #
 ############################################################################################################
 makeChromPal.internal <- function(ys1,xs){
@@ -230,11 +232,10 @@ makeChromPal.internal <- function(ys1,xs){
 }
 
 ############################################################################################################
-#removeChromosomes.internal: subfunction of filterGenotypes.internal, filtering one row
+#makeTransPal.internal: subfunction of plotMapComparison,returning color pallete (red/black)
 # 
-# cross - object of R/qtl cross type
-# minChrLength -if maximal distance between the markers in the chromosome is lower than this value,
-#	whole chromosome will be dropped
+# ys1 - object of plotMapComparison, containing info about predicted map
+# xs - object of plotMapComparison, containing info about reference map
 #
 ############################################################################################################
 makeTransPal.internal <- function(ys1,xs){
@@ -255,11 +256,10 @@ makeTransPal.internal <- function(ys1,xs){
 }
 
 ############################################################################################################
-#removeChromosomes.internal: subfunction of filterGenotypes.internal, filtering one row
+#removeChromosomes.internal: removing from cross chromosomes that have too little markers
 # 
 # cross - object of R/qtl cross type
-# minChrLength -if maximal distance between the markers in the chromosome is lower than this value,
-#	whole chromosome will be dropped
+# minChrLength - minimal number of markers chromosome have to contaion not to be removed)
 #
 ############################################################################################################
 removeChromosomes.internal <- function(cross, minChrLength){
@@ -275,11 +275,10 @@ removeChromosomes.internal <- function(cross, minChrLength){
 }
 
 ############################################################################################################
-#removeChromosomes.internal: subfunction of filterGenotypes.internal, filtering one row
+#switchChromosomes.internal: switching two chromosomes of cross object
 # 
 # cross - object of R/qtl cross type
-# minChrLength -if maximal distance between the markers in the chromosome is lower than this value,
-#	whole chromosome will be dropped
+# chr1, chr2 - numbers of chromosomes to be switched (1,2) == (2,1)
 #
 ############################################################################################################
 switchChromosomes.internal <- function(cross, chr1, chr2){
