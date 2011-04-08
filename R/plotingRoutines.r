@@ -139,6 +139,15 @@ plotMapComparison <- function(cross, coloringMode=1, minChrLength=5){
 		color <- makeTransPal.internal(ys[[1]],xs)
 	}
 	
+	### results of lin regr for each chromosome
+	l <- vector(mode="list",length(table(ys[[1]][,1])))
+	for(i in 1:length(table(ys[[1]][,1]))){
+		a <- ys[[1]][which(ys[[1]][,1]==i),-1]
+		b <- xs[which(rownames(xs) %in% names(a)),-1]
+		l[[i]] <- lm(a~b)$coefficients 
+		cat("Chromosome",i,"lr coefficients",l[[i]],"\n")
+	}
+	
 	### plotting points
 	plot(x=referenceLocs, y=predictedLocs, xlim=c(min(referenceLocs),max(referenceLocs)), ylim=c(min(predictedLocs),max(predictedLocs)),
 		xaxt="n", yaxt="n", col=color[[1]], pch=color[[2]], xlab="Reference map", ylab="Predicted map", main="Comparison of genetic maps")
