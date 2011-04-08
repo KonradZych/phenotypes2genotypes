@@ -13,7 +13,7 @@
 }
 
 \usage{
-	toGenotypes(ril, use=c("real","simulated","map"), treshold=0.01, overlapInd = 0, proportion = 50, margin = 15, minChrLength = 0, verbose=FALSE, debugMode=0)
+	toGenotypes(ril, use=c("real","simulated","map"), treshold=0.01, overlapInd = 0, proportion = 50, margin = 15, minChrLength = 0, verbose=FALSE, debugMode=0,...)
 }
 
 \arguments{

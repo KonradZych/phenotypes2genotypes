@@ -107,7 +107,7 @@ plotMapComparison <- function(cross, coloringMode=1){
 	removed <- cross$maps$physical[[1]][colnames(cross$rmv),-1]
 	
 	#*******order chromosomes*******
-	cross <- orderChromosomes.internal(cross)
+	#cross <- orderChromosomes.internal(cross)
 	
 	#*******objects containing all information needen for function execution*******
 	ys <- getYLocs.internal(cross)
