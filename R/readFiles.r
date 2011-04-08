@@ -1,4 +1,4 @@
-#################################################################################
+#############################################################################################
 #
 # parentalRoutine.R
 #
@@ -7,7 +7,7 @@
 # Modified by Danny Arends
 # 
 # first written March 2011
-# last modified March 2011
+# last modified April 2011
 #
 #     This program is free software; you can redistribute it and/or
 #     modify it under the terms of the GNU General Public License,
@@ -22,9 +22,10 @@
 #     at http://www.r-project.org/Licenses/GPL-3
 #
 # Contains: readFiles 
-# 				readFile.internal, mapMarkers.internal, gffParser, correctRow.internal
+# 				readFile.internal, mapMarkers.internal, gffParser, probesLocation.internal
+#				correctRowGff.internal, correctRowLoc.internal
 #
-#################################################################################
+#############################################################################################
 
 ############################################################################################################
 #readFiles: reads geno/phenotypic files into R environment into special object.
@@ -147,7 +148,6 @@ mapMarkers.internal <- function(expressionMatrix1, expressionMatrix2, mapMode=2,
 ############################################################################################################
 #gffParser: reads gff file and transfroms it into nice matrix!
 # 
-# ril - 
 # filename - name of gff file
 # verbose - Be verbose
 # debugMode - 1: Print our checks, 2: print additional time information
@@ -173,8 +173,8 @@ gffParser.internal <- function(filename="children_map.gff",verbose=FALSE,debugMo
 }
 
 ############################################################################################################
-#correctRow.internal: gffParser sub function, calculating mean possition of the gene and puts its identifier alone in
-# last column
+#correctRow.internal: gffParser sub function, calculating mean possition of the gene and puts its identifier
+# alone as rowname
 # 
 # genesRow - currently processed row
 #
@@ -191,8 +191,7 @@ correctRowGff.internal <- function(genesRow){
 ############################################################################################################
 #gffParser: reads gff file and transfroms it into nice matrix!
 # 
-# ril - 
-# filename - name of gff file
+# filename - name of probes location file
 # verbose - Be verbose
 # debugMode - 1: Print our checks, 2: print additional time information
 #
@@ -216,8 +215,8 @@ probesLocation.internal <- function(filename="children_probes.txt",verbose=FALSE
 }
 
 ############################################################################################################
-#correctRow.internal: gffParser sub function, calculating mean possition of the gene and puts its identifier alone in
-# last column
+#correctRowLoc.internal: probesLocation sub function, calculating mean possition of the gene and removes 
+# begining and end information
 # 
 # genesRow - currently processed row
 #

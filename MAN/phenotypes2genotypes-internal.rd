@@ -3,7 +3,9 @@
 \alias{readFile.internal}
 \alias{mapMarkers.internal}
 \alias{gffParser.internal}
-\alias{correctRow.internal}
+\alias{correctRowGff.internal}
+\alias{correctRowLoc.internal}
+\alias{probesLocation.internal}
 
 \alias{genotypesToCross.internal}
 \alias{writePhenotypes.internal}
