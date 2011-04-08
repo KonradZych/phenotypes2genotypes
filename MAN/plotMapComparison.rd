@@ -1,6 +1,6 @@
 \name{plotMapComparison}
 \alias{plotMapComparison}
-\alias{chr}
+\alias{coloringMode}
 
 \title{Plotting routine for comparison of two genetic maps.}
 
@@ -9,13 +9,12 @@
 }
 
 \usage{
-	plotMapComparison(cross1, cross2, chr=NULL)
+	plotMapComparison(cross, coloringMode=1)
 }
 
 \arguments{
  \item{cross1}{ R/qtl cross type object.}
- \item{cross2}{ R/qtl cross type object.}
- \item{chr}{ Chromosomes of map 1 to be plotted. }
+ \item{coloringMode}{ 1 - rainbow colors 2 - black for cis and red for trans located markers. }
 }
 
 \value{
@@ -38,6 +37,7 @@
 
 \seealso{
   \code{\link{plotChildrenExpression}}
+  \code{\link{plotParentalExpression}}
 }
 
 \keyword{manip}
