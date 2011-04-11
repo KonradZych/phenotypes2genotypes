@@ -27,7 +27,7 @@
 }
 
 \details{
-  TODO
+  To be sure your analysis runs smoothly, data files should have specific format - data separated by tabs, first row provides colnames and first column rownames for the matrix. No addictional remarks, header etc.
 }
 
 \author{
