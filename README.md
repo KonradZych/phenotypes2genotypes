@@ -1,12 +1,7 @@
-The GoogleFinancial package
+The pheno2geno package
 =================
-This package provides a wrapper to download financial data from [Google Finance](http://www.google.com/finance "Google Finance"). 
-It provides tools to model the downloaded financial data. This package provides automated loading of datasets 
-from [Google Finance](http://www.google.com/finance "Google Finance"). It aims to predict stock prices 
-for the upcoming 2 years . Furthermore the packages allows for exploration of the downloaded data like 
-discovery of batch / localized effects. To provide easy data downloading and managment a pre-made list 
-of companies from AEX, DowJones and NasDaQ is provided. However it is always possible to define your 
-own set of companies / indices to monitor and study.
+This package provides you with possibility to create genetic map out of expression data for children and parents. Working currently for RILs, preparing to run Back Cross analysis.
+Mind the fact that this is still pre-release version, so not everything is perfect. Also use rather versions that were tagged, you can install them and perform R check without warnings.
 
 Dependencies
 ------------
