@@ -80,8 +80,11 @@ toGenotypes <- function(ril, use=c("real","simulated","map"), treshold=0.01, ove
 		#Order markers - ripple in our case often produces errors, so turning it off by default
 		cross <- orderMarkers(cross, use.ripple=TRUE, verbose=verbose)
 		#Adding real maps
-		ril <- sortMap.internal(ril)
-		if(!(is.null(ril$rils$map))) cross$maps$physical <- ril$rils$map
+		
+		if(!(is.null(ril$rils$map))){
+			ril <- sortMap.internal(ril)
+			cross$maps$physical <- ril$rils$map
+		}
 		cross$rmv <- removed
 		#Majority rule
 		###********IMPORTANT BUT NOT YET OPERATIVE!!!********
