@@ -172,12 +172,12 @@ filterRow.internal <- function(genotypeRow, overlapInd, proportion, margin){
 	if(sum(is.na(genotypeRow))>overlapInd) return(0)
 	above <- sum(genotypeRow==1)/length(genotypeRow) * 100
 	below <- sum(genotypeRow==0)/length(genotypeRow) * 100
-	if((above < (proportion+margin/2)) && (above < (proportion-margin/2))){
-		if((below > 1-(proportion+margin/2)) && (below > 1-(proportion-margin/2))){
+	if((above < (proportion+margin/2)) && (above > (proportion-margin/2))){
+		if((below > 100-(proportion+margin/2)) && (below < 100-(proportion-margin/2))){
 			return(1)
 		}
-	} else if((below < (proportion+margin/2)) && (below < (proportion-margin/2))){
-		if((above > 1-(proportion+margin/2)) && (above > 1-(proportion-margin/2))){
+	} else if((below < (proportion+margin/2)) && (below > (proportion-margin/2))){
+		if((above > 100-(proportion+margin/2)) && (above < 100-(proportion-margin/2))){
 			return(1)
 		}
 	}
