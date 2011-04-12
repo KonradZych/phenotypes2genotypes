@@ -145,6 +145,7 @@ writePhenotypes.internal <- function(ril, use, outputFile, verbose=FALSE, debugM
 	}
 	
 	toWrite <- ril$rils$phenotypes[chosenLabels,]
+	toWrite <- cleanNames.internal(toWrite)
 	if(verbose && debugMode==1) cat("writePhenotypes starting.\n")
 	write.table(cbind("","",toWrite),file=outputFile,sep=",",quote=FALSE,col.names=FALSE)
 	el <- proc.time()
@@ -191,8 +192,27 @@ writeGenotypes.internal <- function(genotypeMatrix,chr=1,positions=NULL,outputFi
 	if(is.null(positions)) positions <- 1:nrow(genotypeMatrix)
 	else if(length(positions)!=length(1:nrow(genotypeMatrix))) stop("Posistions object is not correct, check help files.\n")
 	if(verbose && debugMode==1) cat("writeGenotypes starting.\n")
+	genotypeMatrix <- cleanNames.internal(genotypeMatrix)
 	write.table(cbind(rownames(genotypeMatrix),chr,positions,genotypeMatrix),file=outputFile,sep=",",quote=FALSE,
 		col.names=FALSE,append=TRUE,row.names=FALSE)
 	el <- proc.time()
 	if(verbose && debugMode==2) cat("Writing genotypes done in:",(el-sl)[3],"seconds.\n")
+}
+
+############################################################################################################
+#cleanNames.internal - changing names that will crush read.cross
+# 
+# matrixToBeCleaned - matrix of any data type
+#
+############################################################################################################
+cleanNames.internal <-function(matrixToBeCleaned){
+	for(i in 1:nrow(matrixToBeCleaned)){
+		old <- rownames(matrixToBeCleaned)[i]
+		new <- gsub(",","_",rownames(matrixToBeCleaned)[i])
+		if(old != new){
+			rownames(matrixToBeCleaned)[i] <- new
+			cat("WARNING: marker name switched from:",old,"to",new,"because it contained ','!\n")
+		}
+	}
+	invisible(matrixToBeCleaned)
 }
