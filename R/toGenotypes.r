@@ -134,7 +134,7 @@ splitRow.internal <- function(x,rils,parental,groupLabels,genotypes){
 	result <- rep(0,length(rils[x,]))
 	A <- parental[which(rownames(parental) == x),which(groupLabels==0)]
 	B <- parental[which(rownames(parental) == x),which(groupLabels==1)]
-	splitVal <- mean(mean(A),mean(B))
+	splitVal <- mean(mean(A,na.rm=TRUE),mean(B,na.rm=TRUE))
 	result[which(rils[x,] > splitVal)] <- genotypes[1]
 	result[which(rils[x,] < splitVal)] <- genotypes[2]
 	result[which(rils[x,] == splitVal)] <- NA
@@ -171,9 +171,13 @@ filterGenotypes.internal <- function(ril, overlapInd=0, proportion=50, margin=5,
 filterRow.internal <- function(genotypeRow, overlapInd, proportion, margin){
 	if(sum(is.na(genotypeRow))>overlapInd) return(0)
 	above <- sum(genotypeRow==1)/length(genotypeRow) * 100
-	bellow <- sum(genotypeRow==0)/length(genotypeRow) * 100
-	if((above < (proportion+(margin/2))) && (above > (proportion-(margin/2)))){
-		if((bellow < ((100-proportion)+(margin/2))) && (bellow > ((100-proportion)-(margin/2)))){
+	below <- sum(genotypeRow==0)/length(genotypeRow) * 100
+	if((above < (proportion+margin/2)) && (above < (proportion-margin/2))){
+		if((below > 1-(proportion+margin/2)) && (below > 1-(proportion-margin/2))){
+			return(1)
+		}
+	} else if((below < (proportion+margin/2)) && (below < (proportion-margin/2))){
+		if((above > 1-(proportion+margin/2)) && (above > 1-(proportion-margin/2))){
 			return(1)
 		}
 	}
