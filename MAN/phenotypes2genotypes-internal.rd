@@ -11,6 +11,7 @@
 \alias{writePhenotypes.internal}
 \alias{writeGenotypes.internal}
 \alias{writeGenotypesMap.internal}
+\alias{cleanNames.internal}
 
 \alias{convertToGenotypes.internal}
 \alias{splitRow.internal}
