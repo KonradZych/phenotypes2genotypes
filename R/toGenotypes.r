@@ -209,3 +209,28 @@ sortMap.internal <- function(ril){
 	ril$rils$map <- list(result,lengths[-length(lengths)])
 	invisible(ril)
 }
+
+############################################################################################################
+#cleanNames.internal - changing names that will crush read.cross
+# 
+# matrixToBeCleaned - matrix of any data type
+#
+############################################################################################################
+cleanMap.internal <-function(cross){
+	for(i in 1:length(cross$geno)){
+		if(max(cross$geno[[i]]$map)>150){
+			for(j in names(cross$geno[[i]]$map)){
+				cur_max <- max(cross$geno[[i]]$map)
+				cross2 <- drop.markers(cross,j)
+				newmap <- est.map(cross2,offset=0)
+				cross2 <- replace.map(cross2, newmap)
+				new_max <- max(cross2$geno[[i]]$map)
+				if(cur_max-new_max > (0.075 * cur_max)){
+					cat("Removed marker:",j,"to make map smaller from",cur_max,"to",new_max,"\n")
+					cross <- cross2
+				}
+			}
+		}
+	}
+	invisible(cross)
+}
