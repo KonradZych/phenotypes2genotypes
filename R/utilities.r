@@ -35,6 +35,7 @@
 ############################################################################################################
 cleanMap <- function(cross, difPercentage, verbose=FALSE, debugMode=0){
 	if(verbose && debugMode==1) cat("cleanMap starting withour errors in checkpoint.\n")
+	s <- proc.time()
 	for(i in 1:length(cross$geno)){
 		begLength <- length(cross$geno[[i]]$map)
 		for(j in names(cross$geno[[i]]$map)){
@@ -46,12 +47,14 @@ cleanMap <- function(cross, difPercentage, verbose=FALSE, debugMode=0){
 				new_max <- max(cross2$geno[[i]]$map)
 				dif <- cur_max-new_max
 				if(dif > (difPercentage/100 * cur_max)){
-					cat("------Removed marker:",j,"to make chromosome",i,"map smaller from",cur_max,"to",new_max,"\n")
+					if(verbose) cat("------Removed marker:",j,"to make chromosome",i,"map smaller from",cur_max,"to",new_max,"\n")
 					cross <- cross2
 				}
 			}
 		}
 		cat("---Removed",begLength-length(cross$geno[[i]]$map),"out of",begLength,"markers on chromosome",i,"\n")
 	}
+	e <- proc.time()
+	if(verbose && debugMode==2)cat("Map cleaning done in:",(e-s)[3],"seconds.\n")
 	invisible(cross)
 }
