@@ -74,23 +74,28 @@ toGenotypes <- function(ril, use=c("real","simulated","map"), treshold=0.01, ove
 	
 	#*******ENHANCING CROSS OBJECT*******
 	if(use!="map"){
-		#FormLinkage groups
+		### FormLinkage groups
 		cross <- invisible(formLinkageGroups(cross,reorgMarkers=TRUE,verbose=verbose,...))
+		
 		### remove shitty chromosomes
 		cross <- removeChromosomes.internal(cross,minChrLength)
+		### saving as separated object, beacause orderMarkers will remove it from cross object
 		removed <- cross$rmv
-		#Order markers - ripple in our case often produces errors, so turning it off by default
-		cross <- orderMarkers(cross, use.ripple=TRUE, verbose=verbose)
-		#Adding real maps
 		
+		### Order markers
+		cross <- orderMarkers(cross, use.ripple=TRUE, verbose=verbose)
+		
+		### Adding real maps		
 		if(!(is.null(ril$rils$map))){
 			ril <- sortMap.internal(ril)
 			cross$maps$physical <- ril$rils$map
 		}
+		
+		### adding info about removed markers
 		cross$rmv <- removed
-		#Majority rule
-		###********IMPORTANT BUT NOT YET OPERATIVE!!!********
-		#cross <- segragateChromosomes.internal(cross)
+		
+		#Majority rule used to order linkage groups
+		cross <- segragateChromosomes.internal(cross)
 	}
 	
 	#*******RETURNING CROSS OBJECT*******
@@ -210,4 +215,22 @@ sortMap.internal <- function(ril){
 	}
 	ril$rils$map <- list(result,lengths[-length(lengths)])
 	invisible(ril)
+}
+
+############################################################################################################
+#segragateChromosomes.internal  - ordering chromosomes using physical map
+# 
+# cross - object of R/qtl cross type
+#
+############################################################################################################
+segragateChromosomes.internal <- function(cross){
+	if(!(in.null(cross$maps$physical)){
+		for(i in 1:length(cross$geno)){
+			cur_ys <- colnames(cross$geno[[i]]$data)
+			cur_xs <- cross$maps$physical[[1]][cur_ys,]
+			new_ord <- names(sort(table(cur_xs[,1]),decreasing=TRUE))
+			cross <- switchChromosomes.internal(cross, i, new_ord[1])
+		}
+	}
+	invisible(cross)
 }
