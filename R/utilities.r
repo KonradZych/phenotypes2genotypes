@@ -9,6 +9,7 @@
 # first written March 2011
 # last modified April 2011
 # last modified in version: 0.4.3
+# in current version: active, not in main workflow
 #
 #     This program is free software; you can redistribute it and/or
 #     modify it under the terms of the GNU General Public License,
@@ -29,9 +30,12 @@
 ############################################################################################################
 
 ############################################################################################################
-#cleanNames.internal - changing names that will crush read.cross
+#cleanMap - removing markers that cause reco map to be too long
 # 
-# matrixToBeCleaned - matrix of any data type
+# cross - R/qtl cross type object
+# difPercentage - If removing marker will make map shorter by this percentage of its length, then it will be dropped.
+# verbose - Be verbose
+# debugMode - 1: Print our checks, 2: print additional time information 
 #
 ############################################################################################################
 cleanMap <- function(cross, difPercentage, verbose=FALSE, debugMode=0){

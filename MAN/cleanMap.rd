@@ -2,10 +2,10 @@
 \alias{cleanMap}
 
 
-\title{Creating genotypes from children phenotypes.}
+\title{Removing wrong markers.}
 
 \description{
-  Creating genotypes from children phenotypes using parental data and saving cross object.
+  Removing markers that cause reco map to be too long.
 }
 
 \usage{
