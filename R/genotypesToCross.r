@@ -7,7 +7,8 @@
 # Modified by Danny Arends
 # 
 # first written March 2011
-# last modified March 2011
+# last modified April 2011
+# last modified in version: 0.4.3
 #
 #     This program is free software; you can redistribute it and/or
 #     modify it under the terms of the GNU General Public License,
