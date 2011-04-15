@@ -12,6 +12,7 @@
 \alias{writeGenotypes.internal}
 \alias{writeGenotypesMap.internal}
 \alias{cleanNames.internal}
+\alias{segragateChromosomes.internal}
 
 \alias{convertToGenotypes.internal}
 \alias{splitRow.internal}
