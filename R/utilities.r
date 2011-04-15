@@ -8,6 +8,7 @@
 # 
 # first written March 2011
 # last modified April 2011
+# last modified in version: 0.4.3
 #
 #     This program is free software; you can redistribute it and/or
 #     modify it under the terms of the GNU General Public License,
@@ -37,7 +38,8 @@ cleanMap <- function(cross, difPercentage, verbose=FALSE, debugMode=0){
 	if(verbose && debugMode==1) cat("cleanMap starting withour errors in checkpoint.\n")
 	s <- proc.time()
 	for(i in 1:length(cross$geno)){
-		begLength <- length(cross$geno[[i]]$map)
+		begMarkers <- length(cross$geno[[i]]$map)
+		begLength <- max(cross$geno[[i]]$map)
 		for(j in names(cross$geno[[i]]$map)){
 			if(max(cross$geno[[i]]$map)>150){
 				cur_max <- max(cross$geno[[i]]$map)
@@ -52,7 +54,8 @@ cleanMap <- function(cross, difPercentage, verbose=FALSE, debugMode=0){
 				}
 			}
 		}
-		cat("---Removed",begLength-length(cross$geno[[i]]$map),"out of",begLength,"markers on chromosome",i,"\n")
+		removed <- begMarkers-length(cross$geno[[i]]$map)
+		if(removed>0)cat("Removed",removed,"out of",begMarkers,"markers on chromosome",i," which led to shortening map from ",begLength,"to",max(cross$geno[[i]]$map),"(",100*(begLength-max(cross$geno[[i]]$map))/begLength,"%)\n")
 	}
 	e <- proc.time()
 	if(verbose && debugMode==2)cat("Map cleaning done in:",(e-s)[3],"seconds.\n")
