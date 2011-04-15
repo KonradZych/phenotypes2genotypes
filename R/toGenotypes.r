@@ -224,7 +224,7 @@ sortMap.internal <- function(ril){
 #
 ############################################################################################################
 segragateChromosomes.internal <- function(cross){
-	if(!(in.null(cross$maps$physical)){
+	if(!(is.null(cross$maps$physical))){
 		for(i in 1:length(cross$geno)){
 			cur_ys <- colnames(cross$geno[[i]]$data)
 			cur_xs <- cross$maps$physical[[1]][cur_ys,]
