@@ -102,7 +102,7 @@ readFiles <- function(rils="children",parental="parental",sep="",verbose=FALSE,d
 readFile.internal <- function(filename,sep="",verbose=FALSE,debugMode=0){
 	if(!file.exists(filename)) stop("File: ",filename,"doesn't exist.\n")
 	s1<-proc.time()
-	currentFile <- read.table(filename,sep=sep)
+	currentFile <- read.table(filename,sep=sep,header=TRUE,row.names=1)
 	currentFile <- as.matrix(currentFile)
 	rownames(currentFile) <- toupper(rownames(currentFile))
 	if(!is.numeric(currentFile)) stop("Not all elements of the file:",filename," are numeric, check help files for rigth input file format. \n")
