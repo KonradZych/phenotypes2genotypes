@@ -225,12 +225,35 @@ sortMap.internal <- function(ril){
 ############################################################################################################
 segragateChromosomes.internal <- function(cross){
 	if(!(is.null(cross$maps$physical))){
+		knchrom <- length(table(cross$maps$physical[[1]][,1]))
+		result <- matrix(0, length(cross$geno), knchrom)
+		output <- matrix(0, length(cross$geno), knchrom)
 		for(i in 1:length(cross$geno)){
 			cur_ys <- colnames(cross$geno[[i]]$data)
 			cur_xs <- cross$maps$physical[[1]][cur_ys,]
-			new_ord <- names(sort(table(cur_xs[,1]),decreasing=TRUE))
-			cross <- switchChromosomes.internal(cross, i, new_ord[1])
+			#ll <- sort(table(cur_xs[,1]),decreasing=TRUE)
+			for(j in 1:knchrom){
+				result[i,j] <- sum(cur_xs[,1]==j)/nrow(cur_xs)
+			}
+			output[i,which(result[i,]==max(result[i,]))] <- 1
+			#new_ord <- names(sort(table(cur_xs[,1]),decreasing=TRUE))
+			#cross <- switchChromosomes.internal(cross, i, new_ord[1])
 		}
+		print(result)
+		print(output)
+		if(min(apply(output,2,max))==1){
+			for(l in 1:ncol(output)){
+				cur <- which(output[,l]==max(output[,l]))
+				names(cross$geno)[cur] <- l#paste(l,0:(length(cur)-1),sep="_")
+				print(names(cross$geno))
+			}
+		}
+		cross <- orderCross.internal(cross)
 	}
 	invisible(cross)
 }
+
+orderCross.internal <- function(cross){
+	
+}
+
