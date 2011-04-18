@@ -231,29 +231,56 @@ segragateChromosomes.internal <- function(cross){
 		for(i in 1:length(cross$geno)){
 			cur_ys <- colnames(cross$geno[[i]]$data)
 			cur_xs <- cross$maps$physical[[1]][cur_ys,]
-			#ll <- sort(table(cur_xs[,1]),decreasing=TRUE)
 			for(j in 1:knchrom){
 				result[i,j] <- sum(cur_xs[,1]==j)/nrow(cur_xs)
 			}
 			output[i,which(result[i,]==max(result[i,]))] <- 1
-			#new_ord <- names(sort(table(cur_xs[,1]),decreasing=TRUE))
-			#cross <- switchChromosomes.internal(cross, i, new_ord[1])
 		}
-		print(result)
-		print(output)
+		cat(1,"\n")
 		if(min(apply(output,2,max))==1){
 			for(l in 1:ncol(output)){
 				cur <- which(output[,l]==max(output[,l]))
-				names(cross$geno)[cur] <- l#paste(l,0:(length(cur)-1),sep="_")
-				print(names(cross$geno))
+				cat(names(cross$geno),cur,"\n")
+				if(length(cur)>1){
+					cross <- mergeChromosomes.internal(cross,cur,l)
+					#cross <- switchChromosomes.internal(cross,cur[1],l)
+					#names(cross$geno)[cur[1]] <- l
+				}else{
+					cross <- switchChromosomes.internal(cross,cur,l)
+					#names(cross$geno)[cur] <- l
+				}
 			}
+		}else{
 		}
-		cross <- orderCross.internal(cross)
+		names(cross$geno) <- 1:length(cross$geno)
+		#cross <- orderCross.internal(cross)
 	}
 	invisible(cross)
 }
 
 orderCross.internal <- function(cross){
-	
+	newO <- names(cross$geno)
+	cat(newO,"\n")
+	for(i in 1:length(newO)){
+		if(i!=newO[i]){
+			cross <- switchChromosomes.internal(cross,i,as.numeric(newO[i]))
+			newO[which(newO==i)] <- newO[i]
+			newO[i] <- i
+		}
+	}
+	names(cross$geno) <- newO
+	invisible(cross)
 }
 
+mergeChromosomes.internal <- function(cross, chromosomes, name){
+	cat("Merging",class(chromosomes),"to",class(name),"\n")
+	geno <- cross$geno
+	names(geno)
+	markerNames <- NULL
+	for(j in chromosomes){
+		if(j!=name) markerNames <- c(markerNames, colnames(geno[[j]]$data))
+	}
+	for(k in markerNames) cross <- movemarker(cross, k, name)
+	names(cross$geno)[]
+	invisible(cross)
+}
