@@ -91,11 +91,11 @@ toGenotypes <- function(ril, use=c("real","simulated","map"), treshold=0.01, ove
 			cross$maps$physical <- ril$rils$map
 		}
 		
+		### Majority rule used to order linkage groups
+		cross <- segregateChromosomes.internal(cross)
+		
 		### adding info about removed markers
 		cross$rmv <- removed
-		
-		#Majority rule used to order linkage groups
-		cross <- segragateChromosomes.internal(cross)
 	}
 	
 	#*******RETURNING CROSS OBJECT*******
@@ -223,57 +223,56 @@ sortMap.internal <- function(ril){
 # cross - object of R/qtl cross type
 #
 ############################################################################################################
-segragateChromosomes.internal <- function(cross){
+segregateChromosomes.internal <- function(cross){
 	if(!(is.null(cross$maps$physical))){
-		knchrom <- length(table(cross$maps$physical[[1]][,1]))
-		result <- matrix(0, length(cross$geno), knchrom)
-		output <- matrix(0, length(cross$geno), knchrom)
-		for(i in 1:length(cross$geno)){
-			cur_ys <- colnames(cross$geno[[i]]$data)
-			cur_xs <- cross$maps$physical[[1]][cur_ys,]
-			for(j in 1:knchrom){
-				result[i,j] <- sum(cur_xs[,1]==j)/nrow(cur_xs)
-			}
-			output[i,which(result[i,]==max(result[i,]))] <- 1
-		}
-		cat(1,"\n")
+		output <- majorityRule.internal(cross)
+		print(output)
 		if(min(apply(output,2,max))==1){
-			for(l in 1:ncol(output)){
-				cur <- which(output[,l]==max(output[,l]))
-				cat(names(cross$geno),cur,"\n")
-				if(length(cur)>1){
-					cross <- mergeChromosomes.internal(cross,cur,l)
-					#cross <- switchChromosomes.internal(cross,cur[1],l)
-					#names(cross$geno)[cur[1]] <- l
-				}else{
-					cross <- switchChromosomes.internal(cross,cur,l)
-					#names(cross$geno)[cur] <- l
+			while(max(apply(output,2,sum))>1){
+				toMerge <- which(apply(output,2,sum)>1)
+				for(curToMerge in toMerge){
+					curMerge <- which(output[,curToMerge]==max(output[,curToMerge]))
+					map <- cross$maps$physical
+					cross <- mergeChromosomes.internal(cross,curMerge,curToMerge)
+					cross$maps$physical <- map
 				}
+				output <- majorityRule.internal(cross)
+				print(output)
 			}
-		}else{
+			order1 <- matrix(0,ncol(output),nrow(output))
+			order2 <- matrix(1,ncol(output),nrow(output))
+			while(any(order1!=order2)){
+				order1 <- output
+				for(l in 1:ncol(output)){
+					cur <- which(output[,l]==max(output[,l]))
+					if(cur!=l)cross <- switchChromosomes.internal(cross,cur,l)
+					output <- majorityRule.internal(cross)
+				}
+				order2 <- output
+			}
 		}
 		names(cross$geno) <- 1:length(cross$geno)
-		#cross <- orderCross.internal(cross)
 	}
 	invisible(cross)
 }
 
-orderCross.internal <- function(cross){
-	newO <- names(cross$geno)
-	cat(newO,"\n")
-	for(i in 1:length(newO)){
-		if(i!=newO[i]){
-			cross <- switchChromosomes.internal(cross,i,as.numeric(newO[i]))
-			newO[which(newO==i)] <- newO[i]
-			newO[i] <- i
+majorityRule.internal <- function(cross){
+	knchrom <- length(table(cross$maps$physical[[1]][,1]))
+	result <- matrix(0, length(cross$geno), knchrom)
+	output <- matrix(0, length(cross$geno), knchrom)
+	for(i in 1:length(cross$geno)){
+		cur_ys <- colnames(cross$geno[[i]]$data)
+		cur_xs <- cross$maps$physical[[1]][cur_ys,]
+		for(j in 1:knchrom){
+			result[i,j] <- sum(cur_xs[,1]==j)/nrow(cur_xs)
 		}
+		output[i,which(result[i,]==max(result[i,]))] <- 1
 	}
-	names(cross$geno) <- newO
-	invisible(cross)
+	invisible(output)
 }
 
 mergeChromosomes.internal <- function(cross, chromosomes, name){
-	cat("Merging",class(chromosomes),"to",class(name),"\n")
+	cat("Merging chromosomes",chromosomes,"to form chromosome",name,"\n")
 	geno <- cross$geno
 	names(geno)
 	markerNames <- NULL
@@ -281,6 +280,9 @@ mergeChromosomes.internal <- function(cross, chromosomes, name){
 		if(j!=name) markerNames <- c(markerNames, colnames(geno[[j]]$data))
 	}
 	for(k in markerNames) cross <- movemarker(cross, k, name)
-	names(cross$geno)[]
+	cat("Ordering markers on newly merged chromosome\n")
+	cross <- orderMarkers(cross, chr=name)
 	invisible(cross)
 }
+
+

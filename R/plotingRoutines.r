@@ -284,7 +284,6 @@ removeChromosomes.internal <- function(cross, minChrLength){
 #
 ############################################################################################################
 switchChromosomes.internal <- function(cross, chr1, chr2){
-	cat(chr1,chr2,"hej\n")
 	if(chr1!=chr2){
 		geno <- cross$geno
 		cross$geno[[chr1]] <- geno[[chr2]] 
