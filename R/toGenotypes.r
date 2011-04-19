@@ -224,32 +224,32 @@ sortMap.internal <- function(ril){
 #
 ############################################################################################################
 segregateChromosomes.internal <- function(cross){
-	if(!(is.null(cross$maps$physical))){
-		output <- majorityRule.internal(cross)
-		print(output)
-		if(min(apply(output,2,max))==1){
-			while(max(apply(output,2,sum))>1){
-				toMerge <- which(apply(output,2,sum)>1)
-				for(curToMerge in toMerge){
-					curMerge <- which(output[,curToMerge]==max(output[,curToMerge]))
-					map <- cross$maps$physical
-					cross <- mergeChromosomes.internal(cross,curMerge,curToMerge)
-					cross$maps$physical <- map
-				}
+	if(is.null(cross$maps$physical)){
+		cat("WARNING: no physical map, function will return unchanged cross object\n")
+	}else{
+		### until every chr on phys map is match exactly once
+		while(max(apply(output,2,sum))>1){
+			toMerge <- which(apply(output,2,sum)>1)
+			for(curToMerge in toMerge){
+				curMerge <- which(output[,curToMerge]==max(output[,curToMerge]))
+				map <- cross$maps$physical
+				cross <- mergeChromosomes.internal(cross,curMerge,curToMerge)
+				cross$maps$physical <- map
+			}
+			output <- majorityRule.internal(cross)
+		}
+		
+		order1 <- matrix(0,ncol(output),nrow(output))
+		order2 <- matrix(1,ncol(output),nrow(output))
+		### until next iteration doesn't change the result
+		while(any(order1!=order2)){
+			order1 <- output
+			for(l in 1:ncol(output)){
+				cur <- which(output[,l]==max(output[,l]))
+				if(cur!=l)cross <- switchChromosomes.internal(cross,cur,l)
 				output <- majorityRule.internal(cross)
-				print(output)
 			}
-			order1 <- matrix(0,ncol(output),nrow(output))
-			order2 <- matrix(1,ncol(output),nrow(output))
-			while(any(order1!=order2)){
-				order1 <- output
-				for(l in 1:ncol(output)){
-					cur <- which(output[,l]==max(output[,l]))
-					if(cur!=l)cross <- switchChromosomes.internal(cross,cur,l)
-					output <- majorityRule.internal(cross)
-				}
-				order2 <- output
-			}
+			order2 <- output
 		}
 		names(cross$geno) <- 1:length(cross$geno)
 	}
@@ -268,6 +268,18 @@ majorityRule.internal <- function(cross){
 		}
 		output[i,which(result[i,]==max(result[i,]))] <- 1
 	}
+	rownames(result) <- 1:nrow(result)
+	colnames(result) <- 1:ncol(result)
+	rownames(output) <- 1:nrow(output)
+	colnames(output) <- 1:ncol(output)
+	
+	if(min(apply(output,2,max))!=1){
+		toCheck <- which(apply(output,2,sum)!=1)
+		for(x in toCheck){
+			output[,x] <- 0
+			output[which(result[,x]==max(result[,x])),x] <- 1
+		}
+	}	
 	invisible(output)
 }
 
