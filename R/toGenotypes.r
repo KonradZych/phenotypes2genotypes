@@ -8,7 +8,7 @@
 # 
 # first written March 2011
 # last modified April 2011
-# last modified in version: 0.4.3
+# last modified in version: 0.4.4
 # in current version: active, in main workflow
 #
 #     This program is free software; you can redistribute it and/or
@@ -25,7 +25,7 @@
 #
 # Contains: toGenotypes
 #           convertToGenotypes.internal, splitRow.internal, filterGenotypes.internal, filterRow.internal
-#			sortMap.internal 
+#			sortMap.internal, majorityRule.internal, mergeChromosomes.internal
 #
 ############################################################################################################
 
@@ -296,6 +296,8 @@ majorityRule.internal <- function(cross){
 # one
 # 
 # cross - object of R/qtl cross type
+# chromosomes - chromosomes to be merged
+# name - chromosome
 #
 ############################################################################################################
 mergeChromosomes.internal <- function(cross, chromosomes, name){
