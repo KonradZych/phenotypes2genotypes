@@ -227,6 +227,7 @@ segregateChromosomes.internal <- function(cross){
 	if(is.null(cross$maps$physical)){
 		cat("WARNING: no physical map, function will return unchanged cross object\n")
 	}else{
+		output <- majorityRule.internal(cross)
 		### until every chr on phys map is match exactly once
 		while(max(apply(output,2,sum))>1){
 			toMerge <- which(apply(output,2,sum)>1)
@@ -256,6 +257,13 @@ segregateChromosomes.internal <- function(cross){
 	invisible(cross)
 }
 
+############################################################################################################
+#majorityRule.internal - subfunction of segragateChromosomes.internal, returns matrix showing for every
+# reco map chromosome from which physicall map chromosome majority of markers comes
+# 
+# cross - object of R/qtl cross type
+#
+############################################################################################################
 majorityRule.internal <- function(cross){
 	knchrom <- length(table(cross$maps$physical[[1]][,1]))
 	result <- matrix(0, length(cross$geno), knchrom)
@@ -283,6 +291,13 @@ majorityRule.internal <- function(cross){
 	invisible(output)
 }
 
+############################################################################################################
+#mergeChromosomes.internal - subfunction of segragateChromosomes.internal, merging multiple chromosomes into
+# one
+# 
+# cross - object of R/qtl cross type
+#
+############################################################################################################
 mergeChromosomes.internal <- function(cross, chromosomes, name){
 	cat("Merging chromosomes",chromosomes,"to form chromosome",name,"\n")
 	geno <- cross$geno
