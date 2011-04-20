@@ -87,6 +87,7 @@ readFiles <- function(rils="children",parental="parental",sep="",verbose=FALSE,d
 	#**********FINALIZING FUNCTION*************
 	e <- proc.time()
 	if(verbose) cat("readFiles done in",(e-s)[3],"seconds.\n")
+	class(ril) <- "ril"
 	invisible(ril)
 }
 
