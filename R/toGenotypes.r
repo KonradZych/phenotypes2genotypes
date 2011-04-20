@@ -145,8 +145,10 @@ splitRow.internal <- function(x,rils,parental,groupLabels,genotypes){
 	A <- parental[which(rownames(parental) == x),which(groupLabels==0)]
 	B <- parental[which(rownames(parental) == x),which(groupLabels==1)]
 	splitVal <- mean(mean(A,na.rm=TRUE),mean(B,na.rm=TRUE))
-	result[which(rils[x,] > splitVal)] <- genotypes[1]
-	result[which(rils[x,] < splitVal)] <- genotypes[2]
+	a <- rils[x,] > splitVal
+	b <- rils[x,] < splitVal
+	result[which(a)] <- genotypes[1]
+	result[which(b)] <- genotypes[2]
 	result[which(rils[x,] == splitVal)] <- NA
 	invisible(result)
 }
