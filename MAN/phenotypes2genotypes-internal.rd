@@ -18,7 +18,7 @@
 
 \alias{convertToGenotypes.internal}
 \alias{splitRow.internal}
-\alias{filterGenotypes.internal}
+\alias{filterRowSub.internal }
 \alias{filterRow.internal}
 \alias{sortMap.internal}
 
