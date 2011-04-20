@@ -30,7 +30,6 @@
 #
 ##################################################################################################
 
-
 ############################################################################################################
 #plotParentalExpression: plot red points for expression values for parent of type 0, blue for parent 1 and green lines
 # for means of rows
@@ -41,6 +40,10 @@
 #
 ############################################################################################################
 plotParentalExpression <- function(ril, markers=1:100, groupLabels=c(0,0,1,1)){
+	#*******checks*******
+	if(class(ril)!="ril")
+	
+	#*******remove too short chromosomes*******
 	if(nrow(ril$parental$phenotypes)<length(markers)){
 		cat("WARNING: There are only",nrow(ril$parental$phenotypes),"markers in ril$parental$phenotypes, function will plot them all.\n")
 		markers <- 1:nrow(ril$parental$phenotypes)

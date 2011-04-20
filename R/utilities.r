@@ -65,3 +65,56 @@ cleanMap <- function(cross, difPercentage, verbose=FALSE, debugMode=0){
 	if(verbose && debugMode==2)cat("Map cleaning done in:",(e-s)[3],"seconds.\n")
 	invisible(cross)
 }
+
+############################################################################################################
+#cleanMap - removing markers that cause reco map to be too long
+# 
+# cross - R/qtl cross type object
+# difPercentage - If removing marker will make map shorter by this percentage of its length, then it will be dropped.
+# verbose - Be verbose
+# debugMode - 1: Print our checks, 2: print additional time information 
+#
+############################################################################################################
+print.ril <- function(x){
+	#if(is.null(ril$summary)) ril$summary <- rilSummary.internal
+	cat("This is object of class ril, too complex to print it, so we provide you with summary.\n")
+	if(!(is.null(ril$rils))){
+		if(!(is.null(ril$rils$phenotypes))){
+			cat("Object contains phenotypic data for",ncol(ril$rils$phenotypes),"children individuals covering",nrow(ril$rils$phenotypes),"probes.\n")
+		}else{
+			stop("There is no phenotypic data for children. This is not acceptable in real ril object.\n")
+		}
+		if(!(is.null(ril$rils$genotypes$read))){
+			cat("Object contains genotypic data for",ncol(ril$rils$phenotypes),"children individuals covering",nrow(ril$rils$phenotypes),"probes.\n")
+		}else{
+			cat("There is no genotypic data for children.")
+		}
+		if(!(is.null(ril$rils$map))){
+			cat("Object contains  for",ncol(ril$rils$phenotypes),"children individuals covering",nrow(ril$rils$phenotypes),"probes.\n")
+		}else{
+			cat("There is no physical genetic map.")
+		}
+	}else{
+		stop("here is no phenotypic data for children. This is not acceptable in real ril object.\n")
+	}
+	
+	if(!(is.null(ril$rils))){
+		if(!(is.null(ril$rils))){
+			
+		}else{
+			cat("There is no ")
+		}
+		if(!(is.null(ril$rils))){
+			
+		}else{
+			cat("There is no ")
+		}
+		if(!(is.null(ril$rils))){
+			
+		}else{
+			cat("There is no ")
+		}
+	}else{
+		stop("This is not real ril object, sorry\n")
+	}
+}
