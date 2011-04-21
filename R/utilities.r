@@ -77,44 +77,46 @@ cleanMap <- function(cross, difPercentage, verbose=FALSE, debugMode=0){
 ############################################################################################################
 print.ril <- function(x){
 	#if(is.null(ril$summary)) ril$summary <- rilSummary.internal
+	cat("*************************************************************************************\n")
 	cat("This is object of class ril, too complex to print it, so we provide you with summary.\n")
 	if(!(is.null(ril$rils))){
 		if(!(is.null(ril$rils$phenotypes))){
 			cat("Object contains phenotypic data for",ncol(ril$rils$phenotypes),"children individuals covering",nrow(ril$rils$phenotypes),"probes.\n")
 		}else{
-			stop("There is no phenotypic data for children. This is not acceptable in real ril object.\n")
+			stop("There is no phenotypic data for children in this object. This is not acceptable in real ril object.\n")
 		}
 		if(!(is.null(ril$rils$genotypes$read))){
 			cat("Object contains genotypic data for",ncol(ril$rils$phenotypes),"children individuals covering",nrow(ril$rils$phenotypes),"probes.\n")
 		}else{
-			cat("There is no genotypic data for children.")
+			cat("There is no genotypic data for children in this object.\n")
 		}
 		if(!(is.null(ril$rils$map))){
-			cat("Object contains  for",ncol(ril$rils$phenotypes),"children individuals covering",nrow(ril$rils$phenotypes),"probes.\n")
+			cat("Object contains physical map covering",nrow(ril$rils$map),"markers from",length(table(ril$rils$map[,1])),"chromosomes.\n")
 		}else{
-			cat("There is no physical genetic map.")
+			cat("There is no physical genetic map in this object.\n")
 		}
 	}else{
-		stop("here is no phenotypic data for children. This is not acceptable in real ril object.\n")
+		cat("WARNING: There is no phenotypic data for children. This is not acceptable in real ril object.\n")
 	}
 	
-	if(!(is.null(ril$rils))){
-		if(!(is.null(ril$rils))){
-			
+	if(!(is.null(ril$parental))){
+		if(!(is.null(ril$parental$phenotypes))){
+			cat("Object contains phenotypic data for",ncol(ril$parental$phenotypes),"parental individuals covering",nrow(ril$parental$phenotypes),"probes.\n")
 		}else{
-			cat("There is no ")
+			stop("There is no phenotypic data for parents in this object. This is not acceptable in real ril object.\n")
 		}
-		if(!(is.null(ril$rils))){
-			
+		if(!(is.null(ril$parental$RP))){
+			cat("Object contains RP analysis results.\n")
 		}else{
-			cat("There is no ")
+			cat("There is no RP analysis result in this object.\n")
 		}
-		if(!(is.null(ril$rils))){
-			
+		if(!(is.null(ril$parental$groups))){
+			cat("Parental groups are as following:",ril$parental$groups,"\n")
 		}else{
-			cat("There is no ")
+			cat("There is no information about parental groups in this object.\n")
 		}
 	}else{
-		stop("This is not real ril object, sorry\n")
+		cat("WARNING: There is no phenotypic data for parents. This is not acceptable in real ril object.\n")
 	}
+	cat("*************************************************************************************\n")
 }

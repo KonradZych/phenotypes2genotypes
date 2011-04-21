@@ -72,7 +72,7 @@ readFiles <- function(rils="children",parental="parental",sep="",verbose=FALSE,d
 		#removing from parental probes that are not in children:
 		ril$parental$phenotypes <- mapMarkers.internal(ril$parental$phenotypes,ril$rils$phenotypes ,mapMode=1,verbose=verbose)
 	}else{
-		cat("WARNING: There is no phenotypic file for parents:",filename,"further processing will take place without taking into account parental data\n")
+		stop("There is no phenotypic file for parents:",filename,"further processing will take place without taking into account parental data\n")
 	}
 	
 	#**********READING LOC GENETIC MAP*************

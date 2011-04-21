@@ -111,13 +111,6 @@ toGenotypes <- function(ril, use=c("real","simulated","map"), treshold=0.01, ove
 ############################################################################################################
 convertToGenotypes.internal <- function(ril, treshold, overlapInd, proportion, margin, verbose=FALSE, debugMode=0){
 	if(verbose && debugMode==1) cat("convertToGenotypes starting.\n")
-	if(length(proportion)==2){
-		genotypesUp <- c(0,1)
-		genotypesDown <- c(1,0)
-	}else if(length(proportion)==3){
-		genotypesUp <- c(0,1,2)
-		genotypesDown <- c(2,1,0)
-	}
 	output <- NULL
 	markerNames <- NULL 
 	upParental <- ril$parental$phenotypes[which(ril$parental$RP$pval[1] < treshold),]
