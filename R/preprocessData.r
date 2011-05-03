@@ -7,8 +7,8 @@
 # Modified by Danny Arends
 # 
 # first written March 2011
-# last modified March 2011
-# last modified in version: 0.4.1
+# last modified May 2011
+# last modified in version: 0.5.1
 # in current version: active, in main workflow
 #
 #     This program is free software; you can redistribute it and/or
@@ -52,6 +52,8 @@ preprocessData <- function(ril,groupLabels=c(0,0,1,1),verbose=FALSE,debugMode=0,
 	ril$parental$groups <- groupLabels
 	e2<-proc.time()
 	if(verbose && debugMode==2)cat("Data preprocessing done in:",(e2-s2)[3],"seconds.\n")
+	ril$parameters$preprocessData <- list("object of ril class", groupLabels,verbose,debugMode)
+	names(ril$parameters$preprocessData) <- c("ril", "groupLabels", "verbose", "debugMode")
 	class(ril) <- "ril"
 	invisible(ril)
 }

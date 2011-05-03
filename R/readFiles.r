@@ -7,8 +7,8 @@
 # Modified by Danny Arends
 # 
 # first written March 2011
-# last modified April 2011
-# last modified in version: 0.4.3
+# last modified May 2011
+# last modified in version: 0.5.1
 # in current version: active, in main workflow
 #
 #     This program is free software; you can redistribute it and/or
@@ -87,6 +87,8 @@ readFiles <- function(rils="children",parental="parental",sep="",verbose=FALSE,d
 	#**********FINALIZING FUNCTION*************
 	e <- proc.time()
 	if(verbose) cat("readFiles done in",(e-s)[3],"seconds.\n")
+	ril$parameters$readFiles <- list(rils,parental,sep="",verbose,debugMode)
+	names(ril$parameters$readFiles) <- c("rils", "parental", "sep", "verbose", "debugMode")
 	class(ril) <- "ril"
 	invisible(ril)
 }
