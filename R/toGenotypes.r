@@ -7,8 +7,8 @@
 # Modified by Danny Arends
 # 
 # first written March 2011
-# last modified April 2011
-# last modified in version: 0.4.4
+# last modified May 2011
+# last modified in version: 0.5.1 (under development)
 # in current version: active, in main workflow
 #
 #     This program is free software; you can redistribute it and/or
@@ -356,4 +356,170 @@ mergeChromosomes.internal <- function(cross, chromosomes, name){
 	invisible(cross)
 }
 
+############################################################################################################
+#mergeChromosomes.internal - subfunction of segragateChromosomes.internal, merging multiple chromosomes into
+# one
+# 
+# cross - object of R/qtl cross type
+# chromosomes - chromosomes to be merged
+# name - chromosome
+#
+############################################################################################################
+mixtureEM.internal <- function(ril, nrDistributions, lambda.ini=NULL, mu.ini=NULL, var.ini=NULL, iter.max=100, epsilon=1e-05, verbose=FALSE, debugMode=0){
+	if(verbose && debugMode==1) cat("toGenotypes starting withour errors in checkpoint.\n")
+	s <- proc.time()
+	result <- apply(ril$rils$phenotypes[1:10,],1,mixtureEMSub.internal, nrDistributions, lambda.ini, mu.ini, var.ini, iter.max, epsilon, verbose, debugMode)
+	ril$parameters$mixtureEM.internal <- list("object of ril class", nrDistributions, lambda.ini, mu.ini, var.ini, iter.max, epsilon, verbose, debugMode)
+	names(ril$parameters$mixtureEM.internal) <- c("ril", "nrDistributions", "lambda.ini", "mu.ini", "var.ini", "iter.max", "epsilon", "verbose", "debugMode")
+	ril$rils$EM <- result
+	e <- proc.time()
+	invisible(ril)
+}
+
+############################################################################################################
+#mergeChromosomes.internal - subfunction of segragateChromosomes.internal, merging multiple chromosomes into
+# one
+# 
+# cross - object of R/qtl cross type
+# chromosomes - chromosomes to be merged
+# name - chromosome
+#
+############################################################################################################
+mixtureEMSub.internal <- function(markerExpression, nrDistributions, lambda.ini=NULL, mu.ini=NULL, var.ini=NULL, iter.max=100, epsilon=1e-05, verbose=FALSE, debugMode=0){
+	
+	### checks
+	
+	### initializing
+	y <- markerExpression
+	n <- length(y)
+	g <- nrDistributions
+	nn <- floor(n/g)
+	L.ini <- matrix(nrow = n, ncol = g, dimnames = NULL)
+	L.old <- matrix(nrow = n, ncol = g, dimnames = NULL)
+	L <- matrix(nrow = n, ncol = g, dimnames = NULL)
+	comp <- matrix(nrow = n, ncol = g, dimnames = NULL)
+	post.prob <- matrix(nrow = n, ncol = g, dimnames = NULL)
+	aux3 <- matrix(rep(y, g), nrow = n, ncol = g, dimnames = NULL)
+
+	### randomly divide data into two sets 
+	index <- matrix(nrow = nn, ncol = g, dimnames = NULL)
+	x <- c(1:n)
+	index[,1] <- sample(x, nn, replace=FALSE)
+	for (i in 2:g){
+		index[,i] <- sample(x[-index[,1:(i-1)]], nn, replace=FALSE)
+	}
+	
+	mu.ini <- apply(index, 2, mean)
+	var.ini <- apply(index, 2, var)
+	lambda <- 1/g; lambda.ini <- rep(1/g, g);
+
+	### compute loglikelihood for initial values
+	for (i in 1:g){
+		L.ini[,i] <- lambda*dnorm(y, mu.ini[i], sqrt(var.ini[i]))
+	}
+
+	LL.ini <- log(apply(L.ini, 1, sum))
+	ll.ini<- sum(LL.ini)
+
+	iteration <- 0;
+	post.prob <- rep(0, g);
+	
+	### main function
+	lambda <- lambda.ini
+	mu <- mu.ini
+	var <- var.ini
+
+	lambda.old <- rep(0, g)
+	mu.old <- rep(0, g)
+	var.old <- rep(0, g)
+
+	ll.old <- 0
+	ll <- ll.ini
+	ll.list <- ll.ini
+	lambda.list <- lambda.ini
+	mu.list <- mu.ini
+	stdev.list <- sqrt(var.ini)
+	lambda.table <- lambda.ini
+	mu.table <- mu.ini
+	stdev.table <- sqrt(var.ini)
+	bM <- FALSE
+
+	########## Loop over the following ################################################
+	while (abs(ll.old-ll)>epsilon && iteration <= iter.max && !bM){
+
+		### E-step
+		s <- proc.time()
+		for (i in 1:g){
+			if(is.na(sqrt(var[i]))){
+				bM <- TRUE
+			}
+			L.old[,i] <- lambda[i]*dnorm(y, mu[i], sqrt(var[i]))  #compute likelihoods of each component
+		}
+		if(bM) break
+		LL.old <- log(apply(L.old, 1, sum))     #sum likelihood of each component over all observations, then take logarithm
+		ll.old<- sum(LL.old)    #compute overall loglikelihood by taking sum of loglik for each component
+
+		for (i in 1:g){
+			comp[,i] <- lambda[i]*dnorm(y, mu[i], sqrt(var[i]))
+		}
+
+		sum.comp <- apply(comp, 1, sum)
+		post.prob <- comp/sum.comp
+
+		### M-step 
+		lambda.old <- lambda              # current lambda becomes lambda.old
+		mu.old <- mu                      # current mean becomes mu.old
+		var.old <- var                    # current variance becomes var.old
+
+		lambda <- apply(post.prob, 2, mean)                # update weights for each component
+
+		aux1 <- post.prob*y                                # update weighted mean, auxiliary step
+		aux2 <- apply(aux1, 2, sum)                        # update weighted mean, auxiliary step
+		mu <- aux2/apply(post.prob, 2, sum)                # update weighted mean
+
+		for (i in 1:g){                                      # update weighted variance, auxiliary step
+		aux3[,i] <- post.prob[,i]*(y - mu[i])^g            # update weighted variance, auxiliary step
+		}                                                    # update weighted variance, auxiliary step
+		var <- apply(aux3, 2, sum)/apply(post.prob, 2, sum)  # update weighted variance
+
+		for (i in 1:g){
+			L[,i] <- lambda[i]*dnorm(y, mu[i], sqrt(var[i]))
+		}
+		LL <- log(apply(L, 1, sum))
+		ll <- sum(LL)
+		ll.list <- c(ll.list, ll)                        # collect loglikelihoods in list
+		lambda.list <- c(lambda.list, lambda)            # collect weights in list
+		mu.list <- c(mu.list, mu)                        # collect means in list
+		stdev.list <- c(stdev.list, sqrt(var))           # collect stand.dev. in list
+
+		lambda.table <- rbind(lambda.table, lambda)      # collect weights in table
+		mu.table <- rbind(mu.table, mu)                  # collect means in table
+		stdev.table <- rbind(stdev.table, sqrt(var))     # collect stand.dev. in table
+		
+		if(verbose && iteration %% 10 == 0 && debugMode==2){
+			e <- proc.time()
+			cat("Iteration:",iteration,"took",(e-s)[3],"seconds. \n")
+		}
+		
+		iteration <- iteration+1
+
+		# if number of iterations exceeds iter.max, then stop
+		if(iteration > iter.max){
+			cat("WARNING: maximum iterations reached at", iter.max, "function stopping.\n")
+			break 
+		}
+
+		output <- c(lambda, mu, sqrt(var))
+		cat("L:",lambda,"mu:",mu,"sqrt(var):",(var),"\n")
+
+		####### SAVE NUMERIC RESULTS OF PARAMETERS #############################################
+		write.table(lambda.table, file=paste(path, "lambda-list.txt", sep=""), sep="\t", col.names = TRUE, row.names = FALSE)
+		write.table(mu.table, file=paste(path, "mu-list.txt", sep=""), sep=", ", col.names = TRUE, row.names = FALSE)
+		write.table(stdev.table, file=paste(path, "stdev-list.txt", sep=""), sep="\t", col.names = TRUE, row.names = FALSE)
+		write.table(post.prob, file=paste(path, "post.prob.txt", sep=""), sep="\t", col.names = TRUE, row.names = FALSE)
+		write.table(ll.list, file=paste(path, "LogLik-list.txt", sep=""), sep="\t", col.names = TRUE, row.names = FALSE)
+		write.table(output, file=paste(path, "output.txt", sep=""), sep = "\t", col.names = TRUE, row.names = FALSE, qmethod = "double")
+	}
+	return(output)
+}
 
