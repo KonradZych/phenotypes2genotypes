@@ -47,7 +47,8 @@ Data files
 --------
 Our workflow is based on assumption that data files provided to our software have certain names (can be modified by user) and format (unmodifiable). 
 To be sure your analysis runs smoothly please acknowledge data format specification included in readFiles help file in DETAILS section, you can access by:
-    $ > ?readFile
+    
+	$ > ?readFile
 
 
 TODO
