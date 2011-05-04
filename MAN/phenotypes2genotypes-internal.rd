@@ -21,6 +21,8 @@
 \alias{filterRowSub.internal }
 \alias{filterRow.internal}
 \alias{sortMap.internal}
+\alias{mixtureEM.internal}
+\alias{mixtureEMSub.internal}
 
 \alias{bestClustering.internal}
 \alias{bestClusteringSub.internal}
