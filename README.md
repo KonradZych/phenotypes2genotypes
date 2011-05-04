@@ -61,15 +61,15 @@ Contributing
 
 Want to contribute? Great!
 
-1. Clone it.
+1. Clone it:
 
     $ git clone git://github.com/KonradZych/phenotypes2genotypes.git 
 	
-2. Install it.
+2. Install it:
 
     $ R CMD INSTALL phenotypes2genotypes
 	
-3. Run it.
+3. Run it:
 
     $ > library(pheno2geno)
 	
