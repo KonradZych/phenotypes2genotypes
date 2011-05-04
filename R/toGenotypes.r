@@ -368,7 +368,7 @@ mergeChromosomes.internal <- function(cross, chromosomes, name){
 mixtureEM.internal <- function(ril, nrDistributions, lambda.ini=NULL, mu.ini=NULL, var.ini=NULL, iter.max=100, epsilon=1e-05, verbose=FALSE, debugMode=0){
 	if(verbose && debugMode==1) cat("toGenotypes starting withour errors in checkpoint.\n")
 	s <- proc.time()
-	result <- apply(ril$rils$phenotypes[1:10,],1,mixtureEMSub.internal, nrDistributions, lambda.ini, mu.ini, var.ini, iter.max, epsilon, verbose, debugMode)
+	result <- apply(ril$rils$phenotypes,1,mixtureEMSub.internal, nrDistributions, lambda.ini, mu.ini, var.ini, iter.max, epsilon, verbose, debugMode)
 	ril$parameters$mixtureEM.internal <- list("object of ril class", nrDistributions, lambda.ini, mu.ini, var.ini, iter.max, epsilon, verbose, debugMode)
 	names(ril$parameters$mixtureEM.internal) <- c("ril", "nrDistributions", "lambda.ini", "mu.ini", "var.ini", "iter.max", "epsilon", "verbose", "debugMode")
 	ril$rils$EM <- result
@@ -409,17 +409,18 @@ mixtureEMSub.internal <- function(markerExpression, nrDistributions, lambda.ini=
 		index[,i] <- sample(x[-index[,1:(i-1)]], nn, replace=FALSE)
 	}
 	
-	mu.ini <- apply(index, 2, mean)
-	var.ini <- apply(index, 2, var)
+	mu.ini <- apply(index, 2, mean, na.rm=TRUE)
+	var.ini <- apply(index, 2, var, na.rm=TRUE)
 	lambda <- 1/g; lambda.ini <- rep(1/g, g);
 
 	### compute loglikelihood for initial values
 	for (i in 1:g){
 		L.ini[,i] <- lambda*dnorm(y, mu.ini[i], sqrt(var.ini[i]))
+		#for(k in 1:length(L.ini[,i])) if(is.na(L.ini[k,i])) L.ini[k,i]<- 0
+		
 	}
-
-	LL.ini <- log(apply(L.ini, 1, sum))
-	ll.ini<- sum(LL.ini)
+	LL.ini <- log(apply(L.ini, 1, sum, na.rm=TRUE))
+	ll.ini <- sum(LL.ini,na.rm=TRUE)
 
 	iteration <- 0;
 	post.prob <- rep(0, g);
@@ -442,28 +443,24 @@ mixtureEMSub.internal <- function(markerExpression, nrDistributions, lambda.ini=
 	lambda.table <- lambda.ini
 	mu.table <- mu.ini
 	stdev.table <- sqrt(var.ini)
-	bM <- FALSE
-
+	cat(LL.ini, ll.old, ll,"    ll    \n")
 	########## Loop over the following ################################################
-	while (abs(ll.old-ll)>epsilon && iteration <= iter.max && !bM){
+	while (abs(ll.old-ll)>epsilon && iteration <= iter.max){
 
 		### E-step
 		s <- proc.time()
 		for (i in 1:g){
-			if(is.na(sqrt(var[i]))){
-				bM <- TRUE
-			}
 			L.old[,i] <- lambda[i]*dnorm(y, mu[i], sqrt(var[i]))  #compute likelihoods of each component
 		}
-		if(bM) break
-		LL.old <- log(apply(L.old, 1, sum))     #sum likelihood of each component over all observations, then take logarithm
+		LL.old <- log(apply(L.old, 1, sum, na.rm=TRUE))     #sum likelihood of each component over all observations, then take logarithm
 		ll.old<- sum(LL.old)    #compute overall loglikelihood by taking sum of loglik for each component
 
 		for (i in 1:g){
 			comp[,i] <- lambda[i]*dnorm(y, mu[i], sqrt(var[i]))
 		}
 
-		sum.comp <- apply(comp, 1, sum)
+		
+		sum.comp <- apply(comp, 1, sum, na.rm=TRUE)
 		post.prob <- comp/sum.comp
 
 		### M-step 
@@ -471,22 +468,25 @@ mixtureEMSub.internal <- function(markerExpression, nrDistributions, lambda.ini=
 		mu.old <- mu                      # current mean becomes mu.old
 		var.old <- var                    # current variance becomes var.old
 
-		lambda <- apply(post.prob, 2, mean)                # update weights for each component
+		lambda <- apply(post.prob, 2, mean, na.rm=TRUE)                # update weights for each component
 
 		aux1 <- post.prob*y                                # update weighted mean, auxiliary step
-		aux2 <- apply(aux1, 2, sum)                        # update weighted mean, auxiliary step
-		mu <- aux2/apply(post.prob, 2, sum)                # update weighted mean
+		aux2 <- apply(aux1, 2, sum, na.rm=TRUE)                        # update weighted mean, auxiliary step
+		mu <- aux2/apply(post.prob, 2, sum, na.rm=TRUE)                # update weighted mean
 
 		for (i in 1:g){                                      # update weighted variance, auxiliary step
 		aux3[,i] <- post.prob[,i]*(y - mu[i])^g            # update weighted variance, auxiliary step
 		}                                                    # update weighted variance, auxiliary step
-		var <- apply(aux3, 2, sum)/apply(post.prob, 2, sum)  # update weighted variance
+		var <- apply(aux3, 2, sum, na.rm=TRUE)/apply(post.prob, 2, sum, na.rm=TRUE)  # update weighted variance
 
 		for (i in 1:g){
 			L[,i] <- lambda[i]*dnorm(y, mu[i], sqrt(var[i]))
+			
 		}
-		LL <- log(apply(L, 1, sum))
-		ll <- sum(LL)
+
+		LL <- log(apply(L, 1, sum, na.rm=TRUE))
+		for(llaux in 1:length(LL)) if(LL[llaux]==-Inf) LL[llaux]<-0
+		ll <- sum(LL,na.rm=TRUE)
 		ll.list <- c(ll.list, ll)                        # collect loglikelihoods in list
 		lambda.list <- c(lambda.list, lambda)            # collect weights in list
 		mu.list <- c(mu.list, mu)                        # collect means in list
@@ -504,21 +504,21 @@ mixtureEMSub.internal <- function(markerExpression, nrDistributions, lambda.ini=
 		iteration <- iteration+1
 
 		# if number of iterations exceeds iter.max, then stop
+		output <- c(lambda, mu, var)
 		if(iteration > iter.max){
 			cat("WARNING: maximum iterations reached at", iter.max, "function stopping.\n")
 			break 
 		}
+		if(any(is.nan(var))){
+			cat("WARNING: variation NaN:", var, "function stopping.\n")
+			break 
+		}
+		if(any(var <= 0)){
+			cat("WARNING: variation lower than zero:", var, "function stopping.\n")
+			break 
+		}
+		cat("L:",lambda,"mu:",mu,"sqrt(var):",sqrt(var),"\n")
 
-		output <- c(lambda, mu, sqrt(var))
-		cat("L:",lambda,"mu:",mu,"sqrt(var):",(var),"\n")
-
-		####### SAVE NUMERIC RESULTS OF PARAMETERS #############################################
-		write.table(lambda.table, file=paste(path, "lambda-list.txt", sep=""), sep="\t", col.names = TRUE, row.names = FALSE)
-		write.table(mu.table, file=paste(path, "mu-list.txt", sep=""), sep=", ", col.names = TRUE, row.names = FALSE)
-		write.table(stdev.table, file=paste(path, "stdev-list.txt", sep=""), sep="\t", col.names = TRUE, row.names = FALSE)
-		write.table(post.prob, file=paste(path, "post.prob.txt", sep=""), sep="\t", col.names = TRUE, row.names = FALSE)
-		write.table(ll.list, file=paste(path, "LogLik-list.txt", sep=""), sep="\t", col.names = TRUE, row.names = FALSE)
-		write.table(output, file=paste(path, "output.txt", sep=""), sep = "\t", col.names = TRUE, row.names = FALSE, qmethod = "double")
 	}
 	return(output)
 }
