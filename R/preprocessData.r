@@ -43,7 +43,9 @@ preprocessData <- function(ril,groupLabels=c(0,0,1,1),verbose=FALSE,debugMode=0,
 		if(verbose) cat("File rilrankProdRes.Rdata already exists, reading it.\n")
 		load("rilrankProdRes.Rdata")
 		ril$parental$RP <- result[[1]]
+		if(verbose) cat("File rilrankProdRes.Rdata contains groupLabels used during processing. They are following:",result[[2]]," and will be used instead of ones supplied by user:",groupLabels,"\n")
 		ril$parental$groups <- result[[2]]
+		
 	}else{
 		#wasting memory here because of Rbug
 		rankProdRes <- invisible(RP(ril$parental$phenotypes,groupLabels,...))
