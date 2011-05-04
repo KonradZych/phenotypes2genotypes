@@ -79,9 +79,11 @@ c) Run it:
 	
 d) Modify some code. (Search -> 'TODO')
 
-e) Go back to 2, or
+e) Check it:
 
-f) Submit a patch
+    $ R CMD check phenotypes2genotypes
+
+f) If it's warning-free, go back to b) or submit a patch.
 
 You can also just post comments on code / commits.
 
