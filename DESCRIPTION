@@ -1,5 +1,5 @@
 Package: pheno2geno
-Version: 0.5.1 (under development), please use stable version 0.4.4 (tagged)
+Version: 0.4.4
 Date: 04 May 2011
 Title: Tools for the construction of genetic maps from phentype data
 Author: Konrad Zych <dominesum@gmail.com> and Danny Arends
