@@ -39,17 +39,19 @@
 preprocessData <- function(ril,groupLabels=c(0,0,1,1),verbose=FALSE,debugMode=0,...){
 	s2<-proc.time()
 	require(RankProd)
-	if(file.exists("rilRP.Rdata")){
-		if(verbose) cat("File rilRP.Rdata already exists, reading it.\n")
-		load("rilRP.Rdata")
-		ril$parental$RP <- res
+	if(file.exists("rilrankProdRes.Rdata")){
+		if(verbose) cat("File rilrankProdRes.Rdata already exists, reading it.\n")
+		load("rilrankProdRes.Rdata")
+		ril$parental$RP <- result[[1]]
+		ril$parental$groups <- result[[2]]
 	}else{
 		#wasting memory here because of Rbug
-		res <- invisible(RP(ril$parental$phenotypes,groupLabels,...))
-		save(file="rilRP.Rdata",res)
-		ril$parental$RP <- res
+		rankProdRes <- invisible(RP(ril$parental$phenotypes,groupLabels,...))
+		result <- list(rankProdRes,groupLabels)
+		save(file="rilrankProdRes.Rdata",result)
+		ril$parental$RP <- rankProdRes
+		ril$parental$groups <- groupLabels
 	}
-	ril$parental$groups <- groupLabels
 	e2<-proc.time()
 	if(verbose && debugMode==2)cat("Data preprocessing done in:",(e2-s2)[3],"seconds.\n")
 	ril$parameters$preprocessData <- list("object of ril class", groupLabels,verbose,debugMode)
