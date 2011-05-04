@@ -20,13 +20,12 @@ Then install into R by using (from a terminal / commandline):
     $ git clone git://github.com/KonradZych/phenotypes2genotypes.git  # Download the repository
     $ R CMD INSTALL phenotypes2genotypes                            # Install the package
 
-However, then you wull install current version, that could be under development. If you want the error and warning free version, click "Files to download", selected latest
+However, then you will install current version, that could be under development. If you want the error and warning free version, click "Files to download", selected latest
 version (currently 0.4.4), download and unpack zip file and then install it:
 
 	 $ R CMD INSTALL phenotypes2genotypes
 	
-Optionally you can install the pre-build packages by downloading the appropriate 
-package for your operating system. 
+
 
 Starting
 --------
