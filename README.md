@@ -15,11 +15,16 @@ Prepare your environment by following these two steps:
 - Download and Install the R environment
 - Install the qtl and RankProd packages into the R environment
 
-Then install into R by using (from a terminal / commanline):
+Then install into R by using (from a terminal / commandline):
 
     $ git clone git://github.com/KonradZych/phenotypes2genotypes.git  # Download the repository
     $ R CMD INSTALL phenotypes2genotypes                            # Install the package
 
+However, then you wull install current version, that could be under development. If you want the error and warning free version, click "Files to download", selected latest
+version (currently 0.4.4), download and unpack zip file and then install it:
+
+	 $ R CMD INSTALL phenotypes2genotypes
+	
 Optionally you can install the pre-build packages by downloading the appropriate 
 package for your operating system. 
 
@@ -74,7 +79,9 @@ c) Run it:
     $ > library(pheno2geno)
 	
 d) Modify some code. (Search -> 'TODO')
+
 e) Go back to 2, or
+
 f) Submit a patch
 
 You can also just post comments on code / commits.
