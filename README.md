@@ -61,7 +61,7 @@ Contributing
 
 Want to contribute? Great!
 
-1. Clone it:
+Clone it:
 
     $ git clone git://github.com/KonradZych/phenotypes2genotypes.git 
 	
