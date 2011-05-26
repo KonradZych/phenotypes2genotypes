@@ -90,7 +90,7 @@ genotypesToCross.internal <- function(ril, use=c("real","simulated","map"), outp
 		}
 	}else{
 			cat("Cross object will be written using simulated genotypic data\n")
-			writeGenotypes.internal(ril$rils$genotypes$simulated, chr=1,outputFile=outputFile, verbose=verbose, debugMode=debugMode)
+			writeGenotypes.internal(ril$rils$genotypes$simulated, chr=1, positions=ril2$location[which(ril2$location[,1] %in% ril$rils$phenotypes[(rownames(ril$rils$genotypes$simulated)),1]),2], outputFile=outputFile, verbose=verbose, debugMode=debugMode)
 		}
 	}	
 
@@ -191,6 +191,7 @@ writeGenotypesMap.internal <- function(ril, outputFile, verbose=FALSE, debugMode
 ############################################################################################################
 writeGenotypes.internal <- function(genotypeMatrix,chr=1,positions=NULL,outputFile,verbose=FALSE,debugMode=0){
 	sl <- proc.time()
+	cat(positions,"\n")
 	if(is.null(positions)) positions <- 1:nrow(genotypeMatrix)
 	else if(length(positions)!=length(1:nrow(genotypeMatrix))) stop("Posistions object is not correct, check help files.\n")
 	if(verbose && debugMode==1) cat("writeGenotypes starting.\n")

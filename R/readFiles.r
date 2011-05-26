@@ -70,7 +70,7 @@ readFiles <- function(rils="children",parental="parental",sep="",verbose=FALSE,d
 		if(verbose) cat("Found phenotypic file for parents:",filename,"and will store it in ril$parental$phenotypes\n")
 		ril$parental$phenotypes <- readFile.internal(filename,sep,verbose,debugMode)
 		#removing from parental probes that are not in children:
-		ril$parental$phenotypes <- mapMarkers.internal(ril$parental$phenotypes,ril$rils$phenotypes ,mapMode=1,verbose=verbose)
+		#ril$parental$phenotypes <- mapMarkers.internal(ril$parental$phenotypes,ril$rils$phenotypes ,mapMode=1,verbose=verbose)
 	}else{
 		stop("There is no phenotypic file for parents:",filename,"further processing will take place without taking into account parental data\n")
 	}
@@ -102,17 +102,31 @@ readFiles <- function(rils="children",parental="parental",sep="",verbose=FALSE,d
 # debugMode - 1: Print our checks, 2: print additional time information
 #
 ############################################################################################################
-readFile.internal <- function(filename,sep="",verbose=FALSE,debugMode=0){
+readFile.internal <- function(filename,sep="",verbose=FALSE,debugMode=0,..){
 	if(!file.exists(filename)) stop("File: ",filename,"doesn't exist.\n")
 	s1<-proc.time()
 	currentFile <- read.table(filename,sep=sep)
+	if(verbose) cat("File:",filename,"was loaded into R enviroment containing",nrow(currentFile),"markers and",ncol(currentFile),"individuals.\n")
+	#currentFile <- makeUnique.internal(currentFile)
+	#if(!is.numeric(currentFile)) stop("Not all elements of the file:",filename," are numeric, check help files for rigth input file format. \n")
+	currentFile[1,] <- as.numeric(currentFile[1,])
 	currentFile <- as.matrix(currentFile)
-	rownames(currentFile) <- toupper(rownames(currentFile))
-	if(!is.numeric(currentFile)) stop("Not all elements of the file:",filename," are numeric, check help files for rigth input file format. \n")
 	if(verbose) cat("File:",filename,"was loaded into R enviroment containing",nrow(currentFile),"markers and",ncol(currentFile),"individuals.\n")
 	e1<-proc.time()
 	if(verbose && debugMode==2)cat("Reading file:",filename,"done in:",(e1-s1)[3],"seconds.\n")
 	invisible(currentFile)
+}
+
+makeUnique.internal <- function(dataMatrix){
+	dataMatrix[,1] <- as.character(dataMatrix[,1])
+	for(i in dataMatrix[,1]){
+		if(sum(dataMatrix[,1]==i)>1){
+			dataMatrix <- dataMatrix[-which(dataMatrix[,1]==i),]
+		}
+	}
+	result <- as.matrix(dataMatrix[,-1])
+	rownames(result) <- toupper(dataMatrix[,1])
+	invisible(result)
 }
 
 ############################################################################################################
@@ -231,3 +245,9 @@ correctRowLoc.internal <- function(genesRow){
 	genesRow <- genesRow[-3]
 	invisible(genesRow)
 }
+
+
+
+
+
+
