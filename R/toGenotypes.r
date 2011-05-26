@@ -8,7 +8,7 @@
 # 
 # first written March 2011
 # last modified May 2011
-# last modified in version: 0.5.1 (under development)
+# last modified in version: 0.5.1 
 # in current version: active, in main workflow
 #
 #     This program is free software; you can redistribute it and/or
@@ -84,10 +84,9 @@ toGenotypes <- function(ril, use=c("real","simulated","map"), treshold=0.01, ove
 		if(!(is.null(ril$rils$map))){
 			ril <- sortMap.internal(ril)
 			cross$maps$physical <- ril$rils$map
+			### Majority rule used to order linkage groups
+			cross <- segregateChromosomes.internal(cross)
 		}
-		
-		### Majority rule used to order linkage groups
-		cross <- segregateChromosomes.internal(cross)
 		
 		### adding info about removed markers
 		cross$rmv <- removed
@@ -110,28 +109,43 @@ toGenotypes <- function(ril, use=c("real","simulated","map"), treshold=0.01, ove
 #
 ############################################################################################################
 convertToGenotypes.internal <- function(ril, treshold, overlapInd, proportion, margin, verbose=FALSE, debugMode=0){
+	### initialization
 	if(verbose && debugMode==1) cat("convertToGenotypes starting.\n")
 	output <- NULL
 	markerNames <- NULL 
+	
+	### selection step
 	upParental <- ril$parental$phenotypes[which(ril$parental$RP$pval[1] < treshold),]
 	downParental <- ril$parental$phenotypes[which(ril$parental$RP$pval[2] < treshold),]
-	upRils <- ril$rils$phenotypes[which(rownames(ril$rils$phenotypes) %in% rownames(upParental)),]
-	downRils <- ril$rils$phenotypes[which(rownames(ril$rils$phenotypes) %in% rownames(downParental)),]
-
-	for(x in rownames(upRils)){
-		cur <- splitRow.internal(x, upRils, upParental, overlapInd, proportion, margin, ril$parental$groups, 1)
-		if(!(is.null(cur))){
-			output <- rbind(output,cur)
-			markerNames <- c(markerNames,x)
+	upRils <- ril$rils$phenotypes[which(ril$parental$RP$pval[1] < treshold),]
+	downRils <- ril$rils$phenotypes[which(ril$parental$RP$pval[2] < treshold),]
+	
+	### checking if anything is selected and if yes - processing
+	if(!(is.null(dim(upRils)))){
+		if(!(is.null(dim(downRils)))){
+			# best situation
+			if(verbose) cat("Selected ",ncol(upRils),"upregulated markers and ",ncol(downRils),"downregulated markers.\n")
+			cur <- splitRow.internal(downRils, downParental, overlapInd, proportion, margin, ril$parental$groups, 0)
+			output <- rbind(output,cur[[1]])
+			markerNames <- c(markerNames,cur[[2]])
+		}else{
+			if(verbose) cat("Selected ",ncol(upRils),"upregulated markers.\n")
+		}
+		cur <- splitRow.internal(upRils,upParental,overlapInd, proportion, margin, ril$parental$groups, 1)
+		output <- rbind(output,cur[[1]])
+		markerNames <- c(markerNames,cur[[2]])
+	}else{
+		if(!(is.null(dim(downRils)))){
+			if(verbose) cat("Selected ",ncol(downRils),"downregulated markers.\n")
+			cur <- splitRow.internal(downRils, downParental, overlapInd, proportion, margin, ril$parental$groups, 0)
+			output <- rbind(output,cur[[1]])
+			markerNames <- c(markerNames,cur[[2]])
+		}else{
+			stop("None of the markers was selected using specified treshold: ",treshold,"\n")
 		}
 	}
-	for(x in rownames(downRils)){
-		cur <- splitRow.internal(x, downRils, downParental, overlapInd, proportion, margin, ril$parental$groups, 0)
-		if(!(is.null(cur))){
-			output <- rbind(output,cur)
-			markerNames <- c(markerNames,x)
-		}
-	}
+	
+	### putting results inside ril object
 	ril$rils$genotypes$simulated <- output
 	colnames(ril$rils$genotypes$simulated) <- colnames(upRils)
 	rownames(ril$rils$genotypes$simulated) <- markerNames
@@ -139,7 +153,32 @@ convertToGenotypes.internal <- function(ril, treshold, overlapInd, proportion, m
 }
 
 ############################################################################################################
-#splitRow.internal: subfunction of convertToGenotypes.internal, splitting one row
+#splitRow.internal: subfunction of convertToGenotypes.internal, splitting children markers using parental
+# mean values
+# 
+# rils - matrix of up/down regulated genes in rils
+# parental - matrix of up/down regulated genes in parents
+# overlapInd - Number of individuals that are allowed in the overlap
+# proportion - Proportion of individuals expected to carrying a certain genotype 
+# margin - Proportion is allowed to varry between this margin (2 sided)
+# groupLabels - Specify which column of parental data belongs to group 0 and which to group 1.
+# up - 1 - genes up 0 - down regulated
+#
+############################################################################################################
+splitRow.internal <- function(rils, parental, overlapInd, proportion, margin, groupLabels, up){
+	output <- NULL
+	for(x in rownames(Rils)){
+		cur <- splitRow.internal(x, Rils, Parental, overlapInd, proportion, margin, groupLabels, up)
+		if(!(is.null(cur))){
+			output <- rbind(output,cur)
+			markerNames <- c(markerNames,x)
+		}
+	}
+	invisible(list(output,markerNames))
+}
+
+############################################################################################################
+#splitRowSub.internal: subfunction of splitRow.internal, splitting one row
 # 
 # x - name of currently processed row
 # rils - matrix of up/down regulated genes in rils
@@ -151,38 +190,46 @@ convertToGenotypes.internal <- function(ril, treshold, overlapInd, proportion, m
 # up - 1 - genes up 0 - down regulated
 #
 ############################################################################################################
-splitRow.internal <- function(x, rils, parental, overlapInd, proportion, margin, groupLabels, up=1){
+splitRowSub.internal <- function(x, rils, parental, overlapInd, proportion, margin, groupLabels, up=1){
+	### initialization
 	result <- rep(0,length(rils[x,]))
-	A <- parental[which(rownames(parental) == x),which(groupLabels==0)]
-	B <- parental[which(rownames(parental) == x),which(groupLabels==1)]
-	splitVal <- mean(mean(A,na.rm=TRUE),mean(B,na.rm=TRUE))
-	rils[x,which(is.na(rils[x,]))] <- splitVal
-	a <- rils[x,] > splitVal
-	b <- rils[x,] < splitVal
+	
+	### splitting
 	if(length(proportion)==2){
+		### splitting into 0/1 genotypes
 		if(up==1){
 			genotypes <- c(0,1)
 		}else if(up==0){
 			genotypes <- c(1,0)
 		}
+		A <- parental[x,which(groupLabels==0)]
+		B <- parental[x,which(groupLabels==1)]
+		splitVal <- mean(mean(A,na.rm=TRUE),mean(B,na.rm=TRUE))
+		rils[x,which(is.na(rils[x,]))] <- splitVal
+		a <- rils[x,] > splitVal
+		b <- rils[x,] < splitVal
 		result[which(a)] <- genotypes[1]
 		result[which(b)] <- genotypes[2]
 		result[which(rils[x,] == splitVal)] <- NA
 		result <- filterRow.internal(result, overlapInd, proportion, margin, genotypes)
 	}else if(length(proportion)==3){
+		### splitting into 0/1/2 genotypes
 		if(up==1){
 			genotypes <- c(0,1,2)
 		}else if(up==0){
 			genotypes <- c(2,1,0)
 		}
-		subSplitValDown <- mean(rils[which(b),])
-		subSplitValUp <- splitVal + (splitVal - mean(b))
+		meanVal <- mean(rils[x,],na.rm=TRUE)
+		sdVal <- sd(rils[x,],na.rm=TRUE)
+		subSplitValDown <- meanVal - sdVal
+		subSplitValUp <- meanVal + sdVal
 		result[which(rils[x,] < subSplitValDown )] <- genotypes[1]
 		result[which(rils[x,] > subSplitValUp )] <- genotypes[3]
 		result[which((rils[x,] > subSplitValDown )&&(rils[x,] < subSplitValUp ))] <- genotypes[2]
-		result[which(rils[x,] == splitVal)] <- NA
+		result[which(rils[x,] == meanVal)] <- NA
 		result <- filterRow.internal(result, overlapInd, proportion, margin, genotypes)
 	}
+	
 	invisible(result)
 }
 
@@ -198,6 +245,9 @@ splitRow.internal <- function(x, rils, parental, overlapInd, proportion, margin,
 
 ############################################################################################################
 filterRow.internal <- function(result, overlapInd, proportion, margin, genotypes){
+	### creating inverted genotypes matrix, to be sure, that we won't filter out anythng in correct proportion
+	### this function returns either unchanged result vector, which is then rbinded to other results, or
+	### NULL, which is ignored by rbind, and we drop current result
 	if(length(proportion)==2){
 		genotypes2 <- genotypes[c(2,1)]
 	}else if(length(proportion)==3){
@@ -278,8 +328,8 @@ segregateChromosomes.internal <- function(cross){
 				map <- cross$maps$physical
 				cross <- mergeChromosomes.internal(cross,curMerge,curMerge[1])
 				cross$maps$physical <- map
+				output <- majorityRule.internal(cross)
 			}
-			output <- majorityRule.internal(cross)
 		}
 		
 		order1 <- matrix(0,ncol(output),nrow(output))
@@ -343,9 +393,8 @@ majorityRule.internal <- function(cross){
 #
 ############################################################################################################
 mergeChromosomes.internal <- function(cross, chromosomes, name){
-	cat("Merging chromosomes",chromosomes,"to form chromosome",name,"\n")
+	cat("Merging chromosomes",chromosomes,"to form chromosome",name,"names:",names(cross$geno),"\n")
 	geno <- cross$geno
-	names(geno)
 	markerNames <- NULL
 	for(j in chromosomes){
 		if(j!=name) markerNames <- c(markerNames, colnames(geno[[j]]$data))
@@ -365,161 +414,8 @@ mergeChromosomes.internal <- function(cross, chromosomes, name){
 # name - chromosome
 #
 ############################################################################################################
-mixtureEM.internal <- function(ril, nrDistributions, lambda.ini=NULL, mu.ini=NULL, var.ini=NULL, iter.max=100, epsilon=1e-05, verbose=FALSE, debugMode=0){
-	if(verbose && debugMode==1) cat("toGenotypes starting withour errors in checkpoint.\n")
-	s <- proc.time()
-	result <- apply(ril$rils$phenotypes,1,mixtureEMSub.internal, nrDistributions, lambda.ini, mu.ini, var.ini, iter.max, epsilon, verbose, debugMode)
-	ril$parameters$mixtureEM.internal <- list("object of ril class", nrDistributions, lambda.ini, mu.ini, var.ini, iter.max, epsilon, verbose, debugMode)
-	names(ril$parameters$mixtureEM.internal) <- c("ril", "nrDistributions", "lambda.ini", "mu.ini", "var.ini", "iter.max", "epsilon", "verbose", "debugMode")
-	ril$rils$EM <- result
-	e <- proc.time()
-	invisible(ril)
+mixtureEM.internal <- function(ril, nrDistributions, epsilon=1e-05, verbose=FALSE, debugMode=0){
+	### here R package will be used instead of Ninos code
 }
 
-############################################################################################################
-#mergeChromosomes.internal - subfunction of segragateChromosomes.internal, merging multiple chromosomes into
-# one
-# 
-# cross - object of R/qtl cross type
-# chromosomes - chromosomes to be merged
-# name - chromosome
-#
-############################################################################################################
-mixtureEMSub.internal <- function(markerExpression, nrDistributions, lambda.ini=NULL, mu.ini=NULL, var.ini=NULL, iter.max=100, epsilon=1e-05, verbose=FALSE, debugMode=0){
-	
-	### checks
-	
-	### initializing
-	y <- markerExpression
-	n <- length(y)
-	g <- nrDistributions
-	nn <- floor(n/g)
-	L.ini <- matrix(nrow = n, ncol = g, dimnames = NULL)
-	L.old <- matrix(nrow = n, ncol = g, dimnames = NULL)
-	L <- matrix(nrow = n, ncol = g, dimnames = NULL)
-	comp <- matrix(nrow = n, ncol = g, dimnames = NULL)
-	post.prob <- matrix(nrow = n, ncol = g, dimnames = NULL)
-	aux3 <- matrix(rep(y, g), nrow = n, ncol = g, dimnames = NULL)
-
-	### randomly divide data into two sets 
-	index <- matrix(nrow = nn, ncol = g, dimnames = NULL)
-	x <- c(1:n)
-	index[,1] <- sample(x, nn, replace=FALSE)
-	for (i in 2:g){
-		index[,i] <- sample(x[-index[,1:(i-1)]], nn, replace=FALSE)
-	}
-	
-	mu.ini <- apply(index, 2, mean, na.rm=TRUE)
-	var.ini <- apply(index, 2, var, na.rm=TRUE)
-	lambda <- 1/g; lambda.ini <- rep(1/g, g);
-
-	### compute loglikelihood for initial values
-	for (i in 1:g){
-		L.ini[,i] <- lambda*dnorm(y, mu.ini[i], sqrt(var.ini[i]))
-		#for(k in 1:length(L.ini[,i])) if(is.na(L.ini[k,i])) L.ini[k,i]<- 0
-		
-	}
-	LL.ini <- log(apply(L.ini, 1, sum, na.rm=TRUE))
-	ll.ini <- sum(LL.ini,na.rm=TRUE)
-
-	iteration <- 0;
-	post.prob <- rep(0, g);
-	
-	### main function
-	lambda <- lambda.ini
-	mu <- mu.ini
-	var <- var.ini
-
-	lambda.old <- rep(0, g)
-	mu.old <- rep(0, g)
-	var.old <- rep(0, g)
-
-	ll.old <- 0
-	ll <- ll.ini
-	ll.list <- ll.ini
-	lambda.list <- lambda.ini
-	mu.list <- mu.ini
-	stdev.list <- sqrt(var.ini)
-	lambda.table <- lambda.ini
-	mu.table <- mu.ini
-	stdev.table <- sqrt(var.ini)
-	cat(LL.ini, ll.old, ll,"    ll    \n")
-	########## Loop over the following ################################################
-	while (abs(ll.old-ll)>epsilon && iteration <= iter.max){
-
-		### E-step
-		s <- proc.time()
-		for (i in 1:g){
-			L.old[,i] <- lambda[i]*dnorm(y, mu[i], sqrt(var[i]))  #compute likelihoods of each component
-		}
-		LL.old <- log(apply(L.old, 1, sum, na.rm=TRUE))     #sum likelihood of each component over all observations, then take logarithm
-		ll.old<- sum(LL.old)    #compute overall loglikelihood by taking sum of loglik for each component
-
-		for (i in 1:g){
-			comp[,i] <- lambda[i]*dnorm(y, mu[i], sqrt(var[i]))
-		}
-
-		
-		sum.comp <- apply(comp, 1, sum, na.rm=TRUE)
-		post.prob <- comp/sum.comp
-
-		### M-step 
-		lambda.old <- lambda              # current lambda becomes lambda.old
-		mu.old <- mu                      # current mean becomes mu.old
-		var.old <- var                    # current variance becomes var.old
-
-		lambda <- apply(post.prob, 2, mean, na.rm=TRUE)                # update weights for each component
-
-		aux1 <- post.prob*y                                # update weighted mean, auxiliary step
-		aux2 <- apply(aux1, 2, sum, na.rm=TRUE)                        # update weighted mean, auxiliary step
-		mu <- aux2/apply(post.prob, 2, sum, na.rm=TRUE)                # update weighted mean
-
-		for (i in 1:g){                                      # update weighted variance, auxiliary step
-		aux3[,i] <- post.prob[,i]*(y - mu[i])^g            # update weighted variance, auxiliary step
-		}                                                    # update weighted variance, auxiliary step
-		var <- apply(aux3, 2, sum, na.rm=TRUE)/apply(post.prob, 2, sum, na.rm=TRUE)  # update weighted variance
-
-		for (i in 1:g){
-			L[,i] <- lambda[i]*dnorm(y, mu[i], sqrt(var[i]))
-			
-		}
-
-		LL <- log(apply(L, 1, sum, na.rm=TRUE))
-		for(llaux in 1:length(LL)) if(LL[llaux]==-Inf) LL[llaux]<-0
-		ll <- sum(LL,na.rm=TRUE)
-		ll.list <- c(ll.list, ll)                        # collect loglikelihoods in list
-		lambda.list <- c(lambda.list, lambda)            # collect weights in list
-		mu.list <- c(mu.list, mu)                        # collect means in list
-		stdev.list <- c(stdev.list, sqrt(var))           # collect stand.dev. in list
-
-		lambda.table <- rbind(lambda.table, lambda)      # collect weights in table
-		mu.table <- rbind(mu.table, mu)                  # collect means in table
-		stdev.table <- rbind(stdev.table, sqrt(var))     # collect stand.dev. in table
-		
-		if(verbose && iteration %% 10 == 0 && debugMode==2){
-			e <- proc.time()
-			cat("Iteration:",iteration,"took",(e-s)[3],"seconds. \n")
-		}
-		
-		iteration <- iteration+1
-
-		# if number of iterations exceeds iter.max, then stop
-		output <- c(lambda, mu, var)
-		if(iteration > iter.max){
-			cat("WARNING: maximum iterations reached at", iter.max, "function stopping.\n")
-			break 
-		}
-		if(any(is.nan(var))){
-			cat("WARNING: variation NaN:", var, "function stopping.\n")
-			break 
-		}
-		if(any(var <= 0)){
-			cat("WARNING: variation lower than zero:", var, "function stopping.\n")
-			break 
-		}
-		cat("L:",lambda,"mu:",mu,"sqrt(var):",sqrt(var),"\n")
-
-	}
-	return(output)
-}
 

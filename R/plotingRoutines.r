@@ -109,7 +109,8 @@ plotMapComparison <- function(cross, coloringMode=1){
 	
 	#*******remove too short chromosomes*******
 	#cross <- removeChromosomes.internal(cross,minChrLength)
-	removed <- cross$maps$physical[[1]][colnames(cross$rmv),-1]
+	removed <- cross$maps$physical[[1]][(rownames(cross$maps$physical[[1]]) %in% colnames(cross$rmv)),-1]
+	cat("siup!\n")
 	
 	#*******order chromosomes*******
 	#cross <- orderChromosomes.internal(cross)
@@ -117,18 +118,22 @@ plotMapComparison <- function(cross, coloringMode=1){
 	#*******objects containing all information needen for function execution*******
 	ys <- getYLocs.internal(cross)
 	xs <- cross$maps$physical[[1]][rownames(ys[[1]]),]
+	cat("siup!\n")
 	
 	#*******positions of markers*******
 	predictedLocs <- ys[[1]][,-1]
 	referenceLocs <- xs[,-1]
+	cat("siup!\n")
 	
 	#*******chromosomes lengths*******
 	predictedChrom <- ys[[2]]
 	referenceChrom <- cross$maps$physical[[2]]
+	cat("siup!\n")
 	
 	#*******chromosome labels*******
 	predictedChromLabels <- names(table(ys[[1]][,1]))
 	referenceChromLabels <- names(table(xs[,1]))
+	cat("siup!\n")
 	
 	#*******chromosome labels positions*******
 	predictedChromPos <- vector(mode="numeric",length(predictedChrom)-1)
