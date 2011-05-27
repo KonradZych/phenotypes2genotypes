@@ -46,17 +46,24 @@
 # debugMode - 1: Print our checks, 2: print additional time information
 #
 ############################################################################################################
-toGenotypes <- function(ril, use=c("real","simulated","map"), treshold=0.01, overlapInd = 0, proportion = c(50,50), margin = 15, minChrLength = 0, verbose=FALSE, debugMode=0,...){
+toGenotypes <- function(ril, use=c("real","simulated","map"), splitMethod=c("EM","mean"),treshold=0.01, overlapInd = 0, proportion = c(50,50), margin = 15, minChrLength = 0, verbose=FALSE, debugMode=0,...){
 	#*******CHECKS*******
-	require(qtl)
+	s<-proc.time()
 	if(proportion < 1 || proportion > 99) stop("Proportion is a percentage (1,99)")
-	#if(overlapInd < 0 || overlapInd > ncol(expressionMatrix)) stop("overlapInd is a number (0,lenght of the row).")
+	if(any(!(is.numeric(ril$parental$phenotypes)))){
+		ril <- intoRil.internal(ril, ril$parental$phenotypes)
+	}
+	if(any(!(is.numeric(ril$rils$phenotypes)))){
+		ril <- intoRil.internal(ril, children=ril$rils$phenotypes)
+	}
+	if(overlapInd < 0 || overlapInd > ncol(ril$rils$phenotypes)) stop("overlapInd is a number (0,lenght of the row).")
 	if(margin < 0 || margin > proportion) stop("Margin is a percentage (0,proportion)")
 	if(verbose && debugMode==1) cat("toGenotypes starting withour errors in checkpoint.\n")
 	
+	
 	#*******CONVERTING CHILDREN PHENOTYPIC DATA TO GENOTYPES*******
 	s1 <- proc.time()
-	ril <- convertToGenotypes.internal(ril, treshold, overlapInd, proportion, margin, verbose, debugMode)
+	ril <- convertToGenotypes.internal(ril, splitMethod, treshold, overlapInd, proportion, margin, verbose, debugMode)
 	e1 <- proc.time()
 	if(verbose && debugMode==2)cat("Converting phenotypes to genotypes done in:",(e1-s1)[3],"seconds.\n")
 	
@@ -78,7 +85,7 @@ toGenotypes <- function(ril, use=c("real","simulated","map"), treshold=0.01, ove
 		removed <- cross$rmv
 		
 		### Order markers
-		cross <- orderMarkers(cross, use.ripple=TRUE, verbose=verbose)
+		#cross <- orderMarkers(cross, use.ripple=TRUE, verbose=verbose)
 		
 		### Adding real maps		
 		if(!(is.null(ril$rils$map))){
@@ -93,6 +100,8 @@ toGenotypes <- function(ril, use=c("real","simulated","map"), treshold=0.01, ove
 	}
 	
 	#*******RETURNING CROSS OBJECT*******
+	e<-proc.time()
+	if(verbose) cat("toGenotypes done in",(e-s)[3],"seconds\n")
 	invisible(cross)
 }
 
@@ -108,7 +117,7 @@ toGenotypes <- function(ril, use=c("real","simulated","map"), treshold=0.01, ove
 # debugMode - 1: Print our checks, 2: print additional time information 
 #
 ############################################################################################################
-convertToGenotypes.internal <- function(ril, treshold, overlapInd, proportion, margin, verbose=FALSE, debugMode=0){
+convertToGenotypes.internal <- function(ril, splitMethod, treshold, overlapInd, proportion, margin, verbose=FALSE, debugMode=0){
 	### initialization
 	if(verbose && debugMode==1) cat("convertToGenotypes starting.\n")
 	output <- NULL
@@ -117,27 +126,27 @@ convertToGenotypes.internal <- function(ril, treshold, overlapInd, proportion, m
 	### selection step
 	upParental <- ril$parental$phenotypes[which(ril$parental$RP$pval[1] < treshold),]
 	downParental <- ril$parental$phenotypes[which(ril$parental$RP$pval[2] < treshold),]
-	upRils <- ril$rils$phenotypes[which(ril$parental$RP$pval[1] < treshold),]
-	downRils <- ril$rils$phenotypes[which(ril$parental$RP$pval[2] < treshold),]
+	upRils <- ril$rils$phenotypes[rownames(upParental),]
+	downRils <- ril$rils$phenotypes[rownames(downParental),]
 	
 	### checking if anything is selected and if yes - processing
 	if(!(is.null(dim(upRils)))){
 		if(!(is.null(dim(downRils)))){
 			# best situation
-			if(verbose) cat("Selected ",ncol(upRils),"upregulated markers and ",ncol(downRils),"downregulated markers.\n")
-			cur <- splitRow.internal(downRils, downParental, overlapInd, proportion, margin, ril$parental$groups, 0)
+			if(verbose) cat("Selected ",nrow(upRils),"upregulated markers and ",nrow(downRils),"downregulated markers.\n")
+			cur <- splitRow.internal(downRils, downParental, splitMethod, overlapInd, proportion, margin, ril$parental$groups, 0)
 			output <- rbind(output,cur[[1]])
 			markerNames <- c(markerNames,cur[[2]])
 		}else{
-			if(verbose) cat("Selected ",ncol(upRils),"upregulated markers.\n")
+			if(verbose) cat("Selected ",nrow(upRils),"upregulated markers.\n")
 		}
-		cur <- splitRow.internal(upRils,upParental,overlapInd, proportion, margin, ril$parental$groups, 1)
+		cur <- splitRow.internal(upRils, upParental, splitMethod, overlapInd, proportion, margin, ril$parental$groups, 1)
 		output <- rbind(output,cur[[1]])
 		markerNames <- c(markerNames,cur[[2]])
 	}else{
 		if(!(is.null(dim(downRils)))){
-			if(verbose) cat("Selected ",ncol(downRils),"downregulated markers.\n")
-			cur <- splitRow.internal(downRils, downParental, overlapInd, proportion, margin, ril$parental$groups, 0)
+			if(verbose) cat("Selected ",nrow(downRils),"downregulated markers.\n")
+			cur <- splitRow.internal(downRils, downParental, splitMethod, overlapInd, proportion, margin, ril$parental$groups, 0)
 			output <- rbind(output,cur[[1]])
 			markerNames <- c(markerNames,cur[[2]])
 		}else{
@@ -146,6 +155,7 @@ convertToGenotypes.internal <- function(ril, treshold, overlapInd, proportion, m
 	}
 	
 	### putting results inside ril object
+	if(is.null(dim(output))) stop("No markers selected.")
 	ril$rils$genotypes$simulated <- output
 	colnames(ril$rils$genotypes$simulated) <- colnames(upRils)
 	rownames(ril$rils$genotypes$simulated) <- markerNames
@@ -165,10 +175,16 @@ convertToGenotypes.internal <- function(ril, treshold, overlapInd, proportion, m
 # up - 1 - genes up 0 - down regulated
 #
 ############################################################################################################
-splitRow.internal <- function(rils, parental, overlapInd, proportion, margin, groupLabels, up){
+splitRow.internal <- function(rils, parental, splitMethod, overlapInd, proportion, margin, groupLabels, up){
 	output <- NULL
-	for(x in rownames(Rils)){
-		cur <- splitRow.internal(x, Rils, Parental, overlapInd, proportion, margin, groupLabels, up)
+	markerNames <- NULL
+	cat("ril:",nrow(rils),"parental:",nrow(parental),"\n")
+	for(x in rownames(rils)){
+		if(splitMethod=="mean"){
+			cur <- splitRowSub.internal(x, rils, parental, overlapInd, proportion, margin, groupLabels, up)
+		}else if(splitMethod=="EM"){
+			cur <- splitRowSubEM.internal(x, rils, parental, overlapInd, proportion, margin, groupLabels, up)
+		}
 		if(!(is.null(cur))){
 			output <- rbind(output,cur)
 			markerNames <- c(markerNames,x)
@@ -414,8 +430,55 @@ mergeChromosomes.internal <- function(cross, chromosomes, name){
 # name - chromosome
 #
 ############################################################################################################
-mixtureEM.internal <- function(ril, nrDistributions, epsilon=1e-05, verbose=FALSE, debugMode=0){
-	### here R package will be used instead of Ninos code
+splitRowSubEM.internal <- function(x, rils, parental, overlapInd, proportion, margin, groupLabels, up=1){
+	### initialization
+	nrDistributions <- length(proportion)
+	result <- rep(0,length(rils[x,]))
+	EM <- invisible(normalmixEM(sort(rils[x,]), k=nrDistributions))
+	if(up==1){
+		genotypes <- c(0:(nrDistributions-1))
+	}else if(up==0){
+		genotypes <- c((nrDistributions-1):0)
+	}
+	len <- vector(mode="numeric",length=nrDistributions)
+	for(i in 1:nrDistributions){
+		len[i]<-length(rils[x,])*EM$lambda[i]
+		startVal <- sum(len[1:i-1])
+		rils[x,which(rils[x,] %in% sort(rils[x,])[startVal:(startVal+len[i])])] <- genotypes[i]
+	}
+	result <- checkMu.internal(EM)
+	if(checkMu.internal(EM)){
+		result <- filterRow.internal(result, overlapInd, proportion, margin, genotypes)
+	}else{
+		result<- NULL
+	}
+	invisible(result)
 }
 
+checkMu.internal <- function(EM){
+	for(i in 2:length(EM$mu)){
+		if((EM$mu[i]-EM$sigma[i])<(EM$mu[i-1]+EM$sigma[i-1])) return(FALSE)
+	}
+	return(TRUE)
+}
+
+
+############################################################################################################
+#removeChromosomes.internal: removing from cross chromosomes that have too little markers
+# 
+# cross - object of R/qtl cross type
+# minChrLength - minimal number of markers chromosome have to contaion not to be removed)
+#
+############################################################################################################
+removeChromosomes.internal <- function(cross, minChrLength){
+	 for(i in length(cross$geno):1){
+		if(length(cross$geno[[i]]$map)<minChrLength){
+			cat("removing markers:",names(cross$geno[[i]]$map),"\n")
+			cross$rmv <- cbind(cross$rmv,cross$geno[[i]]$data)
+			cross <- drop.markers(cross, names(cross$geno[[i]]$map))
+			names(cross$geno) <- 1:length(cross$geno)
+		}
+	}
+	invisible(cross)
+}
 
