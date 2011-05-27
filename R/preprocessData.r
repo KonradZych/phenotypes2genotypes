@@ -48,7 +48,7 @@ preprocessData <- function(ril,groupLabels=c(0,0,1,1),verbose=FALSE,debugMode=0,
 		
 	}else{
 		#wasting memory here because of Rbug
-		rankProdRes <- invisible(RP(ril$parental$phenotypes[,-1],groupLabels,...))
+		rankProdRes <- invisible(RP(ril$parental$phenotypes,groupLabels,...))
 		result <- list(rankProdRes,groupLabels)
 		save(file="rilrankProdRes.Rdata",result)
 		ril$parental$RP <- rankProdRes

@@ -25,7 +25,7 @@
 #
 # Contains: plotParentalExpression, plotChildrenExpression, plotMapComparison
 #				getChromosome.internal, getYLocs.internal, makeChromPal.internal,
-#				makeTransPal.internal, removeChromosomes.internal, switchChromosomes.internal
+#				makeTransPal.internal, switchChromosomes.internal
 #           
 #
 ##################################################################################################
@@ -267,25 +267,6 @@ makeTransPal.internal <- function(ys1,xs){
 }
 
 ############################################################################################################
-#removeChromosomes.internal: removing from cross chromosomes that have too little markers
-# 
-# cross - object of R/qtl cross type
-# minChrLength - minimal number of markers chromosome have to contaion not to be removed)
-#
-############################################################################################################
-removeChromosomes.internal <- function(cross, minChrLength){
-	 for(i in length(cross$geno):1){
-		if(length(cross$geno[[i]]$map)<minChrLength){
-			cat("removing markers:",names(cross$geno[[i]]$map),"\n")
-			cross$rmv <- cbind(cross$rmv,cross$geno[[i]]$data)
-			cross <- drop.markers(cross, names(cross$geno[[i]]$map))
-			names(cross$geno) <- 1:length(cross$geno)
-		}
-	}
-	invisible(cross)
-}
-
-############################################################################################################
 #switchChromosomes.internal: switching two chromosomes of cross object
 # 
 # cross - object of R/qtl cross type
@@ -301,4 +282,38 @@ switchChromosomes.internal <- function(cross, chr1, chr2){
 		cross <- est.rf(cross)
 	}
 	invisible(cross)
+}
+
+plotMarkerDistribution <- function(phenotypeRow,nrDistributions,logarithmic=FALSE){
+	if(logarithmic) phenotypeRow <- log(phenotypeRow)
+	EM<-normalmixEM(phenotypeRow, k=nrDistributions)
+	if(logarithmic){
+		xlab <- "log(expression values)"
+	}else{
+		xlab <- "expression values"
+	}
+	h <- vector(mode="numeric",length=nrDistributions)
+	len <- vector(mode="numeric",length=nrDistributions)
+	for(i in 1:nrDistributions){
+		len[i]<-length(phenotypeRow)*EM$lambda[i]
+		startVal <- sum(len[1:i-1])
+		x <- sort(phenotypeRow)[startVal:(startVal+len[i])]
+		h[i] <- hist(x,breaks=50)
+	}
+ 	h0<-hist(phenotypeRow,breaks=50,col="grey62",border="grey70",xlab=xlab,ylab="Number of counts",main="Distribution of expression values for selected marker")
+	print(h0$mids)
+	colorP <- vector(mode="character",length=3)
+	colorP[1] <- rgb(1,0,0)
+	colorP[2] <- rgb(0,1,0)
+	colorP[3] <- rgb(0,0,1)
+	for(i in 1:nrDistributions){
+		abline(v=EM$mu[i],col=colorP[i%%3+1])
+		abline(v=c(EM$mu[i]-EM$sigma[i],EM$mu[i]+EM$sigma[i]),col=colorP[i%%3+1],lty=2)
+		startVal <- sum(len[1:i-1])
+		x <- sort(phenotypeRow)[startVal:(startVal+len[i])]
+		xfit<-seq(min(x),max(x),length=40) 
+		yfit<-dnorm(xfit,mean=mean(x),sd=sd(x)) 
+		yfit <- yfit*diff(h[[i]][1:2])*length(x) 
+		lines(xfit, yfit, col=colorP[i%%3+1], lwd=2)
+	}
 }

@@ -246,6 +246,114 @@ correctRowLoc.internal <- function(genesRow){
 	invisible(genesRow)
 }
 
+intoRil.internal <- function(ril=NULL, parental=NULL, parentalRows=NULL, parentalCols=NULL, children=NULL, childrenRows=NULL, childrenCols=NULL){
+	if(!(is.null(parental))&&!is.null(dim(parental))){
+		columns <- NULL
+		rows <- NULL
+		
+		for(column in 1:ncol(parental)){
+			if(any(is.na(as.numeric(as.matrix(parental[,column]))))){
+				if(sum(is.na(as.numeric(as.matrix(parental[,column]))))!=sum(is.na(as.matrix(parental[,column])))){
+					columns <- c(columns,column)
+				}
+			}
+		}
+		
+		if(!(is.null(columns))){
+			cat("Parental: following  columns are not numeric and cannot be converted into numeric:",columns," so will be removed.\n")
+			parental <- parental[,-columns]
+		}
+		
+		if(is.null(dim(parental))) stop("Not enough data to continue.\n")
+		
+		for(row_ in 1:nrow(parental)){
+			if(any(is.na(as.numeric(as.matrix(parental[row_,]))))){
+				if(sum(is.na(as.numeric(as.matrix(parental[row_,]))))!=sum(is.na(as.matrix(parental[row_,])))){
+					rows <- c(rows,row_)
+				}
+			}
+		}
+		
+		if(!(is.null(rows))){
+			cat("Parental: following  rows are not numeric and cannot be converted into numeric:",rows," so will be removed.\n")
+			parental <- parental[-rows,]
+		}
+		
+		if(!(is.null(rows))){}
+		
+		if(is.null(dim(parental))) stop("Not enough data to continue.\n")
+		
+		cur<- matrix(as.numeric(as.matrix(parental)),nrow(parental),ncol(parental))
+		
+		if(!is.null(rownames(parental))){
+			rownames(cur) <- rownames(parental)
+		}else{
+			rownames(cur) <- 1:nrow(cur)
+		}
+		
+		if(!is.null(colnames(parental))){
+			colnames(cur) <- colnames(parental)
+		}else{
+			colnames(cur) <- 1:ncol(cur)
+		}
+		
+		ril$parental$phenotypes <- cur
+	}
+	
+	
+	if(!(is.null(children))&&!is.null(dim(children))){
+		columns <- NULL
+		rows <- NULL
+		
+		for(column in 1:ncol(children)){
+			if(any(is.na(as.numeric(as.matrix(children[,column]))))){
+				if(sum(is.na(as.numeric(as.matrix(children[,column]))))!=sum(is.na(as.matrix(children[,column])))){
+					columns <- c(columns,column)
+				}
+			}
+		}
+		
+		if(!(is.null(columns))){
+			cat("Children: following  columns are not numeric and cannot be converted into numeric:",columns," so will be removed.\n")
+			children <- children[,-columns]
+		}
+		
+		for(row_ in 1:nrow(children)){
+			if(any(is.na(as.numeric(as.matrix(children[row_,]))))){
+				if(sum(is.na(as.numeric(as.matrix(children[row_,]))))!=sum(is.na(as.matrix(children[row_,])))){
+					rows <- c(rows,row_)
+				}
+			}
+		}
+		
+		if(!(is.null(rows))){
+			cat("Children: following  rows are not numeric and cannot be converted into numeric:",rows," so will be removed.\n")
+			children <- children[-rows,]
+		}
+		
+		if(is.null(dim(children))) stop("Not enough data to continue.\n")
+		
+		cur<- matrix(as.numeric(as.matrix(children)),nrow(children),ncol(children))
+		
+		if(!is.null(rownames(children))){
+			rownames(cur) <- rownames(children)
+		}else{
+			rownames(cur) <- 1:nrow(cur)
+		}
+		
+		if(!is.null(colnames(children))){
+			colnames(cur) <- colnames(children)
+		}else{
+			colnames(cur) <- 1:ncol(cur)
+		}
+		
+		ril$rils$phenotypes <- cur
+	}
+	if(is.null(ril)) stop("No data provided!\n")
+	class(ril) <- "ril"
+	invisible(ril)
+}
+
 
 
 
