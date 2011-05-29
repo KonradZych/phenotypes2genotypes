@@ -13,12 +13,13 @@
 }
 
 \usage{
-	toGenotypes(ril, use=c("real","simulated","map"), treshold=0.01, overlapInd = 0, proportion = c(50,50), margin = 15, minChrLength = 0, verbose=FALSE, debugMode=0,...)
+	toGenotypes(ril, use=c("real","simulated","map"), splitMethod=c("EM","mean"),treshold=0.01, overlapInd = 0, proportion = c(50,50), margin = 15, minChrLength = 0, verbose=FALSE, debugMode=0,...)
 }
 
 \arguments{
  \item{ril}{ Ril type object, must contain parental phenotypic data.}
  \item{use}{ Which genotypic matrix should be saved to file, real - supported by user and read from file, simulated - made by toGenotypes, map - simulated data orderd using gff map}
+ \item{splitMethod}{ Splitting markers using mean value or more sofisticated fitting of normal distributions by EM algoritm.}
  \item{treshold}{ If Rank Product pval for gene is lower that this value, we assume it is being diff. expressed.}
  \item{overlapInd}{ Number of individuals that are allowed in the overlap }
  \item{proportion}{ Proportion of individuals expected to carrying a certain genotype }

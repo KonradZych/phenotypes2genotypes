@@ -7,8 +7,8 @@
 # Modified by Danny Arends
 # 
 # first written March 2011
-# last modified April 2011
-# last modified in version: 0.4.4
+# last modified May 2011
+# last modified in version: 0.5.1
 # in current version: active, not in main workflow
 #
 #     This program is free software; you can redistribute it and/or
@@ -23,7 +23,7 @@
 #     A copy of the GNU General Public License, version 3, is available
 #     at http://www.r-project.org/Licenses/GPL-3
 #
-# Contains: plotParentalExpression, plotChildrenExpression, plotMapComparison
+# Contains: plotParentalExpression, plotChildrenExpression, plotMapComparison, plotMarkerDistribution
 #				getChromosome.internal, getYLocs.internal, makeChromPal.internal,
 #				makeTransPal.internal, switchChromosomes.internal
 #           
@@ -284,6 +284,15 @@ switchChromosomes.internal <- function(cross, chr1, chr2){
 	invisible(cross)
 }
 
+############################################################################################################
+#plotMarkerDistribution: plotting histogram of distribution of values for single marker and specified number
+# of normal distribution curves, fitted to data using EM algorithm
+# 
+# phenotypeRow - phenotypic data for single marker
+# nrDistributions - numbers of normal distributions to be fitted
+# logarithmic - TRUE - log(data) is used instead of raw data
+#
+############################################################################################################
 plotMarkerDistribution <- function(phenotypeRow,nrDistributions,logarithmic=FALSE){
 	if(logarithmic) phenotypeRow <- log(phenotypeRow)
 	EM<-normalmixEM(phenotypeRow, k=nrDistributions)

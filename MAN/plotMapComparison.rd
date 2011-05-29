@@ -32,16 +32,13 @@
 }
 
 \examples{
-	setwd(paste(.Library,"pheno2geno/data",sep="/"))
-	ril <- readFiles()
-	ril <- preprocessData(ril)
-	#cross <- toGenotypes(ril,use="simulated",minChrLength=0,treshold=1,margin=50,max.rf=1,min.lod=0)
-	#plotMapComparison(cross)
+	#TODO
 }
 
 \seealso{
   \code{\link{plotChildrenExpression}}
-  \code{\link{plotParentalExpression}}
+  \code{\link{plotParentalExpression}} 
+  \code{\link{plotMarkerDistribution}}
 }
 
 \keyword{manip}

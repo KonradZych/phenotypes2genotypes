@@ -5,5 +5,5 @@ Title: Tools for the construction of genetic maps from phentype data
 Author: Konrad Zych <dominesum@gmail.com> and Danny Arends
 Maintainer: Konrad Zych <dominesum@gmail.com>
 Description: Tools for the construction of genetic maps from phentype data
-Depends: R (>= 2.10.1), graphics, stats, utils, RankProd, qtl
+Depends: R (>= 2.10.1), graphics, stats, utils, RankProd, qtl, mixtools
 License: GPL-3
