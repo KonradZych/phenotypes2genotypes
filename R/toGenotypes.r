@@ -25,7 +25,8 @@
 #
 # Contains: toGenotypes
 #           convertToGenotypes.internal, splitRow.internal, filterGenotypes.internal, filterRow.internal
-#			sortMap.internal, majorityRule.internal, mergeChromosomes.internal
+#			sortMap.internal, majorityRule.internal, mergeChromosomes.internal, splitRowSubEM.internal
+#			checkMu.internal, removeChromosomes.internal
 #
 ############################################################################################################
 
@@ -51,10 +52,10 @@ toGenotypes <- function(ril, use=c("real","simulated","map"), splitMethod=c("EM"
 	s<-proc.time()
 	if(proportion < 1 || proportion > 99) stop("Proportion is a percentage (1,99)")
 	if(any(!(is.numeric(ril$parental$phenotypes)))){
-		ril <- intoRil.internal(ril, ril$parental$phenotypes)
+		ril <- intoRil(ril, ril$parental$phenotypes)
 	}
 	if(any(!(is.numeric(ril$rils$phenotypes)))){
-		ril <- intoRil.internal(ril, children=ril$rils$phenotypes)
+		ril <- intoRil(ril, children=ril$rils$phenotypes)
 	}
 	if(overlapInd < 0 || overlapInd > ncol(ril$rils$phenotypes)) stop("overlapInd is a number (0,lenght of the row).")
 	if(margin < 0 || margin > proportion) stop("Margin is a percentage (0,proportion)")
@@ -422,7 +423,7 @@ mergeChromosomes.internal <- function(cross, chromosomes, name){
 }
 
 ############################################################################################################
-#mergeChromosomes.internal - subfunction of segragateChromosomes.internal, merging multiple chromosomes into
+#splitRowSubEM.internal - subfunction of segragateChromosomes.internal, merging multiple chromosomes into
 # one
 # 
 # cross - object of R/qtl cross type
@@ -455,30 +456,15 @@ splitRowSubEM.internal <- function(x, rils, parental, overlapInd, proportion, ma
 	invisible(result)
 }
 
+############################################################################################################
+#checkMu.internal: checking if fitted normal distributions do not overlap
+# 
+# EM - output of normalmixEM function
+#
+############################################################################################################
 checkMu.internal <- function(EM){
 	for(i in 2:length(EM$mu)){
 		if((EM$mu[i]-EM$sigma[i])<(EM$mu[i-1]+EM$sigma[i-1])) return(FALSE)
 	}
 	return(TRUE)
 }
-
-
-############################################################################################################
-#removeChromosomes.internal: removing from cross chromosomes that have too little markers
-# 
-# cross - object of R/qtl cross type
-# minChrLength - minimal number of markers chromosome have to contaion not to be removed)
-#
-############################################################################################################
-removeChromosomes.internal <- function(cross, minChrLength){
-	 for(i in length(cross$geno):1){
-		if(length(cross$geno[[i]]$map)<minChrLength){
-			cat("removing markers:",names(cross$geno[[i]]$map),"\n")
-			cross$rmv <- cbind(cross$rmv,cross$geno[[i]]$data)
-			cross <- drop.markers(cross, names(cross$geno[[i]]$map))
-			names(cross$geno) <- 1:length(cross$geno)
-		}
-	}
-	invisible(cross)
-}
-

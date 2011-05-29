@@ -25,7 +25,7 @@
 #
 # Contains: toGenotypes
 #           convertToGenotypes.internal, splitRow.internal, filterGenotypes.internal, filterRow.internal
-#			sortMap.internal 
+#			sortMap.internal, intoRil, removeChromosomes.internal
 #
 ############################################################################################################
 
@@ -67,12 +67,9 @@ cleanMap <- function(cross, difPercentage, verbose=FALSE, debugMode=0){
 }
 
 ############################################################################################################
-#cleanMap - removing markers that cause reco map to be too long
+#print.ril - overwritting print function for objects of class "ril"
 # 
-# cross - R/qtl cross type object
-# difPercentage - If removing marker will make map shorter by this percentage of its length, then it will be dropped.
-# verbose - Be verbose
-# debugMode - 1: Print our checks, 2: print additional time information 
+# x - object of class ril
 #
 ############################################################################################################
 print.ril <- function(x){
@@ -119,4 +116,143 @@ print.ril <- function(x){
 		cat("WARNING: There is no phenotypic data for parents. This is not acceptable in real ril object.\n")
 	}
 	cat("*************************************************************************************\n")
+}
+
+############################################################################################################
+#intoRil: putting data into ril object
+# 
+# ril - object of class ril, data should be put into, by default - new object will be created
+# parental - matrix of parental data to be put into ril object
+# parentalRows - rows to be selected from parental, by default - all
+# parentalCols - cols to be selected from parental, by default - all
+# children -  matrix of parental data to be put into ril object
+# childrenRows - rows to be selected from children, by default - all
+# childrenCols - cols to be selected from children, by default - all
+#
+############################################################################################################
+intoRil <- function(ril=NULL, parental=NULL, parentalRows=NULL, parentalCols=NULL, children=NULL, childrenRows=NULL, childrenCols=NULL){
+	if(!(is.null(parental))&&!is.null(dim(parental))){
+		columns <- NULL
+		rows <- NULL
+		
+		for(column in 1:ncol(parental)){
+			if(any(is.na(as.numeric(as.matrix(parental[,column]))))){
+				if(sum(is.na(as.numeric(as.matrix(parental[,column]))))!=sum(is.na(as.matrix(parental[,column])))){
+					columns <- c(columns,column)
+				}
+			}
+		}
+		
+		if(!(is.null(columns))){
+			cat("Parental: following  columns are not numeric and cannot be converted into numeric:",columns," so will be removed.\n")
+			parental <- parental[,-columns]
+		}
+		
+		if(is.null(dim(parental))) stop("Not enough data to continue.\n")
+		
+		for(row_ in 1:nrow(parental)){
+			if(any(is.na(as.numeric(as.matrix(parental[row_,]))))){
+				if(sum(is.na(as.numeric(as.matrix(parental[row_,]))))!=sum(is.na(as.matrix(parental[row_,])))){
+					rows <- c(rows,row_)
+				}
+			}
+		}
+		
+		if(!(is.null(rows))){
+			cat("Parental: following  rows are not numeric and cannot be converted into numeric:",rows," so will be removed.\n")
+			parental <- parental[-rows,]
+		}
+		
+		if(!(is.null(rows))){}
+		
+		if(is.null(dim(parental))) stop("Not enough data to continue.\n")
+		
+		cur<- matrix(as.numeric(as.matrix(parental)),nrow(parental),ncol(parental))
+		
+		if(!is.null(rownames(parental))){
+			rownames(cur) <- rownames(parental)
+		}else{
+			rownames(cur) <- 1:nrow(cur)
+		}
+		
+		if(!is.null(colnames(parental))){
+			colnames(cur) <- colnames(parental)
+		}else{
+			colnames(cur) <- 1:ncol(cur)
+		}
+		
+		ril$parental$phenotypes <- cur
+	}
+	
+	
+	if(!(is.null(children))&&!is.null(dim(children))){
+		columns <- NULL
+		rows <- NULL
+		
+		for(column in 1:ncol(children)){
+			if(any(is.na(as.numeric(as.matrix(children[,column]))))){
+				if(sum(is.na(as.numeric(as.matrix(children[,column]))))!=sum(is.na(as.matrix(children[,column])))){
+					columns <- c(columns,column)
+				}
+			}
+		}
+		
+		if(!(is.null(columns))){
+			cat("Children: following  columns are not numeric and cannot be converted into numeric:",columns," so will be removed.\n")
+			children <- children[,-columns]
+		}
+		
+		for(row_ in 1:nrow(children)){
+			if(any(is.na(as.numeric(as.matrix(children[row_,]))))){
+				if(sum(is.na(as.numeric(as.matrix(children[row_,]))))!=sum(is.na(as.matrix(children[row_,])))){
+					rows <- c(rows,row_)
+				}
+			}
+		}
+		
+		if(!(is.null(rows))){
+			cat("Children: following  rows are not numeric and cannot be converted into numeric:",rows," so will be removed.\n")
+			children <- children[-rows,]
+		}
+		
+		if(is.null(dim(children))) stop("Not enough data to continue.\n")
+		
+		cur<- matrix(as.numeric(as.matrix(children)),nrow(children),ncol(children))
+		
+		if(!is.null(rownames(children))){
+			rownames(cur) <- rownames(children)
+		}else{
+			rownames(cur) <- 1:nrow(cur)
+		}
+		
+		if(!is.null(colnames(children))){
+			colnames(cur) <- colnames(children)
+		}else{
+			colnames(cur) <- 1:ncol(cur)
+		}
+		
+		ril$rils$phenotypes <- cur
+	}
+	if(is.null(ril)) stop("No data provided!\n")
+	class(ril) <- "ril"
+	invisible(ril)
+}
+
+############################################################################################################
+#removeChromosomes.internal: removing from cross chromosomes that have too little markers
+# 
+# cross - object of R/qtl cross type
+# minChrLength - minimal number of markers chromosome have to contaion not to be removed)
+#
+############################################################################################################
+removeChromosomes.internal <- function(cross, minChrLength){
+	 for(i in length(cross$geno):1){
+		if(length(cross$geno[[i]]$map)<minChrLength){
+			cat("removing markers:",names(cross$geno[[i]]$map),"\n")
+			cross$rmv <- cbind(cross$rmv,cross$geno[[i]]$data)
+			cross <- drop.markers(cross, names(cross$geno[[i]]$map))
+			names(cross$geno) <- 1:length(cross$geno)
+		}
+	}
+	invisible(cross)
 }

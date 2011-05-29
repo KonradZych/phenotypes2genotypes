@@ -39,6 +39,10 @@
 \alias{switchChromosomes.internal}
 \alias{removeChromosomes.internal}
 
+\alias{checkMu.internal}
+\alias{splitRowSubEM.internal}
+\alias{splitRowSub.internal}
+
 \title{Internal pheno2geno functions}
 
 \description{

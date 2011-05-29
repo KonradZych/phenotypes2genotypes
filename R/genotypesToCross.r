@@ -1,4 +1,4 @@
-#####################################################################
+#############################################################################################
 #
 # genotypesToCross.R
 #
@@ -7,8 +7,8 @@
 # Modified by Danny Arends
 # 
 # first written March 2011
-# last modified April 2011
-# last modified in version: 0.4.3
+# last modified May 2011
+# last modified in version: 0.5.1
 # in current version: active, internal in main workflow
 #
 #     This program is free software; you can redistribute it and/or
@@ -24,9 +24,9 @@
 #     at http://www.r-project.org/Licenses/GPL-3
 #
 # Contains: genotypesToCross.internal 
-#				writePhenotypes.internal, writeGenotypes.internal
+#				writePhenotypes.internal, writeGenotypes.internal, cleanNames.internal
 #
-#####################################################################
+#############################################################################################
 
 
 
@@ -158,25 +158,9 @@ writePhenotypes.internal <- function(ril, use, outputFile, verbose=FALSE, debugM
 #writeGenotypesMap.internal - sub function of genotypesToCross - orders markers using map and writes them to
 # file using writeGenotypes.internal 
 # 
-# ril - Ril type object, must contain parental phenotypic data.
-# outputFile - file where object of type cross is being saved
-# verbose - Be verbose
-# debugMode - 1: Print our checks, 2: print additional time information
+# removed in version 0.5.1
 #
 ############################################################################################################
-writeGenotypesMap.internal <- function(ril, outputFile, verbose=FALSE, debugMode=0){
-	#TODO: use map to sort out the genotype, then also comparing reco map with physical
-	sl <- proc.time()
-	if(verbose && debugMode==1) cat("writeGenotypesMap.internal starting.\n")
-	for(i in 1:length(table(ril$rils$map[,1]))){
-		selectedMap <- ril$rils$map[which(ril$rils$map[,1]==i),]
-		selectedGenes <- ril$rils$genotypes$simulated[which(rownames(ril$rils$genotypes$simulated) %in% rownames(selectedMap)),]
-		selectedMap <- selectedMap[which(rownames(ril$rils$genotypes$simulated) %in% rownames(selectedMap)),]
-		writeGenotypes.internal (selectedGenes,i,selectedMap[,2],outputFile,verbose,debugMode)
-	}
-	el <- proc.time()
-	if(verbose && debugMode==2) cat("Writing genotypes done in:",(el-sl)[3],"seconds.\n")
-}
 
 ############################################################################################################
 #writeGenotypes.internal - sub function of genotypesToCross and writeGenotypesMap - writes genotypes 
@@ -208,7 +192,7 @@ writeGenotypes.internal <- function(genotypeMatrix,chr=1,positions=NULL,outputFi
 # matrixToBeCleaned - matrix of any data type
 #
 ############################################################################################################
-cleanNames.internal <-function(matrixToBeCleaned){
+cleanNames.internal <- function(matrixToBeCleaned){
 	for(i in 1:nrow(matrixToBeCleaned)){
 		old <- rownames(matrixToBeCleaned)[i]
 		new <- gsub(",","_",rownames(matrixToBeCleaned)[i])

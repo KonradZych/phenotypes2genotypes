@@ -25,7 +25,7 @@
 #
 # Contains: readFiles 
 # 				readFile.internal, mapMarkers.internal, gffParser, probesLocation.internal
-#				correctRowGff.internal, correctRowLoc.internal
+#				correctRowGff.internal, correctRowLoc.internal, intoRil
 #
 #############################################################################################
 
@@ -107,26 +107,13 @@ readFile.internal <- function(filename,sep="",verbose=FALSE,debugMode=0,..){
 	s1<-proc.time()
 	currentFile <- read.table(filename,sep=sep)
 	if(verbose) cat("File:",filename,"was loaded into R enviroment containing",nrow(currentFile),"markers and",ncol(currentFile),"individuals.\n")
-	#currentFile <- makeUnique.internal(currentFile)
-	#if(!is.numeric(currentFile)) stop("Not all elements of the file:",filename," are numeric, check help files for rigth input file format. \n")
+	if(!is.numeric(currentFile)) stop("Not all elements of the file:",filename," are numeric, check help files for rigth input file format. \n")
 	currentFile[1,] <- as.numeric(currentFile[1,])
 	currentFile <- as.matrix(currentFile)
 	if(verbose) cat("File:",filename,"was loaded into R enviroment containing",nrow(currentFile),"markers and",ncol(currentFile),"individuals.\n")
 	e1<-proc.time()
 	if(verbose && debugMode==2)cat("Reading file:",filename,"done in:",(e1-s1)[3],"seconds.\n")
 	invisible(currentFile)
-}
-
-makeUnique.internal <- function(dataMatrix){
-	dataMatrix[,1] <- as.character(dataMatrix[,1])
-	for(i in dataMatrix[,1]){
-		if(sum(dataMatrix[,1]==i)>1){
-			dataMatrix <- dataMatrix[-which(dataMatrix[,1]==i),]
-		}
-	}
-	result <- as.matrix(dataMatrix[,-1])
-	rownames(result) <- toupper(dataMatrix[,1])
-	invisible(result)
 }
 
 ############################################################################################################
@@ -245,117 +232,3 @@ correctRowLoc.internal <- function(genesRow){
 	genesRow <- genesRow[-3]
 	invisible(genesRow)
 }
-
-intoRil.internal <- function(ril=NULL, parental=NULL, parentalRows=NULL, parentalCols=NULL, children=NULL, childrenRows=NULL, childrenCols=NULL){
-	if(!(is.null(parental))&&!is.null(dim(parental))){
-		columns <- NULL
-		rows <- NULL
-		
-		for(column in 1:ncol(parental)){
-			if(any(is.na(as.numeric(as.matrix(parental[,column]))))){
-				if(sum(is.na(as.numeric(as.matrix(parental[,column]))))!=sum(is.na(as.matrix(parental[,column])))){
-					columns <- c(columns,column)
-				}
-			}
-		}
-		
-		if(!(is.null(columns))){
-			cat("Parental: following  columns are not numeric and cannot be converted into numeric:",columns," so will be removed.\n")
-			parental <- parental[,-columns]
-		}
-		
-		if(is.null(dim(parental))) stop("Not enough data to continue.\n")
-		
-		for(row_ in 1:nrow(parental)){
-			if(any(is.na(as.numeric(as.matrix(parental[row_,]))))){
-				if(sum(is.na(as.numeric(as.matrix(parental[row_,]))))!=sum(is.na(as.matrix(parental[row_,])))){
-					rows <- c(rows,row_)
-				}
-			}
-		}
-		
-		if(!(is.null(rows))){
-			cat("Parental: following  rows are not numeric and cannot be converted into numeric:",rows," so will be removed.\n")
-			parental <- parental[-rows,]
-		}
-		
-		if(!(is.null(rows))){}
-		
-		if(is.null(dim(parental))) stop("Not enough data to continue.\n")
-		
-		cur<- matrix(as.numeric(as.matrix(parental)),nrow(parental),ncol(parental))
-		
-		if(!is.null(rownames(parental))){
-			rownames(cur) <- rownames(parental)
-		}else{
-			rownames(cur) <- 1:nrow(cur)
-		}
-		
-		if(!is.null(colnames(parental))){
-			colnames(cur) <- colnames(parental)
-		}else{
-			colnames(cur) <- 1:ncol(cur)
-		}
-		
-		ril$parental$phenotypes <- cur
-	}
-	
-	
-	if(!(is.null(children))&&!is.null(dim(children))){
-		columns <- NULL
-		rows <- NULL
-		
-		for(column in 1:ncol(children)){
-			if(any(is.na(as.numeric(as.matrix(children[,column]))))){
-				if(sum(is.na(as.numeric(as.matrix(children[,column]))))!=sum(is.na(as.matrix(children[,column])))){
-					columns <- c(columns,column)
-				}
-			}
-		}
-		
-		if(!(is.null(columns))){
-			cat("Children: following  columns are not numeric and cannot be converted into numeric:",columns," so will be removed.\n")
-			children <- children[,-columns]
-		}
-		
-		for(row_ in 1:nrow(children)){
-			if(any(is.na(as.numeric(as.matrix(children[row_,]))))){
-				if(sum(is.na(as.numeric(as.matrix(children[row_,]))))!=sum(is.na(as.matrix(children[row_,])))){
-					rows <- c(rows,row_)
-				}
-			}
-		}
-		
-		if(!(is.null(rows))){
-			cat("Children: following  rows are not numeric and cannot be converted into numeric:",rows," so will be removed.\n")
-			children <- children[-rows,]
-		}
-		
-		if(is.null(dim(children))) stop("Not enough data to continue.\n")
-		
-		cur<- matrix(as.numeric(as.matrix(children)),nrow(children),ncol(children))
-		
-		if(!is.null(rownames(children))){
-			rownames(cur) <- rownames(children)
-		}else{
-			rownames(cur) <- 1:nrow(cur)
-		}
-		
-		if(!is.null(colnames(children))){
-			colnames(cur) <- colnames(children)
-		}else{
-			colnames(cur) <- 1:ncol(cur)
-		}
-		
-		ril$rils$phenotypes <- cur
-	}
-	if(is.null(ril)) stop("No data provided!\n")
-	class(ril) <- "ril"
-	invisible(ril)
-}
-
-
-
-
-
-

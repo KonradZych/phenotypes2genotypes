@@ -28,7 +28,7 @@
 #################################################################################
 
 ############################################################################################################
-#toGenotypes: Using Rank Product analysis to select differentially expressed genes.
+#preprocessData: Using Rank Product analysis to select differentially expressed genes.
 # 
 # ril - Ril type object, must contain parental phenotypic data.
 # groupLabels - Specify which column of parental data belongs to group 0 and which to group 1.

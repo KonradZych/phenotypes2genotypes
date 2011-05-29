@@ -39,6 +39,8 @@
 
 \seealso{
   \code{\link{plotChildrenExpression}}
+  \code{\link{plotMarkerDistribution}}
+  \code{\link{plotMapComparison}}
 }
 
 \keyword{manip}
