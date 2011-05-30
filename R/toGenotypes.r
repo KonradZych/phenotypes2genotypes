@@ -447,7 +447,7 @@ splitRowSubEM.internal <- function(x, rils, parental, overlapInd, proportion, ma
 		startVal <- sum(len[1:i-1])
 		rils[x,which(rils[x,] %in% sort(rils[x,])[startVal:(startVal+len[i])])] <- genotypes[i]
 	}
-	result <- checkMu.internal(EM)
+	#result <- checkMu.internal(EM)
 	if(checkMu.internal(EM)){
 		result <- filterRow.internal(result, overlapInd, proportion, margin, genotypes)
 	}else{
