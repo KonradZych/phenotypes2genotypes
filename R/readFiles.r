@@ -50,7 +50,8 @@ readFiles <- function(rils="children",parental="parental",sep="",verbose=FALSE,d
 	filename <- paste(rils,"_phenotypes.txt",sep="")
 	if(file.exists(filename)){
 		if(verbose) cat("Found phenotypic file for rils:",filename,"and will store  it in ril$rils$phenotypes\n")
-		ril$rils$phenotypes <- readFile.internal(filename,sep,verbose,debugMode)
+		children <- read.table(filename,sep="")
+		ril <- intoRil(ril, children=children)
 	}else{
 		stop("There is no phenotypic file for rils: ",filename," this file is essentiall, you have to provide it\n")
 	}
@@ -68,9 +69,10 @@ readFiles <- function(rils="children",parental="parental",sep="",verbose=FALSE,d
 	filename <- paste(parental,"_phenotypes.txt",sep="")
 	if(file.exists(filename)){
 		if(verbose) cat("Found phenotypic file for parents:",filename,"and will store it in ril$parental$phenotypes\n")
-		ril$parental$phenotypes <- readFile.internal(filename,sep,verbose,debugMode)
+		parental <- read.table(filename,sep="")
+		ril <- intoRil(ril, parental=parental)
 		#removing from parental probes that are not in children:
-		#ril$parental$phenotypes <- mapMarkers.internal(ril$parental$phenotypes,ril$rils$phenotypes ,mapMode=1,verbose=verbose)
+		ril$parental$phenotypes <- mapMarkers.internal(ril$parental$phenotypes,ril$rils$phenotypes ,mapMode=1,verbose=verbose)
 	}else{
 		stop("There is no phenotypic file for parents:",filename,"further processing will take place without taking into account parental data\n")
 	}

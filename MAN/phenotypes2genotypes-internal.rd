@@ -42,6 +42,7 @@
 \alias{checkMu.internal}
 \alias{splitRowSubEM.internal}
 \alias{splitRowSub.internal}
+\alias{print.ril}
 
 \title{Internal pheno2geno functions}
 
