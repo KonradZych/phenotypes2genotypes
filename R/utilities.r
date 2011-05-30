@@ -247,12 +247,16 @@ intoRil <- function(ril=NULL, parental=NULL, parentalRows=NULL, parentalCols=NUL
 #
 ############################################################################################################
 removeChromosomes.internal <- function(cross, minChrLength){
-	 for(i in length(cross$geno):1){
-		if(length(cross$geno[[i]]$map)<minChrLength){
-			cat("removing markers:",names(cross$geno[[i]]$map),"\n")
-			cross$rmv <- cbind(cross$rmv,cross$geno[[i]]$data)
-			cross <- drop.markers(cross, names(cross$geno[[i]]$map))
-			names(cross$geno) <- 1:length(cross$geno)
+	j <- length(cross$geno)
+	for(i in length(cross$geno):1){
+		if(i<=j){
+			if(length(cross$geno[[i]]$map)<minChrLength){
+				cat("removing markers:",names(cross$geno[[i]]$map),"chr",i,"\n")
+				cross$rmv <- cbind(cross$rmv,cross$geno[[i]]$data)
+				cross <- drop.markers(cross, names(cross$geno[[i]]$map))
+				names(cross$geno) <- 1:length(cross$geno)
+				j <- length(cross$geno)
+			}
 		}
 	}
 	invisible(cross)
