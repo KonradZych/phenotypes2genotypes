@@ -97,19 +97,19 @@ print.ril <- function(x,...){
 		cat("WARNING: There is no phenotypic data for children. This is not acceptable in real ril object.\n",...)
 	}
 	
-	if(!(is.null(ril$parental))){
-		if(!(is.null(ril$parental$phenotypes))){
-			cat("Object contains phenotypic data for",ncol(ril$parental$phenotypes),"parental individuals covering",nrow(ril$parental$phenotypes),"probes.\n",...)
+	if(!(is.null(x$parental))){
+		if(!(is.null(x$parental$phenotypes))){
+			cat("Object contains phenotypic data for",ncol(x$parental$phenotypes),"parental individuals covering",nrow(x$parental$phenotypes),"probes.\n",...)
 		}else{
 			stop("There is no phenotypic data for parents in this object. This is not acceptable in real ril object.\n",...)
 		}
-		if(!(is.null(ril$parental$RP))){
+		if(!(is.null(x$parental$RP))){
 			cat("Object contains RP analysis results.\n",...)
 		}else{
 			cat("There is no RP analysis result in this object.\n",...)
 		}
-		if(!(is.null(ril$parental$groups))){
-			cat("Parental groups are as following:",ril$parental$groups,"\n",...)
+		if(!(is.null(x$parental$groups))){
+			cat("Parental groups are as following:",x$parental$groups,"\n",...)
 		}else{
 			cat("There is no information about parental groups in this object.\n",...)
 		}
