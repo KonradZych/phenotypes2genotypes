@@ -77,19 +77,19 @@ print.ril <- function(x,...){
 	#if(is.null(ril$summary)) ril$summary <- rilSummary.internal
 	cat("*************************************************************************************\n")
 	cat("This is object of class ril, too complex to print it, so we provide you with summary.\n")
-	if(!(is.null(ril$rils))){
-		if(!(is.null(ril$rils$phenotypes))){
-			cat("Object contains phenotypic data for",ncol(ril$rils$phenotypes),"children individuals covering",nrow(ril$rils$phenotypes),"probes.\n",...)
+	if(!(is.null(x$rils))){
+		if(!(is.null(x$rils$phenotypes))){
+			cat("Object contains phenotypic data for",ncol(x$rils$phenotypes),"children individuals covering",nrow(x$rils$phenotypes),"probes.\n",...)
 		}else{
 			stop("There is no phenotypic data for children in this object. This is not acceptable in real ril object.\n",...)
 		}
-		if(!(is.null(ril$rils$genotypes$read))){
-			cat("Object contains genotypic data for",ncol(ril$rils$phenotypes),"children individuals covering",nrow(ril$rils$phenotypes),"probes.\n",...)
+		if(!(is.null(x$rils$genotypes$read))){
+			cat("Object contains genotypic data for",ncol(x$rils$phenotypes),"children individuals covering",nrow(x$rils$phenotypes),"probes.\n",...)
 		}else{
 			cat("There is no genotypic data for children in this object.\n",...)
 		}
-		if(!(is.null(ril$rils$map))){
-			cat("Object contains physical map covering",nrow(ril$rils$map),"markers from",length(table(ril$rils$map[,1])),"chromosomes.\n",...)
+		if(!(is.null(x$rils$map))){
+			cat("Object contains physical map covering",nrow(x$rils$map),"markers from",length(table(x$rils$map[,1])),"chromosomes.\n",...)
 		}else{
 			cat("There is no physical genetic map in this object.\n")
 		}
