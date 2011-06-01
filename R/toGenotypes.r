@@ -52,10 +52,10 @@ toGenotypes <- function(ril, use=c("real","simulated","map"), splitMethod=c("EM"
 	s<-proc.time()
 	if(proportion < 1 || proportion > 99) stop("Proportion is a percentage (1,99)")
 	if(any(!(is.numeric(ril$parental$phenotypes)))){
-		ril <- intoRil(ril, ril$parental$phenotypes)
+		ril <- intoRil(ril, ril$parental$phenotypes, "parental")
 	}
 	if(any(!(is.numeric(ril$rils$phenotypes)))){
-		ril <- intoRil(ril, children=ril$rils$phenotypes)
+		ril <- intoRil(ril, ril$rils$phenotypes, "children")
 	}
 	if(overlapInd < 0 || overlapInd > ncol(ril$rils$phenotypes)) stop("overlapInd is a number (0,lenght of the row).")
 	if(margin < 0 || margin > proportion) stop("Margin is a percentage (0,proportion)")

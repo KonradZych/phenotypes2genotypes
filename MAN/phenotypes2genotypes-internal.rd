@@ -1,6 +1,5 @@
 \name{phenotypes2genotypes-internal}
 
-\alias{readFile.internal}
 \alias{mapMarkers.internal}
 \alias{gffParser.internal}
 \alias{correctRowGff.internal}
@@ -43,6 +42,10 @@
 \alias{splitRowSubEM.internal}
 \alias{splitRowSub.internal}
 \alias{print.ril}
+
+\alias{inRangeCheck.internal}
+\alias{numericCheck.internal}
+\alias{inListCheck.internal}
 
 \title{Internal pheno2geno functions}
 
