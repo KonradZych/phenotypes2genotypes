@@ -14,17 +14,15 @@
 }
 
 \usage{
-	intoRil(ril=NULL, parental=NULL, parentalRows=NULL, parentalCols=NULL, children=NULL, childrenRows=NULL, childrenCols=NULL)
+	intoRil(ril=NULL, dataObject, dataType=c("parental","children"), selectedRows=NULL, selectedCols=NULL)
 }
 
 \arguments{
  \item{ril}{ object of class ril, data should be put into, by default - new object will be created}
- \item{parental}{ matrix of parental data to be put into ril object}
- \item{parentalRows}{ rows to be selected from parental, by default - all}
- \item{parentalCols}{ cols to be selected from parental, by default - all }
- \item{children}{ matrix of parental data to be put into ril object}
- \item{childrenRows}{ rows to be selected from children, by default - all }
- \item{childrenCols}{ cols to be selected from children, by default - all }
+ \item{dataObject}{ matrix of data to be put into ril object}
+ \item{dataType}{ what kind of data dataObject contains (parental phenotypic, children phenotypic)}
+ \item{selectedRows}{ rows to be selected from dataObject, by default - all}
+ \item{selectedCols}{ cols to be selected from dataObject, by default - all }
 }
 
 \value{
@@ -45,7 +43,8 @@
 	setwd(paste(.Library,"pheno2geno/data",sep="/"))
 	parental <- read.table("parental_phenotypes.txt",sep="")
 	children <- read.table("children_phenotypes.txt",sep="")
-	ril <- intoRil(parental=parental, children=children)
+	ril <- intoRil(dataObject=parental, dataType="parental")
+	ril <- intoRil(ril, children, "children")
 }
 
 \seealso{
