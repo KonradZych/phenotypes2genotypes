@@ -82,4 +82,23 @@ inListCheck.internal <- function(objectToBeChecked,objectName,listOfPossibleElem
 	if(!(any(listOfPossibleElements==objectToBeChecked))) stop("Selected wrong ",objectName," possibilities are: ",listOfPossibleElements,"\n")
 }
 
-
+############################################################################################################
+#inRangeCheck.internal - checking if given object is numeric and if it is from specified range
+# 
+# objectToBeChecked - object to be checked
+# objectName - name of the object
+# downLimit, upLimit - down and up limit to specify range
+#
+############################################################################################################
+checkDataStamp.internal <- function(ril, objectToBeChecked){
+	if(is.null(objectToBeChecked)) return(FALSE)
+	if(is.null(objectToBeChecked$wd)) return(FALSE)
+	if(is.null(objectToBeChecked$parental)) return(FALSE)
+	if(is.null(objectToBeChecked$children)) return(FALSE)
+	if(objectToBeChecked$wd!=getwd()) return(FALSE)
+	if(length(objectToBeChecked$parental)!=length(ril$parameters$readFiles$parental)) return(FALSE)
+	if(objectToBeChecked$parental!=ril$parameters$readFiles$parental) return(FALSE)
+	if(length(objectToBeChecked$children)!=length(ril$parameters$readFiles$rils)) return(FALSE)
+	if(objectToBeChecked$children!=ril$parameters$readFiles$rils) return(FALSE)
+	return(TRUE)
+}

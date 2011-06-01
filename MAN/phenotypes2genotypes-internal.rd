@@ -38,8 +38,10 @@
 \alias{inRangeCheck.internal}
 \alias{numericCheck.internal}
 \alias{inListCheck.internal}
+\alias{checkDataStamp.internal}
 
 \alias{conductRP.internal}
+\alias{makeDataStamp.internal}
 
 \title{Internal pheno2geno functions}
 
