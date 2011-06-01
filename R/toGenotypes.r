@@ -433,9 +433,10 @@ mergeChromosomes.internal <- function(cross, chromosomes, name){
 ############################################################################################################
 splitRowSubEM.internal <- function(x, rils, parental, overlapInd, proportion, margin, groupLabels, up=1){
 	### initialization
+	print(x)
 	nrDistributions <- length(proportion)
 	result <- rep(0,length(rils[x,]))
-	EM <- invisible(normalmixEM(sort(rils[x,]), k=nrDistributions))
+	EM <- cat(normalmixEM(sort(rils[x,]), k=nrDistributions, maxrestarts=0, maxit = 100,fast=TRUE),file=NULL)
 	if(up==1){
 		genotypes <- c(0:(nrDistributions-1))
 	}else if(up==0){
