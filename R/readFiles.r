@@ -68,8 +68,8 @@ readFiles <- function(rils="children",parental="parental",sep="",verbose=FALSE,d
 	filename <- paste(parental,"_phenotypes.txt",sep="")
 	if(file.exists(filename)){
 		if(verbose) cat("Found phenotypic file for parents:",filename,"and will store it in ril$parental$phenotypes\n")
-		parental <- read.table(filename,sep="")
-		ril <- intoRil(ril, parental, "parental")
+		parentalData <- read.table(filename,sep="")
+		ril <- intoRil(ril, parentalData, "parental")
 		#removing from parental probes that are not in children:
 		ril$parental$phenotypes <- mapMarkers.internal(ril$parental$phenotypes,ril$rils$phenotypes ,mapMode=1,verbose=verbose)
 	}else{
@@ -88,7 +88,7 @@ readFiles <- function(rils="children",parental="parental",sep="",verbose=FALSE,d
 	#**********FINALIZING FUNCTION*************
 	e <- proc.time()
 	if(verbose) cat("readFiles done in",(e-s)[3],"seconds.\n")
-	ril$parameters$readFiles <- list(rils,parental,sep="",verbose,debugMode)
+	ril$parameters$readFiles <- list(rils, parental,sep="",verbose,debugMode)
 	names(ril$parameters$readFiles) <- c("rils", "parental", "sep", "verbose", "debugMode")
 	class(ril) <- "ril"
 	invisible(ril)
