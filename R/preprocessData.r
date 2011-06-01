@@ -42,18 +42,19 @@ preprocessData <- function(ril,groupLabels=c(0,0,1,1),verbose=FALSE,debugMode=0,
 	if(file.exists("rilrankProdRes.Rdata")){
 		if(verbose) cat("File rilrankProdRes.Rdata already exists, reading it.\n")
 		load("rilrankProdRes.Rdata")
-		ril$parental$RP <- result[[1]]
-		if(verbose) cat("File rilrankProdRes.Rdata contains groupLabels used during processing. They are following:",result[[2]]," and will be used instead of ones supplied by user:",groupLabels,"\n")
-		ril$parental$groups <- result[[2]]
-		
+		if(length(result)==3){
+			if(result[[3]]==c(getwd(),ril$parameters$intoRil$parental,ril$parameters$intoRil$children)){
+				ril$parental$RP <- result[[1]]
+				if(verbose) cat("File rilrankProdRes.Rdata contains groupLabels used during processing. They are following:",result[[2]]," and will be used instead of ones supplied by user:",groupLabels,"\n")
+				ril$parental$groups <- result[[2]]
+			}
+		}else{
+			ril <- conductRP.internal(ril, groupLabels, ...)
+		}
 	}else{
-		#wasting memory here because of Rbug
-		rankProdRes <- invisible(RP(ril$parental$phenotypes,groupLabels,...))
-		result <- list(rankProdRes,groupLabels)
-		save(file="rilrankProdRes.Rdata",result)
-		ril$parental$RP <- rankProdRes
-		ril$parental$groups <- groupLabels
+		ril <- conductRP.internal(ril, groupLabels, ...)
 	}
+	
 	e2<-proc.time()
 	if(verbose && debugMode==2)cat("Data preprocessing done in:",(e2-s2)[3],"seconds.\n")
 	ril$parameters$preprocessData <- list("object of ril class", groupLabels,verbose,debugMode)
@@ -62,3 +63,17 @@ preprocessData <- function(ril,groupLabels=c(0,0,1,1),verbose=FALSE,debugMode=0,
 	invisible(ril)
 }
 
+conductRP.internal <- function(ril, groupLabels, ...){
+	rankProdRes <- invisible(RP(ril$parental$phenotypes,groupLabels,...))
+	result <- list(rankProdRes,groupLabels,c(getwd(),ril$parameters$intoRil$parental,ril$parameters$intoRil$children))
+	filename <- "rilrankProdRes"
+	nr <- 1
+	while(file.exists(paste(filename,".RData",sep=""))){
+		filename <- paste(filename,nr,sep="_")
+		nr <- nr+1
+	}
+	save(file=paste(filename,".RData",sep=""),result)
+	ril$parental$RP <- rankProdRes
+	ril$parental$groups <- groupLabels
+	invisible(ril)
+}
