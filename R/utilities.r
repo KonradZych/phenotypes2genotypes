@@ -188,8 +188,12 @@ intoRil <- function(ril=NULL, dataObject, dataType=c("parental","children"), sel
 		
 		if(dataType=="parental"){
 			ril$parental$phenotypes <- cur
+			ril$parameters$intoRil$parental <- list("dataObject", dataType, selectedRows, selectedCols)
+			names(ril$parameters$intoRil$parental) <- c("dataObject", "dataType", "selectedRows", "selectedCols")
 		}else if(dataType=="children"){
 			ril$rils$phenotypes <- cur
+			ril$parameters$intoRil$children <- list("dataObject", dataType, selectedRows, selectedCols)
+			names(ril$parameters$intoRil$children) <- c("dataObject", "dataType", "selectedRows", "selectedCols")
 		}
 	}
 	if(is.null(ril)) stop("No data provided!\n")

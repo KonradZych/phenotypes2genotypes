@@ -23,14 +23,6 @@
 \alias{mixtureEM.internal}
 \alias{mixtureEMSub.internal}
 
-\alias{bestClustering.internal}
-\alias{bestClusteringSub.internal}
-\alias{bestClusteringSubSub.internal}
-
-\alias{recombinationCountRow.internal}
-\alias{recombinationCountRowSub.internal}
-\alias{recombinationCountRowFlipSub.internal}
-
 \alias{getChromosome.internal}
 \alias{getYLocs.internal}
 \alias{makeChromPal.internal}
@@ -46,6 +38,8 @@
 \alias{inRangeCheck.internal}
 \alias{numericCheck.internal}
 \alias{inListCheck.internal}
+
+\alias{conductRP.internal}
 
 \title{Internal pheno2geno functions}
 
