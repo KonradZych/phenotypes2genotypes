@@ -1,14 +1,14 @@
 #############################################################################################
 #
-# parentalRoutine.R
+# readFiles.R
 #
 # Copyright (c) 2011, Konrad Zych
 #
 # Modified by Danny Arends
 # 
 # first written March 2011
-# last modified May 2011
-# last modified in version: 0.5.1
+# last modified June 2011
+# last modified in version: 0.6.1
 # in current version: active, in main workflow
 #
 #     This program is free software; you can redistribute it and/or
@@ -24,8 +24,8 @@
 #     at http://www.r-project.org/Licenses/GPL-3
 #
 # Contains: readFiles 
-# 				readFile.internal, mapMarkers.internal, gffParser, probesLocation.internal
-#				correctRowGff.internal, correctRowLoc.internal, intoRil
+# 				mapMarkers.internal, gffParser, probesLocation.internal
+#				correctRowGff.internal, correctRowLoc.internal
 #
 #############################################################################################
 
@@ -43,7 +43,6 @@ readFiles <- function(rils="children",parental="parental",sep="",verbose=FALSE,d
 	#**********INITIALIZING FUNCTION*************
 	s <- proc.time()
 	if(verbose && debugMode==1) cat("readFiles starting.\n")
-	if(verbose) cat("Loaded required libraries.\n")
 	ril <- NULL
 	
 	#**********READING CHILDREN PHENOTYPIC DATA*************
@@ -51,26 +50,26 @@ readFiles <- function(rils="children",parental="parental",sep="",verbose=FALSE,d
 	if(file.exists(filename)){
 		if(verbose) cat("Found phenotypic file for rils:",filename,"and will store  it in ril$rils$phenotypes\n")
 		children <- read.table(filename,sep="")
-		ril <- intoRil(ril, children=children)
+		ril <- intoRil(ril, children, "children")
 	}else{
 		stop("There is no phenotypic file for rils: ",filename," this file is essentiall, you have to provide it\n")
 	}
 	
 	#**********READING CHILDREN GENOTYPIC DATA*************
-	filename <- paste(rils,"_genotypes.txt",sep="")
-	if(file.exists(filename)){
-		if(verbose) cat("Found genotypic file for rils:",filename,"and will store  it in ril$rils$genotypes$read\n")
-		ril$rils$genotypes$read <- readFile.internal(filename,sep,verbose,debugMode)
-	}else{
-		cat("WARNING: There is no genotypic file for rils:",filename,"genotypic data for rils will be simulated\n")
-	}
+	#filename <- paste(rils,"_genotypes.txt",sep="")
+	#if(file.exists(filename)){
+	#	if(verbose) cat("Found genotypic file for rils:",filename,"and will store  it in ril$rils$genotypes$read\n")
+	#	ril$rils$genotypes$read <- readFile.internal(filename,sep,verbose,debugMode)
+	#}else{
+	#	cat("WARNING: There is no genotypic file for rils:",filename,"genotypic data for rils will be simulated\n")
+	#}
 	
 	#**********READING PARENTAL PHENOTYPIC DATA*************
 	filename <- paste(parental,"_phenotypes.txt",sep="")
 	if(file.exists(filename)){
 		if(verbose) cat("Found phenotypic file for parents:",filename,"and will store it in ril$parental$phenotypes\n")
 		parental <- read.table(filename,sep="")
-		ril <- intoRil(ril, parental=parental)
+		ril <- intoRil(ril, parental, "parental")
 		#removing from parental probes that are not in children:
 		ril$parental$phenotypes <- mapMarkers.internal(ril$parental$phenotypes,ril$rils$phenotypes ,mapMode=1,verbose=verbose)
 	}else{
@@ -93,29 +92,6 @@ readFiles <- function(rils="children",parental="parental",sep="",verbose=FALSE,d
 	names(ril$parameters$readFiles) <- c("rils", "parental", "sep", "verbose", "debugMode")
 	class(ril) <- "ril"
 	invisible(ril)
-}
-
-############################################################################################################
-#readFile.internal: sub function of readFiles, reads file in and transforms into matrix tahn returning it
-# 
-# filename - Name of the file to be read.
-# sep - Separator of values in files. Passed directly to read.table, so "" is a wildcard meaning whitespace.
-# verbose - Be verbose
-# debugMode - 1: Print our checks, 2: print additional time information
-#
-############################################################################################################
-readFile.internal <- function(filename,sep="",verbose=FALSE,debugMode=0,..){
-	if(!file.exists(filename)) stop("File: ",filename,"doesn't exist.\n")
-	s1<-proc.time()
-	currentFile <- read.table(filename,sep=sep)
-	if(verbose) cat("File:",filename,"was loaded into R enviroment containing",nrow(currentFile),"markers and",ncol(currentFile),"individuals.\n")
-	if(!is.numeric(currentFile)) stop("Not all elements of the file:",filename," are numeric, check help files for rigth input file format. \n")
-	currentFile[1,] <- as.numeric(currentFile[1,])
-	currentFile <- as.matrix(currentFile)
-	if(verbose) cat("File:",filename,"was loaded into R enviroment containing",nrow(currentFile),"markers and",ncol(currentFile),"individuals.\n")
-	e1<-proc.time()
-	if(verbose && debugMode==2)cat("Reading file:",filename,"done in:",(e1-s1)[3],"seconds.\n")
-	invisible(currentFile)
 }
 
 ############################################################################################################
