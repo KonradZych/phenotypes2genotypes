@@ -74,7 +74,6 @@ cleanMap <- function(cross, difPercentage, verbose=FALSE, debugMode=0){
 #
 ############################################################################################################
 print.ril <- function(x,...){
-	#if(is.null(ril$summary)) ril$summary <- rilSummary.internal
 	cat("*************************************************************************************\n")
 	cat("This is object of class ril, too complex to print it, so we provide you with summary.\n")
 	if(!(is.null(x$rils))){
@@ -131,108 +130,67 @@ print.ril <- function(x,...){
 # childrenCols - cols to be selected from children, by default - all
 #
 ############################################################################################################
-intoRil <- function(ril=NULL, parental=NULL, parentalRows=NULL, parentalCols=NULL, children=NULL, childrenRows=NULL, childrenCols=NULL){
-	if(!(is.null(parental))&&!is.null(dim(parental))){
+intoRil <- function(ril=NULL, dataObject, dataType=c("parental","children"), selectedRows=NULL, selectedCols=NULL){
+	if(!(is.null(dataObject))&&!is.null(dim(dataObject))){
 		columns <- NULL
 		rows <- NULL
+		if(is.null(selectedRows)) selectedRows <- c(1:nrow(dataObject))
+		if(is.null(selectedCols)) selectedCols <- c(1:ncol(dataObject))
+		### checks
+		inRangeCheck.internal(min(selectedRows),"selectedRows",-nrow(dataObject),nrow(dataObject))
+		inRangeCheck.internal(max(selectedRows),"selectedRows",-nrow(dataObject),nrow(dataObject))
+		inRangeCheck.internal(min(selectedCols),"selectedCols",-ncol(dataObject),ncol(dataObject))
+		inRangeCheck.internal(max(selectedCols),"selectedCols",-ncol(dataObject),ncol(dataObject))
+		if(length(dataType)!=1) stop("Only one data type could be selected at once.\n")
+		inListCheck.internal(dataType,"dataType",c("parental","children"))
 		
-		for(column in 1:ncol(parental)){
-			if(any(is.na(as.numeric(as.matrix(parental[,column]))))){
-				if(sum(is.na(as.numeric(as.matrix(parental[,column]))))!=sum(is.na(as.matrix(parental[,column])))){
-					columns <- c(columns,column)
-				}
+		dataObject <- dataObject[selectedRows,selectedCols]
+		
+		for(column in 1:ncol(dataObject)){
+			if(!(numericCheck.internal(dataObject[,column],allow.na=TRUE))){
+				columns <- c(columns,column)
 			}
 		}
 		
 		if(!(is.null(columns))){
-			cat("Parental: following  columns are not numeric and cannot be converted into numeric:",columns," so will be removed.\n")
-			parental <- parental[,-columns]
+			cat("Following  columns are not numeric and cannot be converted into numeric:",columns," so will be removed.\n")
+			dataObject <- dataObject[,-columns]
 		}
 		
-		if(is.null(dim(parental))) stop("Not enough data to continue.\n")
+		if(is.null(dim(dataObject))) stop("Not enough data to continue.\n")
 		
-		for(row_ in 1:nrow(parental)){
-			if(any(is.na(as.numeric(as.matrix(parental[row_,]))))){
-				if(sum(is.na(as.numeric(as.matrix(parental[row_,]))))!=sum(is.na(as.matrix(parental[row_,])))){
-					rows <- c(rows,row_)
-				}
+		for(row_ in 1:nrow(dataObject)){
+			if(!(numericCheck.internal(dataObject[row_,],allow.na=TRUE))){
+				rows <- c(rows,row_)
 			}
 		}
 		
 		if(!(is.null(rows))){
-			cat("Parental: following  rows are not numeric and cannot be converted into numeric:",rows," so will be removed.\n")
-			parental <- parental[-rows,]
+			cat("Following  rows are not numeric and cannot be converted into numeric:",rows," so will be removed.\n")
+			dataObject <- dataObject[-rows,]
 		}
 		
-		if(!(is.null(rows))){}
+		if(is.null(dim(dataObject))) stop("Not enough data to continue.\n")
 		
-		if(is.null(dim(parental))) stop("Not enough data to continue.\n")
+		cur<- matrix(as.numeric(as.matrix(dataObject)),nrow(dataObject),ncol(dataObject))
 		
-		cur<- matrix(as.numeric(as.matrix(parental)),nrow(parental),ncol(parental))
-		
-		if(!is.null(rownames(parental))){
-			rownames(cur) <- rownames(parental)
+		if(!is.null(rownames(dataObject))){
+			rownames(cur) <- rownames(dataObject)
 		}else{
 			rownames(cur) <- 1:nrow(cur)
 		}
 		
-		if(!is.null(colnames(parental))){
-			colnames(cur) <- colnames(parental)
+		if(!is.null(colnames(dataObject))){
+			colnames(cur) <- colnames(dataObject)
 		}else{
 			colnames(cur) <- 1:ncol(cur)
 		}
 		
-		ril$parental$phenotypes <- cur
-	}
-	
-	
-	if(!(is.null(children))&&!is.null(dim(children))){
-		columns <- NULL
-		rows <- NULL
-		
-		for(column in 1:ncol(children)){
-			if(any(is.na(as.numeric(as.matrix(children[,column]))))){
-				if(sum(is.na(as.numeric(as.matrix(children[,column]))))!=sum(is.na(as.matrix(children[,column])))){
-					columns <- c(columns,column)
-				}
-			}
+		if(dataType=="parental"){
+			ril$parental$phenotypes <- cur
+		}else if(dataType=="children"){
+			ril$rils$phenotypes <- cur
 		}
-		
-		if(!(is.null(columns))){
-			cat("Children: following  columns are not numeric and cannot be converted into numeric:",columns," so will be removed.\n")
-			children <- children[,-columns]
-		}
-		
-		for(row_ in 1:nrow(children)){
-			if(any(is.na(as.numeric(as.matrix(children[row_,]))))){
-				if(sum(is.na(as.numeric(as.matrix(children[row_,]))))!=sum(is.na(as.matrix(children[row_,])))){
-					rows <- c(rows,row_)
-				}
-			}
-		}
-		
-		if(!(is.null(rows))){
-			cat("Children: following  rows are not numeric and cannot be converted into numeric:",rows," so will be removed.\n")
-			children <- children[-rows,]
-		}
-		
-		if(is.null(dim(children))) stop("Not enough data to continue.\n")
-		
-		cur<- matrix(as.numeric(as.matrix(children)),nrow(children),ncol(children))
-		
-		if(!is.null(rownames(children))){
-			rownames(cur) <- rownames(children)
-		}else{
-			rownames(cur) <- 1:nrow(cur)
-		}
-		
-		if(!is.null(colnames(children))){
-			colnames(cur) <- colnames(children)
-		}else{
-			colnames(cur) <- 1:ncol(cur)
-		}
-		
-		ril$rils$phenotypes <- cur
 	}
 	if(is.null(ril)) stop("No data provided!\n")
 	class(ril) <- "ril"
