@@ -8,7 +8,7 @@
 # 
 # first written March 2011
 # last modified May 2011
-# last modified in version: 0.5.1
+# last modified in version: 0.7.1
 # in current version: active, internal in main workflow
 #
 #     This program is free software; you can redistribute it and/or
@@ -34,36 +34,25 @@
 #genotypesToCross.internal- produces from genotypic matrix file containing object of type cross, reads it 
 # into R a returns
 # 
-# ril - Ril type object, must contain parental phenotypic data.
+# population - population type object, must contain founders phenotypic data.
 # use - save "real" gentypes, "simulated" genotypes otr simulated genotypes ordered using "map" from gff file
 # outputFile - file where object of type cross is being saved
 # verbose - Be verbose
 # debugMode - 1: Print our checks, 2: print additional time information
 #
-#### Not yet in use:
-# #doClustering - this three to be used in the future
-# #groups 
-# #iterations 
-#
-#### To be removed:
-# #use=map - now map is saved in every cross, so we can use it
-#
-#### No longer in use:
-# #limit - how many phenotypes should be written
 #
 ############################################################################################################
-#genotypesToCross.internal <- function(ril, use=c("real","simulated","map"), limit=10, doClustering=FALSE, groups=10, iterations = 100, outputFile="mycross.csv", verbose=FALSE, debugMode=0){
-genotypesToCross.internal <- function(ril, use=c("real","simulated","map"), outputFile="mycross.csv", verbose=FALSE, debugMode=0){
+genotypesToCross.internal <- function(population, use=c("simulated","map_genetic","map_physical","real"), outputFile="mycross.csv", verbose=FALSE, debugMode=0){
 	###CHECKS
 	if(verbose && debugMode==1) cat("genotypesToCross starting.\n")
 	s <- proc.time()
 	
 	
 #**********WRITING PHENOTYPIC DATA TO FILE*************
-	if(!is.null(ril$rils$phenotypes)){
+	if(!is.null(population$offspring$phenotypes)){
 		#there is phenotypic matrix
 		cat("Writing phenotypic data to cross file\n")
-		writePhenotypes.internal(ril, use, outputFile, verbose, debugMode)
+		writePhenotypes.internal(population, use, outputFile, verbose, debugMode)
 	}else{
 		#there is no phenotypic matrix
 		stop("genotypesToCross not provided with phenotypic matrix, stopping\n")
@@ -71,27 +60,36 @@ genotypesToCross.internal <- function(ril, use=c("real","simulated","map"), outp
 	
 #**********WRITING GENOTYPIC DATA TO FILE*************
 	if(use=="real"){
-		if(is.null(ril$rils$genotypes$read)){
-			stop("Use = real chosen, but there is no real genotypic data in ril$rils$genotypes$read\n")
+		if(is.null(population$offspring$genotypes$real)){
+			stop("Use = real chosen, but there is no real genotypic data in population$offspring$genotypes$read\n")
 		}else{
 			cat("Cross object will be written using real genotypic data\n")
-			writeGenotypes.internal(ril$rils$genotypes$read, chr=1,outputFile=outputFile, verbose=verbose, debugMode=debugMode)
+			writeGenotypes.internal(population$offspring$genotypes$read, chr=1,outputFile=outputFile, verbose=verbose, debugMode=debugMode)
 		}
 	}
-	else if(use=="simulated" || use=="map"){
-		if(is.null(ril$rils$genotypes$simulated)){
-			stop("Use = simulated chosen, but there is no simulated genotypic data in ril$rils$genotypes$simulated\n")
-	}else if(use=="map"){
-		if(is.null(ril$rils$map)){
-			stop("Use = map chosen, but there is no map data in ril$rils$map\n")
+	else if(use=="simulated" || use=="map_genetic" || use=="map_physical"){
+		if(is.null(population$offspring$genotypes$simulated)){
+				stop("Use = simulated chosen, but there is no simulated genotypic data in population$offspring$genotypes$simulated\n")
+		}else if(use=="map_genetic"){
+			### check this, doesn't look nice!
+			if(is.null(population$maps$genetic)){
+				stop("Use = map chosen, but there is no map data in population$offspring$map\n")
+			}else{
+				cat("Cross object will be written using simulated genotypic data orderd by gff map\n")
+				writeGenotypes.internal(population$offspring$genotypes$simulated, chr=(population$maps$genetic[rownames(population$offspring$genotypes$simulated),1], positions=(population$maps$genetic[rownames(population$offspring$genotypes$simulated),2], outputFile=outputFile, verbose=verbose, debugMode=debugMode)
+			}
+		}else if(use=="map_physical"){
+			### check this, doesn't look nice!
+			if(is.null(population$maps$physical)){
+				stop("Use = map chosen, but there is no map data in population$offspring$map\n")
+			}else{
+				cat("Cross object will be written using simulated genotypic data orderd by gff map\n")
+				writeGenotypes.internal(population$offspring$genotypes$simulated, chr=(population$maps$physical[rownames(population$offspring$genotypes$simulated),1], positions=(population$maps$physical[rownames(population$offspring$genotypes$simulated),2], outputFile=outputFile, verbose=verbose, debugMode=debugMode)
+			}
 		}else{
-			cat("Cross object will be written using simulated genotypic data orderd by gff map\n")
-			writeGenotypes.internal(ril$rils$genotypes$simulated, chr=ril$rils$map[rownames(ril$rils$genotypes$simulated),1], positions=ril$rils$map[rownames(ril$rils$genotypes$simulated),2], outputFile=outputFile, verbose=verbose, debugMode=debugMode)
-		}
-	}else{
-			cat("Cross object will be written using simulated genotypic data\n")
-			writeGenotypes.internal(ril$rils$genotypes$simulated, chr=1, outputFile=outputFile, verbose=verbose, debugMode=debugMode)
-		}
+				cat("Cross object will be written using simulated genotypic data\n")
+				writeGenotypes.internal(population$offspring$genotypes$simulated, chr=1, outputFile=outputFile, verbose=verbose, debugMode=debugMode)
+			}
 	}	
 
 #**********READING CROSS FILE TO R*************
@@ -105,7 +103,7 @@ genotypesToCross.internal <- function(ril, use=c("real","simulated","map"), outp
 ############################################################################################################
 #writePhenotypes.internal - sub function of genotypesToCross - writes phenotypes to file
 # 
-# ril - Ril type object, must contain parental phenotypic data.
+# population - Ril type object, must contain founders phenotypic data.
 # use - save "real" gentypes, "simulated" genotypes otr simulated genotypes ordered using "map" from gff file
 # outputFile - file where object of type cross is being saved
 # verbose - Be verbose
@@ -115,52 +113,44 @@ genotypesToCross.internal <- function(ril, use=c("real","simulated","map"), outp
 # 		   limit - how many phenotypes should be written
 #
 ############################################################################################################
-writePhenotypes.internal <- function(ril, use, outputFile, verbose=FALSE, debugMode=0){
+writePhenotypes.internal <- function(population, use, outputFile, verbose=FALSE, debugMode=0){
 	sl <- proc.time()
 	
 	if(use=="real"){
-		if(is.null(ril$rils$genotypes$read)){
-			stop("Use = real chosen, but there is no real genotypic data in ril$rils$genotypes$read\n")
+		if(is.null(population$offspring$genotypes$read)){
+			stop("Use = real chosen, but there is no real genotypic data in population$offspring$genotypes$read\n")
 		}else{
-			ril$rils$phenotypes <- mapMarkers.internal(ril$rils$phenotypes,ril$rils$genotypes$read,mapMode=2)
-			ril$rils$genotypes$read <- mapMarkers.internal(ril$rils$genotypes$read,ril$rils$phenotypes,mapMode=2)
-			chosenLabels <- rownames(ril$rils$genotypes$read)
+			population$offspring$phenotypes <- mapMarkers.internal(population$offspring$phenotypes,population$offspring$genotypes$read,mapMode=2)
+			population$offspring$genotypes$read <- mapMarkers.internal(population$offspring$genotypes$read,population$offspring$phenotypes,mapMode=2)
+			chosenLabels <- rownames(population$offspring$genotypes$read)
 		}
 	}else if(use=="simulated" || use=="map"){
-		if(is.null(ril$rils$genotypes$simulated)){
-			stop("Use = simulated or map chosen, but there is no simulated genotypic data in ril$rils$genotypes$simulated\n")
+		if(is.null(population$offspring$genotypes$simulated)){
+			stop("Use = simulated or map chosen, but there is no simulated genotypic data in population$offspring$genotypes$simulated\n")
 		}else{
-			ril$rils$phenotypes <- mapMarkers.internal(ril$rils$phenotypes,ril$rils$genotypes$simulated,mapMode=2)
-			ril$rils$genotypes$simulated <- mapMarkers.internal(ril$rils$genotypes$simulated,ril$rils$phenotypes,mapMode=2)
+			population$offspring$phenotypes <- mapMarkers.internal(population$offspring$phenotypes,population$offspring$genotypes$simulated,mapMode=2)
+			population$offspring$genotypes$simulated <- mapMarkers.internal(population$offspring$genotypes$simulated,population$offspring$phenotypes,mapMode=2)
 		}
 		
 		if(use=="simulated"){
-				chosenLabels <- rownames(ril$rils$genotypes$simulated)
+				chosenLabels <- rownames(population$offspring$genotypes$simulated)
 		}else if(use=="map"){
-			if(is.null(ril$rils$genotypes$simulated)||is.null(ril$rils$map)){
+			if(is.null(population$offspring$genotypes$simulated)||is.null(population$offspring$map)){
 				stop("Use =  map chosen, but there is no simulated genotypic data or map data\n")
 			}else{
-				chosenLabels <- rownames(ril$rils$genotypes$simulated[which(rownames(ril$rils$genotypes$simulated[,]) %in% rownames(ril$rils$map)),])
+				chosenLabels <- rownames(population$offspring$genotypes$simulated[which(rownames(population$offspring$genotypes$simulated[,]) %in% rownames(population$offspring$map)),])
 			}
 		}
 		
 	}
 	
-	toWrite <- ril$rils$phenotypes[chosenLabels,]
+	toWrite <- population$offspring$phenotypes[chosenLabels,]
 	toWrite <- cleanNames.internal(toWrite)
 	if(verbose && debugMode==1) cat("writePhenotypes starting.\n")
 	write.table(cbind("","",toWrite),file=outputFile,sep=",",quote=FALSE,col.names=FALSE)
 	el <- proc.time()
 	if(verbose && debugMode==2)cat("Writing phenotypes done in:",(el-sl)[3],"seconds.\n")
 }
-
-############################################################################################################
-#writeGenotypesMap.internal - sub function of genotypesToCross - orders markers using map and writes them to
-# file using writeGenotypes.internal 
-# 
-# removed in version 0.5.1
-#
-############################################################################################################
 
 ############################################################################################################
 #writeGenotypes.internal - sub function of genotypesToCross and writeGenotypesMap - writes genotypes 

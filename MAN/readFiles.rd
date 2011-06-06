@@ -37,8 +37,8 @@
 
 \examples{
 	setwd(paste(.Library,"pheno2geno/data",sep="/"))
-	ril <- readFiles()
-	ril$parental$phenotypes
+	population <- readFiles()
+	population$founders$phenotypes[1:10,]
 }
 
 \seealso{
