@@ -8,7 +8,7 @@
 # 
 # first written March 2011
 # last modified May 2011
-# last modified in version: 0.5.1 
+# last modified in version: 0.7.1 
 # in current version: active, in main workflow
 #
 #     This program is free software; you can redistribute it and/or
@@ -33,9 +33,12 @@
 ############################################################################################################
 #toGenotypes: Function that chooses from the matrix only appropriate markers with specified rules
 # 
-# ril - Ril type object, must contain parental phenotypic data.
-# use - Which genotypic matrix should be saved to file, real - supported by user and read from file, 
-#	simulated - made by toGenotypes, ap - simulated data orderd using gff map
+# population - Ril type object, must contain founders phenotypic data.
+# use - Which genotypic matrix should be saved to file, 
+# 	- real - supported by user and read from file, 
+#	- simulated - made by toGenotypes, m
+#	- map_genetic - simulated data orderd using genetic map
+#	- map_physical - simulated data orderd using physical map
 # treshold - If Rank Product pval for gene is lower that this value, we assume it is being diff. expressed.
 # overlapInd - Number of individuals that are allowed in the overlap
 # proportion - Proportion of individuals expected to carrying a certain genotype 
@@ -47,36 +50,36 @@
 # debugMode - 1: Print our checks, 2: print additional time information
 #
 ############################################################################################################
-toGenotypes <- function(ril, use=c("real","simulated","map"), splitMethod=c("EM","mean"),treshold=0.01, overlapInd = 0, proportion = c(50,50), margin = 15, minChrLength = 0, verbose=FALSE, debugMode=0,...){
+toGenotypes <- function(population, use=c("simulated","map_genetic","map_physical","real"), splitMethod=c("EM","mean"),treshold=0.01, overlapInd = 0, proportion = c(50,50), margin = 15, minChrLength = 0, verbose=FALSE, debugMode=0,...){
 	#*******CHECKS*******
 	s<-proc.time()
 	if(proportion < 1 || proportion > 99) stop("Proportion is a percentage (1,99)")
-	if(any(!(is.numeric(ril$parental$phenotypes)))){
-		ril <- intoRil(ril, ril$parental$phenotypes, "parental")
+	if(any(!(is.numeric(population$founders$phenotypes)))){
+		population <- intoPopulation(population, population$founders$phenotypes, "founders")
 	}
-	if(any(!(is.numeric(ril$rils$phenotypes)))){
-		ril <- intoRil(ril, ril$rils$phenotypes, "children")
+	if(any(!(is.numeric(population$offspring$phenotypes)))){
+		population <- intoPopulation(population, population$offspring$phenotypes, "offspring$phenotypes")
 	}
-	if(overlapInd < 0 || overlapInd > ncol(ril$rils$phenotypes)) stop("overlapInd is a number (0,lenght of the row).")
+	if(overlapInd < 0 || overlapInd > ncol(population$offspring$phenotypes)) stop("overlapInd is a number (0,lenght of the row).")
 	if(margin < 0 || margin > proportion) stop("Margin is a percentage (0,proportion)")
 	if(verbose && debugMode==1) cat("toGenotypes starting withour errors in checkpoint.\n")
 	
 	
 	#*******CONVERTING CHILDREN PHENOTYPIC DATA TO GENOTYPES*******
 	s1 <- proc.time()
-	ril <- convertToGenotypes.internal(ril, splitMethod, treshold, overlapInd, proportion, margin, verbose, debugMode)
+	population <- convertToGenotypes.internal(population, splitMethod, treshold, overlapInd, proportion, margin, verbose, debugMode)
 	e1 <- proc.time()
 	if(verbose && debugMode==2)cat("Converting phenotypes to genotypes done in:",(e1-s1)[3],"seconds.\n")
 	
 	
 	#*******SAVING CROSS OBJECT*******
 	s1 <- proc.time()
-	cross <- genotypesToCross.internal(ril,use=use,verbose=verbose,debugMode=debugMode)
+	cross <- genotypesToCross.internal(population,use=use,verbose=verbose,debugMode=debugMode)
 	e1 <- proc.time()
 	if(verbose && debugMode==2)cat("Creating cross object done in:",(e1-s1)[3],"seconds.\n")
 	
 	#*******ENHANCING CROSS OBJECT*******
-	if(use!="map"){
+	if(use!="map_genetic"&&use!="map_physical"){
 		### FormLinkage groups
 		cross <- invisible(formLinkageGroups(cross,reorgMarkers=TRUE,verbose=verbose,...))
 		
@@ -89,9 +92,9 @@ toGenotypes <- function(ril, use=c("real","simulated","map"), splitMethod=c("EM"
 		#cross <- orderMarkers(cross, use.ripple=TRUE, verbose=verbose)
 		
 		### Adding real maps		
-		if(!(is.null(ril$rils$map))){
-			ril <- sortMap.internal(ril)
-			cross$maps$physical <- ril$rils$map
+		if(!(is.null(population$offspring$map))){
+			population <- sortMap.internal(population)
+			cross$maps$physical <- population$offspring$map
 			### Majority rule used to order linkage groups
 			cross <- segregateChromosomes.internal(cross)
 		}
@@ -109,7 +112,7 @@ toGenotypes <- function(ril, use=c("real","simulated","map"), splitMethod=c("EM"
 ############################################################################################################
 #convertToGenotypes.internal: function splitting differentially expressed markers into two genotypes
 # 
-# ril - Ril type object, must contain parental phenotypic data.
+# population - Ril type object, must contain founders phenotypic data.
 # treshold - If Rank Product pval for gene is lower that this value, we assume it is being diff. expressed.
 # overlapInd - Number of individuals that are allowed in the overlap
 # proportion - Proportion of individuals expected to carrying a certain genotype 
@@ -118,36 +121,36 @@ toGenotypes <- function(ril, use=c("real","simulated","map"), splitMethod=c("EM"
 # debugMode - 1: Print our checks, 2: print additional time information 
 #
 ############################################################################################################
-convertToGenotypes.internal <- function(ril, splitMethod, treshold, overlapInd, proportion, margin, verbose=FALSE, debugMode=0){
+convertToGenotypes.internal <- function(population, splitMethod, treshold, overlapInd, proportion, margin, verbose=FALSE, debugMode=0){
 	### initialization
 	if(verbose && debugMode==1) cat("convertToGenotypes starting.\n")
 	output <- NULL
 	markerNames <- NULL 
 	
 	### selection step
-	upParental <- ril$parental$phenotypes[which(ril$parental$RP$pval[1] < treshold),]
-	downParental <- ril$parental$phenotypes[which(ril$parental$RP$pval[2] < treshold),]
-	upRils <- ril$rils$phenotypes[rownames(upParental),]
-	downRils <- ril$rils$phenotypes[rownames(downParental),]
+	upParental <- population$founders$phenotypes[which(population$founders$RP$pval[1] < treshold),]
+	downParental <- population$founders$phenotypes[which(population$founders$RP$pval[2] < treshold),]
+	upRils <- population$offspring$phenotypes[rownames(upParental),]
+	downRils <- population$offspring$phenotypes[rownames(downParental),]
 	
 	### checking if anything is selected and if yes - processing
 	if(!(is.null(dim(upRils)))){
 		if(!(is.null(dim(downRils)))){
 			# best situation
 			if(verbose) cat("Selected ",nrow(upRils),"upregulated markers and ",nrow(downRils),"downregulated markers.\n")
-			cur <- splitRow.internal(downRils, downParental, splitMethod, overlapInd, proportion, margin, ril$parental$groups, 0)
+			cur <- splitRow.internal(downRils, downParental, splitMethod, overlapInd, proportion, margin, population$founders$groups, 0)
 			output <- rbind(output,cur[[1]])
 			markerNames <- c(markerNames,cur[[2]])
 		}else{
 			if(verbose) cat("Selected ",nrow(upRils),"upregulated markers.\n")
 		}
-		cur <- splitRow.internal(upRils, upParental, splitMethod, overlapInd, proportion, margin, ril$parental$groups, 1)
+		cur <- splitRow.internal(upRils, upParental, splitMethod, overlapInd, proportion, margin, population$founders$groups, 1)
 		output <- rbind(output,cur[[1]])
 		markerNames <- c(markerNames,cur[[2]])
 	}else{
 		if(!(is.null(dim(downRils)))){
 			if(verbose) cat("Selected ",nrow(downRils),"downregulated markers.\n")
-			cur <- splitRow.internal(downRils, downParental, splitMethod, overlapInd, proportion, margin, ril$parental$groups, 0)
+			cur <- splitRow.internal(downRils, downParental, splitMethod, overlapInd, proportion, margin, population$founders$groups, 0)
 			output <- rbind(output,cur[[1]])
 			markerNames <- c(markerNames,cur[[2]])
 		}else{
@@ -155,36 +158,36 @@ convertToGenotypes.internal <- function(ril, splitMethod, treshold, overlapInd, 
 		}
 	}
 	
-	### putting results inside ril object
+	### putting results inside population object
 	if(is.null(dim(output))) stop("No markers selected.")
-	ril$rils$genotypes$simulated <- output
-	colnames(ril$rils$genotypes$simulated) <- colnames(upRils)
-	rownames(ril$rils$genotypes$simulated) <- markerNames
-	invisible(ril)
+	population$offspring$genotypes$simulated <- output
+	colnames(population$offspring$genotypes$simulated) <- colnames(upRils)
+	rownames(population$offspring$genotypes$simulated) <- markerNames
+	invisible(population)
 }
 
 ############################################################################################################
-#splitRow.internal: subfunction of convertToGenotypes.internal, splitting children markers using parental
+#splitRow.internal: subfunction of convertToGenotypes.internal, splitting children markers using founders
 # mean values
 # 
-# rils - matrix of up/down regulated genes in rils
-# parental - matrix of up/down regulated genes in parents
+# offspring - matrix of up/down regulated genes in offspring
+# founders - matrix of up/down regulated genes in parents
 # overlapInd - Number of individuals that are allowed in the overlap
 # proportion - Proportion of individuals expected to carrying a certain genotype 
 # margin - Proportion is allowed to varry between this margin (2 sided)
-# groupLabels - Specify which column of parental data belongs to group 0 and which to group 1.
+# groupLabels - Specify which column of founders data belongs to group 0 and which to group 1.
 # up - 1 - genes up 0 - down regulated
 #
 ############################################################################################################
-splitRow.internal <- function(rils, parental, splitMethod, overlapInd, proportion, margin, groupLabels, up){
+splitRow.internal <- function(offspring, founders, splitMethod, overlapInd, proportion, margin, groupLabels, up){
 	output <- NULL
 	markerNames <- NULL
-	cat("ril:",nrow(rils),"parental:",nrow(parental),"\n")
-	for(x in rownames(rils)){
+	cat("population:",nrow(offspring),"founders:",nrow(founders),"\n")
+	for(x in rownames(offspring)){
 		if(splitMethod=="mean"){
-			cur <- splitRowSub.internal(x, rils, parental, overlapInd, proportion, margin, groupLabels, up)
+			cur <- splitRowSub.internal(x, offspring, founders, overlapInd, proportion, margin, groupLabels, up)
 		}else if(splitMethod=="EM"){
-			cur <- splitRowSubEM.internal(x, rils, parental, overlapInd, proportion, margin, groupLabels, up)
+			cur <- splitRowSubEM.internal(x, offspring, founders, overlapInd, proportion, margin, groupLabels, up)
 		}
 		if(!(is.null(cur))){
 			output <- rbind(output,cur)
@@ -198,18 +201,18 @@ splitRow.internal <- function(rils, parental, splitMethod, overlapInd, proportio
 #splitRowSub.internal: subfunction of splitRow.internal, splitting one row
 # 
 # x - name of currently processed row
-# rils - matrix of up/down regulated genes in rils
-# parental - matrix of up/down regulated genes in parents
+# offspring - matrix of up/down regulated genes in offspring
+# founders - matrix of up/down regulated genes in parents
 # overlapInd - Number of individuals that are allowed in the overlap
 # proportion - Proportion of individuals expected to carrying a certain genotype 
 # margin - Proportion is allowed to varry between this margin (2 sided)
-# groupLabels - Specify which column of parental data belongs to group 0 and which to group 1.
+# groupLabels - Specify which column of founders data belongs to group 0 and which to group 1.
 # up - 1 - genes up 0 - down regulated
 #
 ############################################################################################################
-splitRowSub.internal <- function(x, rils, parental, overlapInd, proportion, margin, groupLabels, up=1){
+splitRowSub.internal <- function(x, offspring, founders, overlapInd, proportion, margin, groupLabels, up=1){
 	### initialization
-	result <- rep(0,length(rils[x,]))
+	result <- rep(0,length(offspring[x,]))
 	
 	### splitting
 	if(length(proportion)==2){
@@ -219,15 +222,15 @@ splitRowSub.internal <- function(x, rils, parental, overlapInd, proportion, marg
 		}else if(up==0){
 			genotypes <- c(1,0)
 		}
-		A <- parental[x,which(groupLabels==0)]
-		B <- parental[x,which(groupLabels==1)]
+		A <- founders[x,which(groupLabels==0)]
+		B <- founders[x,which(groupLabels==1)]
 		splitVal <- mean(mean(A,na.rm=TRUE),mean(B,na.rm=TRUE))
-		rils[x,which(is.na(rils[x,]))] <- splitVal
-		a <- rils[x,] > splitVal
-		b <- rils[x,] < splitVal
+		offspring[x,which(is.na(offspring[x,]))] <- splitVal
+		a <- offspring[x,] > splitVal
+		b <- offspring[x,] < splitVal
 		result[which(a)] <- genotypes[1]
 		result[which(b)] <- genotypes[2]
-		result[which(rils[x,] == splitVal)] <- NA
+		result[which(offspring[x,] == splitVal)] <- NA
 		result <- filterRow.internal(result, overlapInd, proportion, margin, genotypes)
 	}else if(length(proportion)==3){
 		### splitting into 0/1/2 genotypes
@@ -236,14 +239,14 @@ splitRowSub.internal <- function(x, rils, parental, overlapInd, proportion, marg
 		}else if(up==0){
 			genotypes <- c(2,1,0)
 		}
-		meanVal <- mean(rils[x,],na.rm=TRUE)
-		sdVal <- sd(rils[x,],na.rm=TRUE)
+		meanVal <- mean(offspring[x,],na.rm=TRUE)
+		sdVal <- sd(offspring[x,],na.rm=TRUE)
 		subSplitValDown <- meanVal - sdVal
 		subSplitValUp <- meanVal + sdVal
-		result[which(rils[x,] < subSplitValDown )] <- genotypes[1]
-		result[which(rils[x,] > subSplitValUp )] <- genotypes[3]
-		result[which((rils[x,] > subSplitValDown )&&(rils[x,] < subSplitValUp ))] <- genotypes[2]
-		result[which(rils[x,] == meanVal)] <- NA
+		result[which(offspring[x,] < subSplitValDown )] <- genotypes[1]
+		result[which(offspring[x,] > subSplitValUp )] <- genotypes[3]
+		result[which((offspring[x,] > subSplitValDown )&&(offspring[x,] < subSplitValUp ))] <- genotypes[2]
+		result[which(offspring[x,] == meanVal)] <- NA
 		result <- filterRow.internal(result, overlapInd, proportion, margin, genotypes)
 	}
 	
@@ -253,7 +256,7 @@ splitRowSub.internal <- function(x, rils, parental, overlapInd, proportion, marg
 ############################################################################################################
 #filterRow.internal : removing from genotypic matrix genes that are no passing specified requirments
 # 
-# ril - Ril type object, must contain parental phenotypic data.
+# population - Ril type object, must contain founders phenotypic data.
 # overlapInd - Number of individuals that are allowed in the overlap
 # proportion - Proportion of individuals expected to carrying a certain genotype 
 # margin - Proportion is allowed to varry between this margin (2 sided)
@@ -305,11 +308,11 @@ filterRowSub.internal <- function(result, overlapInd, proportion, margin, genoty
 ############################################################################################################
 #sortMap.internal: subfunction of filterGenotypes.internal, filtering one row
 # 
-# ril - Ril type object
+# population - Ril type object
 #
 ############################################################################################################
-sortMap.internal <- function(ril){
-	genes <- ril$rils$map
+sortMap.internal <- function(population){
+	genes <- population$offspring$map
 	result <- NULL
 	nchr <- length(table(genes[,1]))
 	lengths <- vector(mode="numeric",length=nchr+1)
@@ -321,8 +324,8 @@ sortMap.internal <- function(ril){
 		current[,2] <- current[,2] + lengths[i]
 		result <- rbind(result,current)
 	}
-	ril$rils$map <- list(result,lengths[-length(lengths)])
-	invisible(ril)
+	population$offspring$map <- list(result,lengths[-length(lengths)])
+	invisible(population)
 }
 
 ############################################################################################################
@@ -431,12 +434,12 @@ mergeChromosomes.internal <- function(cross, chromosomes, name){
 # name - chromosome
 #
 ############################################################################################################
-splitRowSubEM.internal <- function(x, rils, parental, overlapInd, proportion, margin, groupLabels, up=1){
+splitRowSubEM.internal <- function(x, offspring, founders, overlapInd, proportion, margin, groupLabels, up=1){
 	### initialization
 	print(x)
 	nrDistributions <- length(proportion)
-	result <- rep(0,length(rils[x,]))
-	EM <- cat(normalmixEM(sort(rils[x,]), k=nrDistributions, maxrestarts=0, maxit = 100,fast=TRUE),file=NULL)
+	result <- rep(0,length(offspring[x,]))
+	EM <- cat(normalmixEM(sort(offspring[x,]), k=nrDistributions, maxrestarts=0, maxit = 100,fast=TRUE),file=NULL)
 	if(up==1){
 		genotypes <- c(0:(nrDistributions-1))
 	}else if(up==0){
@@ -444,9 +447,9 @@ splitRowSubEM.internal <- function(x, rils, parental, overlapInd, proportion, ma
 	}
 	len <- vector(mode="numeric",length=nrDistributions)
 	for(i in 1:nrDistributions){
-		len[i]<-length(rils[x,])*EM$lambda[i]
+		len[i]<-length(offspring[x,])*EM$lambda[i]
 		startVal <- sum(len[1:i-1])
-		rils[x,which(rils[x,] %in% sort(rils[x,])[startVal:(startVal+len[i])])] <- genotypes[i]
+		offspring[x,which(offspring[x,] %in% sort(offspring[x,])[startVal:(startVal+len[i])])] <- genotypes[i]
 	}
 	#result <- checkMu.internal(EM)
 	if(checkMu.internal(EM)){
