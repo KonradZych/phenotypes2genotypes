@@ -1,10 +1,6 @@
 \name{phenotypes2genotypes-internal}
 
 \alias{mapMarkers.internal}
-\alias{gffParser.internal}
-\alias{correctRowGff.internal}
-\alias{correctRowLoc.internal}
-\alias{probesLocation.internal}
 
 \alias{genotypesToCross.internal}
 \alias{writePhenotypes.internal}
