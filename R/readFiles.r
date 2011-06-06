@@ -32,66 +32,78 @@
 ############################################################################################################
 #readFiles: reads geno/phenotypic files into R environment into special object.
 # 
-# rils - Core used to specify names of children phenotypic ("rils_phenotypes.txt") and genotypic ("rils_genotypes.txt") files.
-# parental - Core used to specify names of parental phenotypic ("parental_phenotypes.txt") file.
+# offspring - Core used to specify names of children phenotypic ("offspring_phenotypes.txt") and genotypic ("offspring_genotypes.txt") files.
+# founders - Core used to specify names of founders phenotypic ("founders_phenotypes.txt") file.
 # sep - Separator of values in files. Passed directly to read.table, so "" is a wildcard meaning whitespace.
 # verbose - Be verbose
 # debugMode - 1: Print our checks, 2: print additional time information
 #
 ############################################################################################################
-readFiles <- function(rils="children",parental="parental",sep="",verbose=FALSE,debugMode=0){
+readFiles <- function(offspring="offspring",founders="founders",map="maps",sep="",verbose=FALSE,debugMode=0){
 	#**********INITIALIZING FUNCTION*************
 	s <- proc.time()
 	if(verbose && debugMode==1) cat("readFiles starting.\n")
-	ril <- NULL
+	population <- NULL
 	
 	#**********READING CHILDREN PHENOTYPIC DATA*************
-	filename <- paste(rils,"_phenotypes.txt",sep="")
+	filename <- paste(offspring,"_phenotypes.txt",sep="")
 	if(file.exists(filename)){
-		if(verbose) cat("Found phenotypic file for rils:",filename,"and will store  it in ril$rils$phenotypes\n")
-		children <- read.table(filename,sep="")
-		ril <- intoRil(ril, children, "children")
+		if(verbose) cat("Found phenotypic file for offspring:",filename,"and will store  it in population$offspring$phenotypes\n")
+		offspring_phenotypes <- read.table(filename,sep=sep)
+		population <- intoPopulation(population, offspring_phenotypes, "offspring$phenotypes")
 	}else{
-		stop("There is no phenotypic file for rils: ",filename," this file is essentiall, you have to provide it\n")
+		stop("No phenotype file for offspring: ",filename," this file is essentiall, you have to provide it\n")
 	}
 	
 	#**********READING CHILDREN GENOTYPIC DATA*************
-	#filename <- paste(rils,"_genotypes.txt",sep="")
-	#if(file.exists(filename)){
-	#	if(verbose) cat("Found genotypic file for rils:",filename,"and will store  it in ril$rils$genotypes$read\n")
-	#	ril$rils$genotypes$read <- readFile.internal(filename,sep,verbose,debugMode)
-	#}else{
-	#	cat("WARNING: There is no genotypic file for rils:",filename,"genotypic data for rils will be simulated\n")
-	#}
-	
-	#**********READING PARENTAL PHENOTYPIC DATA*************
-	filename <- paste(parental,"_phenotypes.txt",sep="")
+	filename <- paste(offspring,"_genotypes.txt",sep="")
 	if(file.exists(filename)){
-		if(verbose) cat("Found phenotypic file for parents:",filename,"and will store it in ril$parental$phenotypes\n")
-		parentalData <- read.table(filename,sep="")
-		ril <- intoRil(ril, parentalData, "parental")
-		#removing from parental probes that are not in children:
-		ril$parental$phenotypes <- mapMarkers.internal(ril$parental$phenotypes,ril$rils$phenotypes ,mapMode=1,verbose=verbose)
+		if(verbose) cat("Found genotypic file for offspring:",filename,"and will store  it in population$offspring$genotypes$read\n")
+		offspring_genotypes <- read.table(filename,sep=sep)
+		population <- intoPopulation(population, offspring_genotypes, "offspring$genotypes")
 	}else{
-		stop("There is no phenotypic file for parents:",filename,"further processing will take place without taking into account parental data\n")
+		if(verbose)cat("No genotypic file for offspring:",filename,"genotypic data for offspring will be simulated\n")
 	}
 	
-	#**********READING LOC GENETIC MAP*************
-	filename <- paste(rils,"_probes.txt",sep="")
+	#**********READING PARENTAL PHENOTYPIC DATA*************
+	filename <- paste(founders,"_phenotypes.txt",sep="")
 	if(file.exists(filename)){
-		if(verbose) cat("Found gff map file for children:",filename,"and will store it in ril$rils$map\n")
-		ril$rils$map <- probesLocation.internal(filename,verbose,debugMode)
+		if(verbose) cat("Found phenotypic file for parents:",filename,"and will store it in population$founders$phenotypes\n")
+		foundersData <- read.table(filename,sep=sep)
+		population <- intoPopulation(population, founders, "founders")
+		#removing from founders probes that are not in children:
+		population$founders$phenotypes <- mapMarkers.internal(population$founders$phenotypes,population$offspring$phenotypes, mapMode=1, verbose=verbose)
 	}else{
-		cat("WARNING: There is no map file for rils:",filename,"further processing will take place without taking it into account\n")
+		warning("No phenotype file for parents: ",filename,". Strongly recommend to supply this data.\n")
+	}
+	
+	#**********READING GENETIC MAP*************
+	filename <- paste(map,"_genetic.txt",sep="")
+	if(file.exists(filename)){
+		if(verbose) cat("Found genotypic file for offspring:",filename,"and will store  it in population$offspring$genotypes$read\n")
+		maps_genetic <-  <- read.table(filename,sep=sep)
+		population <- intoPopulation(population, maps_genetic, "maps$genetic")
+	}else{
+		if(verbose)cat("No genetic map file:",filename,".\n")
+	}
+	
+	#**********READING PHYSICAL MAP*************
+	filename <- paste(map,"_physical.txt",sep="")
+	if(file.exists(filename)){
+		if(verbose) cat("Found genotypic file for offspring:",filename,"and will store  it in population$offspring$genotypes$read\n")
+		physical <-  <- read.table(filename,sep=sep)
+		population <- intoPopulation(population, physical, "maps$physical")
+	}else{
+		if(verbose)cat("No physical map file:",filename,".\n")
 	}
 	
 	#**********FINALIZING FUNCTION*************
 	e <- proc.time()
 	if(verbose) cat("readFiles done in",(e-s)[3],"seconds.\n")
-	ril$parameters$readFiles <- list(rils, parental,sep="",verbose,debugMode)
-	names(ril$parameters$readFiles) <- c("rils", "parental", "sep", "verbose", "debugMode")
-	class(ril) <- "ril"
-	invisible(ril)
+	population$parameters$readFiles <- list(offspring, founders,sep=sep"",verbose,debugMode)
+	names(population$parameters$readFiles) <- c("offspring", "founders", "sep", "verbose", "debugMode")
+	class(population) <- "population"
+	invisible(population)
 }
 
 ############################################################################################################
@@ -127,86 +139,4 @@ mapMarkers.internal <- function(expressionMatrix1, expressionMatrix2, mapMode=2,
 		if(verbose) cat("Because of names mismatch,",nrCols-ncol(expressionMatrix1),"individuals were removed, run function with verbose=T debugMode=2 to print their names out.\n")
 	}
 	invisible(expressionMatrix1)
-}
-
-############################################################################################################
-#gffParser: reads gff file and transfroms it into nice matrix!
-# 
-# filename - name of gff file
-# verbose - Be verbose
-# debugMode - 1: Print our checks, 2: print additional time information
-#
-############################################################################################################
-gffParser.internal <- function(filename="children_map.gff",verbose=FALSE,debugMode=0){
-	if(!file.exists(filename)) stop("File: ",filename,"doesn't exist.\n")
-	s1<-proc.time()
-	geneMap <- read.table(filename,sep="\t")
-	genes <- geneMap[which(geneMap[,3]=="gene"),]
-	genes <- genes[which(genes[,1]!="ChrM"),]
-	genes <- genes[which(genes[,1]!="ChrC"),]
-	genes <- genes[,c(1,4,5,9)]
-	genes <- apply(genes,1,correctRowGff.internal)
-	genes <- t(genes)
-	rownames(genes) <- genes[,3]
-	genes <- as.numeric(genes[,-3])
-	colnames(genes) <- c("Chromosome","Location")
-	if(verbose) cat("Map file contains",ncol(genes),"markers from",length(table(genes[1,])),"chromosomes.\n")
-	e1<-proc.time()
-	if(verbose && debugMode==2)cat("Parsing gff file:",filename,"done in:",(e1-s1)[3],"seconds.\n")
-	invisible(genes)
-}
-
-############################################################################################################
-#correctRow.internal: gffParser sub function, calculating mean possition of the gene and puts its identifier
-# alone as rowname
-# 
-# genesRow - currently processed row
-#
-############################################################################################################
-correctRowGff.internal <- function(genesRow){
-	genesRow[1] <- substr(genesRow[1],4,4)
-	genesRow[4] <- toString(strsplit(toString(genesRow[4]),";")[[1]][1])
-	genesRow[4] <- toupper(substr(genesRow[4],4,12))
-	correctedRow <- genesRow[-3]
-	correctedRow[2] <- mean(as.numeric(genesRow[c(2,3)]))
-	invisible(correctedRow)
-}
-
-############################################################################################################
-#gffParser: reads gff file and transfroms it into nice matrix!
-# 
-# filename - name of probes location file
-# verbose - Be verbose
-# debugMode - 1: Print our checks, 2: print additional time information
-#
-############################################################################################################
-probesLocation.internal <- function(filename="children_probes.txt",verbose=FALSE,debugMode=0){
-	if(!file.exists(filename)) stop("File: ",filename,"doesn't exist.\n")
-	s1<-proc.time()
-	geneMap <- read.table(filename,sep="\t",header=TRUE)
-	genes <- geneMap[which(toupper(geneMap[,8])=="GENE"),]
-	genes <- genes[which(genes[,2]!="M"),]
-	genes <- genes[which(genes[,2]!="C"),]
-	rownames(genes) <- toupper(genes[,10])
-	genes <- genes[,c(2,3,4)]
-	genes <- apply(genes,1,correctRowLoc.internal)
-	genes <- t(genes)
-	colnames(genes) <- c("Chromosome","Location")
-	if(verbose) cat("Map file contains",nrow(genes),"markers from",length(table(genes[1,])),"chromosomes.\n")
-	e1<-proc.time()
-	if(verbose && debugMode==2)cat("Parsing gff file:",filename,"done in:",(e1-s1)[3],"seconds.\n")
-	invisible(genes)
-}
-
-############################################################################################################
-#correctRowLoc.internal: probesLocation sub function, calculating mean possition of the gene and removes 
-# begining and end information
-# 
-# genesRow - currently processed row
-#
-############################################################################################################
-correctRowLoc.internal <- function(genesRow){
-	genesRow[2] <- mean(as.numeric(genesRow[c(2,3)]))
-	genesRow <- genesRow[-3]
-	invisible(genesRow)
 }
