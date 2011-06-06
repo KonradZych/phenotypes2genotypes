@@ -30,7 +30,7 @@
 ############################################################################################################
 #preprocessData: Using Rank Product analysis to select differentially expressed genes.
 # 
-# population - Ril type object, must contain founders phenotypic data.
+# population - Population type object, must contain founders phenotypic data.
 # groupLabels - Specify which column of founders data belongs to group 0 and which to group 1.
 # verbose - Be verbose
 # debugMode - 1: Print our checks, 2: print additional time information
