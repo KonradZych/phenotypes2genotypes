@@ -92,9 +92,9 @@ toGenotypes <- function(population, use=c("simulated","map_genetic","map_physica
 		#cross <- orderMarkers(cross, use.ripple=TRUE, verbose=verbose)
 		
 		### Adding real maps		
-		if(!(is.null(population$offspring$map))){
+		if(!(is.null(population$maps$physical))){
 			population <- sortMap.internal(population)
-			cross$maps$physical <- population$offspring$map
+			cross$maps$physical <- population$maps$physical
 			### Majority rule used to order linkage groups
 			cross <- segregateChromosomes.internal(cross)
 		}
