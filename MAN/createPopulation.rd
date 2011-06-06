@@ -3,6 +3,7 @@
 \alias{intoPopulationSub.internal}
 \alias{dataObject}
 \alias{dataType}
+\alias{population}
 
 
 \title{Adiing data to population object}
