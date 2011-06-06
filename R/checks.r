@@ -8,7 +8,7 @@
 # 
 # first written June 2011
 # last modified June 2011
-# last modified in version: 0.6.1
+# last modified in version: 0.7.1
 # in current version: active, in main workflow
 #
 #     This program is free software; you can redistribute it and/or
@@ -90,15 +90,14 @@ inListCheck.internal <- function(objectToBeChecked,objectName,listOfPossibleElem
 # downLimit, upLimit - down and up limit to specify range
 #
 ############################################################################################################
-checkDataStamp.internal <- function(ril, objectToBeChecked){
+checkDataStamp.internal <- function(population, objectToBeChecked){
 	if(is.null(objectToBeChecked)) return(FALSE)
 	if(is.null(objectToBeChecked$wd)) return(FALSE)
-	if(is.null(objectToBeChecked$parental)) return(FALSE)
-	if(is.null(objectToBeChecked$children)) return(FALSE)
+	if(is.null(objectToBeChecked$founders)) return(FALSE)
+	if(is.null(objectToBeChecked$rowS)) return(FALSE)
+	if((objectToBeChecked$rowS)>nrow(objectToBeChecked)) return(FALSE)
 	if(objectToBeChecked$wd!=getwd()) return(FALSE)
-	if(length(objectToBeChecked$parental)!=length(ril$parameters$readFiles$parental)) return(FALSE)
-	if(objectToBeChecked$parental!=ril$parameters$readFiles$parental) return(FALSE)
-	if(length(objectToBeChecked$children)!=length(ril$parameters$readFiles$rils)) return(FALSE)
-	if(objectToBeChecked$children!=ril$parameters$readFiles$rils) return(FALSE)
+	if(length(objectToBeChecked$founders)!=length(population$founders$phenotypes[1:rowS,])) return(FALSE)
+	if(any(objectToBeChecked$founders!=population$founders$phenotypes[1:rowS,])) return(FALSE)
 	return(TRUE)
 }
