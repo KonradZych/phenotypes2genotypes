@@ -1,32 +1,28 @@
-\name{intoRil}
-\alias{intoRil}
-\alias{parental}
-\alias{parentalRows}
-\alias{parentalCols}
-\alias{children}
-\alias{childrenRows}
-\alias{childrenCols}
+\name{intoPopulation}
+\alias{intoPopulation}
+\alias{intoPopulationSub.internal}
+\alias{dataObject}
+\alias{dataType}
 
-\title{intoRil}
+
+\title{Adiing data to population object}
 
 \description{
-  Putting data into ril object.
+  Adding data to existing population object. Overwriting of existing data is permitted and will be executed with warning.
 }
 
 \usage{
-	intoRil(ril=NULL, dataObject, dataType=c("parental","children"), selectedRows=NULL, selectedCols=NULL)
+	intoRil(population, dataObject, dataType=c("founders","offsprings"))
 }
 
 \arguments{
- \item{ril}{ object of class ril, data should be put into, by default - new object will be created}
+ \item{population}{ object of class population, data should be put into}
  \item{dataObject}{ matrix of data to be put into ril object}
  \item{dataType}{ what kind of data dataObject contains (parental phenotypic, children phenotypic)}
- \item{selectedRows}{ rows to be selected from dataObject, by default - all}
- \item{selectedCols}{ cols to be selected from dataObject, by default - all }
 }
 
 \value{
-  Object of class ril.
+  Object of class population. See ?createPopulation for more details about structure.
 }
 
 \details{
@@ -41,14 +37,15 @@
 
 \examples{
 	setwd(paste(.Library,"pheno2geno/data",sep="/"))
-	parental <- read.table("parental_phenotypes.txt",sep="")
-	children <- read.table("children_phenotypes.txt",sep="")
-	ril <- intoRil(dataObject=parental, dataType="parental")
-	ril <- intoRil(ril, children, "children")
+	founders <- read.table("parental_phenotypes.txt",sep="")
+	offsprings <- read.table("children_phenotypes.txt",sep="")
+	population <- createPopulation(offsprings)
+	population <- intoPopulation(population, founders, "founders")
 }
 
 \seealso{
   \code{\link{readFiles}}
+  \code{\link{createPopulation}}
 }
 
 \keyword{manip}

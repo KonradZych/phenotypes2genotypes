@@ -67,50 +67,50 @@ cleanMap <- function(cross, difPercentage, verbose=FALSE, debugMode=0){
 }
 
 ############################################################################################################
-#print.ril - overwritting print function for objects of class "ril"
+#print.population - overwritting print function for objects of class "population"
 # 
-# x - object of class ril
+# x - object of class population
 # ... - passed to cats
 #
 ############################################################################################################
-print.ril <- function(x,...){
+print.population <- function(x,...){
 	cat("*************************************************************************************\n")
-	cat("This is object of class ril, too complex to print it, so we provide you with summary.\n")
-	if(!(is.null(x$rils))){
-		if(!(is.null(x$rils$phenotypes))){
-			cat("Object contains phenotypic data for",ncol(x$rils$phenotypes),"children individuals covering",nrow(x$rils$phenotypes),"probes.\n",...)
+	cat("This is object of class population, too complex to print it, so we provide you with summary.\n")
+	if(!(is.null(x$offspring))){
+		if(!(is.null(x$offspring$phenotypes))){
+			cat("Object contains phenotypic data for",ncol(x$offspring$phenotypes),"offspring individuals covering",nrow(x$offspring$phenotypes),"probes.\n",...)
 		}else{
-			stop("There is no phenotypic data for children in this object. This is not acceptable in real ril object.\n",...)
+			stop("There is no phenotypic data for offspring in this object. This is not acceptable in real ril object.\n",...)
 		}
-		if(!(is.null(x$rils$genotypes$read))){
-			cat("Object contains genotypic data for",ncol(x$rils$phenotypes),"children individuals covering",nrow(x$rils$phenotypes),"probes.\n",...)
+		if(!(is.null(x$offspring$genotypes$read))){
+			cat("Object contains genotypic data for",ncol(x$offspring$phenotypes),"offspring individuals covering",nrow(x$offspring$phenotypes),"probes.\n",...)
 		}else{
-			cat("There is no genotypic data for children in this object.\n",...)
+			cat("There is no genotypic data for offspring in this object.\n",...)
 		}
-		if(!(is.null(x$rils$map))){
-			cat("Object contains physical map covering",nrow(x$rils$map),"markers from",length(table(x$rils$map[,1])),"chromosomes.\n",...)
+		if(!(is.null(x$offspring$map))){
+			cat("Object contains physical map covering",nrow(x$offspring$map),"markers from",length(table(x$offspring$map[,1])),"chromosomes.\n",...)
 		}else{
 			cat("There is no physical genetic map in this object.\n")
 		}
 	}else{
-		cat("WARNING: There is no phenotypic data for children. This is not acceptable in real ril object.\n",...)
+		cat("WARNING: There is no phenotypic data for offspring. This is not acceptable in real ril object.\n",...)
 	}
 	
-	if(!(is.null(x$parental))){
-		if(!(is.null(x$parental$phenotypes))){
-			cat("Object contains phenotypic data for",ncol(x$parental$phenotypes),"parental individuals covering",nrow(x$parental$phenotypes),"probes.\n",...)
+	if(!(is.null(x$founders))){
+		if(!(is.null(x$founders$phenotypes))){
+			cat("Object contains phenotypic data for",ncol(x$founders$phenotypes),"founders individuals covering",nrow(x$founders$phenotypes),"probes.\n",...)
 		}else{
 			stop("There is no phenotypic data for parents in this object. This is not acceptable in real ril object.\n",...)
 		}
-		if(!(is.null(x$parental$RP))){
+		if(!(is.null(x$founders$RP))){
 			cat("Object contains RP analysis results.\n",...)
 		}else{
 			cat("There is no RP analysis result in this object.\n",...)
 		}
-		if(!(is.null(x$parental$groups))){
-			cat("Parental groups are as following:",x$parental$groups,"\n",...)
+		if(!(is.null(x$founders$groups))){
+			cat("Parental groups are as following:",x$founders$groups,"\n",...)
 		}else{
-			cat("There is no information about parental groups in this object.\n",...)
+			cat("There is no information about founders groups in this object.\n",...)
 		}
 	}else{
 		cat("WARNING: There is no phenotypic data for parents. This is not acceptable in real ril object.\n",...)
@@ -119,33 +119,50 @@ print.ril <- function(x,...){
 }
 
 ############################################################################################################
-#intoRil: putting data into ril object
+#intoPopulation: putting data into existing population object
 # 
-# ril - object of class ril, data should be put into, by default - new object will be created
-# parental - matrix of parental data to be put into ril object
-# parentalRows - rows to be selected from parental, by default - all
-# parentalCols - cols to be selected from parental, by default - all
-# children -  matrix of parental data to be put into ril object
-# childrenRows - rows to be selected from children, by default - all
-# childrenCols - cols to be selected from children, by default - all
+# population - object of class population, data should be put into
+# dataObject - matrix of data to be put into ril object
+# dataType - what kind of data dataObject contains:
+# 	-  founders - founders phenotypic
+# 	-  offspring$phenotypes - offspring phenotypic
+# 	-  offspring$genotypes - offspring genotype
+# 	-  maps$genetic - genetic map 
+# 	-  maps$physical - physical map
 #
 ############################################################################################################
-intoRil <- function(ril=NULL, dataObject, dataType=c("parental","children"), selectedRows=NULL, selectedCols=NULL){
+intoPopulation <- function(population, dataObject, dataType=c("founders","offspring$phenotypes","offspring$genotypes","maps$genetic","maps$physical")){
+	if(is.null(population)) stop("No population object provided!\n")
+	### checks
+	inListCheck.internal(dataType,"dataType",c("founders","offspring$phenotypes","offspring$genotypes","maps$genetic","maps$physical"))
+	if(length(dataType)==1) {
+		population <- 
+	}
+	else if(length(dataType)>1){
+		population <- 
+	}
+
+	if(is.null(population)) stop("No data provided!\n")
+	class(population) <- "population"
+	invisible(population)
+}
+
+############################################################################################################
+#intoPopulation: putting data into existing population object
+# 
+# ril - object of class ril, data should be put into, by default - new object will be created
+# founders - matrix of founders data to be put into ril object
+# foundersRows - rows to be selected from founders, by default - all
+# foundersCols - cols to be selected from founders, by default - all
+# offspring -  matrix of founders data to be put into ril object
+# offspringRows - rows to be selected from offspring, by default - all
+# offspringCols - cols to be selected from offspring, by default - all
+#
+############################################################################################################
+intoPopulationSub.internal <- function(population, dataObject, dataType=c("founders","offspring$phenotypes","offspring$genotypes","maps$genetic","maps$physical")){
 	if(!(is.null(dataObject))&&!is.null(dim(dataObject))){
 		columns <- NULL
 		rows <- NULL
-		if(is.null(selectedRows)) selectedRows <- c(1:nrow(dataObject))
-		if(is.null(selectedCols)) selectedCols <- c(1:ncol(dataObject))
-		### checks
-		inRangeCheck.internal(min(selectedRows),"selectedRows",-nrow(dataObject),nrow(dataObject))
-		inRangeCheck.internal(max(selectedRows),"selectedRows",-nrow(dataObject),nrow(dataObject))
-		inRangeCheck.internal(min(selectedCols),"selectedCols",-ncol(dataObject),ncol(dataObject))
-		inRangeCheck.internal(max(selectedCols),"selectedCols",-ncol(dataObject),ncol(dataObject))
-		if(length(dataType)!=1) stop("Only one data type could be selected at once.\n")
-		inListCheck.internal(dataType,"dataType",c("parental","children"))
-		
-		dataObject <- dataObject[selectedRows,selectedCols]
-		
 		for(column in 1:ncol(dataObject)){
 			if(!(numericCheck.internal(dataObject[,column],allow.na=TRUE))){
 				columns <- c(columns,column)
@@ -179,26 +196,24 @@ intoRil <- function(ril=NULL, dataObject, dataType=c("parental","children"), sel
 		}else{
 			rownames(cur) <- 1:nrow(cur)
 		}
-		
+
 		if(!is.null(colnames(dataObject))){
 			colnames(cur) <- colnames(dataObject)
 		}else{
-			colnames(cur) <- 1:ncol(cur)
+		colnames(cur) <- 1:ncol(cur)
 		}
-		
-		if(dataType=="parental"){
-			ril$parental$phenotypes <- cur
-			ril$parameters$intoRil$parental <- list("dataObject", dataType, selectedRows, selectedCols)
-			names(ril$parameters$intoRil$parental) <- c("dataObject", "dataType", "selectedRows", "selectedCols")
-		}else if(dataType=="children"){
-			ril$rils$phenotypes <- cur
-			ril$parameters$intoRil$children <- list("dataObject", dataType, selectedRows, selectedCols)
-			names(ril$parameters$intoRil$children) <- c("dataObject", "dataType", "selectedRows", "selectedCols")
+		if(dataType=="founders"){
+			population$founders$phenotypes <- cur
+			population$parameters$intoRil$founders <- list("dataObject", dataType, selectedRows, selectedCols)
+			names(population$parameters$intoRil$founders) <- c("dataObject", "dataType", "selectedRows", "selectedCols")
+		}else if(dataType=="offspring"){
+			population$offspring$phenotypes <- cur
+			population$parameters$intoRil$offspring <- list("dataObject", dataType, selectedRows, selectedCols)
+			names(population$parameters$intoRil$offspring) <- c("dataObject", "dataType", "selectedRows", "selectedCols")
 		}
 	}
-	if(is.null(ril)) stop("No data provided!\n")
-	class(ril) <- "ril"
-	invisible(ril)
+	if(is.null(population)) stop("No data provided!\n")
+	invisible(population)
 }
 
 ############################################################################################################
