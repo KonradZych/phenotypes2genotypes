@@ -4,30 +4,29 @@
 \title{Reading geno/phenotypic files.}
 
 \description{
-  Reads geno/phenotypic files into R environment into special object.
+  Reads geno/phenotypic/map files into R environment into special object.
 }
 
 \usage{
-	readFiles(rils="children",parental="parental",sep="",verbose=FALSE,debugMode=0)
+	readFiles(offspring="offspring",founders="founders",map="maps",sep="",verbose=FALSE,debugMode=0)
 }
 
 \arguments{
- \item{rils}{ Core used to specify names of children phenotypic ("core_phenotypes.txt") and genotypic ("core_genotypes.txt") files.}
- \item{parental}{ Core used to specify names of parental phenotypic ("core_phenotypes.txt") file. }
+ \item{offspring}{ Core used to specify names of children phenotypic ("core_phenotypes.txt") and genotypic ("core_genotypes.txt") files.}
+ \item{founders}{ Core used to specify names of parental phenotypic ("core_phenotypes.txt") file. }
+ \item{map}{ Core used to specify names of genetic ("map_genetic.txt") and physical ("map_physical.txt") map files. }
  \item{sep}{ Separator of values in files. Passed directly to read.table, so "" is a wildcard meaning whitespace.}
  \item{verbose}{ Be verbose}
  \item{debugMode}{ 1: Print out checks, 2: print additional time information }
 }
 
 \value{
-  Object of type ril, containing in this step:
-  + essential - $rils$phenotypes - children phenotypic file data
-  + optional - $parental$phenotypes - parental phenotypic file data
-  + optional - $rils$genotypes$read - children genotypic file data
+  Object of class population. See createPopulation for more details about structure.
 }
 
 \details{
-  To be sure your analysis runs smoothly, data files should have specific format - data separated by tabs, first row provides colnames and first column rownames for the matrix. No addictional remarks, header etc.
+  Function is working on tab delimited files. First row contains colnames, first column - rownames. No remarks, headers etc. If you fish to use files of
+  your own format, please check createPopulation and intoPopulation functions.
 }
 
 \author{
@@ -45,6 +44,8 @@
 \seealso{
   \code{\link{preprocessData}}
   \code{\link{toGenotypes}}
+  \code{\link{createPopulation}}
+  \code{\link{intoPopulation}}
 }
 
 \keyword{manip}

@@ -34,6 +34,7 @@
 # 
 # offspring - Core used to specify names of children phenotypic ("offspring_phenotypes.txt") and genotypic ("offspring_genotypes.txt") files.
 # founders - Core used to specify names of founders phenotypic ("founders_phenotypes.txt") file.
+# map - Core used to specify names of genetic ("map_genetic.txt") and physical ("map_physical.txt") map files.
 # sep - Separator of values in files. Passed directly to read.table, so "" is a wildcard meaning whitespace.
 # verbose - Be verbose
 # debugMode - 1: Print our checks, 2: print additional time information
@@ -115,26 +116,26 @@ readFiles <- function(offspring="offspring",founders="founders",map="maps",sep="
 # debugMode - 1: Print our checks, 2: print additional time information
 #
 ############################################################################################################
-mapMarkers.internal <- function(expressionMatrix1, expressionMatrix2, mapMode=2,verbose=FALSE,debugMode=0){
+mapMarkers.internal <- function(expressionMatrix1, expressionMatrix2, mapMode=2, verbose=FALSE, debugMode=0){
 	if(mapMode==1) {
 		nrRows <- nrow(expressionMatrix1)
-		#warnings when names are mismatching
+		### warnings when names are mismatching
 		if(verbose && debugMode==2)if(nrRows!=nrow(expressionMatrix2)){
 			cat("Following markers will be removed:\n")
 			cat(paste(rownames(expressionMatrix1)[which(!(rownames(expressionMatrix1) %in% rownames(expressionMatrix2)))],"\n"))
 		}
-		#mapping itself
+		### mapping itself
 		expressionMatrix1 <- expressionMatrix1[which(rownames(expressionMatrix1) %in% rownames(expressionMatrix2)),]
 		if(verbose) cat("Because of names mismatch,",nrRows-nrow(expressionMatrix1),"markers were removed, run function with verbose=T debugMode=2 to print their names out.\n")
 	}
 	else if(mapMode==2){
 		nrCols <- ncol(expressionMatrix1)
-		#warnings when names are mismatching
+		### warnings when names are mismatching
 		if(verbose && debugMode==2)if(nrCols!=ncol(expressionMatrix2)){
 			cat("Following individuals will be removed:\n")
 			paste(colnames(expressionMatrix1)[which(!(colnames(expressionMatrix1) %in% colnames(expressionMatrix2)))],"\n")
 		}
-		#mapping itself
+		### mapping itself
 		expressionMatrix1 <- expressionMatrix1[,which(colnames(expressionMatrix1) %in% colnames(expressionMatrix2))]
 		if(verbose) cat("Because of names mismatch,",nrCols-ncol(expressionMatrix1),"individuals were removed, run function with verbose=T debugMode=2 to print their names out.\n")
 	}
