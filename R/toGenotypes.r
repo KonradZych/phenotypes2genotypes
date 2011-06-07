@@ -36,7 +36,7 @@
 # population - Ril type object, must contain founders phenotypic data.
 # use - Which genotypic matrix should be saved to file, 
 # 	- real - supported by user and read from file, 
-#	- simulated - made by toGenotypes, m
+#	- simulated - made by toGenotypes
 #	- map_genetic - simulated data orderd using genetic map
 #	- map_physical - simulated data orderd using physical map
 # treshold - If Rank Product pval for gene is lower that this value, we assume it is being diff. expressed.

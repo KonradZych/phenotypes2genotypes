@@ -38,7 +38,7 @@
 ############################################################################################################
 preprocessData <- function(population,groupLabels=c(0,0,1,1),verbose=FALSE,debugMode=0,...){
 	s2<-proc.time()
-	rankProdRes <- cat(RP(population$founders$phenotypes,groupLabels,...),file=NULL)
+	rankProdRes <- invisible(RP(population$founders$phenotypes,groupLabels,...))
 	population$founders$RP <- rankProdRes
 	population$founders$groups <- groupLabels
 	population$parameters$preprocessData <- list("object of population class", groupLabels,verbose,debugMode)

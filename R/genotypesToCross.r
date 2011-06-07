@@ -76,7 +76,7 @@ genotypesToCross.internal <- function(population, use=c("simulated","map_genetic
 				stop("Use = map chosen, but there is no map data in population$offspring$map\n")
 			}else{
 				cat("Cross object will be written using simulated genotypic data orderd by gff map\n")
-				writeGenotypes.internal(population$offspring$genotypes$simulated, chr=(population$maps$genetic[rownames(population$offspring$genotypes$simulated),1], positions=(population$maps$genetic[rownames(population$offspring$genotypes$simulated),2], outputFile=outputFile, verbose=verbose, debugMode=debugMode)
+				writeGenotypes.internal(population$offspring$genotypes$simulated, chr=population$maps$genetic[rownames(population$offspring$genotypes$simulated),1], positions=population$maps$genetic[rownames(population$offspring$genotypes$simulated),2], outputFile=outputFile, verbose=verbose, debugMode=debugMode)
 			}
 		}else if(use=="map_physical"){
 			### check this, doesn't look nice!
@@ -84,7 +84,7 @@ genotypesToCross.internal <- function(population, use=c("simulated","map_genetic
 				stop("Use = map chosen, but there is no map data in population$offspring$map\n")
 			}else{
 				cat("Cross object will be written using simulated genotypic data orderd by gff map\n")
-				writeGenotypes.internal(population$offspring$genotypes$simulated, chr=(population$maps$physical[rownames(population$offspring$genotypes$simulated),1], positions=(population$maps$physical[rownames(population$offspring$genotypes$simulated),2], outputFile=outputFile, verbose=verbose, debugMode=debugMode)
+				writeGenotypes.internal(population$offspring$genotypes$simulated, chr=population$maps$physical[rownames(population$offspring$genotypes$simulated),1], positions=population$maps$physical[rownames(population$offspring$genotypes$simulated),2], outputFile=outputFile, verbose=verbose, debugMode=debugMode)
 			}
 		}else{
 				cat("Cross object will be written using simulated genotypic data\n")

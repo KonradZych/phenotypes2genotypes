@@ -51,7 +51,7 @@ readFiles <- function(offspring="offspring",founders="founders",map="maps",sep="
 	if(file.exists(filename)){
 		if(verbose) cat("Found phenotypic file for offspring:",filename,"and will store  it in population$offspring$phenotypes\n")
 		offspring_phenotypes <- read.table(filename,sep=sep)
-		population <- intoPopulation(population, offspring_phenotypes, "offspring$phenotypes")
+		population <- createPopulation(offspring_phenotypes,no.warn=TRUE)
 	}else{
 		stop("No phenotype file for offspring: ",filename," this file is essentiall, you have to provide it\n")
 	}
@@ -70,7 +70,7 @@ readFiles <- function(offspring="offspring",founders="founders",map="maps",sep="
 	filename <- paste(founders,"_phenotypes.txt",sep="")
 	if(file.exists(filename)){
 		if(verbose) cat("Found phenotypic file for parents:",filename,"and will store it in population$founders$phenotypes\n")
-		foundersData <- read.table(filename,sep=sep)
+		founders <- read.table(filename,sep=sep)
 		population <- intoPopulation(population, founders, "founders")
 		#removing from founders probes that are not in children:
 		population$founders$phenotypes <- mapMarkers.internal(population$founders$phenotypes,population$offspring$phenotypes, mapMode=1, verbose=verbose)
@@ -82,7 +82,7 @@ readFiles <- function(offspring="offspring",founders="founders",map="maps",sep="
 	filename <- paste(map,"_genetic.txt",sep="")
 	if(file.exists(filename)){
 		if(verbose) cat("Found genotypic file for offspring:",filename,"and will store  it in population$offspring$genotypes$read\n")
-		maps_genetic <-  <- read.table(filename,sep=sep)
+		maps_genetic <- read.table(filename,sep=sep)
 		population <- intoPopulation(population, maps_genetic, "maps$genetic")
 	}else{
 		if(verbose)cat("No genetic map file:",filename,".\n")
@@ -92,7 +92,7 @@ readFiles <- function(offspring="offspring",founders="founders",map="maps",sep="
 	filename <- paste(map,"_physical.txt",sep="")
 	if(file.exists(filename)){
 		if(verbose) cat("Found genotypic file for offspring:",filename,"and will store  it in population$offspring$genotypes$read\n")
-		physical <-  <- read.table(filename,sep=sep)
+		physical <-	read.table(filename,sep=sep)
 		population <- intoPopulation(population, physical, "maps$physical")
 	}else{
 		if(verbose)cat("No physical map file:",filename,".\n")
@@ -101,7 +101,7 @@ readFiles <- function(offspring="offspring",founders="founders",map="maps",sep="
 	#**********FINALIZING FUNCTION*************
 	e <- proc.time()
 	if(verbose) cat("readFiles done in",(e-s)[3],"seconds.\n")
-	population$parameters$readFiles <- list(offspring, founders,sep=sep"",verbose,debugMode)
+	population$parameters$readFiles <- list(offspring, founders,sep=sep,verbose,debugMode)
 	names(population$parameters$readFiles) <- c("offspring", "founders", "sep", "verbose", "debugMode")
 	class(population) <- "population"
 	invisible(population)
