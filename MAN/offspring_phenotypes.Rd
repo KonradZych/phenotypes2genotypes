@@ -1,11 +1,11 @@
-\name{parental_phenotypes.txt}
-\alias{parental_phenotypes}
+\name{offspring_phenotypes.txt}
+\alias{offspring_phenotypes}
 \docType{data}
 
-\title{Parental phenotypic data.}
+\title{Offspring phenotypic data.}
 
 \description{ 
-  Gene expression data for RIL Ler and Kas A.thaliana strains.
+  Gene expression data for RIL LerKas A.thaliana strain.
 } 
 
 \usage{data(genotypes)}

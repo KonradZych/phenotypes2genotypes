@@ -49,8 +49,8 @@
 
 \examples{
 	setwd(paste(.Library,"pheno2geno/data",sep="/"))
-	founders <- read.table("parental_phenotypes.txt",sep="")
-	offspring <- read.table("children_phenotypes.txt",sep="")
+	founders <- read.table("founders_phenotypes.txt",sep="")
+	offspring <- read.table("offspring_phenotypes.txt",sep="")
 	population <- createPopulation(offspring)
 	population <- intoPopulation(population, founders, "founders")
 }

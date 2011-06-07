@@ -7,8 +7,8 @@
 # Modified by Danny Arends
 # 
 # first written March 2011
-# last modified May 2011
-# last modified in version: 0.5.1
+# last modified June 2011
+# last modified in version: 0.7.1
 # in current version: active, not in main workflow
 #
 #     This program is free software; you can redistribute it and/or
@@ -75,7 +75,13 @@ plotParentalExpression <- function(population, markers=1:100, groupLabels=c(0,0,
 #
 ############################################################################################################
 plotChildrenExpression <- function(population, markers=1:100){
-	if(nrow(population$Foffspring$phenotypes)<length(markers)){
+	### checks
+	if(is.null(population)||(class(population)!="population")) stop("No population object provided.\n")
+	if(is.null(population$offspring$phenotypes)) stop("No offspring data in population object supported.\n")
+	if(is.null(population$founders$phenotypes)) stop("No founders data in population object supported.\n")
+	
+	### function itself
+	if(nrow(population$offspring$phenotypes)<length(markers)){
 		cat("WARNING: There are only",nrow(population$offspring$phenotypes),"markers in population$offspring$phenotypes, function will plot them all.\n")
 		markers <- 1:nrow(population$offspring$phenotypes)
 	}

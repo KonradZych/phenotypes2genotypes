@@ -129,7 +129,7 @@ print.population <- function(x,...){
 # maps$physical - matrix containing physical map (optional)
 #
 ############################################################################################################
-createPopulation <- function(offspring_phenotypes=NULL, founders=NULL, offspring_genotypes=NULL, maps_genetic=NULL, maps_physical=NULL,verbose=FALSE,debugMode=0){
+createPopulation <- function(offspring_phenotypes=NULL, founders=NULL, offspring_genotypes=NULL, maps_genetic=NULL, maps_physical=NULL, no.warn=FALSE, verbose=FALSE,debugMode=0){
 	if(verbose && debugMode==1) cat("createPopulation starting.\n")
 	s <- proc.time()
 	population <- NULL
@@ -139,22 +139,22 @@ createPopulation <- function(offspring_phenotypes=NULL, founders=NULL, offspring
 		population <- intoPopulationSub.internal(population, offspring_phenotypes, "offspring$phenotypes", verbose, debugMode)
 	}
 	if(is.null(founders)){
-		warning("No founders phenotype data provided. Strongly recommend to supply this data using intoPopulation.\n")
+		if(!(no.warn))warning("No founders phenotype data provided. Strongly recommend to supply this data using intoPopulation.\n")
 	}else{
 		population <- intoPopulationSub.internal(population, founders, "founders", verbose, debugMode)
 	}
 	if(is.null(offspring_genotypes)){
-		if(verbose)cat("No offspring genotypic data provided. You can supply it later using intoPopulation.\n")
+		if(verbose && !(no.warn))cat("No offspring genotypic data provided. You can supply it later using intoPopulation.\n")
 	}else{
 		population <- intoPopulationSub.internal(population, offspring_genotypes, "offspring$genotypes", verbose, debugMode)
 	}
 	if(is.null(maps_genetic)){
-		if(verbose)cat("No genotic map provided. You can supply it later using intoPopulation.\n")
+		if(verbose && !(no.warn))cat("No genotic map provided. You can supply it later using intoPopulation.\n")
 	}else{
 		population <- intoPopulationSub.internal(population, maps_genetic, "maps$genetic", verbose, debugMode)
 	}
-	if(is.null(offspring_phenotypes)){
-		if(verbose)cat("No physical map provided.  You can supply it later using intoPopulation.\n")
+	if(is.null(maps_physical)){
+		if(verbose && !(no.warn))cat("No physical map provided.  You can supply it later using intoPopulation.\n")
 	}else{
 		population <- intoPopulationSub.internal(population, maps_physical, "maps$physical", verbose, debugMode)
 	}
@@ -183,8 +183,7 @@ intoPopulation <- function(population, dataObject, dataType=c("founders","offspr
 	if(is.null(population)) stop("No population object provided!\n")
 	inListCheck.internal(dataType,"dataType",c("founders","offspring$phenotypes","offspring$genotypes","maps$genetic","maps$physical"))
 	if(verbose && debugMode==1) cat("intoPopulation starting without errors in checkpoints.\n")
-	s <- proc.time()
-	if(length(dataType)==1) {
+	if(length(dataType)>1) {
 		if(class(dataObject)!="list") stop("Multiple dataObjects should be provided as list.\n")
 		if(length(dataObject)!=length(dataType)) stop("Support dataType for every element of dataObject.\n")
 		if(length(dataType)!=length(unique(dataType))) stop("Every element of dataType must be unique!\n")
@@ -192,14 +191,12 @@ intoPopulation <- function(population, dataObject, dataType=c("founders","offspr
 			population <- intoPopulationSub.internal(population,dataObject[[i]],dataType[i], verbose, debugMode)
 		}
 	}
-	else if(length(dataType)>1){
+	else if(length(dataType)==1){
 		population <- intoPopulationSub.internal(population,dataObject,dataType, verbose, debugMode)
 	}
 
 	if(is.null(population)) stop("No data provided!\n")
 	class(population) <- "population"
-	e <- proc.time()
-	cat("intoPopulation for",dataType,"done in:",(e-s)[3],"seconds.\n")
 	invisible(population)
 }
 
@@ -273,24 +270,24 @@ intoPopulationSub.internal <- function(population, dataObject, dataType=c("found
 		### adding data to population
 		if(dataType=="founders"){
 			population$founders$phenotypes <- cur
-			population$parameters$intoRil$founders <- list("dataObject", dataType, selectedRows, selectedCols)
-			names(population$parameters$intoRil$founders) <- c("dataObject", "dataType", "selectedRows", "selectedCols")
+			population$parameters$intoRil$founders <- list("population object", "data object", dataType)
+			names(population$parameters$intoRil$founders) <- c("population", "dataObject", "dataType")
 		}else if(dataType=="offspring$phenotypes"){
 			population$offspring$phenotypes <- cur
-			population$parameters$intoRil$offspring$phenotypes <- list("dataObject", dataType, selectedRows, selectedCols)
-			names(population$parameters$intoRil$offspring$phenotypes) <- c("dataObject", "dataType", "selectedRows", "selectedCols")
+			population$parameters$intoRil$offspring$phenotypes <- list("population object", "data object", dataType)
+			names(population$parameters$intoRil$offspring$phenotypes) <- c("population", "dataObject", "dataType")
 		}else if(dataType=="offspring$genotypes"){
 			population$offspring$genotypes$real <- cur
-			population$parameters$intoRil$offspring$genotypes <- list("dataObject", dataType, selectedRows, selectedCols)
-			names(population$parameters$intoRil$offspring$genotypes) <- c("dataObject", "dataType", "selectedRows", "selectedCols")
+			population$parameters$intoRil$offspring$genotypes <- list("population object", "data object", dataType)
+			names(population$parameters$intoRil$offspring$genotypes) <- c("population", "dataObject", "dataType")
 		}else if(dataType=="maps$genetic"){
 			population$maps$genetic <- cur
-			population$parameters$intoRil$maps$genetic <- list("dataObject", dataType, selectedRows, selectedCols)
-			names(population$parameters$intoRil$maps$genetic) <- c("dataObject", "dataType", "selectedRows", "selectedCols")
+			population$parameters$intoRil$maps$genetic <- list("population object", "data object", dataType)
+			names(population$parameters$intoRil$maps$genetic) <- c("population", "dataObject", "dataType")
 		}else if(dataType=="maps$physical"){
 			population$maps$physical <- cur
-			population$parameters$intoRil$maps$physical <- list("dataObject", dataType, selectedRows, selectedCols)
-			names(population$parameters$intoRil$maps$physical) <- c("dataObject", "dataType", "selectedRows", "selectedCols")
+			population$parameters$intoRil$maps$physical <- list("population object", "data object", dataType)
+			names(population$parameters$intoRil$maps$physical) <- c("population", "dataObject", "dataType")
 		}
 		
 	}else{
