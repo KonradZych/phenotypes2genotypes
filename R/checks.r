@@ -81,23 +81,3 @@ inListCheck.internal <- function(objectToBeChecked,objectName,listOfPossibleElem
 	if(length(listOfPossibleElements)==1) warning("Specified list contains just a single element!\n")
 	if(!(any(listOfPossibleElements==objectToBeChecked))) stop("Selected wrong ",objectName," possibilities are: ",listOfPossibleElements,"\n")
 }
-
-############################################################################################################
-#inRangeCheck.internal - checking if given object is numeric and if it is from specified range
-# 
-# objectToBeChecked - object to be checked
-# objectName - name of the object
-# downLimit, upLimit - down and up limit to specify range
-#
-############################################################################################################
-checkDataStamp.internal <- function(population, objectToBeChecked){
-	if(is.null(objectToBeChecked)) return(FALSE)
-	if(is.null(objectToBeChecked$wd)) return(FALSE)
-	if(is.null(objectToBeChecked$founders)) return(FALSE)
-	if(is.null(objectToBeChecked$rowS)) return(FALSE)
-	if((objectToBeChecked$rowS)>nrow(objectToBeChecked)) return(FALSE)
-	if(objectToBeChecked$wd!=getwd()) return(FALSE)
-	if(length(objectToBeChecked$founders)!=length(population$founders$phenotypes[1:rowS,])) return(FALSE)
-	if(any(objectToBeChecked$founders!=population$founders$phenotypes[1:rowS,])) return(FALSE)
-	return(TRUE)
-}
