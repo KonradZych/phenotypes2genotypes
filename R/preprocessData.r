@@ -38,76 +38,13 @@
 ############################################################################################################
 preprocessData <- function(population,groupLabels=c(0,0,1,1),verbose=FALSE,debugMode=0,...){
 	s2<-proc.time()
-	result <- NULL
-	filename <- "populationRankProdRes"
-	nr <- 1
-	loaded <- 0
-	while(file.exists(paste(filename,".RData",sep=""))&&loaded==0){
-		print(paste(filename,".RData",sep=""))
-		if(verbose) cat("File populationRankProdRes.Rdata already exists, reading it.\n")
-		load(paste(filename,".RData",sep=""))
-		if(length(result)==3){
-			if(checkDataStamp.internal(population,result[[3]])){
-				population$founders$RP <- result[[1]]
-				if(verbose) cat("File populationRankProdRes.Rdata contains groupLabels used during processing. They are following:",result[[2]]," and will be used instead of ones supplied by user:",groupLabels,"\n")
-				population$founders$groups <- result[[2]]
-				loaded <- 1
-			}else{
-			filename <- paste(filename,nr,sep="_")
-			nr <- nr+1
-			}
-		}else{
-			filename <- paste(filename,nr,sep="_")
-			nr <- nr+1
-		}
-	}
-	if(loaded==0){
-		population <- conductRP.internal(population, groupLabels, filename, ...)
-	}	
-	e2<-proc.time()
-	if(verbose && debugMode==2)cat("Data preprocessing done in:",(e2-s2)[3],"seconds.\n")
+	rankProdRes <- cat(RP(population$founders$phenotypes,groupLabels,...),file=NULL)
+	population$founders$RP <- rankProdRes
+	population$founders$groups <- groupLabels
 	population$parameters$preprocessData <- list("object of population class", groupLabels,verbose,debugMode)
 	names(population$parameters$preprocessData) <- c("population", "groupLabels", "verbose", "debugMode")
 	class(population) <- "population"
+	e2<-proc.time()
+	if(verbose && debugMode==2)cat("Data preprocessing done in:",(e2-s2)[3],"seconds.\n")
 	invisible(population)
-}
-
-############################################################################################################
-#preprocessData: Using Rank Product analysis to select differentially expressed genes.
-# 
-# population - Ril type object, must contain founders phenotypic data.
-# groupLabels - Specify which column of founders data belongs to group 0 and which to group 1.
-# verbose - Be verbose
-# debugMode - 1: Print our checks, 2: print additional time information
-#
-############################################################################################################
-conductRP.internal <- function(population, groupLabels, filename, ...){
-	rankProdRes <- invisible(RP(population$founders$phenotypes,groupLabels,...))
-	result <- list(rankProdRes,groupLabels,makeDataStamp.internal(population))
-	save(file=paste(filename,".RData",sep=""),result)
-	population$founders$RP <- rankProdRes
-	population$founders$groups <- groupLabels
-	invisible(population)
-}
-
-############################################################################################################
-#preprocessData: Using Rank Product analysis to select differentially expressed genes.
-# 
-# population - Ril type object, must contain founders phenotypic data.
-# groupLabels - Specify which column of founders data belongs to group 0 and which to group 1.
-# verbose - Be verbose
-# debugMode - 1: Print our checks, 2: print additional time information
-#
-############################################################################################################
-makeDataStamp.internal <- function(population){
-	result <- NULL
-	result$wd <- getwd()
-	if(nrow(population$founders$phenotypes)<10){
-		rowS <- nrow(population$founders$phenotypes)
-	}else{
-		rowS <- 10
-	}
-	result$rowS <- rowS
-	result$founders <- population$founders$phenotypes[1:rowS,]
-	invisible(result)
 }

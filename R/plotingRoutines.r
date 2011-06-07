@@ -34,72 +34,72 @@
 #plotParentalExpression: plot red points for expression values for parent of type 0, blue for parent 1 and green lines
 # for means of rows
 #
-# ril - Ril type object, must contain parental phenotypic data.
+# population - Ril type object, must contain founders phenotypic data.
 # markers - markers to be printed numbers or names 
-# groupLabels - Specify which column of parental data belongs to group 0 and which to group 1
+# groupLabels - Specify which column of founders data belongs to group 0 and which to group 1
 #
 ############################################################################################################
-plotParentalExpression <- function(ril, markers=1:100, groupLabels=c(0,0,1,1)){
+plotParentalExpression <- function(population, markers=1:100, groupLabels=c(0,0,1,1)){
 	#*******checks*******
-	if(class(ril)!="ril")
+	if(class(population)!="population")
 	
 	#*******remove too short chromosomes*******
-	if(nrow(ril$parental$phenotypes)<length(markers)){
-		cat("WARNING: There are only",nrow(ril$parental$phenotypes),"markers in ril$parental$phenotypes, function will plot them all.\n")
-		markers <- 1:nrow(ril$parental$phenotypes)
+	if(nrow(population$founders$phenotypes)<length(markers)){
+		cat("WARNING: There are only",nrow(population$founders$phenotypes),"markers in population$founders$phenotypes, function will plot them all.\n")
+		markers <- 1:nrow(population$founders$phenotypes)
 	}
-	for(i in markers) if(!(i %in% 1:nrow(ril$parental$phenotypes))){
+	for(i in markers) if(!(i %in% 1:nrow(population$founders$phenotypes))){
 		stop("ERROR: There is no marker number: ",i,", stopping \n")
 	}
-	parental <- ril$parental$phenotypes[markers,]
-	plot(x=markers[1], y=parental[1,1], xlim=c(min(markers),max(markers)), ylim=c(min(parental),max(parental)), col="red",
+	founders <- population$founders$phenotypes[markers,]
+	plot(x=markers[1], y=founders[1,1], xlim=c(min(markers),max(markers)), ylim=c(min(founders),max(founders)), col="red",
 	xlab="Marker", ylab="Expression value", main="Parental gene expression data")
-	for(i in 1:nrow(parental)){
+	for(i in 1:nrow(founders)){
 		for(j in which(groupLabels==0)){
-			if(i%%50==0) cat(i,j,parental[i,j],"\n")
-			points(x=markers[i],y=parental[i,j],col="red")
+			if(i%%50==0) cat(i,j,founders[i,j],"\n")
+			points(x=markers[i],y=founders[i,j],col="red")
 		}
 		for(k in which(groupLabels==1)){
-			if(i%%50==0) cat(i,k,parental[i,k],"\n")
-			points(x=markers[i],y=parental[i,k],col="blue")
+			if(i%%50==0) cat(i,k,founders[i,k],"\n")
+			points(x=markers[i],y=founders[i,k],col="blue")
 		}
 	}
-	points(x=markers,y=apply(parental,1,mean),col="green", pch=95, cex=3)
+	points(x=markers,y=apply(founders,1,mean),col="green", pch=95, cex=3)
 }
 
 ############################################################################################################
-#plotChildrenExpression: boxplot of data for selected markers + points of parental mean for each marker
+#plotChildrenExpression: boxplot of data for selected markers + points of founders mean for each marker
 # 
-# ril - Ril type object, must contain parental phenotypic data.
+# population - Ril type object, must contain founders phenotypic data.
 # markers - markers to be printed numbers or names 
 #
 ############################################################################################################
-plotChildrenExpression <- function(ril, markers=1:100){
-	if(nrow(ril$rils$phenotypes)<length(markers)){
-		cat("WARNING: There are only",nrow(ril$rils$phenotypes),"markers in ril$rils$phenotypes, function will plot them all.\n")
-		markers <- 1:nrow(ril$rils$phenotypes)
+plotChildrenExpression <- function(population, markers=1:100){
+	if(nrow(population$Foffspring$phenotypes)<length(markers)){
+		cat("WARNING: There are only",nrow(population$offspring$phenotypes),"markers in population$offspring$phenotypes, function will plot them all.\n")
+		markers <- 1:nrow(population$offspring$phenotypes)
 	}
-	if(nrow(ril$parental$phenotypes)<length(markers)){
-		cat("WARNING: There are only",nrow(ril$parental$phenotypes),"markers in ril$parental$phenotypes, function will plot them all.\n")
-		markers <- 1:nrow(ril$parental$phenotypes)
+	if(nrow(population$founders$phenotypes)<length(markers)){
+		cat("WARNING: There are only",nrow(population$founders$phenotypes),"markers in population$founders$phenotypes, function will plot them all.\n")
+		markers <- 1:nrow(population$founders$phenotypes)
 	}
-	for(i in markers) if(!(i %in% 1:nrow(ril$rils$phenotypes))){
+	for(i in markers) if(!(i %in% 1:nrow(population$offspring$phenotypes))){
 		stop("ERROR: There is no marker number: ",i,", stopping \n")
 	}
-	for(i in markers) if(!(i %in% 1:nrow(ril$parental$phenotypes))){
+	for(i in markers) if(!(i %in% 1:nrow(population$founders$phenotypes))){
 		stop("ERROR: There is no marker number: ",i,", stopping \n")
 	}
-	children <- ril$rils$phenotypes[markers,]
-	parental <- ril$parental$phenotypes[which(rownames(ril$parental$phenotypes) %in% rownames(children)),]
+	children <- population$offspring$phenotypes[markers,]
+	founders <- population$founders$phenotypes[which(rownames(population$founders$phenotypes) %in% rownames(children)),]
 	rownames(children) <- markers
 	boxplot(t(children), ylim=c(min(children), max(children)),	xlab="Marker", ylab="Expression value", main="Children gene expression data")
-	points(apply(parental,1,mean),col="green", pch=95, cex=3)
-	points(apply(parental,1,max),col="red", pch=24, cex=1)
-	points(apply(parental,1,min),col="blue", pch=25, cex=1)
+	points(apply(founders,1,mean),col="green", pch=95, cex=3)
+	points(apply(founders,1,max),col="red", pch=24, cex=1)
+	points(apply(founders,1,min),col="blue", pch=25, cex=1)
 }
 
 ############################################################################################################
-#plotMapComparison: boxplot of data for selected markers + points of parental mean for each marker
+#plotMapComparison: boxplot of data for selected markers + points of founders mean for each marker
 # 
 # cross - object of R/qtl cross type
 # coloringMode - 1 - rainbow colors 2 - black for cis and red for trans located markers

@@ -9,11 +9,11 @@
 }
 
 \usage{
-	plotChildrenExpression(ril, markers=1:100)
+	plotChildrenExpression(population, markers=1:100)
 }
 
 \arguments{
- \item{ril}{ Ril type object, must contain parental phenotypic data.}
+ \item{population}{ Population type object, must contain parental phenotypic data.}
  \item{markers}{ Numbers of markers to be plotted. }
 }
 
@@ -33,8 +33,8 @@
 
 \examples{
 	setwd(paste(.Library,"pheno2geno/data",sep="/"))
-	ril <- readFiles()
-	plotChildrenExpression(ril)
+	population <- readFiles()
+	plotChildrenExpression(population)
 }
 
 \seealso{

@@ -8,11 +8,11 @@
 }
 
 \usage{
-	plotParentalExpression(ril, markers=1:100, groupLabels=c(0,0,1,1))
+	plotParentalExpression(population, markers=1:100, groupLabels=c(0,0,1,1))
 }
 
 \arguments{
- \item{ril}{ Ril type object, must contain parental phenotypic data.}
+ \item{population}{ population type object, must contain parental phenotypic data.}
  \item{markers}{ Numbers of markers to be plotted. }
  \item{groupLabels}{ Specify which column of parental data belongs to group 0 and which to group 1.}
 }
@@ -33,8 +33,8 @@
 
 \examples{
 	setwd(paste(.Library,"pheno2geno/data",sep="/"))
-	ril <- readFiles()
-	plotParentalExpression(ril)
+	population <- readFiles()
+	plotParentalExpression(population)
 }
 
 \seealso{
