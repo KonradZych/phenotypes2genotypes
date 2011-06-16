@@ -1,0 +1,42 @@
+\begin{thebibliography}{}
+
+\bibitem[Arends {\em et~al.}(2010)Arends, Prins, Jansen, and
+  Broman]{arends:2010}
+Arends, D.~A., Prins, P., Jansen, R.~C., and Broman, K.~W. (2010).
+\newblock {R/QTL: high throughput Multiple QTL Mapping}.
+\newblock {\em Bioinformatics\/}, {\bf ??}(?), ???--???
+
+\bibitem[Balding {\em et~al.}(2007)Balding, Bishop, and
+  Cannings]{Handbook:2007}
+Balding, D.~J., Bishop, M., and Cannings, C., editors (2007).
+\newblock {\em Handbook of Statistical Genetics\/}.
+\newblock John Wiley \& Sons, Ltd.
+\newblock ISBN: 978-0-470-05830-5.
+
+\bibitem[Broman {\em et~al.}(2003)Broman, Wu, Sen, and Churchill]{Broman:2003}
+Broman, K.~W., Wu, H., Sen, S., and Churchill, G.~A. (2003).
+\newblock {R/qtl: QTL mapping in experimental crosses}.
+\newblock {\em Bioinformatics\/}, {\bf 19}(7), 889--890.
+
+\bibitem[Jansen(1994)Jansen]{Jansen:1994a}
+Jansen, R.~C. (1994).
+\newblock {Controlling the type I and type II errors in mapping quantitative
+  trait loci}.
+\newblock {\em Genetics\/}, {\bf 138}(3), 871--881.
+
+\bibitem[Li {\em et~al.}(2006)Li, Alvarez, Gutteling, Tijsterman, J.Riksen,
+  Hazendonk, Prins, Plasterk, Jansen, Breitling, and Kammenga]{Li:2006}
+Li, Y., Alvarez, O., Gutteling, E.~W., Tijsterman, M., J.Riksen, J.~A.,
+  Hazendonk, E., Prins, P., Plasterk, R.~H., Jansen, R.~C., Breitling, R., and
+  Kammenga, J.~E. (2006).
+\newblock {Mapping determinants of gene expression plasticity by genetical
+  genomics in C. elegans}.
+\newblock {\em PLoS Genet\/}, {\bf 2}(12), e222.
+
+\bibitem[Team(2010)Team]{RLang:2010}
+Team, R. D.~C. (2010).
+\newblock {\em R: A Language and Environment for Statistical Computing\/}.
+\newblock R Foundation for Statistical Computing, Vienna, Austria.
+\newblock ISBN: 3-900051-07-0.
+
+\end{thebibliography}
