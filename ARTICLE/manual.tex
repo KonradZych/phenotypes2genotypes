@@ -22,7 +22,7 @@ Danny Arends\,$^{2,}$,
 
 \newpage
 \section{General introduction}
-\begin{multicols}{2}
+
 {\noindent}Genetical Genomics (citation) is powerful method, providing world of life sciences with tool to look deep inside the complex relation between genetic information stored by DNA and final outcome of its processing - phenotype. And because this is the core dogma of modern biology, every method helping us to understand it better is of high importance to scientific world. 
 
 {\noindent}Great power often comes for high price, though. To perform GG studies one has to obtain both phenotypic and genotypic data, that are subsequently being matched. This not only elevates costs of experiment, but also introduces number of human errors, e.g. mismatching/mislabeling of arrays.
@@ -35,10 +35,10 @@ R packages contribute to power of this language more than anything. Using then, 
 > install me
 > or what?
 or use Packages menu (just click on Install Packages, select a mirror and than select package pheno2geno).
-\end{multicols}
+
 \newpage
 \section{Data}
-\begin{multicols}{2}
+
 \subsection{Data files' structure}
 {\noindent}In order to ensure smooth work of our package, we specified strict rules about data files provided. If below mentioned requirements are met and filenames are default, user don't have to provide reading function with any parameters. If your more advanced R user, your data files are of different format or you have data already inside R environment, please see section 4.1. 
 \subsubsection{Phenotype data for offspring}
@@ -51,9 +51,10 @@ This data is optional and doesn't have any impact on analysis, could be only use
 This data is optional and could be used for comparison with map created by our software or for ordering markers in output cross. Default filename is maps\_genetic.txt. File should contain three columns - marker name, chromosome number and position on chromosome in cM. Second and third column should contain numeric values without NAs, NaNs, etc. First column should contain unique marker names, matching ones in phenotype files.
 \subsubsection{Physical map}
 Exactly the same as in genetic map, but position on chromosome should be in Mbp.
-\end{multicols}
-\begin{multicols}{2}
+
+
 \subsection{Population object}
+\begin{multicols}{2}
 To store all the necessary information and mainupulate it easily we developed object of class population (schematically shown on figure 1). It's divided in three main parts:
 \begin{itemize}
 \item  founders part, storing founders phenotype data, information about founders groups used by RankProduct analysis (see 3.2) and results of this analysis (RP object, futher documentation about it is available in help file of RP function),
@@ -61,11 +62,16 @@ To store all the necessary information and mainupulate it easily we developed ob
 \item maps part, storing genetic and/or physical map
 \end{itemize}
 \includegraphics[scale=0.22]{population.jpg}
-\end{multicols}
+ \end{multicols}
 \newpage
 \section{Basic workflow}
-\begin{multicols}{2}
+
+\subsection{Introduction}
+\blindtext[2]
+
+
 \subsection{Loading data into workflow}
+\subsubsection{Introduction}
 If data is formatted as specified in chapter 2 and files are having default names, you just have to type: population <-  readFiles() into Rgui (make sure your working directory is the one containing data files) and it's all done. If you want to customize your files names, that can be done, but only to some extend. First of all you're able only to specify "cores": 
 \begin{itemize}
 \item  founders core, then name of the file containing founders phenotype data should be founders core\_phenotypes.txt
@@ -73,14 +79,27 @@ If data is formatted as specified in chapter 2 and files are having default name
 \item maps core, then file maps core\_genetic.txt contains genetic map, while maps core\_physical.txt - physical map.
 \end{itemize}
 If you are more advanced in R and want to use your own data files of different names and/or structure, see section 4.1.
+\subsubsection{Example of function call}
+> \$ population <- readFiles()
 \subsection{Rank product analysis}
-Rank Product (citation) is a powerful method for discovery of
- 
+\subsubsection{Introduction}
+Rank Product is a powerful method to detect genes showing differential expression, especially in microarray experiments (citation). As so, it fits our needs perfectly and that's why it's incorporated into our workflow. For vast majority of the cases user just has to specify parental groups. This means providing function with a vector of 0s and 1s, specifying for each column of parental phenotype file which parent data does it contain. E.g. we measured both parents twice and first two columns contain information about first parent and other two about second. Then parental groups should be c(0,0,1,1) and function should be called: >  \$ population <- preprocessData(population,c(0,0,1,1))
+
+{\noindent}If you're more experienced user and would like to provide RP function with additional parameters, it's possible. Just provide preprocessData funtion with them and they will be send directly to RP function. For further information see help files of RP and preprocessData functions.
+\subsubsection{Example of function call}
+>  \$ population <- preprocessData(population,c(0,0,1,1))
+\subsection{toGenotypes function}
+\subsubsection{Introduction}
+After RankProduct analysis is done, it's time for magic to happen,  very essence of this package - creating genetic map out of gene expression data.
+\subsubsection{Example of function call}
 \subsection{Preoptimized parameters for most common experimental crosses}
-\blindtext
+\subsubsection{Introduction}
+If you use one of our preoptimized sets of parameters, you don't have to bother about this section, as well as following ones, because everything is done for you. 
+\subsubsection{Example of function call}
 \subsection{Selecting appriopriate markers}
-\blindtext
-\subsection{Splitting selected markers}
+First step in toGenotypes analysis is selecting appropriate markers. Those are ones clearly differentially expressed between the parents. And having results from rank product you just have to specify p-value that determines whether difference in expression is significant(parameter threshold, default - 0.05). Normally it's 0.05 or 0.01. If you want to use all of your markers use threshold 0.5. Using any value above that will cause duplications (genes will be selected both as up- and down-regulated).
+\subsection{Splitting selected markers} 
+{\noindent}Once the appropriate markers are selected, they have to undergo splitting procedure, which means gene expression values are either assigned as 0 or 1, depending on which parent they come from. There are two methods to do so, as listed below.
 \subsubsection{Parental mean splitting}
 \blindtext
 \subsubsection{EM splitting}
@@ -95,10 +114,10 @@ Rank Product (citation) is a powerful method for discovery of
 \blindtext
 \subsubsection{Augmenting cross object}
 \blindtext
-\end{multicols}
+
 \newpage
 \section{Advanced options/modifications}
-\begin{multicols}{2}
+
 \subsection{Using data files with different \\* structure}
 \blindtext
 \subsection{Rank product analysis}
@@ -115,7 +134,7 @@ Rank Product (citation) is a powerful method for discovery of
 \blindtext
 \subsubsection{Post-processing of cross object}
 \blindtext
-\end{multicols}
+
 \newpage
 \section{Built-in plotting routines}
 \subsection{plotChildrenExpression}
@@ -128,14 +147,14 @@ Rank Product (citation) is a powerful method for discovery of
 \blindtext[2]
 \newpage
 \section{Big datasets}
-\begin{multicols}{2}
+
 \subsection{Problematic handling of big data by R}
 \blindtext
 \subsection{C preprocessing}
 \blindtext
 \subsection{Other solutions}
 \blindtext
-\end{multicols}
+
 \newpage
 \section{Package development \& collaboration}
 \newpage
