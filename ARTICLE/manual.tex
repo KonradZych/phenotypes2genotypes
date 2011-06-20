@@ -3,6 +3,7 @@
 \usepackage{fullpage}
 \usepackage[english]{babel}
 \usepackage{blindtext}
+\usepackage{graphicx}
 \addtolength{\oddsidemargin}{-0.4in}
 \addtolength{\evensidemargin}{-0.3in}
 \addtolength{\textwidth}{0.7in}
@@ -38,19 +39,43 @@ or use Packages menu (just click on Install Packages, select a mirror and than s
 \newpage
 \section{Data}
 \begin{multicols}{2}
-{\noindent}There is current trend in life sciences into -omics (proteomics, genomics, metabolomics) scale of data. Unfortunately even though conducting -omics experiments is being made simpler and simpler, we still lack tools and power to process data avalanche we obtain. 
 \subsection{Data files' structure}
-{\noindent}
+{\noindent}In order to ensure smooth work of our package, we specified strict rules about data files provided. If below mentioned requirements are met and filenames are default, user don't have to provide reading function with any parameters. If your more advanced R user, your data files are of different format or you have data already inside R environment, please see section 4.1. 
+\subsubsection{Phenotype data for offspring}
+This data is crucial and analysis cannot be run without it. Default filename is offspring\_phenotypes.txt. Rows correspond to markers and columns to individuals. File should contain only numeric values apart from first row, containing unique column names and first column containing unique row names. Rows and columns with non-numeric values are removed. All values should be separated by tabs. In normal practice first row has one element less then others (no column name for column containing rownames).
+\subsubsection{Phenotype data for founders}
+This data is optional but really important for the analysis, so we recommend to provide it. Default filename is founders\_phenotypes.txt. Data structure inside the file should be the same as in offspring phenotype file. Also row names should match, because non-matching rows are removed.
+\subsubsection{Genotype data for offspring}
+This data is optional and doesn't have any impact on analysis, could be only used for creating cross object out of existing data using our software. Default filename is offspring\_genotypes.txt. Genotypes should be coded as 0,1 and NA. Data structure inside the file should be the same as in offspring and founders phenotype files. Row names should match, because non-matching rows are removed. 
+\subsubsection{Genetic map}
+This data is optional and could be used for comparison with map created by our software or for ordering markers in output cross. Default filename is maps\_genetic.txt. File should contain three columns - marker name, chromosome number and position on chromosome in cM. Second and third column should contain numeric values without NAs, NaNs, etc. First column should contain unique marker names, matching ones in phenotype files.
+\subsubsection{Physical map}
+Exactly the same as in genetic map, but position on chromosome should be in Mbp.
+\end{multicols}
+\begin{multicols}{2}
 \subsection{Population object}
-\blindtext[3]
+To store all the necessary information and mainupulate it easily we developed object of class population (schematically shown on figure 1). It's divided in three main parts:
+\begin{itemize}
+\item  founders part, storing founders phenotype data, information about founders groups used by RankProduct analysis (see 3.2) and results of this analysis (RP object, futher documentation about it is available in help file of RP function),
+\item  offspring part, storing founders phenotype and genotype data (read from file and/or simulated by our software),
+\item maps part, storing genetic and/or physical map
+\end{itemize}
+\includegraphics[scale=0.22]{population.jpg}
 \end{multicols}
 \newpage
 \section{Basic workflow}
 \begin{multicols}{2}
 \subsection{Loading data into workflow}
-\blindtext
+If data is formatted as specified in chapter 2 and files are having default names, you just have to type: population <-  readFiles() into Rgui (make sure your working directory is the one containing data files) and it's all done. If you want to customize your files names, that can be done, but only to some extend. First of all you're able only to specify "cores": 
+\begin{itemize}
+\item  founders core, then name of the file containing founders phenotype data should be founders core\_phenotypes.txt
+\item  offspring core,  then name of the file containing offspring phenotype data should be offspring core\_phenotypes.txt and file containing genotype data should be called offspring core\_genotypes.tx
+\item maps core, then file maps core\_genetic.txt contains genetic map, while maps core\_physical.txt - physical map.
+\end{itemize}
+If you are more advanced in R and want to use your own data files of different names and/or structure, see section 4.1.
 \subsection{Rank product analysis}
-\blindtext
+Rank Product (citation) is a powerful method for discovery of
+ 
 \subsection{Preoptimized parameters for most common experimental crosses}
 \blindtext
 \subsection{Selecting appriopriate markers}
@@ -111,6 +136,8 @@ or use Packages menu (just click on Install Packages, select a mirror and than s
 \subsection{Other solutions}
 \blindtext
 \end{multicols}
+\newpage
+\section{Package development \& collaboration}
 \newpage
 \section{References}
 \end{document}
