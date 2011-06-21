@@ -65,11 +65,6 @@ To store all the necessary information and mainupulate it easily we developed ob
  \end{multicols}
 \newpage
 \section{Basic workflow}
-
-\subsection{Introduction}
-\blindtext[2]
-
-
 \subsection{Loading data into workflow}
 \subsubsection{Introduction}
 If data is formatted as specified in chapter 2 and files are having default names, you just have to type: population <-  readFiles() into Rgui (make sure your working directory is the one containing data files) and it's all done. If you want to customize your files names, that can be done, but only to some extend. First of all you're able only to specify "cores": 
@@ -89,12 +84,10 @@ Rank Product is a powerful method to detect genes showing differential expressio
 \subsubsection{Example of function call}
 >  \$ population <- preprocessData(population,c(0,0,1,1))
 \subsection{toGenotypes function}
-\subsubsection{Introduction}
-After RankProduct analysis is done, it's time for magic to happen,  very essence of this package - creating genetic map out of gene expression data.
-\subsubsection{Example of function call}
+After RankProduct analysis is done, it's time for magic to happen,  very essence of this package - creating genetic map out of gene expression data. If you're dataset come from experiment using of most common experimental breeding schemes - Recombinant Inbreed Lines, F2 or Back Cross, you should use corresponding set of parameters, described in section 3.4. If your breeding scheme is different, you will find all necessary information in sections 3.5 - 3.8.
 \subsection{Preoptimized parameters for most common experimental crosses}
 \subsubsection{Introduction}
-If you use one of our preoptimized sets of parameters, you don't have to bother about this section, as well as following ones, because everything is done for you. 
+We prepared preoptimized sets for most common experimental breeding schemes - Recombinant Inbreed Lines, F2 or Back Cross. You can just select one corresponding to your dataset, copy/paste it into R and everything is done for you. You still may be curious what exactly is happening and/or modify given sets to better suit your needs (e.g. more strict selection of the markers).
 \subsubsection{Example of function call}
 \subsection{Selecting appriopriate markers}
 First step in toGenotypes analysis is selecting appropriate markers. Those are ones clearly differentially expressed between the parents. And having results from rank product you just have to specify p-value that determines whether difference in expression is significant(parameter threshold, default - 0.05). Normally it's 0.05 or 0.01. If you want to use all of your markers use threshold 0.5. Using any value above that will cause duplications (genes will be selected both as up- and down-regulated).
