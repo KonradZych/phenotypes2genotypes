@@ -128,15 +128,17 @@ convertToGenotypes.internal <- function(population, splitMethod, treshold, overl
 	markerNames <- NULL 
 	
 	### selection step
+	### up-regulated
 	upNotNull <- which(population$founders$RP$pval[1] > 0)
 	upBelowTreshold <- which(population$founders$RP$pval[1] < treshold)
 	upSelected <- upNotNull[which(upBelowTreshold%in%upNotNull)]
 	upParental <- population$founders$phenotypes[upSelected,]
+	upRils <- population$offspring$phenotypes[rownames(upParental),]
+	### down-regulated
 	downNotNull <- which(population$founders$RP$pval[2] > 0)
 	downBelowTreshold <- which(population$founders$RP$pval[2] < treshold)
-	downSelected <- upNotNull[which(downBelowTreshold%in%downNotNull)]
+	downSelected <- downNotNull[which(downBelowTreshold%in%downNotNull)]
 	downParental <- population$founders$phenotypes[downSelected,]
-	upRils <- population$offspring$phenotypes[rownames(upParental),]
 	downRils <- population$offspring$phenotypes[rownames(downParental),]
 	
 	### checking if anything is selected and if yes - processing
