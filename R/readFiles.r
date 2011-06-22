@@ -83,6 +83,7 @@ readFiles <- function(offspring="offspring",founders="founders",map="maps",sep="
 	if(file.exists(filename)){
 		if(verbose) cat("Found genotypic file for offspring:",filename,"and will store  it in population$offspring$genotypes$read\n")
 		maps_genetic <- read.table(filename,sep=sep,row.names=1,header=FALSE)
+		maps_genetic <- as.matrix(maps_genetic)
 		population <- intoPopulation(population, maps_genetic, "maps$genetic")
 	}else{
 		if(verbose)cat("No genetic map file:",filename,".\n")
@@ -93,6 +94,7 @@ readFiles <- function(offspring="offspring",founders="founders",map="maps",sep="
 	if(file.exists(filename)){
 		if(verbose) cat("Found genotypic file for offspring:",filename,"and will store  it in population$offspring$genotypes$read\n")
 		physical <-	read.table(filename,sep=sep,row.names=1,header=FALSE)
+		physical <- as.matrix(physical)
 		population <- intoPopulation(population, physical, "maps$physical")
 	}else{
 		if(verbose)cat("No physical map file:",filename,".\n")

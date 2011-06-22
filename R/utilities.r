@@ -8,7 +8,7 @@
 # 
 # first written March 2011
 # last modified June 2011
-# last modified in version: 0.7.1
+# last modified in version: 0.7.2
 # in current version: active, not in main workflow
 #
 #     This program is free software; you can redistribute it and/or
@@ -215,11 +215,11 @@ intoPopulation <- function(population, dataObject, dataType=c("founders","offspr
 ############################################################################################################
 intoPopulationSub.internal <- function(population, dataObject, dataType=c("founders","offspring$phenotypes","offspring$genotypes","maps$genetic","maps$physical"),verbose=FALSE,debugMode=0){
 	if(dataType=="founders" || dataType=="offspring$phenotypes"){
-		population <- intoPopulationSubPheno.internal(population,dataObject[[i]],dataType[i], verbose, debugMode)
+		population <- intoPopulationSubPheno.internal(population,dataObject,dataType, verbose, debugMode)
 	}else if(dataType=="offspring$genotypes"){
-		population <- intoPopulationSubGeno.internal(population,dataObject[[i]], verbose, debugMode)
+		population <- intoPopulationSubGeno.internal(population,dataObject, verbose, debugMode)
 	}else if(dataType=="maps$genetic"||dataType=="maps$physical"){
-		population <- intoPopulationSubMap.internal(population,dataObject[[i]], dataType[i],verbose, debugMode)
+		population <- intoPopulationSubMap.internal(population,dataObject, dataType, verbose, debugMode)
 	}
 }
 
@@ -401,19 +401,19 @@ intoPopulationSubGeno.internal <- function(population, dataObject,verbose=FALSE,
 # 	-  maps$physical - physical map
 #
 ############################################################################################################
-intoPopulationSubMap.internal <- function(population, dataObject, verbose=FALSE,debugMode=0){
+intoPopulationSubMap.internal <- function(population, dataObject, dataType=c("maps$genetic","maps$physical"),verbose=FALSE, debugMode=0){
 	if(verbose && debugMode==1) cat("intoPopulationSub.internal starting.\n")
 	s <- proc.time()
-	if(!(is.null(dataObject))&&!is.null(dim(dataObject))){
+	if(!(is.null(dataObject))&&!(is.null(dim(dataObject)))&&class(dataObject)=="matrix"){
 		if(ncol(dataObject)!=2) stop ("This is not a correct map object.\n")
 		if(any(!(is.numeric(dataObject)))) stop ("This is not a correct map object.\n")
 		### adding data to population
 		if(dataType=="maps$genetic"){
-			population$maps$genetic <- cur
+			population$maps$genetic <- dataObject
 			population$parameters$intoRil$maps$genetic <- list("population object", "data object", dataType)
 			names(population$parameters$intoRil$maps$genetic) <- c("population", "dataObject", "dataType")
 		}else if(dataType=="maps$physical"){
-			population$maps$physical <- cur
+			population$maps$physical <- dataObject
 			population$parameters$intoRil$maps$physical <- list("population object", "data object", dataType)
 			names(population$parameters$intoRil$maps$physical) <- c("population", "dataObject", "dataType")
 		}

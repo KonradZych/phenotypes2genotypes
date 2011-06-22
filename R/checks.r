@@ -8,7 +8,7 @@
 # 
 # first written June 2011
 # last modified June 2011
-# last modified in version: 0.7.1
+# last modified in version: 0.7.2
 # in current version: active, in main workflow
 #
 #     This program is free software; you can redistribute it and/or
@@ -59,13 +59,13 @@ numericCheck.internal <- function(objectToBeChecked, allow.na=FALSE){
 #
 ############################################################################################################
 genotypeCheck.internal <- function(objectToBeChecked, allow.na=FALSE){
-	converted <- as.numeric(as.matrix(objectToBeChecked)))
-	if(any(is.na(converted)){
+	converted <- as.numeric(as.matrix(objectToBeChecked))
+	if(any(is.na(converted))){
 		if(!(allow.na)){
 			return(FALSE)
 		}else{
-			if(sum(is.na(converted)==sum(is.na((objectToBeChecked)))){
-				nrOfCorrect <- sum(is.na(converted) + sum(converted==1) + sum(converted==0)
+			if(sum(is.na(converted))==sum(is.na(objectToBeChecked))){
+				nrOfCorrect <- sum(is.na(converted)) + sum(converted==1) + sum(converted==0)
 				if(nrOfCorrect==length(converted)){
 					return(TRUE)
 				}else{
