@@ -51,6 +51,35 @@ numericCheck.internal <- function(objectToBeChecked, allow.na=FALSE){
 }
 
 ############################################################################################################
+#genotypeCheck.internal - checking if given object is containing only 0,1 and NAs
+# 
+# objectToBeChecked - object to be checked
+# allow.na - specifies whether object could cointain NAs
+# value - boolean
+#
+############################################################################################################
+genotypeCheck.internal <- function(objectToBeChecked, allow.na=FALSE){
+	converted <- as.numeric(as.matrix(objectToBeChecked)))
+	if(any(is.na(converted)){
+		if(!(allow.na)){
+			return(FALSE)
+		}else{
+			if(sum(is.na(converted)==sum(is.na((objectToBeChecked)))){
+				nrOfCorrect <- sum(is.na(converted) + sum(converted==1) + sum(converted==0)
+				if(nrOfCorrect==length(converted)){
+					return(TRUE)
+				}else{
+					return(FALSE)
+				}
+			}else{
+				return(FALSE)
+			}
+		}
+	}
+	return(TRUE)
+}
+
+############################################################################################################
 #inRangeCheck.internal - checking if given object is numeric and if it is from specified range
 # 
 # objectToBeChecked - object to be checked

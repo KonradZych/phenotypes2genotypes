@@ -6,7 +6,7 @@
 \alias{proportion}
 \alias{margin}
 \alias{splitMethod}
-\alias{minChrLength}
+\alias{numberOfChromosomes}
 
 \title{Creating genotypes from children phenotypes.}
 
@@ -15,7 +15,7 @@
 }
 
 \usage{
-	toGenotypes(population, use=c("simulated","map_genetic","map_physical","real"), splitMethod=c("EM","mean"),treshold=0.01, overlapInd = 0, proportion = c(50,50), margin = 15, minChrLength = 0, verbose=FALSE, debugMode=0,...)
+	toGenotypes(population, use=c("simulated","map_genetic","map_physical","real"), splitMethod=c("EM","mean"),treshold=0.01, overlapInd = 0, proportion = c(50,50), margin = 15, numberOfChromosomes = NULL, verbose=FALSE, debugMode=0,...)
 }
 
 \arguments{
@@ -34,7 +34,7 @@
  \item{overlapInd}{ Number of individuals that are allowed in the overlap }
  \item{proportion}{ Proportion of individuals expected to carrying a certain genotype }
  \item{margin}{ Proportion is allowed to varry between this margin (2 sided) }
- \item{minChrLength}{ If maximal distance between the markers in the chromosome is lower than this value, whole chromosome will be dropped. }
+ \item{numberOfChromosomes}{ How many chromosomes should map contain - leaving only that number of linkage groups and dropping one with higher numbers, this can be dangerous, so be sure you know what you're doing. }
  \item{verbose}{ Be verbose}
  \item{debugMode}{ 1: Print our checks, 2: print additional time information }
   \item{...}{ Parameters passed to formLinkageGroups. }
