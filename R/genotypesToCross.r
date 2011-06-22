@@ -7,8 +7,8 @@
 # Modified by Danny Arends
 # 
 # first written March 2011
-# last modified May 2011
-# last modified in version: 0.7.1
+# last modified June 2011
+# last modified in version: 0.7.2
 # in current version: active, internal in main workflow
 #
 #     This program is free software; you can redistribute it and/or
@@ -42,7 +42,7 @@
 #
 #
 ############################################################################################################
-genotypesToCross.internal <- function(population, use=c("simulated","map_genetic","map_physical","real"), outputFile="mycross.csv", verbose=FALSE, debugMode=0){
+genotypesToCross.internal <- function(population, genotype=c("simulated","real"), orderUsing=c("map_genetic","map_physical",NULL), outputFile="mycross.csv", verbose=FALSE, debugMode=0){
 	###CHECKS
 	if(verbose && debugMode==1) cat("genotypesToCross starting.\n")
 	s <- proc.time()
@@ -63,33 +63,32 @@ genotypesToCross.internal <- function(population, use=c("simulated","map_genetic
 		if(is.null(population$offspring$genotypes$real)){
 			stop("Use = real chosen, but there is no real genotypic data in population$offspring$genotypes$read\n")
 		}else{
-			cat("Cross object will be written using real genotypic data\n")
-			writeGenotypes.internal(population$offspring$genotypes$read, chr=1,outputFile=outputFile, verbose=verbose, debugMode=debugMode)
+			if(is.null(orderUsing)){
+				writeGenotypes.internal(population$offspring$genotypes$real, chr=1, outputFile=outputFile, verbose=verbose, debugMode=debugMode)
+			}else if(orderUsing=="map_physical"){
+				if(is.null(population$maps$physical)) stop("orderUsing = map_physical chosen, but no physical map provided in population$maps$physical\n")
+				writeGenotypes.internal(population$offspring$genotypes$real, chr=population$maps$physical[rownames(population$offspring$genotypes$real),1], positions=population$maps$physical[rownames(population$offspring$genotypes$real),2], outputFile=outputFile, verbose=verbose, debugMode=debugMode)
+			}else if(orderUsing=="map_genetic"){
+				if(is.null(population$maps$genetic)) stop("orderUsing = map_physical chosen, but no genetic map provided in population$maps$genetic\n")
+				writeGenotypes.internal(population$offspring$genotypes$real, chr=population$maps$genetic[rownames(population$offspring$genotypes$real),1], positions=population$maps$genetic[rownames(population$offspring$genotypes$real),2], outputFile=outputFile, verbose=verbose, debugMode=debugMode)
+			}
+		
 		}
 	}
-	else if(use=="simulated" || use=="map_genetic" || use=="map_physical"){
+	else if(use=="simulated"){
 		if(is.null(population$offspring$genotypes$simulated)){
-				stop("Use = simulated chosen, but there is no simulated genotypic data in population$offspring$genotypes$simulated\n")
-		}else if(use=="map_genetic"){
-			### check this, doesn't look nice!
-			if(is.null(population$maps$genetic)){
-				stop("Use = map chosen, but there is no map data in population$offspring$map\n")
-			}else{
-				cat("Cross object will be written using simulated genotypic data orderd by gff map\n")
+			stop("Use = simulated chosen, but there is no simulated genotypic data in population$offspring$genotypes$simulated\n")
+		}else{
+			if(is.null(orderUsing)){
+				writeGenotypes.internal(population$offspring$genotypes$simulated, chr=1, outputFile=outputFile, verbose=verbose, debugMode=debugMode)
+			}else if(orderUsing=="map_physical"){
+				if(is.null(population$maps$physical)) stop("orderUsing = map_physical chosen, but no physical map provided in population$maps$physical\n")
+				writeGenotypes.internal(population$offspring$genotypes$simulated, chr=population$maps$physical[rownames(population$offspring$genotypes$simulated),1], positions=population$maps$physical[rownames(population$offspring$genotypes$simulated),2], outputFile=outputFile, verbose=verbose, debugMode=debugMode)
+			}else if(orderUsing=="map_genetic"){
+				if(is.null(population$maps$genetic)) stop("orderUsing = map_physical chosen, but no genetic map provided in population$maps$genetic\n")
 				writeGenotypes.internal(population$offspring$genotypes$simulated, chr=population$maps$genetic[rownames(population$offspring$genotypes$simulated),1], positions=population$maps$genetic[rownames(population$offspring$genotypes$simulated),2], outputFile=outputFile, verbose=verbose, debugMode=debugMode)
 			}
-		}else if(use=="map_physical"){
-			### check this, doesn't look nice!
-			if(is.null(population$maps$physical)){
-				stop("Use = map chosen, but there is no map data in population$offspring$map\n")
-			}else{
-				cat("Cross object will be written using simulated genotypic data orderd by gff map\n")
-				writeGenotypes.internal(population$offspring$genotypes$simulated, chr=population$maps$physical[rownames(population$offspring$genotypes$simulated),1], positions=population$maps$physical[rownames(population$offspring$genotypes$simulated),2], outputFile=outputFile, verbose=verbose, debugMode=debugMode)
-			}
-		}else{
-				cat("Cross object will be written using simulated genotypic data\n")
-				writeGenotypes.internal(population$offspring$genotypes$simulated, chr=1, outputFile=outputFile, verbose=verbose, debugMode=debugMode)
-			}
+		}
 	}	
 
 #**********READING CROSS FILE TO R*************
@@ -98,6 +97,22 @@ genotypesToCross.internal <- function(population, use=c("simulated","map_genetic
 	e <- proc.time()
 	if(verbose) cat("genotypesToCross done in",(e-s)[3],"seconds.\n")
 	invisible(cross)
+}
+
+############################################################################################################
+#genotypesToCross.internal- produces from genotypic matrix file containing object of type cross, reads it 
+# into R a returns
+# 
+# population - population type object, must contain founders phenotypic data.
+# use - save "real" gentypes, "simulated" genotypes otr simulated genotypes ordered using "map" from gff file
+# outputFile - file where object of type cross is being saved
+# verbose - Be verbose
+# debugMode - 1: Print our checks, 2: print additional time information
+#
+#
+############################################################################################################
+genotypesToCrossSub.internal <- function(genotype, map, outputFile="mycross.csv", verbose=FALSE, debugMode=0){
+	writeGenotypes.internal(population$offspring$genotypes$simulated, chr=population$maps$genetic[rownames(population$offspring$genotypes$simulated),1], positions=population$maps$genetic[rownames(population$offspring$genotypes$simulated),2], outputFile=outputFile, verbose=verbose, debugMode=debugMode)
 }
 
 ############################################################################################################
