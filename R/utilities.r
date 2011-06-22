@@ -188,7 +188,7 @@ intoPopulation <- function(population, dataObject, dataType=c("founders","offspr
 		if(length(dataObject)!=length(dataType)) stop("Support dataType for every element of dataObject.\n")
 		if(length(dataType)!=length(unique(dataType))) stop("Every element of dataType must be unique!\n")
 		for(i in 1:length(dataObject)){
-			population <- intoPopulationSub.internal(population,dataObject[[i]],dataType[i], verbose, debugMode)
+			population <- intoPopulationSub.internal(population,dataObject,dataType, verbose, debugMode)
 		}
 	}
 	else if(length(dataType)==1){
@@ -201,7 +201,7 @@ intoPopulation <- function(population, dataObject, dataType=c("founders","offspr
 }
 
 ############################################################################################################
-#intoPopulationSub.internal: subfunction of intoPopulation, adding data to population object
+#intoPopulationSubPheno.internal: subfunction of intoPopulation, adding data to population object
 # 
 # population - object of class population, data should be put into
 # dataObject - matrix of data to be put into ril object
@@ -214,6 +214,29 @@ intoPopulation <- function(population, dataObject, dataType=c("founders","offspr
 #
 ############################################################################################################
 intoPopulationSub.internal <- function(population, dataObject, dataType=c("founders","offspring$phenotypes","offspring$genotypes","maps$genetic","maps$physical"),verbose=FALSE,debugMode=0){
+	if(dataType=="founders" || dataType=="offspring$phenotypes"){
+		population <- intoPopulationSubPheno.internal(population,dataObject[[i]],dataType[i], verbose, debugMode)
+	}else if(dataType=="offspring$genotypes"){
+		population <- intoPopulationSubGeno.internal(population,dataObject[[i]], verbose, debugMode)
+	}else if(dataType=="maps$genetic"||dataType=="maps$physical"){
+		population <- intoPopulationSubMap.internal(population,dataObject[[i]], dataType[i],verbose, debugMode)
+	}
+}
+
+############################################################################################################
+#intoPopulationSubPheno.internal: subfunction of intoPopulation, adding data to population object
+# 
+# population - object of class population, data should be put into
+# dataObject - matrix of data to be put into ril object
+# dataType - what kind of data dataObject contains:
+# 	-  founders - founders phenotype
+# 	-  offspring$phenotypes - offspring phenotype
+# 	-  offspring$genotypes - offspring genotype
+# 	-  maps$genetic - genetic map 
+# 	-  maps$physical - physical map
+#
+############################################################################################################
+intoPopulationSubPheno.internal <- function(population, dataObject, dataType=c("founders","offspring$phenotypes"),verbose=FALSE,debugMode=0){
 	if(verbose && debugMode==1) cat("intoPopulationSub.internal starting.\n")
 	s <- proc.time()
 	if(!(is.null(dataObject))&&!is.null(dim(dataObject))){
@@ -276,11 +299,116 @@ intoPopulationSub.internal <- function(population, dataObject, dataType=c("found
 			population$offspring$phenotypes <- cur
 			population$parameters$intoRil$offspring$phenotypes <- list("population object", "data object", dataType)
 			names(population$parameters$intoRil$offspring$phenotypes) <- c("population", "dataObject", "dataType")
-		}else if(dataType=="offspring$genotypes"){
-			population$offspring$genotypes$real <- cur
-			population$parameters$intoRil$offspring$genotypes <- list("population object", "data object", dataType)
-			names(population$parameters$intoRil$offspring$genotypes) <- c("population", "dataObject", "dataType")
-		}else if(dataType=="maps$genetic"){
+		}
+	}else{
+		stop("No data provided for ",dataType,"!\n")
+	}
+	e <- proc.time()
+	cat("intoPopulation for",dataType,"done in:",(e-s)[3],"seconds.\n")
+	invisible(population)
+}
+
+############################################################################################################
+#intoPopulationSub.internal: subfunction of intoPopulation, adding data to population object
+# 
+# population - object of class population, data should be put into
+# dataObject - matrix of data to be put into ril object
+# dataType - what kind of data dataObject contains:
+# 	-  founders - founders phenotype
+# 	-  offspring$phenotypes - offspring phenotype
+# 	-  offspring$genotypes - offspring genotype
+# 	-  maps$genetic - genetic map 
+# 	-  maps$physical - physical map
+#
+############################################################################################################
+intoPopulationSubGeno.internal <- function(population, dataObject,verbose=FALSE,debugMode=0){
+	if(verbose && debugMode==1) cat("intoPopulationSub.internal starting.\n")
+	s <- proc.time()
+	if(!(is.null(dataObject))&&!is.null(dim(dataObject))){
+		### initialization
+		columns <- NULL
+		rows <- NULL
+		
+		### checking whether columns are numeric/convertable to numeric
+		for(column in 1:ncol(dataObject)){
+			if(!(genotypeCheck.internal(dataObject[,column],allow.na=TRUE))){
+				columns <- c(columns,column)
+			}
+		}
+		
+		### removing faulty columns
+		if(!(is.null(columns))){
+			cat("Following  columns are not numeric and cannot be converted into numeric:",columns," so will be removed.\n")
+			dataObject <- dataObject[,-columns]
+		}
+		
+		if(is.null(dim(dataObject))) stop("Not enough data to continue.\n")
+		
+		### checking whether rows are numeric/convertable to numeric
+		for(row_ in 1:nrow(dataObject)){
+			if(!(genotypeCheck.internal(dataObject[row_,],allow.na=TRUE))){
+				rows <- c(rows,row_)
+			}
+		}
+		
+		### removing faulty rows
+		if(!(is.null(rows))){
+			cat("Following  rows are not numeric and cannot be converted into numeric:",rows," so will be removed.\n")
+			dataObject <- dataObject[-rows,]
+		}
+		
+		if(is.null(dim(dataObject))) stop("Not enough data to continue.\n")
+		
+		cur<- matrix(as.numeric(as.matrix(dataObject)),nrow(dataObject),ncol(dataObject))
+		
+		### keeping colnames
+		if(!is.null(colnames(dataObject))){
+			colnames(cur) <- colnames(dataObject)
+		}else{
+			colnames(cur) <- 1:ncol(cur)
+		}
+		
+		### keeping rownames
+		if(!is.null(rownames(dataObject))){
+			rownames(cur) <- rownames(dataObject)
+		}else{
+			rownames(cur) <- 1:nrow(cur)
+		}
+		
+		### adding data to population
+		population$offspring$genotypes$real <- cur
+		population$parameters$intoRil$offspring$genotypes <- list("population object", "data object", dataType)
+		names(population$parameters$intoRil$offspring$genotypes) <- c("population", "dataObject", "dataType")
+		
+	}else{
+		stop("No data provided for ",dataType,"!\n")
+	}
+	e <- proc.time()
+	cat("intoPopulation for",dataType,"done in:",(e-s)[3],"seconds.\n")
+	invisible(population)
+}
+
+############################################################################################################
+#intoPopulationSub.internal: subfunction of intoPopulation, adding data to population object
+# 
+# population - object of class population, data should be put into
+# dataObject - matrix of data to be put into ril object
+# dataType - what kind of data dataObject contains:
+# 	-  founders - founders phenotype
+# 	-  offspring$phenotypes - offspring phenotype
+# 	-  offspring$genotypes - offspring genotype
+# 	-  maps$genetic - genetic map 
+# 	-  maps$physical - physical map
+#
+############################################################################################################
+intoPopulationSubMap.internal <- function(population, dataObject, verbose=FALSE,debugMode=0){
+	if(verbose && debugMode==1) cat("intoPopulationSub.internal starting.\n")
+	s <- proc.time()
+	if(!(is.null(dataObject))&&!is.null(dim(dataObject))){
+		if(ncol(dataObject)!=2) stop ("This is not a correct map object.\n")
+		if(any(!(is.numeric(dataObject)))) stop ("This is not a correct map object.\n")
+		### adding data to population
+		if(dataType=="maps$genetic"){
 			population$maps$genetic <- cur
 			population$parameters$intoRil$maps$genetic <- list("population object", "data object", dataType)
 			names(population$parameters$intoRil$maps$genetic) <- c("population", "dataObject", "dataType")
@@ -305,18 +433,12 @@ intoPopulationSub.internal <- function(population, dataObject, dataType=c("found
 # minChrLength - minimal number of markers chromosome have to contaion not to be removed)
 #
 ############################################################################################################
-removeChromosomes.internal <- function(cross, minChrLength){
-	j <- length(cross$geno)
-	for(i in length(cross$geno):1){
-		if(i<=j){
-			if(length(cross$geno[[i]]$map)<minChrLength){
-				cat("removing markers:",names(cross$geno[[i]]$map),"chr",i,"\n")
-				cross$rmv <- cbind(cross$rmv,cross$geno[[i]]$data)
-				cross <- drop.markers(cross, names(cross$geno[[i]]$map))
-				names(cross$geno) <- 1:length(cross$geno)
-				j <- length(cross$geno)
-			}
-		}
+removeChromosomes.internal <- function(cross, numberOfChromosomes){
+	for(i in length(cross$geno):(numberOfChromosomes+1)){
+		cat("removing chromosome:",i," markers:",names(cross$geno[[i]]$map),"\n")
+		cross$rmv <- cbind(cross$rmv,cross$geno[[i]]$data)
+		cross <- drop.markers(cross, names(cross$geno[[i]]$map))
+		names(cross$geno) <- 1:length(cross$geno)
 	}
 	invisible(cross)
 }

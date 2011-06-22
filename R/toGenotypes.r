@@ -50,7 +50,7 @@
 # debugMode - 1: Print our checks, 2: print additional time information
 #
 ############################################################################################################
-toGenotypes <- function(population, use=c("simulated","map_genetic","map_physical","real"), splitMethod=c("EM","mean"),treshold=0.01, overlapInd = 0, proportion = c(50,50), margin = 15, minChrLength = 0, verbose=FALSE, debugMode=0,...){
+toGenotypes <- function(population, use=c("simulated","map_genetic","map_physical","real"), splitMethod=c("EM","mean"),treshold=0.01, overlapInd = 0, proportion = c(50,50), margin = 15, numberOfChromosomes = NULL, verbose=FALSE, debugMode=0,...){
 	#*******CHECKS*******
 	s<-proc.time()
 	if(proportion < 1 || proportion > 99) stop("Proportion is a percentage (1,99)")
@@ -84,7 +84,7 @@ toGenotypes <- function(population, use=c("simulated","map_genetic","map_physica
 		cross <- invisible(formLinkageGroups(cross,reorgMarkers=TRUE,verbose=verbose,...))
 		
 		### remove shitty chromosomes
-		cross <- removeChromosomes.internal(cross,minChrLength)
+		if(!is.null(numberOfChromosomes))	cross <- removeChromosomes.internal(cross,numberOfChromosomes)
 		### saving as separated object, beacause orderMarkers will remove it from cross object
 		removed <- cross$rmv
 		
@@ -131,13 +131,13 @@ convertToGenotypes.internal <- function(population, splitMethod, treshold, overl
 	### up-regulated
 	upNotNull <- which(population$founders$RP$pval[1] > 0)
 	upBelowTreshold <- which(population$founders$RP$pval[1] < treshold)
-	upSelected <- upNotNull[which(upBelowTreshold%in%upNotNull)]
+	upSelected <- upBelowTreshold[which(upBelowTreshold%in%upNotNull)]
 	upParental <- population$founders$phenotypes[upSelected,]
 	upRils <- population$offspring$phenotypes[rownames(upParental),]
 	### down-regulated
 	downNotNull <- which(population$founders$RP$pval[2] > 0)
 	downBelowTreshold <- which(population$founders$RP$pval[2] < treshold)
-	downSelected <- downNotNull[which(downBelowTreshold%in%downNotNull)]
+	downSelected <- downBelowTreshold[which(downBelowTreshold%in%downNotNull)]
 	downParental <- population$founders$phenotypes[downSelected,]
 	downRils <- population$offspring$phenotypes[rownames(downParental),]
 	

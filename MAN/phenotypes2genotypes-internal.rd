@@ -30,10 +30,17 @@
 \alias{splitRowSubEM.internal}
 \alias{splitRowSub.internal}
 \alias{print.population}
+\alias{intoPopulationSub.internal}
+\alias{intoPopulationSubPheno.internal}
+\alias{intoPopulationSubGeno.internal}
+\alias{intoPopulationSubMap.internal}
+
 
 \alias{inRangeCheck.internal}
 \alias{numericCheck.internal}
 \alias{inListCheck.internal}
+\alias{genotypeCheck.internal}
+
 
 
 \title{Internal pheno2geno functions}
