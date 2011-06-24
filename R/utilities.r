@@ -1,6 +1,6 @@
 ############################################################################################################
 #
-# toGenotypes.R
+# utilities.R
 #
 # Copyright (c) 2011, Konrad Zych
 #
@@ -23,17 +23,15 @@
 #     A copy of the GNU General Public License, version 3, is available
 #     at http://www.r-project.org/Licenses/GPL-3
 #
-# Contains: toGenotypes
-#           convertToGenotypes.internal, splitRow.internal, filterGenotypes.internal, filterRow.internal
-#			sortMap.internal, intoRil, removeChromosomes.internal
+# Contains: cleanMap, print.population, removeChromosomes.internal
 #
 ############################################################################################################
 
 ############################################################################################################
-#cleanMap - removing markers that cause reco map to be too long
+#cleanMap - Removes markers that cause the recombination map to expand more than a given percentage (of its total length)
 # 
 # cross - R/qtl cross type object
-# difPercentage - If removing marker will make map shorter by this percentage of its length, then it will be dropped.
+# difPercentage - If by removing a marker the map gets shorter by this percentage (or more). The marker will be dropped.
 # verbose - Be verbose
 # debugMode - 1: Print our checks, 2: print additional time information 
 #
@@ -67,7 +65,7 @@ cleanMap <- function(cross, difPercentage, verbose=FALSE, debugMode=0){
 }
 
 ############################################################################################################
-#print.population - overwritting print function for objects of class "population"
+#print.population - Overwrites the print function for objects of class "population"
 # 
 # x - object of class population
 # ... - passed to cats
@@ -119,10 +117,10 @@ print.population <- function(x,...){
 }
 
 ############################################################################################################
-#removeChromosomes.internal: removing from cross chromosomes that have too little markers
+#removeChromosomes.internal: Removes chromosomes from a cross object
 # 
 # cross - object of R/qtl cross type
-# minChrLength - minimal number of markers chromosome have to contaion not to be removed)
+# numberOfChromosomes - Expected number of chromosomes
 #
 ############################################################################################################
 removeChromosomes.internal <- function(cross, numberOfChromosomes){

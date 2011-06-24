@@ -23,10 +23,7 @@
 #     A copy of the GNU General Public License, version 3, is available
 #     at http://www.r-project.org/Licenses/GPL-3
 #
-# Contains: toGenotypes
-#           createPopulation, intoPopulation 
-#				intoPopulationSub.internal
-#					 intoPopulationSubPheno.internal, intoPopulationSubGeno.internal, intoPopulationSubMap.internal   
+# Contains: createPopulation, intoPopulation, intoPopulationSub.internal, intoPopulationSubPheno.internal, intoPopulationSubGeno.internal, intoPopulationSubMap.internal   
 #
 ############################################################################################################
 
