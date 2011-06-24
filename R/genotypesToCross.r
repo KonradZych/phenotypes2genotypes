@@ -52,7 +52,7 @@ genotypesToCross.internal <- function(population, genotype=c("simulated","real")
 	if(!is.null(population$offspring$phenotypes)){
 		#there is phenotypic matrix
 		cat("Writing phenotypic data to cross file\n")
-		writePhenotypes.internal(population, use, outputFile, verbose, debugMode)
+		population<-writePhenotypes.internal(population, genotype, outputFile, verbose, debugMode)
 	}else{
 		#there is no phenotypic matrix
 		stop("genotypesToCross not provided with phenotypic matrix, stopping\n")
@@ -100,22 +100,6 @@ genotypesToCross.internal <- function(population, genotype=c("simulated","real")
 }
 
 ############################################################################################################
-#genotypesToCross.internal- produces from genotypic matrix file containing object of type cross, reads it 
-# into R a returns
-# 
-# population - population type object, must contain founders phenotypic data.
-# use - save "real" gentypes, "simulated" genotypes otr simulated genotypes ordered using "map" from gff file
-# outputFile - file where object of type cross is being saved
-# verbose - Be verbose
-# debugMode - 1: Print our checks, 2: print additional time information
-#
-#
-############################################################################################################
-genotypesToCrossSub.internal <- function(genotype, map, outputFile="mycross.csv", verbose=FALSE, debugMode=0){
-	writeGenotypes.internal(population$offspring$genotypes$simulated, chr=population$maps$genetic[rownames(population$offspring$genotypes$simulated),1], positions=population$maps$genetic[rownames(population$offspring$genotypes$simulated),2], outputFile=outputFile, verbose=verbose, debugMode=debugMode)
-}
-
-############################################################################################################
 #writePhenotypes.internal - sub function of genotypesToCross - writes phenotypes to file
 # 
 # population - Ril type object, must contain founders phenotypic data.
@@ -128,43 +112,32 @@ genotypesToCrossSub.internal <- function(genotype, map, outputFile="mycross.csv"
 # 		   limit - how many phenotypes should be written
 #
 ############################################################################################################
-writePhenotypes.internal <- function(population, use, outputFile, verbose=FALSE, debugMode=0){
+writePhenotypes.internal <- function(population, genotype, outputFile, verbose=FALSE, debugMode=0){
 	sl <- proc.time()
-	
-	if(use=="real"){
-		if(is.null(population$offspring$genotypes$read)){
-			stop("Use = real chosen, but there is no real genotypic data in population$offspring$genotypes$read\n")
+	if(verbose && debugMode==1) cat("writePhenotypes starting.\n")
+	if(genotype=="real"){
+		if(is.null(population$offspring$genotypes$real)){
+			stop("genotype = real chosen, but there is no real genotypic data in population$offspring$genotypes$read\n")
 		}else{
-			population$offspring$phenotypes <- mapMarkers.internal(population$offspring$phenotypes,population$offspring$genotypes$read,mapMode=2)
-			population$offspring$genotypes$read <- mapMarkers.internal(population$offspring$genotypes$read,population$offspring$phenotypes,mapMode=2)
-			chosenLabels <- rownames(population$offspring$genotypes$read)
+			population$offspring$phenotypes <- mapMarkers.internal(population$offspring$phenotypes,population$offspring$genotypes$real,mapMode=2)
+			population$offspring$genotypes$real <- mapMarkers.internal(population$offspring$genotypes$real,population$offspring$phenotypes,mapMode=2)
 		}
-	}else if(use=="simulated" || use=="map"){
+	}else if(genotype=="simulated"){
 		if(is.null(population$offspring$genotypes$simulated)){
-			stop("Use = simulated or map chosen, but there is no simulated genotypic data in population$offspring$genotypes$simulated\n")
+			stop("genotype = simulated or map chosen, but there is no simulated genotypic data in population$offspring$genotypes$simulated\n")
 		}else{
 			population$offspring$phenotypes <- mapMarkers.internal(population$offspring$phenotypes,population$offspring$genotypes$simulated,mapMode=2)
 			population$offspring$genotypes$simulated <- mapMarkers.internal(population$offspring$genotypes$simulated,population$offspring$phenotypes,mapMode=2)
 		}
-		
-		if(use=="simulated"){
-				chosenLabels <- rownames(population$offspring$genotypes$simulated)
-		}else if(use=="map"){
-			if(is.null(population$offspring$genotypes$simulated)||is.null(population$offspring$map)){
-				stop("Use =  map chosen, but there is no simulated genotypic data or map data\n")
-			}else{
-				chosenLabels <- rownames(population$offspring$genotypes$simulated[which(rownames(population$offspring$genotypes$simulated[,]) %in% rownames(population$offspring$map)),])
-			}
-		}
-		
 	}
-	
-	toWrite <- population$offspring$phenotypes[chosenLabels,]
-	toWrite <- cleanNames.internal(toWrite)
-	if(verbose && debugMode==1) cat("writePhenotypes starting.\n")
-	write.table(cbind("","",toWrite),file=outputFile,sep=",",quote=FALSE,col.names=FALSE)
+	if(nrow(population$offspring$phenotypes)>1000){
+		population$offspring$phenotypes <- population$offspring$phenotypes[1:1000,]
+	}
+	population$offspring$phenotypes<- cleanNames.internal(population$offspring$phenotypes)
+	write.table(cbind("","",population$offspring$phenotypes),file=outputFile,sep=",",quote=FALSE,col.names=FALSE)
 	el <- proc.time()
 	if(verbose && debugMode==2)cat("Writing phenotypes done in:",(el-sl)[3],"seconds.\n")
+	invisible(population)
 }
 
 ############################################################################################################
@@ -180,7 +153,7 @@ writePhenotypes.internal <- function(population, use, outputFile, verbose=FALSE,
 ############################################################################################################
 writeGenotypes.internal <- function(genotypeMatrix,chr=1,positions=NULL,outputFile,verbose=FALSE,debugMode=0){
 	sl <- proc.time()
-	cat(positions,"\n")
+	if(verbose && debugMode==1) cat("writePhenotypes starting.\n")
 	if(is.null(positions)) positions <- 1:nrow(genotypeMatrix)
 	else if(length(positions)!=length(1:nrow(genotypeMatrix))) stop("Posistions object is not correct, check help files.\n")
 	if(verbose && debugMode==1) cat("writeGenotypes starting.\n")

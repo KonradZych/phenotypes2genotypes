@@ -36,9 +36,11 @@
 }
 
 \examples{
+	\dontrun{
 	setwd(paste(.Library,"pheno2geno/data",sep="/"))
 	population <- readFiles()
 	population$founders$phenotypes[1:10,]
+	}
 }
 
 \seealso{

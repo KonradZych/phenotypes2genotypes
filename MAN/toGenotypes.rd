@@ -15,20 +15,26 @@
 }
 
 \usage{
-	toGenotypes(population, use=c("simulated","map_genetic","map_physical","real"), splitMethod=c("EM","mean"),treshold=0.01, overlapInd = 0, proportion = c(50,50), margin = 15, numberOfChromosomes = NULL, verbose=FALSE, debugMode=0,...)
+	toGenotypes(population, genotype=c("simulated","real"), orderUsing=c("map_genetic","map_physical"), splitMethod=c("EM","mean"),treshold=0.01, overlapInd = 0, proportion = c(50,50), margin = 15, numberOfChromosomes = NULL, verbose=FALSE, debugMode=0,...)
 }
 
 \arguments{
  \item{population}{ Population type object, must contain parental phenotypic data.}
- \item{use}{ 
+ \item{genotype}{ 
 	Which genotypic matrix should be saved to file:
 	\itemize{
 	\item{simulated}{ - made by toGenotypes}
-	\item{map_genetic}{ - simulated data orderd using supported genetic map}
-	\item{map_physical}{ - simulated data orderd using supported physical map}
 	\item{real}{ - supported by user and read from file}
 	}
 }
+ \item{orderUsing}{ 
+	which map should be used to order markers (by default - none, so markers are all put in 1 chromosome, with distance 1 cM between)
+	\itemize{
+	\item{map_genetic}{ - simulated data orderd using supported genetic map}
+	\item{map_physical}{ - simulated data orderd using supported physical map}
+	}
+}
+
  \item{splitMethod}{ Splitting markers using founders mean value or more sofisticated fitting of normal distributions by EM algoritm.}
  \item{treshold}{ If Rank Product pval for gene is lower that this value, we assume it is being diff. expressed.}
  \item{overlapInd}{ Number of individuals that are allowed in the overlap }
@@ -55,10 +61,12 @@
 }
 
 \examples{
+\dontrun{
 	setwd(paste(.Library,"pheno2geno/data",sep="/"))
 	ril <- readFiles()
 	ril <- preprocessData(ril)
 	#cross <- toGenotypes(ril,use="simulated",minChrLength=0,treshold=0.5,margin=50,max.rf=10)
+	}
 }
 
 \seealso{

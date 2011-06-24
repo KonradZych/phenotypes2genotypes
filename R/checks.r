@@ -65,7 +65,7 @@ genotypeCheck.internal <- function(objectToBeChecked, allow.na=FALSE){
 			return(FALSE)
 		}else{
 			if(sum(is.na(converted))==sum(is.na(objectToBeChecked))){
-				nrOfCorrect <- (sum(is.na(converted)) + sum(converted==1,na.rm=T) + sum(converted==0,na.rm=T))
+				nrOfCorrect <- (sum(is.na(converted)) + sum(converted==1,na.rm=TRUE) + sum(converted==0,na.rm=TRUE))
 				if(nrOfCorrect==length(converted)){
 					return(TRUE)
 				}else{

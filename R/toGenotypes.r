@@ -26,7 +26,7 @@
 # Contains: toGenotypes
 #           convertToGenotypes.internal, splitRow.internal, filterGenotypes.internal, filterRow.internal
 #			sortMap.internal, majorityRule.internal, mergeChromosomes.internal, splitRowSubEM.internal
-#			checkMu.internal, removeChromosomes.internal
+#			checkMu.internal
 #
 ############################################################################################################
 
@@ -34,11 +34,12 @@
 #toGenotypes: Function that chooses from the matrix only appropriate markers with specified rules
 # 
 # population - Ril type object, must contain founders phenotypic data.
-# use - Which genotypic matrix should be saved to file, 
-# 	- real - supported by user and read from file, 
+# genotype - Which genotypic matrix should be saved to file, 
 #	- simulated - made by toGenotypes
-#	- map_genetic - simulated data orderd using genetic map
-#	- map_physical - simulated data orderd using physical map
+# 	- real - supported by user and read from file, 
+# orderUsing- which map should be used to order markers (default - none)
+# 	- map_genetic - genetic map
+#	- map_physical - physical map
 # treshold - If Rank Product pval for gene is lower that this value, we assume it is being diff. expressed.
 # overlapInd - Number of individuals that are allowed in the overlap
 # proportion - Proportion of individuals expected to carrying a certain genotype 
@@ -67,10 +68,12 @@ toGenotypes <- function(population, genotype=c("simulated","real"), orderUsing=c
 	
 	
 	#*******CONVERTING CHILDREN PHENOTYPIC DATA TO GENOTYPES*******
-	s1 <- proc.time()
-	population <- convertToGenotypes.internal(population, splitMethod, treshold, overlapInd, proportion, margin, verbose, debugMode)
-	e1 <- proc.time()
-	if(verbose && debugMode==2)cat("Converting phenotypes to genotypes done in:",(e1-s1)[3],"seconds.\n")
+	if(genotype=="simulated"){
+		s1 <- proc.time()
+		population <- convertToGenotypes.internal(population, splitMethod, treshold, overlapInd, proportion, margin, verbose, debugMode)
+		e1 <- proc.time()
+		if(verbose && debugMode==2)cat("Converting phenotypes to genotypes done in:",(e1-s1)[3],"seconds.\n")
+	}
 	
 	
 	#*******SAVING CROSS OBJECT*******
@@ -80,29 +83,29 @@ toGenotypes <- function(population, genotype=c("simulated","real"), orderUsing=c
 	if(verbose && debugMode==2)cat("Creating cross object done in:",(e1-s1)[3],"seconds.\n")
 	
 	#*******ENHANCING CROSS OBJECT*******
-	if(use!="map_genetic"&&use!="map_physical"){
+	#if(use!="map_genetic"&&use!="map_physical"){
 		### FormLinkage groups
-		cross <- invisible(formLinkageGroups(cross,reorgMarkers=TRUE,verbose=verbose,...))
+	#	cross <- invisible(formLinkageGroups(cross,reorgMarkers=TRUE,verbose=verbose,...))
 		
 		### remove shitty chromosomes
-		if(!is.null(numberOfChromosomes))	cross <- removeChromosomes.internal(cross,numberOfChromosomes)
+	#	if(!is.null(numberOfChromosomes))	cross <- removeChromosomes.internal(cross,numberOfChromosomes)
 		### saving as separated object, beacause orderMarkers will remove it from cross object
-		removed <- cross$rmv
+	#	removed <- cross$rmv
 		
 		### Order markers
 		#cross <- orderMarkers(cross, use.ripple=TRUE, verbose=verbose)
 		
 		### Adding real maps		
-		if(!(is.null(population$maps$physical))){
-			population <- sortMap.internal(population)
-			cross$maps$physical <- population$maps$physical
+	#	if(!(is.null(population$maps$physical))){
+	#		population <- sortMap.internal(population)
+	#		cross$maps$physical <- population$maps$physical
 			### Majority rule used to order linkage groups
-			cross <- segregateChromosomes.internal(cross)
-		}
+	#		cross <- segregateChromosomes.internal(cross)
+	#	}
 		
 		### adding info about removed markers
-		cross$rmv <- removed
-	}
+	#	cross$rmv <- removed
+	#}
 	
 	#*******RETURNING CROSS OBJECT*******
 	e<-proc.time()
