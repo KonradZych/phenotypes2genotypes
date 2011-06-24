@@ -48,11 +48,13 @@
 }
 
 \examples{
-	setwd(paste(.Library,"pheno2geno/data",sep="/"))
-	founders <- read.table("founders_phenotypes.txt",sep="")
-	offspring <- read.table("offspring_phenotypes.txt",sep="")
-	population <- createPopulation(offspring)
-	population <- intoPopulation(population, founders, "founders")
+	\dontrun{
+		setwd(paste(.Library,"pheno2geno/data",sep="/"))
+		founders <- read.table("founders_phenotypes.txt",sep="")
+		offspring <- read.table("offspring_phenotypes.txt",sep="")
+		population <- createPopulation(offspring)
+		population <- intoPopulation(population, founders, "founders")
+	}
 }
 
 \seealso{

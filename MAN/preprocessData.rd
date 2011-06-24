@@ -35,9 +35,11 @@
 }
 
 \examples{
+	\dontrun{
 	setwd(paste(.Library,"pheno2geno/data",sep="/"))
 	population <- readFiles()
 	population <- preprocessData(population)
+	}
 }
 
 \seealso{
