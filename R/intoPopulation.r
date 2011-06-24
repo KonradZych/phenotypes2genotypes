@@ -289,14 +289,12 @@ intoPopulationSubGeno.internal <- function(population, dataObject, verbose=FALSE
 		
 		### adding data to population
 		population$offspring$genotypes$real <- cur
-		population$parameters$intoRil$offspring$genotypes <- list("population object", "data object", dataType)
-		names(population$parameters$intoRil$offspring$genotypes) <- c("population", "dataObject", "dataType")
 		
 	}else{
 		stop("No data provided for offspring$genotypes !\n")
 	}
 	e <- proc.time()
-	cat("intoPopulation for",dataType,"done in:",(e-s)[3],"seconds.\n")
+	cat("intoPopulation for offspring$genotypes done in:",(e-s)[3],"seconds.\n")
 	invisible(population)
 }
 

@@ -59,7 +59,7 @@ genotypesToCross.internal <- function(population, genotype=c("simulated","real")
 	}
 	
 #**********WRITING GENOTYPIC DATA TO FILE*************
-	if(use=="real"){
+	if(genotype=="real"){
 		if(is.null(population$offspring$genotypes$real)){
 			stop("Use = real chosen, but there is no real genotypic data in population$offspring$genotypes$read\n")
 		}else{
@@ -75,7 +75,7 @@ genotypesToCross.internal <- function(population, genotype=c("simulated","real")
 		
 		}
 	}
-	else if(use=="simulated"){
+	else if(genotype=="simulated"){
 		if(is.null(population$offspring$genotypes$simulated)){
 			stop("Use = simulated chosen, but there is no simulated genotypic data in population$offspring$genotypes$simulated\n")
 		}else{

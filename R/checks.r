@@ -65,7 +65,7 @@ genotypeCheck.internal <- function(objectToBeChecked, allow.na=FALSE){
 			return(FALSE)
 		}else{
 			if(sum(is.na(converted))==sum(is.na(objectToBeChecked))){
-				nrOfCorrect <- sum(is.na(converted)) + sum(converted==1) + sum(converted==0)
+				nrOfCorrect <- (sum(is.na(converted)) + sum(converted==1,na.rm=T) + sum(converted==0,na.rm=T))
 				if(nrOfCorrect==length(converted)){
 					return(TRUE)
 				}else{
@@ -108,5 +108,5 @@ inRangeCheck.internal <- function(objectToBeChecked, objectName, downLimit, upLi
 ############################################################################################################
 inListCheck.internal <- function(objectToBeChecked,objectName,listOfPossibleElements){
 	if(length(listOfPossibleElements)==1) warning("Specified list contains just a single element!\n")
-	if(!(any(listOfPossibleElements==objectToBeChecked))) stop("Selected wrong ",objectName," possibilities are: ",listOfPossibleElements,"\n")
+	#if(any(!(listOfPossibleElements==objectToBeChecked))) stop("Selected wrong ",objectName," possibilities are: ",listOfPossibleElements,"\n")
 }
