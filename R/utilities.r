@@ -23,9 +23,7 @@
 #     A copy of the GNU General Public License, version 3, is available
 #     at http://www.r-project.org/Licenses/GPL-3
 #
-# Contains: toGenotypes
-#           convertToGenotypes.internal, splitRow.internal, filterGenotypes.internal, filterRow.internal
-#			sortMap.internal, intoRil, removeChromosomes.internal
+# Contains: cleanMap, print.population, removeChromosomes.internal
 #
 ############################################################################################################
 
