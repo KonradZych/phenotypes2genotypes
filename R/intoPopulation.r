@@ -100,7 +100,7 @@ intoPopulation <- function(population, dataObject, dataType=c("founders","offspr
 		if(length(dataObject)!=length(dataType)) stop("Support dataType for every element of dataObject.\n")
 		if(length(dataType)!=length(unique(dataType))) stop("Every element of dataType must be unique!\n")
 		for(i in 1:length(dataObject)){
-			population <- intoPopulationSub.internal(population,dataObject,dataType, verbose, debugMode)
+			population <- intoPopulationSub.internal(population,dataObject[[i]],dataType[i], verbose, debugMode)
 		}
 	}
 	else if(length(dataType)==1){
@@ -233,8 +233,8 @@ intoPopulationSubPheno.internal <- function(population, dataObject, dataType=c("
 # 	-  maps$physical - physical map
 #
 ############################################################################################################
-intoPopulationSubGeno.internal <- function(population, dataObject,verbose=FALSE,debugMode=0){
-	if(verbose && debugMode==1) cat("intoPopulationSub.internal starting.\n")
+intoPopulationSubGeno.internal <- function(population, dataObject, verbose=FALSE,debugMode=0){
+	if(verbose && debugMode==1) cat("intoPopulationSubGeno.internal starting.\n")
 	s <- proc.time()
 	if(!(is.null(dataObject))&&!is.null(dim(dataObject))){
 		### initialization
@@ -293,7 +293,7 @@ intoPopulationSubGeno.internal <- function(population, dataObject,verbose=FALSE,
 		names(population$parameters$intoRil$offspring$genotypes) <- c("population", "dataObject", "dataType")
 		
 	}else{
-		stop("No data provided for ",dataType,"!\n")
+		stop("No data provided for offspring$genotypes !\n")
 	}
 	e <- proc.time()
 	cat("intoPopulation for",dataType,"done in:",(e-s)[3],"seconds.\n")

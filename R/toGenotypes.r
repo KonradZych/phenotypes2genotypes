@@ -50,8 +50,9 @@
 # debugMode - 1: Print our checks, 2: print additional time information
 #
 ############################################################################################################
-toGenotypes <- function(population, use=c("simulated","map_genetic","map_physical","real"), splitMethod=c("EM","mean"),treshold=0.01, overlapInd = 0, proportion = c(50,50), margin = 15, numberOfChromosomes = NULL, verbose=FALSE, debugMode=0,...){
+toGenotypes <- function(population, genotype=c("simulated","real"), orderUsing=c("map_genetic","map_physical"), splitMethod=c("EM","mean"),treshold=0.01, overlapInd = 0, proportion = c(50,50), margin = 15, numberOfChromosomes = NULL, verbose=FALSE, debugMode=0,...){
 	#*******CHECKS*******
+	if(missing(orderUsing)) orderUsing <- NULL
 	s<-proc.time()
 	if(proportion < 1 || proportion > 99) stop("Proportion is a percentage (1,99)")
 	if(any(!(is.numeric(population$founders$phenotypes)))){
@@ -74,7 +75,7 @@ toGenotypes <- function(population, use=c("simulated","map_genetic","map_physica
 	
 	#*******SAVING CROSS OBJECT*******
 	s1 <- proc.time()
-	cross <- genotypesToCross.internal(population,use=use,verbose=verbose,debugMode=debugMode)
+	cross <- genotypesToCross.internal(population,genotype=genotype,orderUsing=orderUsing,verbose=verbose,debugMode=debugMode)
 	e1 <- proc.time()
 	if(verbose && debugMode==2)cat("Creating cross object done in:",(e1-s1)[3],"seconds.\n")
 	
