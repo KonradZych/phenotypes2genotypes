@@ -23,7 +23,7 @@
 #     A copy of the GNU General Public License, version 3, is available
 #     at http://www.r-project.org/Licenses/GPL-3
 #
-# Contains: 
+# Contains: numericCheck.internal, genotypeCheck.internal, inRangeCheck.internal
 #
 ############################################################################################################
 
@@ -99,11 +99,10 @@ inRangeCheck.internal <- function(objectToBeChecked, objectName, downLimit, upLi
 }
 
 ############################################################################################################
-#inRangeCheck.internal - checking if given object is numeric and if it is from specified range
+#inListCheck.internal - checking if given object is numeric and if it is from specified range
 # 
 # objectToBeChecked - object to be checked
-# objectName - name of the object
-# downLimit, upLimit - down and up limit to specify range
+# listOfPossibleElements - 
 #
 ############################################################################################################
 inListCheck.internal <- function(objectToBeChecked,objectName,listOfPossibleElements){
