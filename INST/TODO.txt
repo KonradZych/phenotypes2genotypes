@@ -1,79 +1,29 @@
-
 "To do" list
 ----------------------------------------------------------------------
 This file is intended to contain a list of many of the additions and
 revisions that are planned for the package.  
 ----------------------------------------------------------------------
- 
-SHORT TERM:
+TOMORROW:
 
-x --------------------DONE--------------------
-
-x --------------------DONE--------------------
-
-x --------------------DONE--------------------
-
-> Set up analysis of expression data projected on a known genetic map >>> IN PROGRESS
-
-> Prepare a ppt presentation on genetic map reconstruction and our plan >>> IN PROGRESS
-
-x --------------------DONE--------------------
-
-x --------------------DONE--------------------
-
-> Documentation - make nice and clean examples >>> IN PROGRESS
-
-x --------------------DONE--------------------
-
-o Start writting article
-
-o Enhancing cross object with parental data, physical and geno map
-
-o Plotting routine to compare maps
-
-o Heuristic to remove chromosome that have distance which is smaller than X (optional)
-
-o Map chromosomes (recombination - majority rule for physicall map), genetic map - use it
+	o map together Wilco's data and simulated one
+	o continue check and rebuild of package
+	o removal function
 
 ----------------------------------------------------------------------
+THIS WEEK:
 
-MEDIUM-SHORT TERM:
-
-o Add basic linkage group detection based on recombinations
-
-o Add method to find optimal placement of markers within a chromosome
-
-o Construct generic data structures (and define class functions for them plot, summary, print)
-
-> Add help files for all major functions >>> IN PROGRESS
-
-o Roadmap:
-  - 0.1 Known sequence / genetic map and expression data
-  - 0.2 Comparable sequence / genetic map and expression data
-
-> Add tests for all major functions  >>> IN PROGRESS
+	o finish rebuild to 0.8.1 - hopefully last before 1.0.0
+	o manual - section 3 to be finished, 4 to be started
+	o article - do sth
+	o rewriting examples
 
 ----------------------------------------------------------------------
+UNTIL END OF JULY:
 
-MEDIUM TERM:
-
-o Add tests for all internal functions
-
-o Write initial draft article
-
-o Roadmap:
-  - 0.3 Expression data only (RIL and Parental)
-
-----------------------------------------------------------------------
-
-LONG TERM:
-
-o Finish article
-
-o Roadmap:
-  - 1.0 Expression data only (RIL) and package on CRAN
-
-o Add method to find number of linkage groups (chromosomes) when unknown
+	o presentation for team meeting
+	o manual
+	o paper
+	o code nice and shiny with tests and examples
   
 ----------------------------------------------------------------------
 end of TODO.txt
