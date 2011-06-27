@@ -8,7 +8,7 @@
 # 
 # first written March 2011
 # last modified June 2011
-# last modified in version: 0.7.2 
+# last modified in version: 0.8.1 
 # in current version: active, in main workflow
 #
 #     This program is free software; you can redistribute it and/or
@@ -31,27 +31,34 @@
 ############################################################################################################
 
 ############################################################################################################
-#toGenotypes: Function that chooses from the matrix only appropriate markers with specified rules
+#									*** toGenotypes ***
+#
+# DESCRIPTION:
+#	function that chooses from the matrix only appropriate markers with specified rules
 # 
-# population - Ril type object, must contain founders phenotypic data.
-# genotype - Which genotypic matrix should be saved to file, 
-#	- simulated - made by toGenotypes
-# 	- real - supported by user and read from file, 
-# orderUsing- which map should be used to order markers (default - none)
-# 	- map_genetic - genetic map
-#	- map_physical - physical map
-# treshold - If Rank Product pval for gene is lower that this value, we assume it is being diff. expressed.
-# overlapInd - Number of individuals that are allowed in the overlap
-# proportion - Proportion of individuals expected to carrying a certain genotype 
-# margin - Proportion is allowed to varry between this margin (2 sided)
-# minChrLength -if maximal distance between the markers in the chromosome is lower than this value,
-#	whole chromosome will be dropped
-# ... - Parameters passed to formLinkageGroups.
-# verbose - Be verbose
-# debugMode - 1: Print our checks, 2: print additional time information
+# PARAMETERS:
+# 	population - Ril type object, must contain founders phenotypic data.
+# 	genotype - Which genotypic matrix should be saved to file, 
+#		- simulated - made by toGenotypes
+# 		- real - supported by user and read from file, 
+# 	orderUsing- which map should be used to order markers (default - none)
+# 		- map_genetic - genetic map
+#		- map_physical - physical map
+# 	treshold - If Rank Product pval for gene is lower that this value, we assume it is being diff. expressed.
+# 	overlapInd - Number of individuals that are allowed in the overlap
+# 	proportion - Proportion of individuals expected to carrying a certain genotype 
+# 	margin - Proportion is allowed to varry between this margin (2 sided)
+# 	minChrLength -if maximal distance between the markers in the chromosome is lower than this value,
+#		whole chromosome will be dropped
+# 	... - Parameters passed to formLinkageGroups.
+# 	verbose - Be verbose
+# 	debugMode - 1: Print our checks, 2: print additional time information
+# 
+# OUTPUT:
+#	object of class cross
 #
 ############################################################################################################
-toGenotypes <- function(population, genotype=c("simulated","real"), orderUsing=c("map_genetic","map_physical"), splitMethod=c("EM","mean"),treshold=0.01, overlapInd = 0, proportion = c(50,50), margin = 15, numberOfChromosomes = NULL, verbose=FALSE, debugMode=0,...){
+toGenotypes <- function(population, genotype=c("simulated","real"), orderUsing=c("map_genetic","map_physical"), splitMethod=c("EM","mean"),treshold=0.01, overlapInd = 0, proportion = list(c(50,50),15), margin = 15, removalFUN = NULL, verbose=FALSE, debugMode=0,...){
 	#*******CHECKS*******
 	if(missing(orderUsing)) orderUsing <- NULL
 	s<-proc.time()
@@ -65,6 +72,8 @@ toGenotypes <- function(population, genotype=c("simulated","real"), orderUsing=c
 	if(overlapInd < 0 || overlapInd > ncol(population$offspring$phenotypes)) stop("overlapInd is a number (0,lenght of the row).")
 	if(margin < 0 || margin > proportion) stop("Margin is a percentage (0,proportion)")
 	if(verbose && debugMode==1) cat("toGenotypes starting withour errors in checkpoint.\n")
+	inListCheck.internal(genotype,"genotype",c("simulated","real"))
+	inListCheck.internal(orderUsing,"orderUsing",c("map_genetic","map_physical"))
 	
 	
 	#*******CONVERTING CHILDREN PHENOTYPIC DATA TO GENOTYPES*******
@@ -114,15 +123,22 @@ toGenotypes <- function(population, genotype=c("simulated","real"), orderUsing=c
 }
 
 ############################################################################################################
-#convertToGenotypes.internal: function splitting differentially expressed markers into two genotypes
+#									*** convertToGenotypes.internal ***
+#
+# DESCRIPTION:
+#	function splitting differentially expressed markers into two genotypes
 # 
-# population - Ril type object, must contain founders phenotypic data.
-# treshold - If Rank Product pval for gene is lower that this value, we assume it is being diff. expressed.
-# overlapInd - Number of individuals that are allowed in the overlap
-# proportion - Proportion of individuals expected to carrying a certain genotype 
-# margin - Proportion is allowed to varry between this margin (2 sided)
-# verbose - Be verbose
-# debugMode - 1: Print our checks, 2: print additional time information 
+# PARAMETERS:
+# 	population - object of class population, must contain founders phenotypic data.
+# 	treshold - if Rank Product pval for gene is lower that this value, we assume it is being diff. expressed.
+# 	overlapInd - number of individuals that are allowed in the overlap
+# 	proportion - proportion of individuals expected to carrying a certain genotype 
+# 	margin - proportion is allowed to varry between this margin (2 sided)
+# 	verbose - be verbose
+# 	debugMode - 1: Print our checks, 2: print additional time information 
+# 
+# OUTPUT:
+#	object of class population
 #
 ############################################################################################################
 convertToGenotypes.internal <- function(population, splitMethod, treshold, overlapInd, proportion, margin, verbose=FALSE, debugMode=0){
@@ -179,16 +195,19 @@ convertToGenotypes.internal <- function(population, splitMethod, treshold, overl
 }
 
 ############################################################################################################
-#splitRow.internal: subfunction of convertToGenotypes.internal, splitting children markers using founders
-# mean values
+#									*** splitRow.internal ***
+#
+# DESCRIPTION:
+#	subfunction of convertToGenotypes.internal, splitting children markers using founders mean values
 # 
-# offspring - matrix of up/down regulated genes in offspring
-# founders - matrix of up/down regulated genes in parents
-# overlapInd - Number of individuals that are allowed in the overlap
-# proportion - Proportion of individuals expected to carrying a certain genotype 
-# margin - Proportion is allowed to varry between this margin (2 sided)
-# groupLabels - Specify which column of founders data belongs to group 0 and which to group 1.
-# up - 1 - genes up 0 - down regulated
+# PARAMETERS:
+# 	offspring - matrix of up/down regulated genes in offspring
+# 	founders - matrix of up/down regulated genes in parents
+# 	overlapInd - Number of individuals that are allowed in the overlap
+# 	proportion - Proportion of individuals expected to carrying a certain genotype 
+# 	margin - Proportion is allowed to varry between this margin (2 sided)
+# 	groupLabels - Specify which column of founders data belongs to group 0 and which to group 1.
+# 	up - 1 - genes up 0 - down regulated
 #
 ############################################################################################################
 splitRow.internal <- function(offspring, founders, splitMethod, overlapInd, proportion, margin, groupLabels, up){
