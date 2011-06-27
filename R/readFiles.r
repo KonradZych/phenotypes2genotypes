@@ -8,7 +8,7 @@
 # 
 # first written March 2011
 # last modified June 2011
-# last modified in version: 0.7.1
+# last modified in version: 0.8.1
 # in current version: active, in main workflow
 #
 #     This program is free software; you can redistribute it and/or
@@ -30,14 +30,21 @@
 #############################################################################################
 
 ############################################################################################################
-#readFiles: reads geno/phenotypic files into R environment into special object.
+#									*** readFiles ***
+#
+# DESCRIPTION:
+#	reads geno/phenotypic files into R environment into special object.
 # 
-# offspring - Core used to specify names of children phenotypic ("offspring_phenotypes.txt") and genotypic ("offspring_genotypes.txt") files.
-# founders - Core used to specify names of founders phenotypic ("founders_phenotypes.txt") file.
-# map - Core used to specify names of genetic ("map_genetic.txt") and physical ("map_physical.txt") map files.
-# sep - Separator of values in files. Passed directly to read.table, so "" is a wildcard meaning whitespace.
-# verbose - Be verbose
-# debugMode - 1: Print our checks, 2: print additional time information
+# PARAMETERS:
+# 	offspring - Core used to specify names of children phenotypic ("offspring_phenotypes.txt") and genotypic ("offspring_genotypes.txt") files.
+# 	founders - Core used to specify names of founders phenotypic ("founders_phenotypes.txt") file.
+# 	map - Core used to specify names of genetic ("map_genetic.txt") and physical ("map_physical.txt") map files.
+# 	sep - Separator of values in files. Passed directly to read.table, so "" is a wildcard meaning whitespace.
+# 	verbose - Be verbose
+# 	debugMode - 1: Print our checks, 2: print additional time information
+#
+# OUTPUT:
+#	object of class population 
 #
 ############################################################################################################
 readFiles <- function(offspring="offspring",founders="founders",map="maps",sep="",verbose=FALSE,debugMode=0){
@@ -51,7 +58,9 @@ readFiles <- function(offspring="offspring",founders="founders",map="maps",sep="
 	if(file.exists(filename)){
 		if(verbose) cat("Found phenotypic file for offspring:",filename,"and will store  it in population$offspring$phenotypes\n")
 		offspring_phenotypes <- read.table(filename,sep=sep,header=TRUE)
+		offspring_phenotypes <- as.matrix(offspring_phenotypes)
 		population <- createPopulation(offspring_phenotypes,no.warn=TRUE)
+		doCleanUp.internal()
 	}else{
 		stop("No phenotype file for offspring: ",filename," this file is essentiall, you have to provide it\n")
 	}
@@ -60,20 +69,24 @@ readFiles <- function(offspring="offspring",founders="founders",map="maps",sep="
 	filename <- paste(offspring,"_genotypes.txt",sep="")
 	if(file.exists(filename)){
 		if(verbose) cat("Found genotypic file for offspring:",filename,"and will store  it in population$offspring$genotypes$read\n")
-		offspring_genotypes <- read.table(filename,sep=sep,header=TRUE)
-		population <- intoPopulation(population, offspring_genotypes, "offspring$genotypes")
+		offspring_genotypess <- read.table(filename,sep=sep,header=TRUE)
+		offspring_genotypess <- as.matrix(offspring_genotypess)
+		population <- intoPopulation(population, offspring_genotypess, "offspring$genotypes")
+		doCleanUp.internal()
 	}else{
 		if(verbose)cat("No genotypic file for offspring:",filename,"genotypic data for offspring will be simulated\n")
 	}
 	
 	#**********READING PARENTAL PHENOTYPIC DATA*************
-	filename <- paste(founders,"_phenotypes.txt",sep="")
+	filename <- paste(founders,"_phenotype.txt",sep="")
 	if(file.exists(filename)){
 		if(verbose) cat("Found phenotypic file for parents:",filename,"and will store it in population$founders$phenotypes\n")
 		founders <- read.table(filename,sep=sep,header=TRUE)
+		founders <- as.matrix(founders)
 		population <- intoPopulation(population, founders, "founders")
 		#removing from founders probes that are not in children:
 		population$founders$phenotypes <- mapMarkers.internal(population$founders$phenotypes,population$offspring$phenotypes, mapMode=1, verbose=verbose)
+		doCleanUp.internal()
 	}else{
 		warning("No phenotype file for parents: ",filename,". Strongly recommend to supply this data.\n")
 	}
@@ -85,6 +98,7 @@ readFiles <- function(offspring="offspring",founders="founders",map="maps",sep="
 		maps_genetic <- read.table(filename,sep=sep,row.names=1,header=FALSE)
 		maps_genetic <- as.matrix(maps_genetic)
 		population <- intoPopulation(population, maps_genetic, "maps$genetic")
+		doCleanUp.internal()
 	}else{
 		if(verbose)cat("No genetic map file:",filename,".\n")
 	}
@@ -96,6 +110,7 @@ readFiles <- function(offspring="offspring",founders="founders",map="maps",sep="
 		physical <-	read.table(filename,sep=sep,row.names=1,header=FALSE)
 		physical <- as.matrix(physical)
 		population <- intoPopulation(population, physical, "maps$physical")
+		doCleanUp.internal()
 	}else{
 		if(verbose)cat("No physical map file:",filename,".\n")
 	}
@@ -106,16 +121,24 @@ readFiles <- function(offspring="offspring",founders="founders",map="maps",sep="
 	population$parameters$readFiles <- list(offspring, founders,sep=sep,verbose,debugMode)
 	names(population$parameters$readFiles) <- c("offspring", "founders", "sep", "verbose", "debugMode")
 	class(population) <- "population"
+	doCleanUp.internal()
 	invisible(population)
 }
 
 ############################################################################################################
-#mapMarkers.internal: removes from matrix1 cols or rows, which are not present in second (coparing using col/rownames)
+#									*** mapMarkers.internal ***
+#
+# DESCRIPTION:
+#	removes from matrix1 cols or rows, which are not present in second (coparing using col/rownames)
 # 
-# expressionMatrix1, expressionMatrix2 - matrices with data of any type
-# mapMode - 1 - map rows, 2 - map cols
-# verbose - Be verbose
-# debugMode - 1: Print our checks, 2: print additional time information
+# PARAMETERS:
+# 	expressionMatrix1, expressionMatrix2 - matrices with data of any type
+# 	mapMode - 1 - map rows, 2 - map cols
+# 	verbose - Be verbose
+# 	debugMode - 1: Print our checks, 2: print additional time information
+#
+# OUTPUT:
+#	object of class population 
 #
 ############################################################################################################
 mapMarkers.internal <- function(expressionMatrix1, expressionMatrix2, mapMode=2, verbose=FALSE, debugMode=0){

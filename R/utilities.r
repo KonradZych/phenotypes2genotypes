@@ -8,7 +8,7 @@
 # 
 # first written March 2011
 # last modified June 2011
-# last modified in version: 0.7.2
+# last modified in version: 0.8.1
 # in current version: active, not in main workflow
 #
 #     This program is free software; you can redistribute it and/or
@@ -23,17 +23,22 @@
 #     A copy of the GNU General Public License, version 3, is available
 #     at http://www.r-project.org/Licenses/GPL-3
 #
-# Contains: cleanMap, print.population, removeChromosomes.internal
+# Contains: cleanMap, print.population, removeChromosomes.internal, doCleanUp.internal
 #
 ############################################################################################################
 
 ############################################################################################################
-#cleanMap - Removes markers that cause the recombination map to expand more than a given percentage (of its total length)
+#									*** cleanMap ***
+#
+# DESCRIPTION:
+#	removes markers that cause the recombination map to expand more than a given percentage (of its total
+#	length)
 # 
-# cross - R/qtl cross type object
-# difPercentage - If by removing a marker the map gets shorter by this percentage (or more). The marker will be dropped.
-# verbose - Be verbose
-# debugMode - 1: Print our checks, 2: print additional time information 
+# PARAMETERS:
+# 	cross - R/qtl cross type object
+# 	difPercentage - If by removing a marker the map gets shorter by this percentage (or more). The marker will be dropped.
+# 	verbose - Be verbose
+# 	debugMode - 1: Print our checks, 2: print additional time information 
 #
 ############################################################################################################
 cleanMap <- function(cross, difPercentage, verbose=FALSE, debugMode=0){
@@ -65,10 +70,14 @@ cleanMap <- function(cross, difPercentage, verbose=FALSE, debugMode=0){
 }
 
 ############################################################################################################
-#print.population - Overwrites the print function for objects of class "population"
+#									*** print.population ***
+#
+# DESCRIPTION:
+#	overwrites the print function for objects of class "population"
 # 
-# x - object of class population
-# ... - passed to cats
+# PARAMETERS:
+# 	x - object of class population
+# 	... - passed to cats
 #
 ############################################################################################################
 print.population <- function(x,...){
@@ -117,13 +126,17 @@ print.population <- function(x,...){
 }
 
 ############################################################################################################
-#removeChromosomes.internal: Removes chromosomes from a cross object
+#									*** removeChromosomes.internal ***
+#
+# DESCRIPTION:
+#	removes chromosomes from a cross object
 # 
-# cross - object of R/qtl cross type
-# numberOfChromosomes - Expected number of chromosomes
+# PARAMETERS:
+# 	cross - object of R/qtl cross type
+# 	numberOfChromosomes - expected number of chromosomes
 #
 ############################################################################################################
-removeChromosomes.internal <- function(cross, numberOfChromosomes){
+removeChromosomes.internal <- function(cross, numberOfChromosomes, minLength){
 	for(i in length(cross$geno):(numberOfChromosomes+1)){
 		cat("removing chromosome:",i," markers:",names(cross$geno[[i]]$map),"\n")
 		cross$rmv <- cbind(cross$rmv,cross$geno[[i]]$data)
@@ -131,4 +144,30 @@ removeChromosomes.internal <- function(cross, numberOfChromosomes){
 		names(cross$geno) <- 1:length(cross$geno)
 	}
 	invisible(cross)
+}
+
+
+############################################################################################################
+#									*** doCleanUp.internal ***
+#	based on idea by Danny Arends
+#
+# DESCRIPTION:
+#	better garbage collection 
+# 
+# PARAMETERS:
+#	verbose - be verbose
+#
+# OUTPUT:
+#	none
+#
+############################################################################################################
+doCleanUp.internal <- function(verbose=FALSE){
+	before <- gc()[2,3]
+	bf <- before
+	after <- gc()[2,3]
+	while(before!=after){
+		before <- after
+		after <- gc()[2,3]
+	}
+	if(verbose) cat("Cleaned up memory from:",bf,"to:",after,"\n")
 }
