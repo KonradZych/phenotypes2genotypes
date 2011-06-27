@@ -2,13 +2,13 @@
 #
 # checks.R
 #
+#
 # Copyright (c) 2011, Konrad Zych
 #
-# Modified by Danny Arends
 # 
 # first written June 2011
 # last modified June 2011
-# last modified in version: 0.7.2
+# last modified in version: 0.8.1
 # in current version: active, in main workflow
 #
 #     This program is free software; you can redistribute it and/or
@@ -23,20 +23,31 @@
 #     A copy of the GNU General Public License, version 3, is available
 #     at http://www.r-project.org/Licenses/GPL-3
 #
-# Contains: numericCheck.internal, genotypeCheck.internal, inRangeCheck.internal
+# CONTAINS:
+#	numericCheck.internal, genotypeCheck.internal, inRangeCheck.internal, inListCheck.internal
 #
 ############################################################################################################
 
 ############################################################################################################
-#numericCheck.internal - checking if given object is numeric or could be converted to numeric
+#									*** numericCheck.internal ***
+#
+# DESCRIPTION:
+#	checking if given object is numeric or could be converted to numeric
 # 
-# objectToBeChecked - object to be checked
-# allow.na - specifies whether object could cointain NAs
-# value - boolean
+# PARAMETERS:
+#	objectToBeChecked - object to be checked
+#	allow.na - specifies whether object could cointain NAs
+#
+# OUTPUT:
+#	boolean
 #
 ############################################################################################################
 numericCheck.internal <- function(objectToBeChecked, allow.na=FALSE){
 	if(any(is.na(as.numeric(objectToBeChecked)))){
+		### if object converted to numeric contains NAs it's either not-convertable or cointained NAs
+		### previously, if we don't allow NAs - we just quit here, if we do, we have to chech if they
+		### are intruduced (then object is not-convertable and we rerturm false) or they were in the
+		### object previously (then we return true)
 		if(!(allow.na)){
 			return(FALSE)
 		}else{
@@ -51,11 +62,17 @@ numericCheck.internal <- function(objectToBeChecked, allow.na=FALSE){
 }
 
 ############################################################################################################
-#genotypeCheck.internal - checking if given object is containing only 0,1 and NAs
+#									*** genotypeCheck.internal ***
+#
+# DESCRIPTION:
+#	checking if given object is containing only 0,1 and NAs
 # 
+# PARAMETERS:
 # objectToBeChecked - object to be checked
 # allow.na - specifies whether object could cointain NAs
-# value - boolean
+#
+# OUTPUT:
+#	boolean
 #
 ############################################################################################################
 genotypeCheck.internal <- function(objectToBeChecked, allow.na=FALSE){
@@ -80,11 +97,18 @@ genotypeCheck.internal <- function(objectToBeChecked, allow.na=FALSE){
 }
 
 ############################################################################################################
-#inRangeCheck.internal - checking if given object is numeric and if it is from specified range
+#									*** inRangeCheck.internal ***
+#
+# DESCRIPTION:
+#	checking if given object is numeric and if it is from specified range
 # 
+# PARAMETERS:
 # objectToBeChecked - object to be checked
 # objectName - name of the object
 # downLimit, upLimit - down and up limit to specify range
+#
+# OUTPUT:
+#	none
 #
 ############################################################################################################
 inRangeCheck.internal <- function(objectToBeChecked, objectName, downLimit, upLimit){
@@ -99,13 +123,20 @@ inRangeCheck.internal <- function(objectToBeChecked, objectName, downLimit, upLi
 }
 
 ############################################################################################################
-#inListCheck.internal - checking if given object is numeric and if it is from specified range
+#									*** inListCheck.internal ***
+#
+# DESCRIPTION:
+#	checking if given object is numeric and if it is from specified range
 # 
+# PARAMETERS:
 # objectToBeChecked - object to be checked
 # listOfPossibleElements - 
+#
+# OUTPUT:
+#	none
 #
 ############################################################################################################
 inListCheck.internal <- function(objectToBeChecked,objectName,listOfPossibleElements){
 	if(length(listOfPossibleElements)==1) warning("Specified list contains just a single element!\n")
-	#if(any(!(listOfPossibleElements==objectToBeChecked))) stop("Selected wrong ",objectName," possibilities are: ",listOfPossibleElements,"\n")
+	if(any(!(objectToBeChecked%in%listOfPossibleElements))) stop("Selected wrong ",objectName," possibilities are: ",listOfPossibleElements,"\n")
 }
