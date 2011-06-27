@@ -36,9 +36,13 @@
 # 
 # PARAMETERS:
 # 	cross - R/qtl cross type object
-# 	difPercentage - If by removing a marker the map gets shorter by this percentage (or more). The marker will be dropped.
+# 	difPercentage - If by removing a marker the map gets shorter by this percentage (or more). The marker 
+#		will be dropped.
 # 	verbose - Be verbose
 # 	debugMode - 1: Print our checks, 2: print additional time information 
+# 
+# OUTPUT:
+#	object of class cross
 #
 ############################################################################################################
 cleanMap <- function(cross, difPercentage, verbose=FALSE, debugMode=0){
@@ -78,6 +82,9 @@ cleanMap <- function(cross, difPercentage, verbose=FALSE, debugMode=0){
 # PARAMETERS:
 # 	x - object of class population
 # 	... - passed to cats
+# 
+# OUTPUT:
+#	none
 #
 ############################################################################################################
 print.population <- function(x,...){
@@ -134,6 +141,9 @@ print.population <- function(x,...){
 # PARAMETERS:
 # 	cross - object of R/qtl cross type
 # 	numberOfChromosomes - expected number of chromosomes
+# 
+# OUTPUT:
+#	object of class cross
 #
 ############################################################################################################
 removeChromosomes.internal <- function(cross, numberOfChromosomes, minLength){
