@@ -136,23 +136,64 @@ print.population <- function(x,...){
 #									*** removeChromosomes.internal ***
 #
 # DESCRIPTION:
-#	removes chromosomes from a cross object
+#	Function to remove chromosomes from cross object. Those can specified in three ways described below.
 # 
 # PARAMETERS:
-# 	cross - object of R/qtl cross type
-# 	numberOfChromosomes - expected number of chromosomes
+# 	cross - object of class cross
+# 	#parameters to specify chromosomes to be removed:
+# 	numberOfChromosomes - how many chromosomes should stay (remove all but 1:numberOfChromosomes)
+# 	chromosomesToBeRmv - explicitly provide functions with NAMES of chromosomes to be removed
+# 	minNrOfMarkers - specify minimal number of markers chromosome is allowed to have (remove all that have
+#					 less markers than that)
 # 
 # OUTPUT:
 #	object of class cross
 #
 ############################################################################################################
-removeChromosomes.internal <- function(cross, numberOfChromosomes, minLength){
-	for(i in length(cross$geno):(numberOfChromosomes+1)){
-		cat("removing chromosome:",i," markers:",names(cross$geno[[i]]$map),"\n")
-		cross$rmv <- cbind(cross$rmv,cross$geno[[i]]$data)
-		cross <- drop.markers(cross, names(cross$geno[[i]]$map))
-		names(cross$geno) <- 1:length(cross$geno)
+removeChromosomes.internal <- function(cross, numberOfChromosomes, chromosomesToBeRmv, minNrOfMarkers){
+	if(is.null(cross)&&!(any(class(cross)=="cross"))) stop("Not a cross object!\n")
+	if(!(missing(numberOfChromosomes))){
+		for(i in length(cross$geno):(numberOfChromosomes+1)){
+			cross <- removeChromosomesSub.internal(cross,i)
+		}
+	}else if(!(missing(chromosomesToBeRmv))){
+		for(i in chromosomesToBeRmv){
+			if(!(i%in%names(cross$geno))){
+				stop("There is no chromosome called ",i,"\n")
+			}else{
+				cross <- removeChromosomesSub.internal(cross,i)
+			}
+		}
+	}else if(!(missing(minNrOfMarkers))){
+		for(i in length(cross$geno):1){
+			if(length(cross$geno[[i]]$map)<minNrOfMarkers){
+				cross <- removeChromosomesSub.internal(cross,i)
+			}
+		}
+	}else{
+		stop("You have to provide one of following: numberOfChromosomes, chromosomes or minLength")
 	}
+	invisible(cross)
+}
+
+############################################################################################################
+#									*** removeChromosomesSub.internal ***
+#
+# DESCRIPTION:
+#	subfunction of removeChromosomes.internal, removing from given cross object specified chromosome
+# 
+# PARAMETERS:
+# 	cross - object of class cross
+# 	chr - chromosome to be removed (number or name)
+# 
+# OUTPUT:
+#	object of class cross
+#
+############################################################################################################
+removeChromosomesSub.internal <- function(cross, chr){
+	cat("removing chromosome:",i," markers:",names(cross$geno[[i]]$map),"\n")
+	cross$rmv <- cbind(cross$rmv,cross$geno[[i]]$data)
+	cross <- drop.markers(cross, names(cross$geno[[i]]$map))
 	invisible(cross)
 }
 

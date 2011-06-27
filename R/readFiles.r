@@ -68,17 +68,17 @@ readFiles <- function(offspring="offspring",founders="founders",map="maps",sep="
 	#**********READING CHILDREN GENOTYPIC DATA*************
 	filename <- paste(offspring,"_genotypes.txt",sep="")
 	if(file.exists(filename)){
-		if(verbose) cat("Found genotypic file for offspring:",filename,"and will store  it in population$offspring$genotypes$read\n")
-		offspring_genotypess <- read.table(filename,sep=sep,header=TRUE)
-		offspring_genotypess <- as.matrix(offspring_genotypess)
-		population <- intoPopulation(population, offspring_genotypess, "offspring$genotypes")
+		if(verbose) cat("Found genotypic file for offspring:",filename,"and will store  it in population$offspring$genotypes$real\n")
+		offspring_genotypes <- read.table(filename,sep=sep,header=TRUE)
+		offspring_genotypes <- as.matrix(offspring_genotypes)
+		population <- intoPopulation(population, offspring_genotypes, "offspring$genotypes")
 		doCleanUp.internal()
 	}else{
 		if(verbose)cat("No genotypic file for offspring:",filename,"genotypic data for offspring will be simulated\n")
 	}
 	
 	#**********READING PARENTAL PHENOTYPIC DATA*************
-	filename <- paste(founders,"_phenotype.txt",sep="")
+	filename <- paste(founders,"_phenotypes.txt",sep="")
 	if(file.exists(filename)){
 		if(verbose) cat("Found phenotypic file for parents:",filename,"and will store it in population$founders$phenotypes\n")
 		founders <- read.table(filename,sep=sep,header=TRUE)
@@ -94,7 +94,7 @@ readFiles <- function(offspring="offspring",founders="founders",map="maps",sep="
 	#**********READING GENETIC MAP*************
 	filename <- paste(map,"_genetic.txt",sep="")
 	if(file.exists(filename)){
-		if(verbose) cat("Found genotypic file for offspring:",filename,"and will store  it in population$offspring$genotypes$read\n")
+		if(verbose) cat("Found genotypic file for offspring:",filename,"and will store  it in population$maps$genetic\n")
 		maps_genetic <- read.table(filename,sep=sep,row.names=1,header=FALSE)
 		maps_genetic <- as.matrix(maps_genetic)
 		population <- intoPopulation(population, maps_genetic, "maps$genetic")
@@ -106,7 +106,7 @@ readFiles <- function(offspring="offspring",founders="founders",map="maps",sep="
 	#**********READING PHYSICAL MAP*************
 	filename <- paste(map,"_physical.txt",sep="")
 	if(file.exists(filename)){
-		if(verbose) cat("Found genotypic file for offspring:",filename,"and will store  it in population$offspring$genotypes$read\n")
+		if(verbose) cat("Found genotypic file for offspring:",filename,"and will store  it in population$maps$physical\n")
 		physical <-	read.table(filename,sep=sep,row.names=1,header=FALSE)
 		physical <- as.matrix(physical)
 		population <- intoPopulation(population, physical, "maps$physical")
@@ -118,8 +118,6 @@ readFiles <- function(offspring="offspring",founders="founders",map="maps",sep="
 	#**********FINALIZING FUNCTION*************
 	e <- proc.time()
 	if(verbose) cat("readFiles done in",(e-s)[3],"seconds.\n")
-	population$parameters$readFiles <- list(offspring, founders,sep=sep,verbose,debugMode)
-	names(population$parameters$readFiles) <- c("offspring", "founders", "sep", "verbose", "debugMode")
 	class(population) <- "population"
 	doCleanUp.internal()
 	invisible(population)

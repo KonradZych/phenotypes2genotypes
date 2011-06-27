@@ -10,6 +10,7 @@
 \alias{segregateChromosomes.internal}
 \alias{mergeChromosomes.internal}
 \alias{majorityRule.internal}
+\alias{doCleanUp.internal}
 
 \alias{convertToGenotypes.internal}
 \alias{splitRow.internal}
@@ -25,6 +26,7 @@
 \alias{makeTransPal.internal}
 \alias{switchChromosomes.internal}
 \alias{removeChromosomes.internal}
+\alias{removeChromosomesSub.internal}
 
 \alias{checkMu.internal}
 \alias{splitRowSubEM.internal}
