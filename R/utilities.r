@@ -133,6 +133,39 @@ print.population <- function(x,...){
 }
 
 ############################################################################################################
+#									*** removeIndividuals.internal ***
+#
+# DESCRIPTION:
+#	Function to remove individual(s) from population object. 
+# 
+# PARAMETERS:
+# 	population - object of class population
+# 	individuals - individuals to be romved specified by their names
+#
+# OUTPUT:
+#	object of class population
+#
+############################################################################################################
+removeIndividuals.internal <- function(population,individuals){
+	for(ind in individuals){
+		if(ind%in%colnames(population$offspring$genotypes$real)){
+			population$offspring$genotypes$real <- population$offspring$genotypes$real[,-which(colnames(population$offspring$genotypes$real)==ind)]
+			cat("Removed",ind,"from population$offspring$genotypes$real\n")
+		}
+		if(ind%in%colnames(population$offspring$phenotypes)){
+			population$offspring$phenotypes <- population$offspring$phenotypes[,-which(colnames(population$offspring$phenotypes)==ind)]
+			cat("Removed",ind,"from population$offspring$phenotypes\n")
+		}
+		if(ind%in%colnames(population$founders$phenotypes)){
+			population$founders$phenotypes <- population$founders$phenotypes[,-which(colnames(population$founders$phenotypes)==ind)]
+			cat("Removed",ind,"from population$founders$phenotypes\n")
+		}
+	}
+	invisible(population)
+}
+
+
+############################################################################################################
 #									*** removeChromosomes.internal ***
 #
 # DESCRIPTION:

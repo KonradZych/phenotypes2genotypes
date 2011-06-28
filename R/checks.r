@@ -138,5 +138,5 @@ inRangeCheck.internal <- function(objectToBeChecked, objectName, downLimit, upLi
 ############################################################################################################
 inListCheck.internal <- function(objectToBeChecked,objectName,listOfPossibleElements){
 	if(length(listOfPossibleElements)==1) warning("Specified list contains just a single element!\n")
-	if(any(!(objectToBeChecked%in%listOfPossibleElements))) stop("Selected wrong ",objectName," possibilities are: ",listOfPossibleElements,"\n")
+	if(any(!(objectToBeChecked%in%listOfPossibleElements))) stop("Selected wrong ",objectName," possibilities are: ",paste(listOfPossibleElements,sep=", "),"\n")
 }

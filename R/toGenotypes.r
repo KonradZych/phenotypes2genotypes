@@ -58,7 +58,7 @@
 #	object of class cross
 #
 ############################################################################################################
-toGenotypes <- function(population, genotype=c("simulated","real"), orderUsing=c("map_genetic","map_physical"), splitMethod=c("EM","mean"),treshold=0.01, overlapInd = 0, proportion = list(c(50,50),15), margin = 15, removalFUN = NULL, verbose=FALSE, debugMode=0,...){
+toGenotypes <- function(population, genotype=c("simulated","real"), orderUsing=c("map_genetic","map_physical"), splitMethod=c("EM","mean"),treshold=0.01, overlapInd = 0, proportion = c(50,50), margin = 15, removalFUN = NULL, verbose=FALSE, debugMode=0,...){
 	#*******CHECKS*******
 	if(missing(orderUsing)) orderUsing <- NULL
 	s<-proc.time()
