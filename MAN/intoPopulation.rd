@@ -55,6 +55,10 @@
 		population <- createPopulation(offspring)
 		population <- intoPopulation(population, founders, "founders")
 	}
+	load(offspring_phenotypes)
+	population <- createPopulation(offspring_phenotypes)
+	load(founders_phenotypes)
+	population <- intoPopulation(population, founders_phenotypes, "founders")
 }
 
 \seealso{
