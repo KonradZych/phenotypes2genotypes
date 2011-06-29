@@ -13,7 +13,7 @@
 }
 
 \arguments{
- \item{population}{ population type object, must contain parental phenotypic data.}
+ \item{population}{ An object of class \code{population}. See \code{\link{createPopulation}} for details.}
  \item{groupLabels}{ Specify which column of parental data belongs to group 0 and which to group 1.}
  \item{verbose}{ Be verbose}
  \item{debugMode}{ 1: Print out checks, 2: print additional time information }
