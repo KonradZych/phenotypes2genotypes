@@ -20,8 +20,17 @@ TODO
 	Maintainer: Konrad Zych \email{konrad.zych@uj.edu.pl}
 }
 \references{
-TODO
+  
+  Zych, K.; Arend, D. and Jansen R.C. (2011) Pheno2geno: R package for creation of genetic maps out of gene expression data, \bold{in press}
+  
+  Breitling, R.; Armengaud, P.; Amtmann, A.; and Herzyk, P.(2004) Rank Products:A simple, 
+  yet powerful, new method to detect differentially regulated genes in replicated microarray experiments, \bold{FEBS Letter}, 57383-92
+
+  Broman, K. W. and Sen,
+  \if{latex}{\out{\'S}}\if{html}{\out{&#346;}}\if{text}{S}. (2009) \emph{A
+  guide to QTL mapping with R/qtl.}  \bold{Springer}.  \url{http://www.rqtl.org/book}
 }
+
 \keyword{ package, qtl }
 
 \seealso{
