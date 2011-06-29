@@ -16,9 +16,8 @@
 TODO
 }
 \author{ 
-	Konrad Zych \email{konrad.zych@uj.edu.pl}
+	Konrad Zych \email{konrad.zych@uj.edu.pl}, Danny Arends \email{Danny.Arends@gmail.com}
 	Maintainer: Konrad Zych \email{konrad.zych@uj.edu.pl}
-	Under tender patronage of: Danny Arends \email{Danny.Arends@gmail.com}
 }
 \references{
 TODO
