@@ -43,7 +43,7 @@
  \item{numberOfChromosomes}{ How many chromosomes should map contain - leaving only that number of linkage groups and dropping one with higher numbers, this can be dangerous, so be sure you know what you're doing. }
  \item{verbose}{ Be verbose}
  \item{debugMode}{ 1: Print our checks, 2: print additional time information }
-  \item{...}{ Parameters passed to formLinkageGroups. }
+  \item{...}{ Parameters passed to \code{\link[qtl]{formLinkageGroups}}. }
 }
 
 \value{

@@ -1,7 +1,7 @@
 The pheno2geno package
 =================
-This package provides you with possibility to create genetic map out of expression data for children and parents. Working currently for RILs, preparing to run Back Cross analysis.
-Mind the fact that this is still pre-release version, so not everything is perfect. Also use rather versions that were tagged, you can install them and perform R check without warnings.
+R package to create genetic maps out of gene expression data. Currently supported breeding schemes are: Recombinant inbred line, F2 and backcross.
+The master branch is the current stabile version and is tagged. The master branch can be installed into R, any development branches can contain errors.
 
 Dependencies
 ------------
