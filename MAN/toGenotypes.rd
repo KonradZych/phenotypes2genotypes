@@ -23,15 +23,15 @@
  \item{genotype}{ 
   Which genotypic matrix should be saved to file:
   \itemize{
-    \item{simulated}{ - made by toGenotypes}
-    \item{real}{ - supported by user and read from file}
+    \item{simulated}{ - Genotype matrix from: \code{\link{toGenotypes}}}
+    \item{real}{ - Original genotype matrix supplied by the user and read from file}
   }
   }
   \item{orderUsing}{ 
-  which map should be used to order markers (by default - none, so markers are all put in 1 chromosome, with distance 1 cM between)
+  which map should be used to order markers (Default - none, so markers are all put in 1 chromosome, with distance 1 cM between)
   \itemize{
-    \item{map_genetic}{ - simulated data orderd using supported genetic map}
-    \item{map_physical}{ - simulated data orderd using supported physical map}
+    \item{map_genetic}{ - simulated data orderd using supplied genetic map}
+    \item{map_physical}{ - simulated data orderd using supplied physical map}
   }
   }
  \item{splitMethod}{ Splitting markers using founders mean value or more sofisticated fitting of normal distributions by EM algoritm.}
