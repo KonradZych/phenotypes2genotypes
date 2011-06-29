@@ -38,7 +38,6 @@
 \seealso{
   \code{\link{plotChildrenExpression}}
   \code{\link{plotParentalExpression}} 
-  \code{\link{plotMarkerDistribution}}
 }
 
 \keyword{manip}

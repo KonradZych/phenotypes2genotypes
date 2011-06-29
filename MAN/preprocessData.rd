@@ -21,7 +21,7 @@
 }
 
 \value{
-  Object of type RP (see ?RP for description), saved into population$founders$RP.
+  Object of class population, (see \code{\link{createPopulation}} for more details about structure) with object of class \link[RankProd]{RP} saved into population$founders$RP.
 }
 
 \details{
@@ -36,13 +36,13 @@
 \examples{
 
 	population <- fakePopulation()
-	population <- preprocessData(population,c(0,0,0,1,1,1)
+	population <- preprocessData(population,c(0,0,0,1,1,1))
 
 }
 
 \seealso{
 	\itemize{
-    \item \code{\link{rankprod}} - Add description
+    \item \code{\link[RankProd]{RP}} - Add description
     \item \code{\link{readFiles}} - Add description
     \item \code{\link{toGenotypes}} - Creating genotypes from children phenotypes
   }

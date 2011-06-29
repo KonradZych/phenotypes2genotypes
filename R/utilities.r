@@ -225,9 +225,9 @@ removeChromosomes.internal <- function(cross, numberOfChromosomes, chromosomesTo
 #
 ############################################################################################################
 removeChromosomesSub.internal <- function(cross, chr){
-	cat("removing chromosome:",i," markers:",names(cross$geno[[i]]$map),"\n")
-	cross$rmv <- cbind(cross$rmv,cross$geno[[i]]$data)
-	cross <- drop.markers(cross, names(cross$geno[[i]]$map))
+	cat("removing chromosome:",chr," markers:",names(cross$geno[[chr]]$map),"\n")
+	cross$rmv <- cbind(cross$rmv,cross$geno[[chr]]$data)
+	cross <- drop.markers(cross, names(cross$geno[[chr]]$map))
 	invisible(cross)
 }
 
