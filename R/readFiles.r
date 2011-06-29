@@ -39,6 +39,7 @@
 # 	offspring - Core used to specify names of children phenotypic ("offspring_phenotypes.txt") and genotypic ("offspring_genotypes.txt") files.
 # 	founders - Core used to specify names of founders phenotypic ("founders_phenotypes.txt") file.
 # 	map - Core used to specify names of genetic ("map_genetic.txt") and physical ("map_physical.txt") map files.
+#	founders_groups - specify founders groups
 # 	verbose - Be verbose
 # 	debugMode - 1: Print our checks, 2: print additional time information
 #
@@ -46,11 +47,13 @@
 #	object of class population 
 #
 ############################################################################################################
-readFiles <- function(offspring="offspring",founders="founders",map="maps",verbose=FALSE,debugMode=0){
+readFiles <- function(offspring="offspring",founders="founders",map="maps",founders_groups,verbose=FALSE,debugMode=0){
 	#**********INITIALIZING FUNCTION*************
 	s <- proc.time()
 	if(verbose && debugMode==1) cat("readFiles starting.\n")
 	population <- NULL
+	if(missing(founders_groups)){ stop("Specify parental groups!\n")
+	}else{ population$founders$groups <- founders_groups}
 	
 	#**********READING CHILDREN PHENOTYPIC DATA*************
 	filename <- paste(offspring,"_phenotypes.txt",sep="")
