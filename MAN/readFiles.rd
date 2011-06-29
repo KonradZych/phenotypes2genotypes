@@ -20,7 +20,7 @@
 }
 
 \value{
-  Object of class population. See createPopulation for more details about structure.
+  Object of class population. See \code{\link{createPopulation}} for more details about structure.
 }
 
 \details{
