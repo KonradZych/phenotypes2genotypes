@@ -41,8 +41,11 @@
 }
 
 \seealso{
-  \code{\link{readFiles}}
-  \code{\link{toGenotypes}}
+	\itemize{
+    \item \code{\link{rankprod}} - Add description
+    \item \code{\link{readFiles}} - Add description
+    \item \code{\link{toGenotypes}} - Creating genotypes from children phenotypes
+  }
 }
 
 \keyword{manip}
