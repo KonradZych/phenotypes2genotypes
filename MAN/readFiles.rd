@@ -1,10 +1,10 @@
 \name{readFiles}
 \alias{readFiles}
 
-\title{Reading geno/phenotypic files.}
+\title{Loading genotype and phenotype data}
 
 \description{
-  Reads geno/phenotypic/map files into R environment into special object.
+  Loads genotype, phenotype, genetic map data files into R environment into a population object.
 }
 
 \usage{
