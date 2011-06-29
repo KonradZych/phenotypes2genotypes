@@ -15,7 +15,7 @@
 }
 
 \usage{
-	toGenotypes(population, genotype=c("simulated","real"), orderUsing=c("map_genetic","map_physical"), splitMethod=c("EM","mean"),treshold=0.01, overlapInd = 0, proportion = c(50,50), margin = 15, numberOfChromosomes = NULL, verbose=FALSE, debugMode=0,...)
+	toGenotypes(population, genotype=c("simulated","real"), orderUsing=c("none","map_genetic","map_physical"), splitMethod=c("EM","mean"),treshold=0.01, overlapInd = 0, proportion = c(50,50), margin = 15, numberOfChromosomes = NULL, verbose=FALSE, debugMode=0,...)
 }
 
 \arguments{
@@ -60,12 +60,9 @@
 }
 
 \examples{
-\dontrun{
-	setwd(paste(.Library,"pheno2geno/data",sep="/"))
-	ril <- readFiles()
-	ril <- preprocessData(ril)
-	#cross <- toGenotypes(ril,use="simulated",minChrLength=0,treshold=0.5,margin=50,max.rf=10)
-	}
+	population <- fakePopulation()
+	### using faked genotypes
+	cross <- toGenotypes(population,genotype="real",orderUsing="map_genetic")
 }
 
 \seealso{
