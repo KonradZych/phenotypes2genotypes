@@ -267,18 +267,40 @@ doCleanUp.internal <- function(verbose=FALSE){
 #									*** fakePopulation ***
 #
 # DESCRIPTION:
-#	better garbage collection 
+#	simulating population object 
 # 
 # PARAMETERS:
-#	verbose - be verbose
+#	nrFounders - number of founders to be simulated
+#	... - parameters send to sim.cross, most important:
+#		type - type of the cross - "riself" for two-way RIL
+#		n.ind - number of offspring individuals
 #
 # OUTPUT:
-#	none
+#	object of class population
 #
 ############################################################################################################
-fakePopulation <- function(){
+fakePopulation <- function(nrFounders,...){
 	map <- sim.map()
-	fake <- sim.cross(map, type="riself", n.ind=250, model = rbind(c(1,45,1,1),c(5,20,0.5,-0.5)))
+	dots <- list(...)
+    if ("type" %in% names(dots)){
+        type <- dots$type
+		dots <- dots[[-which(names(dots)=="type")]]
+	}else{
+		type <- "riself"
+	}
+	if ("n.ind" %in% names(dots)){
+        n.ind <- dots$n.ind
+		dots <- dots[[-which(names(dots)=="n.ind")]]
+	}else{
+		n.ind <- 250
+	}
+	if ("model" %in% names(dots)){
+        model <- dots$model
+		dots <- dots[[-which(names(dots)=="model")]]
+	}else{
+		model <- rbind(c(1,45,1,1),c(5,20,0.5,-0.5))
+	}
+	fake <- sim.cross(map,type=type, n.ind=n.ind, model = model, dots)
 	geno <- t(pull.geno(fake))
 	map <- convertMap.internal(map)
 	colnames(geno) <- paste("RIL",1:ncol(geno),sep="_")
@@ -299,16 +321,16 @@ fakePopulation <- function(){
 #									*** fakePheno.internal ***
 #
 # DESCRIPTION:
-#	better garbage collection 
+#	simulating phenotype data using genotype data simulatyed by sim.cross
 # 
 # PARAMETERS:
-#	verbose - be verbose
+#	genoRow - row of offspring genotype matrix
 #
 # OUTPUT:
-#	none
+#	row of offspring phenotype matrix
 #
 ############################################################################################################
-fakePheno.internal <- function(phenoRow){
+fakePheno.internal <- function(genoRow){
 	scalingF <- runif(1,1,10)
 	errorF <- runif(length(phenoRow),0,3)
 	phenoRow <- (phenoRow*scalingF) + errorF
@@ -319,13 +341,13 @@ fakePheno.internal <- function(phenoRow){
 #									*** fakeFounders.internal ***
 #
 # DESCRIPTION:
-#	better garbage collection 
+#	simulating founders phenotype data using offspring phenotype data
 # 
 # PARAMETERS:
-#	verbose - be verbose
+#	phenoRow - row of offspring phenotype matrix
 #
 # OUTPUT:
-#	none
+#	row of parental phenotype matrix
 #
 ############################################################################################################
 fakeFounders.internal <- function(phenoRow){
@@ -336,16 +358,18 @@ fakeFounders.internal <- function(phenoRow){
 }
 
 ############################################################################################################
-#									*** fakeFounders.internal ***
+#									*** convertMap.internal ***
 #
 # DESCRIPTION:
-#	better garbage collection 
+#	convert rqtl type map into population type one
 # 
 # PARAMETERS:
-#	verbose - be verbose
+#	map - map of cross type (list with names - names of chromosomes, elements o the list - markers and their
+#		  positions)
 #
 # OUTPUT:
-#	none
+#	map of population class type - rownames - names of the markers, first column - numbers of chromosomes,
+#		second - position of the marker on chromosome
 #
 ############################################################################################################
 convertMap.internal <- function(map){
