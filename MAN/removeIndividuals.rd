@@ -39,7 +39,7 @@
 
 \seealso{
   \code{\link{readFiles}}
-  \code{\link{preprocessData}}
+  \code{\link{findDiffExpressed}}
   \code{\link{toGenotypes}}
 }
 

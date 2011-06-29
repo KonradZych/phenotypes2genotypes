@@ -38,34 +38,39 @@
 # maps$physical - matrix containing physical map (optional)
 #
 ############################################################################################################
-createPopulation <- function(offspring_phenotypes=NULL, founders=NULL, offspring_genotypes=NULL, maps_genetic=NULL, maps_physical=NULL, no.warn=FALSE, verbose=FALSE,debugMode=0){
+createPopulation <- function(offspring_phenotypes, founders, offspring_genotypes, maps_genetic, maps_physical, founders_groups,no.warn=FALSE, verbose=FALSE,debugMode=0){
 	if(verbose && debugMode==1) cat("createPopulation starting.\n")
 	s <- proc.time()
 	population <- NULL
-	if(is.null(offspring_phenotypes)){
+	if(missing(offspring_phenotypes)){
 		stop("No offspring phenotype data provided!\n")
 	}else{
 		population <- intoPopulationSub.internal(population, offspring_phenotypes, "offspring$phenotypes", verbose, debugMode)
 	}
-	if(is.null(founders)){
+	if(missing(founders)){
 		if(!(no.warn))warning("No founders phenotype data provided. Strongly recommend to supply this data using intoPopulation.\n")
 	}else{
 		population <- intoPopulationSub.internal(population, founders, "founders", verbose, debugMode)
 	}
-	if(is.null(offspring_genotypes)){
+	if(missing(offspring_genotypes)){
 		if(verbose && !(no.warn))cat("No offspring genotypic data provided. You can supply it later using intoPopulation.\n")
 	}else{
 		population <- intoPopulationSub.internal(population, offspring_genotypes, "offspring$genotypes", verbose, debugMode)
 	}
-	if(is.null(maps_genetic)){
+	if(missing(maps_genetic)){
 		if(verbose && !(no.warn))cat("No genotic map provided. You can supply it later using intoPopulation.\n")
 	}else{
 		population <- intoPopulationSub.internal(population, maps_genetic, "maps$genetic", verbose, debugMode)
 	}
-	if(is.null(maps_physical)){
+	if(missing(maps_physical)){
 		if(verbose && !(no.warn))cat("No physical map provided.  You can supply it later using intoPopulation.\n")
 	}else{
 		population <- intoPopulationSub.internal(population, maps_physical, "maps$physical", verbose, debugMode)
+	}
+	if(missing(founders_groups)){
+		if(!(no.warn))warning("No information about founders groups provided.  Strongly recommend to supply this data using intoPopulation.\n")
+	}else{
+		population <- intoPopulationSub.internal(population, founders_groups, "founders$groups", verbose, debugMode)
 	}
 	if(is.null(population)) stop("No data provided!\n")
 	class(population) <- "population"
@@ -122,14 +127,17 @@ intoPopulation <- function(population, dataObject, dataType=c("founders","offspr
 # 	-  maps$physical - physical map
 #
 ############################################################################################################
-intoPopulationSub.internal <- function(population, dataObject, dataType=c("founders","offspring$phenotypes","offspring$genotypes","maps$genetic","maps$physical"),verbose=FALSE,debugMode=0){
+intoPopulationSub.internal <- function(population, dataObject, dataType=c("founders","offspring$phenotypes","offspring$genotypes","maps$genetic","maps$physical","founders$groups"),verbose=FALSE,debugMode=0){
 	if(dataType=="founders" || dataType=="offspring$phenotypes"){
 		population <- intoPopulationSubPheno.internal(population,dataObject,dataType, verbose, debugMode)
 	}else if(dataType=="offspring$genotypes"){
 		population <- intoPopulationSubGeno.internal(population,dataObject, verbose, debugMode)
 	}else if(dataType=="maps$genetic"||dataType=="maps$physical"){
 		population <- intoPopulationSubMap.internal(population,dataObject, dataType, verbose, debugMode)
+	}else if(dataType=="founders$groups"){
+		population$founders$groups <- dataObject
 	}
+	invisible(population)
 }
 
 ############################################################################################################

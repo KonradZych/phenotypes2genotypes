@@ -1,5 +1,5 @@
-\name{preprocessData}
-\alias{preprocessData}
+\name{findDiffExpressed}
+\alias{findDiffExpressed}
 \alias{groupLabels}
 
 \title{RankProduct analysis.}
@@ -9,7 +9,7 @@
 }
 
 \usage{
-	preprocessData(population,groupLabels=c(0,0,1,1),verbose=FALSE,debugMode=0,...)
+	findDiffExpressed(population,groupLabels=c(0,0,1,1),verbose=FALSE,debugMode=0,...)
 }
 
 \arguments{
@@ -36,7 +36,7 @@
 \examples{
 
 	population <- fakePopulation()
-	population <- preprocessData(population,c(0,0,0,1,1,1))
+	population <- findDiffExpressed(population)
 
 }
 
