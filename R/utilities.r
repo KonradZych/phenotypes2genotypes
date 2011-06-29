@@ -89,48 +89,55 @@ cleanMap <- function(cross, difPercentage, minChrLenght,verbose=FALSE, debugMode
 #
 ############################################################################################################
 print.population <- function(x,...){
-	cat("*************************************************************************************\n")
-	cat("This is object of class population, too complex to print it, so we provide you with summary.\n")
+	cat("This is object of class \"population\"\n  It is too complex to print, so we provide just this summary.\n")
 	if(!(is.null(x$offspring))){
+    cat("Offspring:\n",...)
 		if(!(is.null(x$offspring$phenotypes))){
-			cat("Object contains phenotypic data for",ncol(x$offspring$phenotypes),"offspring individuals covering",nrow(x$offspring$phenotypes),"probes.\n",...)
+			cat("\tPhenotypes:",ncol(x$offspring$phenotypes),"\n",...)
+      cat("\tMarkers:",nrow(x$offspring$phenotypes),"\n",...)
 		}else{
-			stop("There is no phenotypic data for offspring in this object. This is not acceptable in real ril object.\n",...)
+			stop("No phenotype data for offspring, this is not a valid population object\n")
 		}
 		if(!(is.null(x$offspring$genotypes$read))){
-			cat("Object contains genotypic data for",ncol(x$offspring$phenotypes),"offspring individuals covering",nrow(x$offspring$phenotypes),"probes.\n",...)
+			cat("\tGenotypes:",ncol(x$offspring$genotypes),"\n",...)
 		}else{
-			cat("There is no genotypic data for offspring in this object.\n",...)
+			cat("\tGenotypes: None\n",...)
 		}
-		if(!(is.null(x$offspring$map))){
-			cat("Object contains physical map covering",nrow(x$offspring$map),"markers from",length(table(x$offspring$map[,1])),"chromosomes.\n",...)
+		if(!(is.null(x$maps$genetic))){
+			cat("\tGenetic map:",nrow(x$maps$genetic),"markers, ",length(table(x$maps$genetic[,1]))," chromosomes\n",...)
 		}else{
-			cat("There is no physical genetic map in this object.\n")
+			cat("\ttGenetic map: None\n")
 		}
+		if(!(is.null(x$maps$physical))){
+			cat("\tPhysical map:",nrow(x$maps$physical),"markers, ",length(table(x$maps$physical[,1]))," chromosomes\n",...)
+		}else{
+			cat("\tPhysical ap: None\n")
+		}    
 	}else{
-		cat("WARNING: There is no phenotypic data for offspring. This is not acceptable in real ril object.\n",...)
+		stop("No phenotype data for offspring, this is not a valid population object\n")
 	}
 	
 	if(!(is.null(x$founders))){
+    cat("Founders:\n",...)
 		if(!(is.null(x$founders$phenotypes))){
-			cat("Object contains phenotypic data for",ncol(x$founders$phenotypes),"founders individuals covering",nrow(x$founders$phenotypes),"probes.\n",...)
+			cat("\tPhenotypes:",ncol(x$founders$phenotypes),"\n",...)
+      cat("\tMarkers:",nrow(x$founders$phenotypes),"\n",...)
 		}else{
-			stop("There is no phenotypic data for parents in this object. This is not acceptable in real ril object.\n",...)
+			stop("No phenotype data for founders, this is not a valid population object\n")
 		}
 		if(!(is.null(x$founders$RP))){
-			cat("Object contains RP analysis results.\n",...)
+			cat("\tDifferential expression: Detected\n",...)
 		}else{
-			cat("There is no RP analysis result in this object.\n",...)
+			cat("\tDifferential expression: Not Detected (please: use functionname) \n",...)
 		}
 		if(!(is.null(x$founders$groups))){
-			cat("Parental groups are as following:",x$founders$groups,"\n",...)
+			cat("\tFounder groups:",x$founders$groups,"\n",...)
 		}else{
-			cat("There is no information about founders groups in this object.\n",...)
+			stop("No information about founders groups\n",...)
 		}
 	}else{
-		cat("WARNING: There is no phenotypic data for parents. This is not acceptable in real ril object.\n",...)
+		stop("No phenotype data for founders, this is not a valid population object\n")
 	}
-	cat("*************************************************************************************\n")
 }
 
 ############################################################################################################
