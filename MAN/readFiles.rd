@@ -8,13 +8,14 @@
 }
 
 \usage{
-	readFiles(offspring="offspring",founders="founders",map="maps",verbose=FALSE,debugMode=0)
+	readFiles(offspring="offspring",founders="founders",map="maps",founders_groups,verbose=FALSE,debugMode=0)
 }
 
 \arguments{
  \item{offspring}{ Core used to specify names of children phenotypic ("core_phenotypes.txt") and genotypic ("core_genotypes.txt") files.}
  \item{founders}{ Core used to specify names of parental phenotypic ("core_phenotypes.txt") file. }
  \item{map}{ Core used to specify names of genetic ("map_genetic.txt") and physical ("map_physical.txt") map files. }
+ \item{founders_groups}{ Specify groups of individuals in founders data, see \code{\link[RankProd]{RP}} for more details }
  \item{verbose}{ Be verbose}
  \item{debugMode}{ 1: Print out checks, 2: print additional time information }
 }
@@ -76,7 +77,7 @@ map with (see toGenotypes for more information). Example of map file structure:
 }
 
 \seealso{
-  \code{\link{preprocessData}}
+  \code{\link{findDiffExpressed}}
   \code{\link{toGenotypes}}
   \code{\link{createPopulation}}
   \code{\link{intoPopulation}}

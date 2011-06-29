@@ -280,6 +280,9 @@ doCleanUp.internal <- function(verbose=FALSE){
 #
 ############################################################################################################
 fakePopulation <- function(nrFounders,...){
+	if(missing(nrFounders)) nrFounders <- 4
+	if(nrFounders<4) nrFounders <- 4
+	if(!(nrFounders%%2==0)) nrFounders <- nrFounders+1
 	map <- sim.map()
 	dots <- list(...)
     if ("type" %in% names(dots)){
@@ -300,18 +303,18 @@ fakePopulation <- function(nrFounders,...){
 	}else{
 		model <- rbind(c(1,45,1,1),c(5,20,0.5,-0.5))
 	}
-	fake <- sim.cross(map,type=type, n.ind=n.ind, model = model, dots)
+	fake <- sim.cross(map,type=type, n.ind=n.ind, model = model)
 	geno <- t(pull.geno(fake))
 	map <- convertMap.internal(map)
 	colnames(geno) <- paste("RIL",1:ncol(geno),sep="_")
 	pheno <- t(apply(geno,1,fakePheno.internal))
 	rownames(pheno) <- rownames(geno)
 	colnames(pheno) <- colnames(geno)
-	founders <- t(apply(pheno,1,fakeFounders.internal))
+	founders <- t(apply(pheno,1,fakeFounders.internal,nrFounders))
 	rownames(founders) <- rownames(geno)
-	colnames(founders) <- 1:6
-	colnames(founders)[1:3] <- paste("Founder",1,1:3,sep="_")
-	colnames(founders)[4:6] <- paste("Founder",2,1:3,sep="_")
+	colnames(founders) <- 1:nrFounders
+	colnames(founders)[1:(nrFounders/2)] <- paste("Founder",1,1:(nrFounders/2),sep="_")
+	colnames(founders)[(nrFounders/2+1):nrFounders] <- paste("Founder",2,(nrFounders/2+1):nrFounders,sep="_")
 	geno[which(geno==2)] <- 0
 	population <- createPopulation(pheno, founders, geno, map, map)
 	invisible(population)
@@ -332,9 +335,9 @@ fakePopulation <- function(nrFounders,...){
 ############################################################################################################
 fakePheno.internal <- function(genoRow){
 	scalingF <- runif(1,1,10)
-	errorF <- runif(length(phenoRow),0,3)
-	phenoRow <- (phenoRow*scalingF) + errorF
-	invisible(phenoRow)
+	errorF <- runif(length(genoRow),0,3)
+	genoRow <- (genoRow*scalingF) + errorF
+	invisible(genoRow)
 }
 
 ############################################################################################################
@@ -350,10 +353,10 @@ fakePheno.internal <- function(genoRow){
 #	row of parental phenotype matrix
 #
 ############################################################################################################
-fakeFounders.internal <- function(phenoRow){
-	errorF <- runif(6,0,3)
+fakeFounders.internal <- function(phenoRow,nrFounders){
+	errorF <- runif(nrFounders,0,3)
 	cur_mean <- mean(phenoRow)
-	parentalRow <- c(rep((cur_mean-0.1*cur_mean),3),rep((cur_mean-0.1*cur_mean),3)) + errorF
+	parentalRow <- c(rep((cur_mean-0.1*cur_mean),(nrFounders/2)),rep((cur_mean-0.1*cur_mean),(nrFounders/2))) + errorF
 	invisible(parentalRow)
 }
 

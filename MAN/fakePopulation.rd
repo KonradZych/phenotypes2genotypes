@@ -9,11 +9,13 @@
 }
 
 \usage{
-	fakePopulation()
+	fakePopulation(nrFounders,...)
 }
 
 \arguments{
-
+ \item{nrFounders}{ number of founders to be simulated}
+ \item{...)}{ to be passed to sim.cross
+ }
 }
 
 \value{

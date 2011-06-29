@@ -66,7 +66,7 @@
 
 \seealso{
   \code{\link{readFiles}} - Loads genotype, phenotype, genetic map data files into R environment into a population object.
-  \code{\link{preprocessData}}
+  \code{\link{findDiffExpressed}}
 }
 
 \keyword{manip}
