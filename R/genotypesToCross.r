@@ -47,7 +47,7 @@
 #	object of class cross
 #
 ############################################################################################################
-genotypesToCross.internal <- function(population, genotype=c("simulated","real"), orderUsing=c("map_genetic","map_physical",NULL), outputFile="mycross.csv", verbose=FALSE, debugMode=0){
+genotypesToCross.internal <- function(population, genotype=c("simulated","real"), orderUsing=c("none","map_genetic","map_physical"), outputFile="mycross.csv", verbose=FALSE, debugMode=0){
 	###CHECKS
 	if(verbose && debugMode==1) cat("genotypesToCross starting.\n")
 	s <- proc.time()
@@ -68,7 +68,7 @@ genotypesToCross.internal <- function(population, genotype=c("simulated","real")
 		if(is.null(population$offspring$genotypes$real)){
 			stop("Use = real chosen, but there is no real genotypic data in population$offspring$genotypes$real\n")
 		}else{
-			if(is.null(orderUsing)){
+			if(orderUsing=="none"){
 				writeGenotypes.internal(population$offspring$genotypes$real, chr=1, outputFile=outputFile, verbose=verbose, debugMode=debugMode)
 			}else if(orderUsing=="map_physical"){
 				population$maps$physical <- mapMarkers.internal(population$maps$physical,population$offspring$genotypes$real, mapMode=1, verbose=verbose)
@@ -86,7 +86,7 @@ genotypesToCross.internal <- function(population, genotype=c("simulated","real")
 		if(is.null(population$offspring$genotypes$simulated)){
 			stop("Use = simulated chosen, but there is no simulated genotypic data in population$offspring$genotypes$simulated\n")
 		}else{
-			if(is.null(orderUsing)){
+			if(orderUsing=="none"){
 				writeGenotypes.internal(population$offspring$genotypes$simulated, chr=1, outputFile=outputFile, verbose=verbose, debugMode=debugMode)
 			}else if(orderUsing=="map_physical"){
 				population$maps$physical <- mapMarkers.internal(population$maps$physical,population$offspring$genotypes$simulated, mapMode=1, verbose=verbose)
