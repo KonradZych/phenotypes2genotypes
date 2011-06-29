@@ -42,6 +42,10 @@
 \alias{inListCheck.internal}
 \alias{genotypeCheck.internal}
 
+\alias{fakePheno.internal}
+\alias{fakeFounders.internal}
+\alias{convertMap.internal}
+
 
 
 \title{Internal pheno2geno functions}

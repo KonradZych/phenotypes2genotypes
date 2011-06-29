@@ -32,11 +32,10 @@
 }
 
 \examples{
-	\dontrun{
-	setwd(paste(.Library,"pheno2geno/data",sep="/"))
-	population <- readFiles()
-	plotChildrenExpression(population)
-	}
+	population <- fakePopulation()
+	### plotting only 10 markers for clearer image
+	plotChildrenExpression(population,1:10)
+
 }
 
 \seealso{

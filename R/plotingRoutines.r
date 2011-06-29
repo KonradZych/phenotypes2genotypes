@@ -109,7 +109,7 @@ plotChildrenExpression <- function(population, markers=1:100){
 # 
 # cross - object of R/qtl cross type
 # coloringMode - 1 - rainbow colors 2 - black for cis and red for trans located markers
-#
+# NEEDS REMODELLING A BIT
 ############################################################################################################
 plotMapComparison <- function(cross, coloringMode=1){ 
 	
@@ -297,38 +297,38 @@ switchChromosomes.internal <- function(cross, chr1, chr2){
 # phenotypeRow - phenotypic data for single marker
 # nrDistributions - numbers of normal distributions to be fitted
 # logarithmic - TRUE - log(data) is used instead of raw data
-#
+# PROBABLY WILL BE REMOVED
 ############################################################################################################
-plotMarkerDistribution <- function(phenotypeRow,nrDistributions,logarithmic=FALSE){
-	if(logarithmic) phenotypeRow <- log(phenotypeRow)
-	EM<-normalmixEM(phenotypeRow, k=nrDistributions)
-	if(logarithmic){
-		xlab <- "log(expression values)"
-	}else{
-		xlab <- "expression values"
-	}
-	h <- vector(mode="numeric",length=nrDistributions)
-	len <- vector(mode="numeric",length=nrDistributions)
-	for(i in 1:nrDistributions){
-		len[i]<-length(phenotypeRow)*EM$lambda[i]
-		startVal <- sum(len[1:i-1])
-		x <- sort(phenotypeRow)[startVal:(startVal+len[i])]
-		h[i] <- hist(x,breaks=50)
-	}
- 	h0<-hist(phenotypeRow,breaks=50,col="grey62",border="grey70",xlab=xlab,ylab="Number of counts",main="Distribution of expression values for selected marker")
-	print(h0$mids)
-	colorP <- vector(mode="character",length=3)
-	colorP[1] <- rgb(1,0,0)
-	colorP[2] <- rgb(0,1,0)
-	colorP[3] <- rgb(0,0,1)
-	for(i in 1:nrDistributions){
-		abline(v=EM$mu[i],col=colorP[i%%3+1])
-		abline(v=c(EM$mu[i]-EM$sigma[i],EM$mu[i]+EM$sigma[i]),col=colorP[i%%3+1],lty=2)
-		startVal <- sum(len[1:i-1])
-		x <- sort(phenotypeRow)[startVal:(startVal+len[i])]
-		xfit<-seq(min(x),max(x),length=40) 
-		yfit<-dnorm(xfit,mean=mean(x),sd=sd(x)) 
-		yfit <- yfit*diff(h[[i]][1:2])*length(x) 
-		lines(xfit, yfit, col=colorP[i%%3+1], lwd=2)
-	}
-}
+#plotMarkerDistribution <- function(phenotypeRow,nrDistributions,logarithmic=FALSE){
+#	if(logarithmic) phenotypeRow <- log(phenotypeRow)
+#	EM<-normalmixEM(phenotypeRow, k=nrDistributions)
+#	if(logarithmic){
+#		xlab <- "log(expression values)"
+#	}else{
+#		xlab <- "expression values"
+#	}
+#	h <- vector(mode="numeric",length=nrDistributions)
+#	len <- vector(mode="numeric",length=nrDistributions)
+#	for(i in 1:nrDistributions){
+#		len[i]<-length(phenotypeRow)*EM$lambda[i]
+#		startVal <- sum(len[1:i-1])
+#		x <- sort(phenotypeRow)[startVal:(startVal+len[i])]
+#		h[i] <- hist(x,breaks=50)
+#	}
+ #	h0<-hist(phenotypeRow,breaks=50,col="grey62",border="grey70",xlab=xlab,ylab="Number of counts",main="Distribution of expression values for selected marker")
+#	print(h0$mids)
+#	colorP <- vector(mode="character",length=3)
+#	colorP[1] <- rgb(1,0,0)
+#	colorP[2] <- rgb(0,1,0)
+#	colorP[3] <- rgb(0,0,1)
+#	for(i in 1:nrDistributions){
+#		abline(v=EM$mu[i],col=colorP[i%%3+1])
+#		abline(v=c(EM$mu[i]-EM$sigma[i],EM$mu[i]+EM$sigma[i]),col=colorP[i%%3+1],lty=2)
+#		startVal <- sum(len[1:i-1])
+#		x <- sort(phenotypeRow)[startVal:(startVal+len[i])]
+#		xfit<-seq(min(x),max(x),length=40) 
+#		yfit<-dnorm(xfit,mean=mean(x),sd=sd(x)) 
+#		yfit <- yfit*diff(h[[i]][1:2])*length(x) 
+#		lines(xfit, yfit, col=colorP[i%%3+1], lwd=2)
+#	}
+#}
