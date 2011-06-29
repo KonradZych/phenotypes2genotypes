@@ -32,11 +32,10 @@
 }
 
 \examples{
-	\dontrun{
-	setwd(paste(.Library,"pheno2geno/data",sep="/"))
-	population <- readFiles()
+	### simulating data
+	population <- fakePopulation()
+	### plotting 
 	plotParentalExpression(population)
-	}
 }
 
 \seealso{

@@ -3,10 +3,10 @@
 \alias{population}
 
 
-\title{Adding data to population object}
+\title{Create new object of class population.}
 
 \description{
-  Adding data to existing population object. Overwriting of existing data is permitted and will be executed with warning.
+  Create new object of class population. If object exists, will be overwritten.
 }
 
 \usage{
@@ -39,10 +39,11 @@
 }
 
 \examples{
-	setwd(paste(.Library,"pheno2geno/data",sep="/"))
-	founders <- read.table("founders_phenotypes.txt",sep="")
-	offspring <- read.table("offspring_phenotypes.txt",sep="")
-	population <- createPopulation(offspring)
+	### simulating data
+	population <- fakePopulation()
+	offspring <- population$offspring$phenotypes
+	founders <- population$founders$phenotypes
+	population <- createPopulation(offspring,founders)
 }
 
 \seealso{

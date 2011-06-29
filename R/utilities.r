@@ -38,6 +38,7 @@
 # 	cross - R/qtl cross type object
 # 	difPercentage - If by removing a marker the map gets shorter by this percentage (or more). The marker 
 #		will be dropped.
+#	minChrLenght - chromosomes shorter than that won't be processed
 # 	verbose - Be verbose
 # 	debugMode - 1: Print our checks, 2: print additional time information 
 # 
@@ -45,14 +46,14 @@
 #	object of class cross
 #
 ############################################################################################################
-cleanMap <- function(cross, difPercentage, verbose=FALSE, debugMode=0){
+cleanMap <- function(cross, difPercentage, minChrLenght,verbose=FALSE, debugMode=0){
 	if(verbose && debugMode==1) cat("cleanMap starting withour errors in checkpoint.\n")
 	s <- proc.time()
 	for(i in 1:length(cross$geno)){
 		begMarkers <- length(cross$geno[[i]]$map)
 		begLength <- max(cross$geno[[i]]$map)
 		for(j in names(cross$geno[[i]]$map)){
-			if(max(cross$geno[[i]]$map)>150){
+			if(max(cross$geno[[i]]$map)>minChrLenght){
 				cur_max <- max(cross$geno[[i]]$map)
 				cross2 <- drop.markers(cross,j)
 				newmap <- est.map(cross2,offset=0)
@@ -133,7 +134,7 @@ print.population <- function(x,...){
 }
 
 ############################################################################################################
-#									*** removeIndividuals.internal ***
+#									*** removeIndividuals ***
 #
 # DESCRIPTION:
 #	Function to remove individual(s) from population object. 
@@ -146,7 +147,7 @@ print.population <- function(x,...){
 #	object of class population
 #
 ############################################################################################################
-removeIndividuals.internal <- function(population,individuals){
+removeIndividuals <- function(population,individuals){
 	for(ind in individuals){
 		if(ind%in%colnames(population$offspring$genotypes$real)){
 			population$offspring$genotypes$real <- population$offspring$genotypes$real[,-which(colnames(population$offspring$genotypes$real)==ind)]
@@ -233,7 +234,6 @@ removeChromosomesSub.internal <- function(cross, chr){
 
 ############################################################################################################
 #									*** doCleanUp.internal ***
-#	based on idea by Danny Arends
 #
 # DESCRIPTION:
 #	better garbage collection 
@@ -255,3 +255,98 @@ doCleanUp.internal <- function(verbose=FALSE){
 	}
 	if(verbose) cat("Cleaned up memory from:",bf,"to:",after,"\n")
 }
+
+############################################################################################################
+#									*** fakePopulation ***
+#
+# DESCRIPTION:
+#	better garbage collection 
+# 
+# PARAMETERS:
+#	verbose - be verbose
+#
+# OUTPUT:
+#	none
+#
+############################################################################################################
+fakePopulation <- function(){
+	map <- sim.map()
+	fake <- sim.cross(map, type="riself", n.ind=250, model = rbind(c(1,45,1,1),c(5,20,0.5,-0.5)))
+	geno <- t(pull.geno(fake))
+	map <- convertMap.internal(map)
+	colnames(geno) <- paste("RIL",1:ncol(geno),sep="_")
+	pheno <- t(apply(geno,1,fakePheno.internal))
+	rownames(pheno) <- rownames(geno)
+	colnames(pheno) <- colnames(geno)
+	founders <- t(apply(pheno,1,fakeFounders.internal))
+	rownames(founders) <- rownames(geno)
+	colnames(founders) <- 1:6
+	colnames(founders)[1:3] <- paste("Founder",1,1:3,sep="_")
+	colnames(founders)[4:6] <- paste("Founder",2,1:3,sep="_")
+	geno[which(geno==2)] <- 0
+	population <- createPopulation(pheno, founders, geno, map, map)
+	invisible(population)
+}
+
+############################################################################################################
+#									*** fakePheno.internal ***
+#
+# DESCRIPTION:
+#	better garbage collection 
+# 
+# PARAMETERS:
+#	verbose - be verbose
+#
+# OUTPUT:
+#	none
+#
+############################################################################################################
+fakePheno.internal <- function(phenoRow){
+	scalingF <- runif(1,1,10)
+	errorF <- runif(length(phenoRow),0,3)
+	phenoRow <- (phenoRow*scalingF) + errorF
+	invisible(phenoRow)
+}
+
+############################################################################################################
+#									*** fakeFounders.internal ***
+#
+# DESCRIPTION:
+#	better garbage collection 
+# 
+# PARAMETERS:
+#	verbose - be verbose
+#
+# OUTPUT:
+#	none
+#
+############################################################################################################
+fakeFounders.internal <- function(phenoRow){
+	errorF <- runif(6,0,3)
+	cur_mean <- mean(phenoRow)
+	parentalRow <- c(rep((cur_mean-0.1*cur_mean),3),rep((cur_mean-0.1*cur_mean),3)) + errorF
+	invisible(parentalRow)
+}
+
+############################################################################################################
+#									*** fakeFounders.internal ***
+#
+# DESCRIPTION:
+#	better garbage collection 
+# 
+# PARAMETERS:
+#	verbose - be verbose
+#
+# OUTPUT:
+#	none
+#
+############################################################################################################
+convertMap.internal <- function(map){
+	map_ <- NULL
+	for(i in 1:length(map)){
+		cur_chr <- cbind(rep(i,length(map[[i]])),map[[i]])
+		map_ <- rbind(map_,cur_chr)
+	}
+	invisible(map_)
+}
+

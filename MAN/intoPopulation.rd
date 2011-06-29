@@ -34,7 +34,7 @@
 }
 
 \value{
-  Object of class population. See ?createPopulation for more details about structure.
+  Object of class population. See \code{\link{createPopulation}} for description.
 }
 
 \details{
@@ -48,17 +48,11 @@
 }
 
 \examples{
-	\dontrun{
-		setwd(paste(.Library,"pheno2geno/data",sep="/"))
-		founders <- read.table("founders_phenotypes.txt",sep="")
-		offspring <- read.table("offspring_phenotypes.txt",sep="")
-		population <- createPopulation(offspring)
-		population <- intoPopulation(population, founders, "founders")
-	}
-	load(offspring_phenotypes)
-	population <- createPopulation(offspring_phenotypes)
-	load(founders_phenotypes)
-	population <- intoPopulation(population, founders_phenotypes, "founders")
+	population <- fakePopulation()
+	offspring <- population$offspring$phenotypes
+	founders <- population$founders$phenotypes
+	population <- createPopulation(offspring,no.warn=TRUE)
+	population <- intoPopulation(population,founders,"founders")
 }
 
 \seealso{

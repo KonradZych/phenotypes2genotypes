@@ -39,7 +39,6 @@
 # 	offspring - Core used to specify names of children phenotypic ("offspring_phenotypes.txt") and genotypic ("offspring_genotypes.txt") files.
 # 	founders - Core used to specify names of founders phenotypic ("founders_phenotypes.txt") file.
 # 	map - Core used to specify names of genetic ("map_genetic.txt") and physical ("map_physical.txt") map files.
-# 	sep - Separator of values in files. Passed directly to read.table, so "" is a wildcard meaning whitespace.
 # 	verbose - Be verbose
 # 	debugMode - 1: Print our checks, 2: print additional time information
 #
@@ -47,7 +46,7 @@
 #	object of class population 
 #
 ############################################################################################################
-readFiles <- function(offspring="offspring",founders="founders",map="maps",sep="\t",verbose=FALSE,debugMode=0){
+readFiles <- function(offspring="offspring",founders="founders",map="maps",verbose=FALSE,debugMode=0){
 	#**********INITIALIZING FUNCTION*************
 	s <- proc.time()
 	if(verbose && debugMode==1) cat("readFiles starting.\n")
@@ -57,7 +56,7 @@ readFiles <- function(offspring="offspring",founders="founders",map="maps",sep="
 	filename <- paste(offspring,"_phenotypes.txt",sep="")
 	if(file.exists(filename)){
 		if(verbose) cat("Found phenotypic file for offspring:",filename,"and will store  it in population$offspring$phenotypes\n")
-		offspring_phenotypes <- read.table(filename,sep=sep,header=TRUE)
+		offspring_phenotypes <- read.table(filename,sep="\t",header=TRUE)
 		offspring_phenotypes <- as.matrix(offspring_phenotypes)
 		population <- createPopulation(offspring_phenotypes,no.warn=TRUE)
 		doCleanUp.internal()
@@ -69,7 +68,7 @@ readFiles <- function(offspring="offspring",founders="founders",map="maps",sep="
 	filename <- paste(offspring,"_genotypes.txt",sep="")
 	if(file.exists(filename)){
 		if(verbose) cat("Found genotypic file for offspring:",filename,"and will store  it in population$offspring$genotypes$real\n")
-		offspring_genotypes <- read.table(filename,sep=sep,header=TRUE)
+		offspring_genotypes <- read.table(filename,sep="\t",header=TRUE)
 		offspring_genotypes <- as.matrix(offspring_genotypes)
 		population <- intoPopulation(population, offspring_genotypes, "offspring$genotypes")
 		doCleanUp.internal()
@@ -81,7 +80,7 @@ readFiles <- function(offspring="offspring",founders="founders",map="maps",sep="
 	filename <- paste(founders,"_phenotypes.txt",sep="")
 	if(file.exists(filename)){
 		if(verbose) cat("Found phenotypic file for parents:",filename,"and will store it in population$founders$phenotypes\n")
-		founders <- read.table(filename,sep=sep,header=TRUE)
+		founders <- read.table(filename,sep="\t",header=TRUE)
 		founders <- as.matrix(founders)
 		population <- intoPopulation(population, founders, "founders")
 		#removing from founders probes that are not in children:
@@ -95,7 +94,7 @@ readFiles <- function(offspring="offspring",founders="founders",map="maps",sep="
 	filename <- paste(map,"_genetic.txt",sep="")
 	if(file.exists(filename)){
 		if(verbose) cat("Found genotypic file for offspring:",filename,"and will store  it in population$maps$genetic\n")
-		maps_genetic <- read.table(filename,sep=sep,row.names=1,header=FALSE)
+		maps_genetic <- read.table(filename,sep="\t",row.names=1,header=FALSE)
 		maps_genetic <- as.matrix(maps_genetic)
 		population <- intoPopulation(population, maps_genetic, "maps$genetic")
 		doCleanUp.internal()
@@ -107,7 +106,7 @@ readFiles <- function(offspring="offspring",founders="founders",map="maps",sep="
 	filename <- paste(map,"_physical.txt",sep="")
 	if(file.exists(filename)){
 		if(verbose) cat("Found genotypic file for offspring:",filename,"and will store  it in population$maps$physical\n")
-		physical <-	read.table(filename,sep=sep,row.names=1,header=FALSE)
+		physical <-	read.table(filename,sep="\t",row.names=1,header=FALSE)
 		physical <- as.matrix(physical)
 		population <- intoPopulation(population, physical, "maps$physical")
 		doCleanUp.internal()

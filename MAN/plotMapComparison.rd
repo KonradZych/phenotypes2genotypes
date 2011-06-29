@@ -32,7 +32,8 @@
 }
 
 \examples{
-	#TODO
+	#TODO, cause function needs reformatting
+	
 }
 
 \seealso{
