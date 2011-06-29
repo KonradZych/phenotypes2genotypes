@@ -284,23 +284,29 @@ fakePopulation <- function(nrFounders,...){
 	if(nrFounders<4) nrFounders <- 4
 	if(!(nrFounders%%2==0)) nrFounders <- nrFounders+1
 	map <- sim.map()
-	dots <- list(...)
-    if ("type" %in% names(dots)){
-        type <- dots$type
-		dots <- dots[[-which(names(dots)=="type")]]
+	if(!missing(...)){
+		dots <- list(...)
+		if ("type" %in% names(dots)){
+			type <- dots$type
+			dots <- dots[[-which(names(dots)=="type")]]
+		}else{
+			type <- "riself"
+		}
+		if ("n.ind" %in% names(dots)){
+			n.ind <- dots$n.ind
+			dots <- dots[[-which(names(dots)=="n.ind")]]
+		}else{
+			n.ind <- 250
+		}
+		if ("model" %in% names(dots)){
+			model <- dots$model
+			dots <- dots[[-which(names(dots)=="model")]]
+		}else{
+			model <- rbind(c(1,45,1,1),c(5,20,0.5,-0.5))
+		}
 	}else{
 		type <- "riself"
-	}
-	if ("n.ind" %in% names(dots)){
-        n.ind <- dots$n.ind
-		dots <- dots[[-which(names(dots)=="n.ind")]]
-	}else{
 		n.ind <- 250
-	}
-	if ("model" %in% names(dots)){
-        model <- dots$model
-		dots <- dots[[-which(names(dots)=="model")]]
-	}else{
 		model <- rbind(c(1,45,1,1),c(5,20,0.5,-0.5))
 	}
 	fake <- sim.cross(map,type=type, n.ind=n.ind, model = model)
@@ -316,7 +322,9 @@ fakePopulation <- function(nrFounders,...){
 	colnames(founders)[1:(nrFounders/2)] <- paste("Founder",1,1:(nrFounders/2),sep="_")
 	colnames(founders)[(nrFounders/2+1):nrFounders] <- paste("Founder",2,(nrFounders/2+1):nrFounders,sep="_")
 	geno[which(geno==2)] <- 0
-	population <- createPopulation(pheno, founders, geno, map, map)
+	foundersGroups <- c(rep(0,(nrFounders/2)),rep(1,(nrFounders/2)))
+	cat(foundersGroups)
+	population <- createPopulation(pheno, founders, geno, map, map, foundersGroups)
 	invisible(population)
 }
 
@@ -356,8 +364,8 @@ fakePheno.internal <- function(genoRow){
 fakeFounders.internal <- function(phenoRow,nrFounders){
 	errorF <- runif(nrFounders,0,3)
 	cur_mean <- mean(phenoRow)
-	parentalRow <- c(rep((cur_mean-0.1*cur_mean),(nrFounders/2)),rep((cur_mean-0.1*cur_mean),(nrFounders/2))) + errorF
-	invisible(parentalRow)
+	foundersRow <- c(rep((cur_mean-0.1*cur_mean),(nrFounders/2)),rep((cur_mean-0.1*cur_mean),(nrFounders/2))) + errorF
+	invisible(foundersRow)
 }
 
 ############################################################################################################
