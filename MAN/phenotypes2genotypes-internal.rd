@@ -13,12 +13,10 @@
 \alias{doCleanUp.internal}
 
 \alias{convertToGenotypes.internal}
-\alias{splitRow.internal}
+\alias{splitPheno.internal}
 \alias{filterRowSub.internal }
 \alias{filterRow.internal}
 \alias{sortMap.internal}
-\alias{mixtureEM.internal}
-\alias{mixtureEMSub.internal}
 
 \alias{getChromosome.internal}
 \alias{getYLocs.internal}
@@ -29,8 +27,8 @@
 \alias{removeChromosomesSub.internal}
 
 \alias{checkMu.internal}
-\alias{splitRowSubEM.internal}
-\alias{splitRowSub.internal}
+\alias{splitPhenoRowEM.internal}
+\alias{splitPhenoRow.internal}
 \alias{print.population}
 \alias{intoPopulationSubPheno.internal}
 \alias{intoPopulationSubGeno.internal}
