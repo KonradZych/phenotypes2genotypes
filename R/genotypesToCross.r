@@ -8,7 +8,7 @@
 # 
 # first written March 2011
 # last modified June 2011
-# last modified in version: 0.7.2
+# last modified in version: 0.8.1
 # in current version: active, internal in main workflow
 #
 #     This program is free software; you can redistribute it and/or

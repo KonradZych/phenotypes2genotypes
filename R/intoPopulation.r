@@ -92,7 +92,7 @@ createPopulation <- function(offspring_phenotypes, founders, founders_groups, of
 # 	-  maps$physical - physical map
 #
 ############################################################################################################
-intoPopulation <- function(population, dataObject, dataType=c("founders","offspring$phenotypes","offspring$genotypes","maps$genetic","maps$physical"),verbose=FALSE,debugMode=0){
+intoPopulation <- function(population, dataObject, dataType=c("founders","offspring$phenotypes","founders$group","offspring$genotypes","maps$genetic","maps$physical"),verbose=FALSE,debugMode=0){
 	### checks
 	if(is.null(population)) stop("No population object provided!\n")
 	inListCheck.internal(dataType,"dataType",c("founders","offspring$phenotypes","offspring$genotypes","maps$genetic","maps$physical"))
@@ -127,7 +127,7 @@ intoPopulation <- function(population, dataObject, dataType=c("founders","offspr
 # 	-  maps$physical - physical map
 #
 ############################################################################################################
-intoPopulationSub.internal <- function(population, dataObject, dataType=c("founders","offspring$phenotypes","offspring$genotypes","maps$genetic","maps$physical","founders$groups"),verbose=FALSE,debugMode=0){
+intoPopulationSub.internal <- function(population, dataObject, dataType=c("founders","offspring$phenotypes","founders$groups","offspring$genotypes","maps$genetic","maps$physical"),verbose=FALSE,debugMode=0){
 	if(dataType=="founders" || dataType=="offspring$phenotypes"){
 		population <- intoPopulationSubPheno.internal(population,dataObject,dataType, verbose, debugMode)
 	}else if(dataType=="offspring$genotypes"){
