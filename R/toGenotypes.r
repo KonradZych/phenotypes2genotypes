@@ -197,9 +197,9 @@ splitPheno.internal <- function(offspring, founders, splitMethod, overlapInd, pr
 	cat("population:",nrow(offspring),"founders:",nrow(founders),"\n")
 	for(x in rownames(offspring)){
 		if(splitMethod=="mean"){
-			cur <- splitRowSub.internal(x, offspring, founders, overlapInd, proportion, margin, groupLabels, up)
+			cur <- splitPhenoRow.internal(x, offspring, founders, overlapInd, proportion, margin, groupLabels, up)
 		}else if(splitMethod=="EM"){
-			cur <- splitRowSubEM.internal(x, offspring, founders, overlapInd, proportion, margin, groupLabels, up)
+			cur <- splitPhenoRowEM.internal(x, offspring, founders, overlapInd, proportion, margin, groupLabels, up)
 		}
 		if(!(is.null(cur))){
 			output <- rbind(output,cur)
@@ -210,7 +210,7 @@ splitPheno.internal <- function(offspring, founders, splitMethod, overlapInd, pr
 }
 
 ############################################################################################################
-#									*** splitRowSub.internal ***
+#									*** splitPhenoRow.internal ***
 #
 # DESCRIPTION:
 #	subfunction of splitRow.internal, splitting one row
@@ -229,7 +229,7 @@ splitPheno.internal <- function(offspring, founders, splitMethod, overlapInd, pr
 #	genotype row
 #
 ############################################################################################################
-splitRowSub.internal <- function(x, offspring, founders, overlapInd, proportion, margin, groupLabels, up=1){
+splitPhenoRow.internal <- function(x, offspring, founders, overlapInd, proportion, margin, groupLabels, up=1){
 	### initialization
 	result <- rep(0,length(offspring[x,]))
 	
@@ -339,7 +339,7 @@ filterRowSub.internal <- function(result, overlapInd, proportion, margin, genoty
 }
 
 ############################################################################################################
-#									*** splitRowSubEM.internal ***
+#									*** splitPhenoRowEM.internal ***
 #
 # DESCRIPTION:
 #	subfunction of splitRow.internal, splitting one row using EM algorithm
@@ -358,7 +358,7 @@ filterRowSub.internal <- function(result, overlapInd, proportion, margin, genoty
 #	genotype row
 #
 ############################################################################################################
-splitRowSubEM.internal <- function(x, offspring, founders, overlapInd, proportion, margin, groupLabels, up=1){
+splitPhenoRowEM.internal <- function(x, offspring, founders, overlapInd, proportion, margin, groupLabels, up=1){
 	### initialization
 	print(x)
 	nrDistributions <- length(proportion)
