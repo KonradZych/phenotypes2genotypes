@@ -10,12 +10,13 @@
 }
 
 \usage{
-	createPopulation(offspring_phenotypes=NULL, founders=NULL, offspring_genotypes=NULL, maps_genetic=NULL, maps_physical=NULL, no.warn=FALSE, verbose=FALSE, debugMode=0)
+	createPopulation(offspring_phenotypes, founders, founders_groups, offspring_genotypes, maps_genetic, maps_physical, no.warn=FALSE, verbose=FALSE,debugMode=0)
 }
 
 \arguments{
- \item{offspring_phenotypes}{ matrix containing offspring phenotype data (have to be supported, if not - function quits with error}
- \item{founders}{ matrix containing founders phenotype data (optional)}
+ \item{offspring_phenotypes}{ matrix containing offspring phenotype data (have to be supported, if not - function quits with error)}
+ \item{founders}{ matrix containing founders phenotype data (have to be supported, if not - function quits with error)}
+  \item{founders_groups}{ specify groups im founders data (have to be supported, if not - function quits with error)}
  \item{offspring_genotypes}{ matrix containing offspring genotype data (optional)}
  \item{maps_genetic}{ matrix containing genetic map (optional)}
  \item{maps_physical}{ matrix containing physical map (optional)}
@@ -42,7 +43,8 @@
 	population <- fakePopulation()
 	offspring <- population$offspring$phenotypes
 	founders <- population$founders$phenotypes
-	population <- createPopulation(offspring,founders)
+	founders_groups <- population$founders$groups
+	population <- createPopulation(offspring,founders,founders_groups)
 }
 
 \seealso{

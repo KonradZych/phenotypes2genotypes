@@ -50,8 +50,10 @@
 	population <- fakePopulation()
 	offspring <- population$offspring$phenotypes
 	founders <- population$founders$phenotypes
-	population <- createPopulation(offspring,no.warn=TRUE)
-	population <- intoPopulation(population,founders,"founders")
+	founders_groups <- population$founders$groups
+	maps_genetic <- population$maps$genetic
+	population <- createPopulation(offspring,founders,founders_groups)
+	population <- intoPopulation(population,maps_genetic,"maps$genetic")
 }
 
 \seealso{

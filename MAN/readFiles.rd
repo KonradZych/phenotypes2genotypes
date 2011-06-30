@@ -15,7 +15,7 @@
  \item{offspring}{ Core used to specify names of children phenotypic ("core_phenotypes.txt") and genotypic ("core_genotypes.txt") files.}
  \item{founders}{ Core used to specify names of parental phenotypic ("core_phenotypes.txt") file. }
  \item{map}{ Core used to specify names of genetic ("map_genetic.txt") and physical ("map_physical.txt") map files. }
- \item{founders_groups}{ Specify groups of individuals in founders data, see \code{\link[RankProd]{RP}} for more details }
+ \item{founders_groups}{ Specify groups of individuals in founders data, see description below and \code{\link[RankProd]{RP}} for more details }
  \item{verbose}{ Be verbose}
  \item{debugMode}{ 1: Print out checks, 2: print additional time information }
 }
@@ -56,6 +56,8 @@ map with (see toGenotypes for more information). Example of map file structure:
 "marker4"        \tab 1      \tab 2     \cr
 "marker5"               \tab 1    \tab 3      \cr
 }
+You have also to specify groups ion founders file, so which columns come from which parent. Let's imagine, you have measured both parents in triplo and data for first parent is in columns 1,3 and 5, for second parent - columns 2,4,6.
+Founders groups should be c(0,1,0,1,0,1) then. Always use only 0 and 1 to specify groups.
 }
 
 \author{
@@ -66,11 +68,11 @@ map with (see toGenotypes for more information). Example of map file structure:
 \examples{
 	\dontrun{
 	### simplest call possible
-	population <- readFiles()
+	population <- readFiles(founders_groups=c(0,0,0,1,1,1))
 	### more informative one
-	population <- readFiles(verbose=TRUE,debugMode=1)
+	population <- readFiles(founders_groups=c(0,0,0,1,1,1),verbose=TRUE,debugMode=1)
 	### imagine you prefer parents and children instead of founders and offspring:
-	population <- readFiles(offspring="children",founders="parents",verbose=TRUE,debugMode=1)
+	population <- readFiles(offspring="children",founders="parents",founders_groups=c(0,0,0,1,1,1)verbose=TRUE,debugMode=1)
 	### etc.. when you load it, you may want to inspect it:
 	population$founders$phenotypes[1:10,]
 	}

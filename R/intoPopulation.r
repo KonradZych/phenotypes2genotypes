@@ -38,7 +38,7 @@
 # maps$physical - matrix containing physical map (optional)
 #
 ############################################################################################################
-createPopulation <- function(offspring_phenotypes, founders, offspring_genotypes, maps_genetic, maps_physical, founders_groups,no.warn=FALSE, verbose=FALSE,debugMode=0){
+createPopulation <- function(offspring_phenotypes, founders, founders_groups, offspring_genotypes, maps_genetic, maps_physical, no.warn=FALSE, verbose=FALSE,debugMode=0){
 	if(verbose && debugMode==1) cat("createPopulation starting.\n")
 	s <- proc.time()
 	population <- NULL
@@ -48,9 +48,14 @@ createPopulation <- function(offspring_phenotypes, founders, offspring_genotypes
 		population <- intoPopulationSub.internal(population, offspring_phenotypes, "offspring$phenotypes", verbose, debugMode)
 	}
 	if(missing(founders)){
-		if(!(no.warn))warning("No founders phenotype data provided. Strongly recommend to supply this data using intoPopulation.\n")
+		stop("No founders phenotype data provided!\n")
 	}else{
 		population <- intoPopulationSub.internal(population, founders, "founders", verbose, debugMode)
+	}
+	if(missing(founders_groups)){
+		stop("No information about founders groups provided!\n")
+	}else{
+		population <- intoPopulationSub.internal(population, founders_groups, "founders$groups", verbose, debugMode)
 	}
 	if(missing(offspring_genotypes)){
 		if(verbose && !(no.warn))cat("No offspring genotypic data provided. You can supply it later using intoPopulation.\n")
@@ -66,11 +71,6 @@ createPopulation <- function(offspring_phenotypes, founders, offspring_genotypes
 		if(verbose && !(no.warn))cat("No physical map provided.  You can supply it later using intoPopulation.\n")
 	}else{
 		population <- intoPopulationSub.internal(population, maps_physical, "maps$physical", verbose, debugMode)
-	}
-	if(missing(founders_groups)){
-		if(!(no.warn))warning("No information about founders groups provided.  Strongly recommend to supply this data using intoPopulation.\n")
-	}else{
-		population <- intoPopulationSub.internal(population, founders_groups, "founders$groups", verbose, debugMode)
 	}
 	if(is.null(population)) stop("No data provided!\n")
 	class(population) <- "population"

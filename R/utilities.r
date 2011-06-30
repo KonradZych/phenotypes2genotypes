@@ -323,8 +323,7 @@ fakePopulation <- function(nrFounders,...){
 	colnames(founders)[(nrFounders/2+1):nrFounders] <- paste("Founder",2,(nrFounders/2+1):nrFounders,sep="_")
 	geno[which(geno==2)] <- 0
 	foundersGroups <- c(rep(0,(nrFounders/2)),rep(1,(nrFounders/2)))
-	cat(foundersGroups)
-	population <- createPopulation(pheno, founders, geno, map, map, foundersGroups)
+	population <- createPopulation(pheno, founders, foundersGroups, geno, map, map)
 	invisible(population)
 }
 
