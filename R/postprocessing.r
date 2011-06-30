@@ -43,9 +43,9 @@
 #	object of class cross
 #
 ############################################################################################################
-segregateChromosomes.internal <- function(cross){
+segregateChromosomes.internal <- function(cross,verbose=FALSE){
 	if(is.null(cross$maps$physical)){
-		cat("WARNING: no physical map, function will return unchanged cross object\n")
+		if(verbose) cat("WARNING: no physical map, function will return unchanged cross object\n")
 	}else{
 		output <- majorityRule.internal(cross)
 		print(output)
@@ -128,22 +128,41 @@ majorityRule.internal <- function(cross){
 # PARAMETERS:
 # 	cross - object of class cross
 # 	chromosomes - chromosomes to be merged
-# 	name - chromosome
+# 	name - name of merged chromosome
 # 
 # OUTPUT:
 #	object of class cross
 #
 ############################################################################################################
-mergeChromosomes.internal <- function(cross, chromosomes, name){
-	cat("Merging chromosomes",chromosomes,"to form chromosome",name,"names:",names(cross$geno),"\n")
+mergeChromosomes.internal <- function(cross, chromosomes, name, verbose=FALSE){
+	if(verbose)cat("Merging chromosomes",chromosomes,"to form chromosome",name,"names:",names(cross$geno),"\n")
 	geno <- cross$geno
 	markerNames <- NULL
 	for(j in chromosomes){
 		if(j!=name) markerNames <- c(markerNames, colnames(geno[[j]]$data))
 	}
 	for(k in markerNames) cross <- movemarker(cross, k, name)
-	cat("Ordering markers on newly merged chromosome\n")
-	#cross <- orderMarkers(cross, chr=name)
+	invisible(cross)
+}
+
+############################################################################################################
+#									*** switchChromosomes.internal ***
+#
+# DESCRIPTION:
+#	switching two chromosomes of cross object
+# 
+# cross - object of R/qtl cross type
+# chr1, chr2 - numbers of chromosomes to be switched (1,2) == (2,1)
+#
+############################################################################################################
+switchChromosomes.internal <- function(cross, chr1, chr2){
+	cat(chr1,chr2,"\n")
+	if(chr1!=chr2){
+		geno <- cross$geno
+		cross$geno[[chr1]] <- geno[[chr2]] 
+		cross$geno[[chr2]] <- geno[[chr1]]
+		cross <- est.rf(cross)
+	}
 	invisible(cross)
 }
 
@@ -206,8 +225,8 @@ removeChromosomes.internal <- function(cross, numberOfChromosomes, chromosomesTo
 #	object of class cross
 #
 ############################################################################################################
-removeChromosomesSub.internal <- function(cross, chr){
-	cat("removing chromosome:",chr," markers:",names(cross$geno[[chr]]$map),"\n")
+removeChromosomesSub.internal <- function(cross, chr,verbose=FALSE){
+	if(verbose)cat("removing chromosome:",chr," markers:",names(cross$geno[[chr]]$map),"\n")
 	cross$rmv <- cbind(cross$rmv,cross$geno[[chr]]$data)
 	cross <- drop.markers(cross, names(cross$geno[[chr]]$map))
 	invisible(cross)
