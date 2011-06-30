@@ -24,9 +24,8 @@
 #     at http://www.r-project.org/Licenses/GPL-3
 #
 # Contains: toGenotypes
-#           convertToGenotypes.internal, splitRow.internal, filterGenotypes.internal, filterRow.internal
-#			sortMap.internal, majorityRule.internal, mergeChromosomes.internal, splitRowSubEM.internal
-#			checkMu.internal
+#           convertToGenotypes.internal, splitRow.internal, filterGenotypes.internal, filterRow.internal,
+# 			splitRowSubEM.internal, checkMu.internal
 #
 ############################################################################################################
 
@@ -58,7 +57,7 @@
 #	object of class cross
 #
 ############################################################################################################
-toGenotypes <- function(population, genotype=c("simulated","real"), orderUsing=c("none","map_genetic","map_physical"), splitMethod=c("EM","mean"),treshold=0.01, overlapInd = 0, proportion = c(50,50), margin = 15, numberOfChromosomes = NULL, verbose=FALSE, debugMode=0,...){
+toGenotypes <- function(population, genotype=c("simulated","real"), orderUsing=c("none","map_genetic","map_physical"), splitMethod=c("EM","mean"),treshold=0.01, overlapInd = 0, proportion = c(50,50), margin = 15, verbose=FALSE, debugMode=0,...){
 	#*******CHECKS*******
 	if(missing(orderUsing)) orderUsing <- NULL
 	s<-proc.time()
@@ -91,30 +90,9 @@ toGenotypes <- function(population, genotype=c("simulated","real"), orderUsing=c
 	e1 <- proc.time()
 	if(verbose && debugMode==2)cat("Creating cross object done in:",(e1-s1)[3],"seconds.\n")
 	
-	#*******ENHANCING CROSS OBJECT*******
-	#if(use!="map_genetic"&&use!="map_physical"){
-		### FormLinkage groups
-	#	cross <- invisible(formLinkageGroups(cross,reorgMarkers=TRUE,verbose=verbose,...))
-		
-		### remove shitty chromosomes
-	#	if(!is.null(numberOfChromosomes))	cross <- removeChromosomes.internal(cross,numberOfChromosomes)
-		### saving as separated object, beacause orderMarkers will remove it from cross object
-	#	removed <- cross$rmv
-		
-		### Order markers
-		#cross <- orderMarkers(cross, use.ripple=TRUE, verbose=verbose)
-		
-		### Adding real maps		
-	#	if(!(is.null(population$maps$physical))){
-	#		population <- sortMap.internal(population)
-	#		cross$maps$physical <- population$maps$physical
-			### Majority rule used to order linkage groups
-	#		cross <- segregateChromosomes.internal(cross)
-	#	}
-		
-		### adding info about removed markers
-	#	cross$rmv <- removed
-	#}
+	#*******ADDING MAPS TO THE CROSS*******
+	if(!(is.null(population$maps$physical))) cross$maps$physical <- population$maps$physical
+	if(!(is.null(population$maps$genetic))) cross$maps$genetic <- population$maps$genetic
 	
 	#*******RETURNING CROSS OBJECT*******
 	e<-proc.time()
@@ -166,19 +144,19 @@ convertToGenotypes.internal <- function(population, splitMethod, treshold, overl
 		if(!(is.null(dim(downRils)))){
 			# best situation
 			if(verbose) cat("Selected ",nrow(upRils),"upregulated markers and ",nrow(downRils),"downregulated markers.\n")
-			cur <- splitRow.internal(downRils, downParental, splitMethod, overlapInd, proportion, margin, population$founders$groups, 0)
+			cur <- splitPheno.internal(downRils, downParental, splitMethod, overlapInd, proportion, margin, population$founders$groups, 0)
 			output <- rbind(output,cur[[1]])
 			markerNames <- c(markerNames,cur[[2]])
 		}else{
 			if(verbose) cat("Selected ",nrow(upRils),"upregulated markers.\n")
 		}
-		cur <- splitRow.internal(upRils, upParental, splitMethod, overlapInd, proportion, margin, population$founders$groups, 1)
+		cur <- splitPheno.internal(upRils, upParental, splitMethod, overlapInd, proportion, margin, population$founders$groups, 1)
 		output <- rbind(output,cur[[1]])
 		markerNames <- c(markerNames,cur[[2]])
 	}else{
 		if(!(is.null(dim(downRils)))){
 			if(verbose) cat("Selected ",nrow(downRils),"downregulated markers.\n")
-			cur <- splitRow.internal(downRils, downParental, splitMethod, overlapInd, proportion, margin, population$founders$groups, 0)
+			cur <- splitPheno.internal(downRils, downParental, splitMethod, overlapInd, proportion, margin, population$founders$groups, 0)
 			output <- rbind(output,cur[[1]])
 			markerNames <- c(markerNames,cur[[2]])
 		}else{
@@ -195,7 +173,7 @@ convertToGenotypes.internal <- function(population, splitMethod, treshold, overl
 }
 
 ############################################################################################################
-#									*** splitRow.internal ***
+#									*** splitPheno.internal ***
 #
 # DESCRIPTION:
 #	subfunction of convertToGenotypes.internal, splitting children markers using founders mean values
@@ -208,9 +186,12 @@ convertToGenotypes.internal <- function(population, splitMethod, treshold, overl
 # 	margin - Proportion is allowed to varry between this margin (2 sided)
 # 	groupLabels - Specify which column of founders data belongs to group 0 and which to group 1.
 # 	up - 1 - genes up 0 - down regulated
+# 
+# OUTPUT:
+#	list containg genotype matrix and names of selected markers
 #
 ############################################################################################################
-splitRow.internal <- function(offspring, founders, splitMethod, overlapInd, proportion, margin, groupLabels, up){
+splitPheno.internal <- function(offspring, founders, splitMethod, overlapInd, proportion, margin, groupLabels, up){
 	output <- NULL
 	markerNames <- NULL
 	cat("population:",nrow(offspring),"founders:",nrow(founders),"\n")
@@ -229,16 +210,23 @@ splitRow.internal <- function(offspring, founders, splitMethod, overlapInd, prop
 }
 
 ############################################################################################################
-#splitRowSub.internal: subfunction of splitRow.internal, splitting one row
+#									*** splitRowSub.internal ***
+#
+# DESCRIPTION:
+#	subfunction of splitRow.internal, splitting one row
 # 
-# x - name of currently processed row
-# offspring - matrix of up/down regulated genes in offspring
-# founders - matrix of up/down regulated genes in parents
-# overlapInd - Number of individuals that are allowed in the overlap
-# proportion - Proportion of individuals expected to carrying a certain genotype 
-# margin - Proportion is allowed to varry between this margin (2 sided)
-# groupLabels - Specify which column of founders data belongs to group 0 and which to group 1.
-# up - 1 - genes up 0 - down regulated
+# PARAMETERS:
+# 	x - name of currently processed row
+# 	offspring - matrix of up/down regulated genes in offspring
+# 	founders - matrix of up/down regulated genes in parents
+# 	overlapInd - Number of individuals that are allowed in the overlap
+# 	proportion - Proportion of individuals expected to carrying a certain genotype 
+# 	margin - Proportion is allowed to varry between this margin (2 sided)
+# 	groupLabels - Specify which column of founders data belongs to group 0 and which to group 1.
+# 	up - 1 - genes up 0 - down regulated
+# 
+# OUTPUT:
+#	genotype row
 #
 ############################################################################################################
 splitRowSub.internal <- function(x, offspring, founders, overlapInd, proportion, margin, groupLabels, up=1){
@@ -285,15 +273,22 @@ splitRowSub.internal <- function(x, offspring, founders, overlapInd, proportion,
 }
 
 ############################################################################################################
-#filterRow.internal : removing from genotypic matrix genes that are no passing specified requirments
+#									*** filterRow.internal ***
+#
+# DESCRIPTION:
+#	checking whether given genotype row meets given requirments
 # 
-# population - Ril type object, must contain founders phenotypic data.
-# overlapInd - Number of individuals that are allowed in the overlap
-# proportion - Proportion of individuals expected to carrying a certain genotype 
-# margin - Proportion is allowed to varry between this margin (2 sided)
-# verbose - Be verbose
-# debugMode - 1: Print our checks, 2: print additional time information
-
+# PARAMETERS:
+# 	population - Ril type object, must contain founders phenotypic data.
+# 	overlapInd - Number of individuals that are allowed in the overlap
+# 	proportion - Proportion of individuals expected to carrying a certain genotype 
+# 	margin - Proportion is allowed to varry between this margin (2 sided)
+# 	verbose - Be verbose
+# 	debugMode - 1: Print our checks, 2: print additional time information
+# 
+# OUTPUT:
+#	genotype row if it meets requirments or NULL
+#
 ############################################################################################################
 filterRow.internal <- function(result, overlapInd, proportion, margin, genotypes){
 	### creating inverted genotypes matrix, to be sure, that we won't filter out anythng in correct proportion
@@ -314,12 +309,19 @@ filterRow.internal <- function(result, overlapInd, proportion, margin, genotypes
 }
 
 ############################################################################################################
-#filterRowSub.internal : subfunction of filterGenotypes.internal, filtering one row
+#									*** filterRowSub.internal ***
+#
+# DESCRIPTION:
+# 	subfunction of filterGenotypes.internal, filtering one row
 # 
-# genotypeRow - currently processed row
-# overlapInd - Number of individuals that are allowed in the overlap
-# proportion - Proportion of individuals expected to carrying a certain genotype 
-# margin - Proportion is allowed to varry between this margin (2 sided)
+# PARAMETERS:
+# 	genotypeRow - currently processed row
+# 	overlapInd - Number of individuals that are allowed in the overlap
+# 	proportion - Proportion of individuals expected to carrying a certain genotype 
+# 	margin - Proportion is allowed to varry between this margin (2 sided)
+# 
+# OUTPUT:
+#	boolean
 #
 ############################################################################################################
 filterRowSub.internal <- function(result, overlapInd, proportion, margin, genotypes){
@@ -337,132 +339,23 @@ filterRowSub.internal <- function(result, overlapInd, proportion, margin, genoty
 }
 
 ############################################################################################################
-#sortMap.internal: subfunction of filterGenotypes.internal, filtering one row
-# 
-# population - Ril type object
+#									*** splitRowSubEM.internal ***
 #
-############################################################################################################
-sortMap.internal <- function(population){
-	genes <- population$offspring$map
-	result <- NULL
-	nchr <- length(table(genes[,1]))
-	lengths <- vector(mode="numeric",length=nchr+1)
-	lengths[1] <- 0
-	for(i in 1:nchr){
-		current <- genes[which(genes[,1]==i),]
-		lengths[i+1] <- max(current[,2]) + lengths[i] + 20000
-		current <- current[names(sort(current[,2])),]
-		current[,2] <- current[,2] + lengths[i]
-		result <- rbind(result,current)
-	}
-	population$offspring$map <- list(result,lengths[-length(lengths)])
-	invisible(population)
-}
-
-############################################################################################################
-#segragateChromosomes.internal  - ordering chromosomes using physical map
+# DESCRIPTION:
+#	subfunction of splitRow.internal, splitting one row using EM algorithm
 # 
-# cross - object of R/qtl cross type
-#
-############################################################################################################
-segregateChromosomes.internal <- function(cross){
-	if(is.null(cross$maps$physical)){
-		cat("WARNING: no physical map, function will return unchanged cross object\n")
-	}else{
-		output <- majorityRule.internal(cross)
-		print(output)
-		### until every chr on phys map is match exactly once
-		while(max(apply(output,2,sum))>1){
-			toMerge <- which(apply(output,2,sum)>1)
-			for(curToMerge in toMerge){
-				curMerge <- which(output[,curToMerge]==max(output[,curToMerge]))
-				map <- cross$maps$physical
-				cross <- mergeChromosomes.internal(cross,curMerge,curMerge[1])
-				cross$maps$physical <- map
-				output <- majorityRule.internal(cross)
-			}
-		}
-		
-		order1 <- matrix(0,ncol(output),nrow(output))
-		order2 <- matrix(1,ncol(output),nrow(output))
-		### until next iteration doesn't change the result
-		while(any(order1!=order2)){
-			order1 <- output
-			for(l in 1:ncol(output)){
-				cur <- which(output[,l]==max(output[,l]))
-				if(cur!=l)cross <- switchChromosomes.internal(cross,cur,l)
-				output <- majorityRule.internal(cross)
-			}
-			order2 <- output
-		}
-		names(cross$geno) <- 1:length(cross$geno)
-	}
-	invisible(cross)
-}
-
-############################################################################################################
-#majorityRule.internal - subfunction of segragateChromosomes.internal, returns matrix showing for every
-# reco map chromosome from which physicall map chromosome majority of markers comes
+# PARAMETERS:
+# 	x - name of currently processed row
+# 	offspring - matrix of up/down regulated genes in offspring
+# 	founders - matrix of up/down regulated genes in parents
+# 	overlapInd - Number of individuals that are allowed in the overlap
+# 	proportion - Proportion of individuals expected to carrying a certain genotype 
+# 	margin - Proportion is allowed to varry between this margin (2 sided)
+# 	groupLabels - Specify which column of founders data belongs to group 0 and which to group 1.
+# 	up - 1 - genes up 0 - down regulated
 # 
-# cross - object of R/qtl cross type
-#
-############################################################################################################
-majorityRule.internal <- function(cross){
-	knchrom <- length(table(cross$maps$physical[[1]][,1]))
-	result <- matrix(0, length(cross$geno), knchrom)
-	output <- matrix(0, length(cross$geno), knchrom)
-	for(i in 1:length(cross$geno)){
-		cur_ys <- colnames(cross$geno[[i]]$data)
-		cur_xs <- cross$maps$physical[[1]][cur_ys,]
-		for(j in 1:knchrom){
-			result[i,j] <- sum(cur_xs[,1]==j)/nrow(cur_xs)
-		}
-		output[i,which(result[i,]==max(result[i,]))] <- 1
-	}
-	rownames(result) <- 1:nrow(result)
-	colnames(result) <- 1:ncol(result)
-	rownames(output) <- 1:nrow(output)
-	colnames(output) <- 1:ncol(output)
-	
-	if(min(apply(output,2,max))!=1){
-		toCheck <- which(apply(output,2,sum)!=1)
-		for(x in toCheck){
-			output[,x] <- 0
-			output[which(result[,x]==max(result[,x])),x] <- 1
-		}
-	}	
-	invisible(output)
-}
-
-############################################################################################################
-#mergeChromosomes.internal - subfunction of segragateChromosomes.internal, merging multiple chromosomes into
-# one
-# 
-# cross - object of R/qtl cross type
-# chromosomes - chromosomes to be merged
-# name - chromosome
-#
-############################################################################################################
-mergeChromosomes.internal <- function(cross, chromosomes, name){
-	cat("Merging chromosomes",chromosomes,"to form chromosome",name,"names:",names(cross$geno),"\n")
-	geno <- cross$geno
-	markerNames <- NULL
-	for(j in chromosomes){
-		if(j!=name) markerNames <- c(markerNames, colnames(geno[[j]]$data))
-	}
-	for(k in markerNames) cross <- movemarker(cross, k, name)
-	cat("Ordering markers on newly merged chromosome\n")
-	#cross <- orderMarkers(cross, chr=name)
-	invisible(cross)
-}
-
-############################################################################################################
-#splitRowSubEM.internal - subfunction of segragateChromosomes.internal, merging multiple chromosomes into
-# one
-# 
-# cross - object of R/qtl cross type
-# chromosomes - chromosomes to be merged
-# name - chromosome
+# OUTPUT:
+#	genotype row
 #
 ############################################################################################################
 splitRowSubEM.internal <- function(x, offspring, founders, overlapInd, proportion, margin, groupLabels, up=1){
@@ -492,9 +385,16 @@ splitRowSubEM.internal <- function(x, offspring, founders, overlapInd, proportio
 }
 
 ############################################################################################################
-#checkMu.internal: checking if fitted normal distributions do not overlap
+#									*** checkMu.internal ***
+#
+# DESCRIPTION:
+#	checking if fitted normal distributions do not overlap
 # 
-# EM - output of normalmixEM function
+# PARAMETERS:
+# 	EM - output of normalmixEM function
+# 
+# OUTPUT:
+#	boolean
 #
 ############################################################################################################
 checkMu.internal <- function(EM){
