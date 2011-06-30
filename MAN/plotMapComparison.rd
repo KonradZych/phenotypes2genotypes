@@ -9,7 +9,7 @@
 }
 
 \usage{
-	plotMapComparison(cross, coloringMode=1)
+	plotMapComparison(cross, coloringMode=1,map=c("genetic","physical"))
 }
 
 \arguments{
@@ -31,8 +31,9 @@
 }
 
 \examples{
-	#TODO, cause function needs reformatting
-	
+	population <- fakePopulation()
+	cross <- toGenotypes(population,genotype="real",orderUsing="map_genetic")
+	plotMapComparison(cross,map="genetic")
 }
 
 \seealso{
