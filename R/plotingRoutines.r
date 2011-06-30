@@ -31,12 +31,19 @@
 ##################################################################################################
 
 ############################################################################################################
-#plotParentalExpression: plot red points for expression values for parent of type 0, blue for parent 1 and green lines
-# for means of rows
+#									*** plotParentalExpression ***
 #
-# population - Ril type object, must contain founders phenotypic data.
-# markers - markers to be printed numbers or names 
-# groupLabels - Specify which column of founders data belongs to group 0 and which to group 1
+# DESCRIPTION:
+#	plot red points for expression values for parent of type 0, blue for parent 1 and green lines for means
+#	of rows
+# 
+# PARAMETERS:
+# 	population - Ril type object, must contain founders phenotypic data.
+# 	markers - markers to be printed numbers or names 
+# 	groupLabels - Specify which column of founders data belongs to group 0 and which to group 1
+# 
+# OUTPUT:
+#	plot
 #
 ############################################################################################################
 plotParentalExpression <- function(population, markers=1:100, groupLabels=c(0,0,1,1)){
@@ -68,10 +75,17 @@ plotParentalExpression <- function(population, markers=1:100, groupLabels=c(0,0,
 }
 
 ############################################################################################################
-#plotChildrenExpression: boxplot of data for selected markers + points of founders mean for each marker
+#									*** plotChildrenExpression ***
+#
+# DESCRIPTION:
+#	boxplot of data for selected markers + points of founders mean for each marker
 # 
-# population - Ril type object, must contain founders phenotypic data.
-# markers - markers to be printed numbers or names 
+# PARAMETERS:
+# 	population - Ril type object, must contain founders phenotypic data.
+# 	markers - markers to be printed numbers or names 
+# 
+# OUTPUT:
+#	plot
 #
 ############################################################################################################
 plotChildrenExpression <- function(population, markers=1:100){
@@ -105,11 +119,19 @@ plotChildrenExpression <- function(population, markers=1:100){
 }
 
 ############################################################################################################
-#plotMapComparison: boxplot of data for selected markers + points of founders mean for each marker
+#									*** plotMapComparison ***
+#
+# DESCRIPTION:
+#	boxplot of data for selected markers + points of founders mean for each marker
 # 
-# cross - object of R/qtl cross type
-# coloringMode - 1 - rainbow colors 2 - black for cis and red for trans located markers
-# NEEDS REMODELLING A BIT
+# PARAMETERS:
+# 	cross - object of R/qtl cross type
+# 	coloringMode - 1 - rainbow colors 2 - black for cis and red for trans located markers
+# 	NEEDS REMODELLING A BIT
+# 
+# OUTPUT:
+#	plot
+#
 ############################################################################################################
 plotMapComparison <- function(cross, coloringMode=1){ 
 	
@@ -196,10 +218,16 @@ plotMapComparison <- function(cross, coloringMode=1){
 }
 
 ############################################################################################################
-#getChromosome.internal: subfunction of plotMapComparison, returning list of chromosome numbers for all
-# markers in cross
+#									*** getChromosome.internal ***
+#
+# DESCRIPTION:
+#	subfunction of plotMapComparison, returning list of chromosome numbers for all markers in cross
 # 
-# cross - object of R/qtl cross type
+# PARAMETERS:
+# 	cross - object of class cross 
+# 
+# OUTPUT:
+#	vector of numbers
 #
 ############################################################################################################
 getChromosome.internal <- function(cross){
@@ -207,9 +235,16 @@ getChromosome.internal <- function(cross){
 }
 
 ############################################################################################################
-#getYLocs.internal: subfunction of plotMapComparison, returning list of location of all markers in cross
+#									*** getYLocs.internal***
+#
+# DESCRIPTION:
+#	subfunction of plotMapComparison, returning list of location of all markers in cross
 # 
-# cross - object of R/qtl cross type
+# PARAMETERS:
+# 	cross - object of class cross 
+#
+# OUTPUT:
+#	vector of numbers
 #
 ############################################################################################################
 getYLocs.internal <- function(cross){
@@ -229,10 +264,17 @@ getYLocs.internal <- function(cross){
 }
 
 ############################################################################################################
-#makeChromPal.internal: subfunction of plotMapComparison, returning color pallete (rainbow colors)
+#									*** makeChromPal.internal ***
+#
+# DESCRIPTION:
+#	subfunction of plotMapComparison, returning color pallete (rainbow colors)
 # 
-# ys1 - object of plotMapComparison, containing info about predicted map
-# xs - object of plotMapComparison, containing info about reference map
+# PARAMETERS:
+# 	ys1 - object of plotMapComparison, containing info about predicted map
+# 	xs - object of plotMapComparison, containing info about reference map
+#
+# OUTPUT:
+#	list of vector of colors (characters) and vector of numbers (symbol identifiers)
 #
 ############################################################################################################
 makeChromPal.internal <- function(ys1,xs){
@@ -249,10 +291,17 @@ makeChromPal.internal <- function(ys1,xs){
 }
 
 ############################################################################################################
-#makeTransPal.internal: subfunction of plotMapComparison,returning color pallete (red/black)
+#									*** makeTransPal.internal ***
+#
+# DESCRIPTION:
+#	subfunction of plotMapComparison,returning color pallete (red/black)
 # 
-# ys1 - object of plotMapComparison, containing info about predicted map
-# xs - object of plotMapComparison, containing info about reference map
+# PARAMETERS:
+# 	ys1 - object of plotMapComparison, containing info about predicted map
+# 	xs - object of plotMapComparison, containing info about reference map
+#
+# OUTPUT:
+#	list of vector of colors (characters) and vector of numbers (symbol identifiers)
 #
 ############################################################################################################
 makeTransPal.internal <- function(ys1,xs){
@@ -271,64 +320,3 @@ makeTransPal.internal <- function(ys1,xs){
 	}
 	invisible(list(color, symbol))
 }
-
-############################################################################################################
-#switchChromosomes.internal: switching two chromosomes of cross object
-# 
-# cross - object of R/qtl cross type
-# chr1, chr2 - numbers of chromosomes to be switched (1,2) == (2,1)
-#
-############################################################################################################
-switchChromosomes.internal <- function(cross, chr1, chr2){
-	cat(chr1,chr2,"\n")
-	if(chr1!=chr2){
-		geno <- cross$geno
-		cross$geno[[chr1]] <- geno[[chr2]] 
-		cross$geno[[chr2]] <- geno[[chr1]]
-		cross <- est.rf(cross)
-	}
-	invisible(cross)
-}
-
-############################################################################################################
-#plotMarkerDistribution: plotting histogram of distribution of values for single marker and specified number
-# of normal distribution curves, fitted to data using EM algorithm
-# 
-# phenotypeRow - phenotypic data for single marker
-# nrDistributions - numbers of normal distributions to be fitted
-# logarithmic - TRUE - log(data) is used instead of raw data
-# PROBABLY WILL BE REMOVED
-############################################################################################################
-#plotMarkerDistribution <- function(phenotypeRow,nrDistributions,logarithmic=FALSE){
-#	if(logarithmic) phenotypeRow <- log(phenotypeRow)
-#	EM<-normalmixEM(phenotypeRow, k=nrDistributions)
-#	if(logarithmic){
-#		xlab <- "log(expression values)"
-#	}else{
-#		xlab <- "expression values"
-#	}
-#	h <- vector(mode="numeric",length=nrDistributions)
-#	len <- vector(mode="numeric",length=nrDistributions)
-#	for(i in 1:nrDistributions){
-#		len[i]<-length(phenotypeRow)*EM$lambda[i]
-#		startVal <- sum(len[1:i-1])
-#		x <- sort(phenotypeRow)[startVal:(startVal+len[i])]
-#		h[i] <- hist(x,breaks=50)
-#	}
- #	h0<-hist(phenotypeRow,breaks=50,col="grey62",border="grey70",xlab=xlab,ylab="Number of counts",main="Distribution of expression values for selected marker")
-#	print(h0$mids)
-#	colorP <- vector(mode="character",length=3)
-#	colorP[1] <- rgb(1,0,0)
-#	colorP[2] <- rgb(0,1,0)
-#	colorP[3] <- rgb(0,0,1)
-#	for(i in 1:nrDistributions){
-#		abline(v=EM$mu[i],col=colorP[i%%3+1])
-#		abline(v=c(EM$mu[i]-EM$sigma[i],EM$mu[i]+EM$sigma[i]),col=colorP[i%%3+1],lty=2)
-#		startVal <- sum(len[1:i-1])
-#		x <- sort(phenotypeRow)[startVal:(startVal+len[i])]
-#		xfit<-seq(min(x),max(x),length=40) 
-#		yfit<-dnorm(xfit,mean=mean(x),sd=sd(x)) 
-#		yfit <- yfit*diff(h[[i]][1:2])*length(x) 
-#		lines(xfit, yfit, col=colorP[i%%3+1], lwd=2)
-#	}
-#}
