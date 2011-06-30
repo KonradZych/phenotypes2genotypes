@@ -127,41 +127,49 @@ plotChildrenExpression <- function(population, markers=1:100){
 # PARAMETERS:
 # 	cross - object of R/qtl cross type
 # 	coloringMode - 1 - rainbow colors 2 - black for cis and red for trans located markers
-# 	NEEDS REMODELLING A BIT
+# 	map - which map should be used for comparison:
+#			- genetic - genetic map from cross$maps$genetic
+#			- physical - physical map from cross$maps$physical
 # 
 # OUTPUT:
 #	plot
 #
 ############################################################################################################
-plotMapComparison <- function(cross, coloringMode=1){ 
-	
-	#*******remove too short chromosomes*******
-	#cross <- removeChromosomes.internal(cross,minChrLength)
-	removed <- cross$maps$physical[[1]][(rownames(cross$maps$physical[[1]]) %in% colnames(cross$rmv)),-1]
-	cat("siup!\n")
-	
-	#*******order chromosomes*******
-	#cross <- orderChromosomes.internal(cross)
-	
+plotMapComparison <- function(cross, coloringMode=1,map=c("genetic","physical")){ 
+		
 	#*******objects containing all information needen for function execution*******
 	ys <- getYLocs.internal(cross)
-	xs <- cross$maps$physical[[1]][rownames(ys[[1]]),]
-	cat("siup!\n")
-	
+	if(map=="genetic"){
+		if(!is.null(cross$maps$genetic)){
+			xs <- cross$maps$genetic[rownames(ys[[1]]),]
+			#*******chromosomes lengths*******
+			referenceChrom <- chromosomesLengths.internal(cross$maps$genetic)
+			xs[,2] <- xs[,2] + referenceChrom[xs[,1]]
+		}else{
+			stop("map=genetic selected, but ther is no genetic map in cross$maps$genetic\n")
+		}
+	}else if(map=="physical"){
+		if(!is.null(cross$maps$physical)){
+			xs <- cross$maps$physical[rownames(ys[[1]]),]
+			#*******chromosomes lengths*******
+			referenceChrom <- chromosomesLengths.internal(cross$maps$physical)
+			xs[,2] <- xs[,2] + referenceChrom[xs[,1]]
+		}else{
+			stop("map=physical selected, but ther is no physical map in cross$maps$physical\n")
+		}
+	}else{
+		stop("Choosemap=genetic or physical\n")
+	}
 	#*******positions of markers*******
 	predictedLocs <- ys[[1]][,-1]
-	referenceLocs <- xs[,-1]
-	cat("siup!\n")
+	referenceLocs <- xs[,2]
 	
 	#*******chromosomes lengths*******
 	predictedChrom <- ys[[2]]
-	referenceChrom <- cross$maps$physical[[2]]
-	cat("siup!\n")
 	
 	#*******chromosome labels*******
 	predictedChromLabels <- names(table(ys[[1]][,1]))
 	referenceChromLabels <- names(table(xs[,1]))
-	cat("siup!\n")
 	
 	#*******chromosome labels positions*******
 	predictedChromPos <- vector(mode="numeric",length(predictedChrom)-1)
@@ -174,8 +182,7 @@ plotMapComparison <- function(cross, coloringMode=1){
 	for(i in 1:length(referenceChrom)-1){
 		referenceChromPos[i] <- (referenceChrom[i] + referenceChrom[i+1])/2
 	}
-	referenceChromPos[length(referenceChrom)] <- (referenceChrom[length(referenceChrom)] + max(referenceLocs))/2
-	
+	#referenceChromPos[length(referenceChrom)] <- (referenceChrom[length(referenceChrom)] + max(referenceLocs))/2
 	#*******color palette*******
 	if(coloringMode==1){ 
 		color <- makeChromPal.internal(ys[[1]],xs)
@@ -187,12 +194,11 @@ plotMapComparison <- function(cross, coloringMode=1){
 	l <- vector(mode="list",length(table(ys[[1]][,1])))
 	for(i in 1:length(table(ys[[1]][,1]))){
 		a <- ys[[1]][which(ys[[1]][,1]==i),-1]
-		b <- xs[which(rownames(xs) %in% names(a)),-1]
+		b <- xs[which(rownames(xs) %in% names(a)),2]
 		l[[i]] <- lm(a~b)$coefficients 
 		p <- anova(lm(a~b))[[5]][1]
 		cat("Chromosome",i,"lr coefficients",l[[i]],"corected by length diff",l[[i]][2]*((max(b)-min(b))/(max(a)-min(a))),"p-val",p,"\n")
 	}
-	
 	#*******plotting points*******
 	plot(x=referenceLocs, y=predictedLocs, xlim=c(min(referenceLocs),max(referenceLocs)), ylim=c(min(predictedLocs),max(predictedLocs)),
 		xaxt="n", yaxt="n", col=color[[1]], pch=color[[2]], xlab="Reference map", ylab="Predicted map", main="Comparison of genetic maps")
@@ -205,7 +211,7 @@ plotMapComparison <- function(cross, coloringMode=1){
 	
 	#*******adding marker tics*******
 	axis(1, at = referenceLocs,labels = FALSE)
-	axis(1, at = removed,labels = FALSE, col.ticks = "red")
+	#if(!is.null(cross$removed)) axis(1, at = cross$removed[,2],labels = FALSE, col.ticks = "red")
 	axis(2, at = predictedLocs,labels = FALSE)
 	
 	#*******adding lines marking chromosomes ends*******
@@ -319,4 +325,27 @@ makeTransPal.internal <- function(ys1,xs){
 		symbol[i] <- 1
 	}
 	invisible(list(color, symbol))
+}
+
+############################################################################################################
+#									*** chromosomesLengths.internal ***
+#
+# DESCRIPTION:
+#	function calculating lengths of chromosomes in given map
+# 
+# PARAMETERS:
+# 	map - genetic por physical map (matrix with two cols - 1 - chromome nr, 2- postion on chromosome),
+#		  rownames - names of markers
+#
+# OUTPUT:
+#	vector of lengths of chromosomes
+#
+############################################################################################################
+chromosomesLengths.internal <- function(map){
+	lengths <- vector(mode="numeric",length=(max(map[,1])+1))
+	lengths[1] <- 0
+	for(i in 1:max(map[,1])){
+		lengths[i+1] <- max(map[which(map[,1]==i),2]) + lengths[i]
+	}
+	invisible(lengths)
 }

@@ -330,7 +330,6 @@ filterRowSub.internal <- function(result, overlapInd, proportion, margin, genoty
 		if(is.na(cur)) return(FALSE)
 		upLimit <- proportion[i] + margin/2
 		downLimit <- proportion[i] - margin/2
-		#cat(result,"\n",cur,upLimit,downLimit,"\n")
 		if(!((cur < upLimit)&&(cur > downLimit))){
 			return(FALSE)
 		}
