@@ -170,7 +170,7 @@ intoPopulationSubPheno.internal <- function(population, dataObject, dataType=c("
 		
 		### removing faulty columns
 		if(!(is.null(columns))){
-			cat("Following  columns are not numeric and cannot be converted into numeric:",columns," so will be removed.\n")
+			if(verbose) cat("Following  columns are not numeric and cannot be converted into numeric:",columns," so will be removed.\n")
 			dataObject <- dataObject[,-columns]
 		}
 		
@@ -185,7 +185,7 @@ intoPopulationSubPheno.internal <- function(population, dataObject, dataType=c("
 		
 		### removing faulty rows
 		if(!(is.null(rows))){
-			cat("Following  rows are not numeric and cannot be converted into numeric:",rows," so will be removed.\n")
+			if(verbose)cat("Following  rows are not numeric and cannot be converted into numeric:",rows," so will be removed.\n")
 			dataObject <- dataObject[-rows,]
 		}
 		
@@ -221,7 +221,7 @@ intoPopulationSubPheno.internal <- function(population, dataObject, dataType=c("
 		stop("No data provided for ",dataType,"!\n")
 	}
 	e <- proc.time()
-	cat("intoPopulation for",dataType,"done in:",(e-s)[3],"seconds.\n")
+	if(verbose&&debugMode==2)cat("intoPopulation for",dataType,"done in:",(e-s)[3],"seconds.\n")
 	invisible(population)
 }
 
@@ -255,7 +255,7 @@ intoPopulationSubGeno.internal <- function(population, dataObject, verbose=FALSE
 		
 		### removing faulty columns
 		if(!(is.null(columns))){
-			cat("Following  columns are not numeric and cannot be converted into numeric:",columns," so will be removed.\n")
+			if(verbose)cat("Following  columns are not numeric and cannot be converted into numeric:",columns," so will be removed.\n")
 			dataObject <- dataObject[,-columns]
 		}
 		
@@ -270,7 +270,7 @@ intoPopulationSubGeno.internal <- function(population, dataObject, verbose=FALSE
 		
 		### removing faulty rows
 		if(!(is.null(rows))){
-			cat("Following  rows are not numeric and cannot be converted into numeric:",rows," so will be removed.\n")
+			if(verbose)cat("Following  rows are not numeric and cannot be converted into numeric:",rows," so will be removed.\n")
 			dataObject <- dataObject[-rows,]
 		}
 		
@@ -299,7 +299,7 @@ intoPopulationSubGeno.internal <- function(population, dataObject, verbose=FALSE
 		stop("No data provided for offspring$genotypes !\n")
 	}
 	e <- proc.time()
-	cat("intoPopulation for offspring$genotypes done in:",(e-s)[3],"seconds.\n")
+	if(verbose&&debugMode==2)cat("intoPopulation for offspring$genotypes done in:",(e-s)[3],"seconds.\n")
 	invisible(population)
 }
 
@@ -337,6 +337,6 @@ intoPopulationSubMap.internal <- function(population, dataObject, dataType=c("ma
 		stop("No data provided for ",dataType,"!\n")
 	}
 	e <- proc.time()
-	cat("intoPopulation for",dataType,"done in:",(e-s)[3],"seconds.\n")
+	if(verbose&&debugMode==2)cat("intoPopulation for",dataType,"done in:",(e-s)[3],"seconds.\n")
 	invisible(population)
 }
