@@ -150,3 +150,89 @@ doCleanUp.internal <- function(verbose=FALSE){
 	if(verbose) cat("Cleaned up memory from:",bf,"to:",after,"\n")
 }
 
+############################################################################################################
+#									*** write.population ***
+#
+# DESCRIPTION:
+#	writing population object to specific population file
+# 
+# PARAMETERS:
+#	population - object of class population
+#	outputFile - name of the output file
+#	verbose - be verbose
+#
+# OUTPUT:
+#	none
+#
+############################################################################################################
+write.population <- function(population,outputFile="population.txt",verbose=FALSE){
+	is.population(population)
+	firstLine <- vector(mode="numeric",length=6)
+	firstLine[1] <- nrow(population$offspring$phenotypes)
+	firstLine[2] <- nrow(population$founders$phenotypes)
+	firstLine[3] <- length(population$founders$groups)
+	if(!is.null(population$offspring$genotypes$real)){
+		firstLine[4] <- nrow(population$offspring$genotypes$real)
+	}else{
+		firstLine[4] <- NA
+	}
+	if(!is.null(population$maps$genetic)){
+		firstLine[5] <- nrow(population$maps$genetic)
+	}else{
+		firstLine[5] <- NA
+	}
+	if(!is.null(population$maps$physical)){
+		firstLine[6] <- nrow(population$maps$physical)
+	}else{
+		firstLine[6] <- NA
+	}
+	cat(firstLine,"\n",file=outputFile,append=FALSE)
+	
+	write.table(population$offspring$phenotypes,file=outputFile,sep="\t",quote=FALSE,append=TRUE)
+	if(verbose) cat("Offspring phenotype data written into",outputFile,"\n")
+	
+	write.table(population$founders$phenotypes,file=outputFile,sep="\t",quote=FALSE,append=TRUE)
+	if(verbose) cat("Founders phenotype data written into",outputFile,"\n")
+	
+	cat(population$founders$groups,"\n",file=outputFile,append=TRUE)
+	if(verbose) cat("Founders groups data written into",outputFile,"\n")
+	
+	if(!is.null(population$offspring$genotypes$real)){
+		write.table(population$offspring$genotypes$real,file=outputFile,sep="\t",quote=FALSE,append=TRUE)
+		if(verbose) cat("Offspring genotype data written into",outputFile,"\n")
+	}else{
+		if(verbose) cat("Offspring genotype data not found.\n")
+	}
+	
+	if(!is.null(population$maps$genetic)){
+		write.table(population$maps$genetic,file=outputFile,sep="\t",quote=FALSE,append=TRUE,col.names=FALSE)
+		if(verbose) cat("Genetic map written into",outputFile,"\n")
+	}else{
+		if(verbose) cat("Genetic map not found.\n")
+	}
+	
+	if(!is.null(population$maps$physical)){
+		write.table(population$maps$physical,file=outputFile,sep="\t",quote=FALSE,append=TRUE,col.names=FALSE)
+		if(verbose) cat("Physical map written into",outputFile,"\n")
+	}else{
+		if(verbose) cat("Physical map not found.\n")
+	}
+}
+
+############################################################################################################
+#									*** write.population ***
+#
+# DESCRIPTION:
+#	writing population object to specific population file
+# 
+# PARAMETERS:
+#	population - object of class population
+#	outputFile - name of the output file
+#	verbose - be verbose
+#
+# OUTPUT:
+#	none
+#
+############################################################################################################
+read.population <- function(filename="population.txt",verbose=FALSE){
+}

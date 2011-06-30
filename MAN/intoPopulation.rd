@@ -12,7 +12,7 @@
 }
 
 \usage{
-	intoPopulation(population, dataObject, dataType=c("founders","offspring$phenotypes","offspring$genotypes","maps$genetic","maps$physical"),verbose=FALSE,debugMode=0)
+	intoPopulation(population, dataObject, dataType=c("founders","offspring$phenotypes","founders$group","offspring$genotypes","maps$genetic","maps$physical"),verbose=FALSE,debugMode=0)
 }
 
 \arguments{
@@ -24,6 +24,7 @@
 	\itemize{
 		\item{founders}{ - founders phenotype}
 		\item{offspring$phenotypes }{ - offspring phenotype}
+		\item{founders$group }{ - specifying groups in founders phenotypes}
 		\item{offspring$genotypes}{ - offspring genotype}
 		\item{maps$genetic}{ - genetic map}
 		\item{maps$physical}{ - physical map}

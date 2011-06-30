@@ -33,6 +33,8 @@
 \alias{intoPopulationSubPheno.internal}
 \alias{intoPopulationSubGeno.internal}
 \alias{intoPopulationSubMap.internal}
+\alias{read.population}
+\alias{is.population}
 
 
 \alias{inRangeCheck.internal}

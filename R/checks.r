@@ -24,7 +24,7 @@
 #     at http://www.r-project.org/Licenses/GPL-3
 #
 # CONTAINS:
-#	numericCheck.internal, genotypeCheck.internal, inRangeCheck.internal, inListCheck.internal
+#	numericCheck.internal, genotypeCheck.internal, inRangeCheck.internal, inListCheck.internal, is.population
 #
 ############################################################################################################
 
@@ -139,4 +139,21 @@ inRangeCheck.internal <- function(objectToBeChecked, objectName, downLimit, upLi
 inListCheck.internal <- function(objectToBeChecked,objectName,listOfPossibleElements){
 	if(length(listOfPossibleElements)==1) warning("Specified list contains just a single element!\n")
 	if(any(!(objectToBeChecked%in%listOfPossibleElements))) stop("Selected wrong ",objectName," possibilities are: ",paste(listOfPossibleElements,sep=", "),"\n")
+}
+
+############################################################################################################
+#									*** is.population ***
+#
+# DESCRIPTION:
+#	checking if given object is of class population
+# 
+# PARAMETERS:
+# objectToBeChecked - object to be checked
+#
+# OUTPUT:
+#	none
+#
+############################################################################################################
+is.population <- function(objectToBeChecked){
+	if(is.null(objectToBeChecked)||class(objectToBeChecked)!="population") stop("Supported object is empty!\n")
 }

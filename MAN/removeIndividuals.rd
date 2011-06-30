@@ -9,12 +9,13 @@
 }
 
 \usage{
-	removeIndividuals(population,individuals)
+	removeIndividuals(population,individuals,verbose)
 }
 
 \arguments{
  \item{population}{ object of class population}
  \item{individuals}{ individuals to be romved specified by their names}
+  \item{verbose}{ Be verbose}
 }
 
 \value{
@@ -33,7 +34,7 @@
 \examples{
 	### simulating data
 	population <- fakePopulation()
-	population <- removeIndividuals(population,"RIL_1")
+	population <- removeIndividuals(population,"RIL_1",TRUE)
 
 }
 
