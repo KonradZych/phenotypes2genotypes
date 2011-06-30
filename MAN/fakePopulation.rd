@@ -14,7 +14,7 @@
 
 \arguments{
  \item{nrFounders}{ number of founders to be simulated}
- \item{...)}{ to be passed to sim.cross
+ \item{...}{ to be passed to sim.cross
  }
 }
 
