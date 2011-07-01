@@ -7,8 +7,8 @@
 # Modified by Danny Arends
 # 
 # first written March 2011
-# last modified June 2011
-# last modified in version: 0.7.1
+# last modified July 2011
+# last modified in version: 0.8.1
 # in current version: active, not in main workflow
 #
 #     This program is free software; you can redistribute it and/or
