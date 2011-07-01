@@ -1,27 +1,31 @@
-\name{cleanMap}
-\alias{cleanMap}
+\name{orderChromosomes}
+\alias{orderChromosomes}
 
 
-\title{Removing wrong markers.}
+\title{Order chromosomes.}
 
 \description{
-  Removing markers that cause reco map to be too long.
+  Order chromosomes of object of class cross using majority rule.
 }
 
 \usage{
-	cleanMap(cross, difPercentage, minChrLenght, verbose=FALSE, debugMode=0)
+	orderChromosomes(cross,map=c("genetic","physical"),verbose=FALSE)
 }
 
 \arguments{
- \item{cross}{ R/qtl cross type object.}
- \item{difPercentage}{ If removing marker will make map shorter by this percentage of its length, then it will be dropped.}
- \item{minChrLenght}{ chromosomes shorter than that won't be processed}
+ \item{cross}{ object of class cross}
+ \item{map}{ 
+  Which genotypic matrix should be saved to file:
+  \itemize{
+    \item{genetic}{ - genetic map from cross$maps$genetic}
+    \item{physical}{ - physical map from cross$maps$physical}
+  }
+  }
  \item{verbose}{ Be verbose}
- \item{debugMode}{ 1: Print our checks, 2: print additional time information }
 }
 
 \value{
-  Cross type object.
+  object of class cross
 }
 
 \details{
@@ -38,7 +42,7 @@
 	population <- fakePopulation()
 	cross <- toGenotypes(population,genotype="real",orderUsing="map_genetic")
 	### dangerous
-	cross <- cleanMap(cross,10,70,verbose=TRUE, debugMode=1)
+	cross <- orderChromosomes(cross,"physical,"verbose=TRUE)
 }
 
 \seealso{
