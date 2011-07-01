@@ -41,7 +41,7 @@
 	### simulating data
 	population <- fakePopulation()
 	cross <- toGenotypes(population,genotype="real",orderUsing="map_genetic")
-	cross <- orderChromosomes(cross,"physical,"verbose=TRUE)
+	cross <- orderChromosomes(cross,"physical",verbose=TRUE)
 }
 
 \seealso{
