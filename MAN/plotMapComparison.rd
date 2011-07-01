@@ -9,12 +9,19 @@
 }
 
 \usage{
-	plotMapComparison(cross, coloringMode=1,map=c("genetic","physical"))
+	plotMapComparison(cross, coloringMode=1, map=c("genetic","physical"))
 }
 
 \arguments{
  \item{cross}{ R/qtl cross type object.}
  \item{coloringMode}{ 1 - rainbow colors 2 - black for cis and red for trans located markers. }
+ \item{map}{ 
+  Which genotypic matrix should be saved to file:
+  \itemize{
+    \item{genetic}{ - genetic map from cross$maps$genetic}
+    \item{physical}{ - physical map from cross$maps$physical}
+  }
+  }
 }
 
 \value{

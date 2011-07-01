@@ -7,7 +7,7 @@
 \alias{writeGenotypes.internal}
 \alias{writeGenotypesMap.internal}
 \alias{cleanNames.internal}
-\alias{segregateChromosomes.internal}
+\alias{crossContainsMap.internal}
 \alias{mergeChromosomes.internal}
 \alias{majorityRule.internal}
 \alias{doCleanUp.internal}
@@ -20,6 +20,7 @@
 
 \alias{getChromosome.internal}
 \alias{getYLocs.internal}
+\alias{chromosomesLengths.internal}
 \alias{makeChromPal.internal}
 \alias{makeTransPal.internal}
 \alias{switchChromosomes.internal}
