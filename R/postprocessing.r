@@ -48,13 +48,13 @@
 ############################################################################################################
 orderChromosomes <- function(cross,map=c("genetic","physical"),verbose=FALSE){
 	crossContainsMap.internal(cross,map)
-	output <- majorityRule.internal(cross,map)
+	inListCheck.internal(map,"map",c("genetic","physical"))
 	if(map=="genetic"){
 			cur_map <- cross$maps$genetic
 	}else if(map=="physical"){
 			cur_map <- cross$maps$physical
-	}	
-	print(output)
+	}
+	output <- majorityRule.internal(cross,cur_map)
 	### until every chr on phys map is match exactly once
 	while(max(apply(output,2,sum))>1){
 		toMerge <- which(apply(output,2,sum)>1)
@@ -64,7 +64,7 @@ orderChromosomes <- function(cross,map=c("genetic","physical"),verbose=FALSE){
 			output <- majorityRule.internal(cross,cur_map)
 		}
 	}
-	
+	if(verbose) cat(output,"\n")
 	order1 <- matrix(0,ncol(output),nrow(output))
 	order2 <- matrix(1,ncol(output),nrow(output))
 	### until next iteration doesn't change the result
