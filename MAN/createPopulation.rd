@@ -3,19 +3,20 @@
 \alias{population}
 
 
-\title{Adding data to population object}
+\title{Create new object of class population.}
 
 \description{
-  Adding data to existing population object. Overwriting of existing data is permitted and will be executed with warning.
+  Create new object of class population. If object exists, will be overwritten.
 }
 
 \usage{
-	createPopulation(offspring_phenotypes=NULL, founders=NULL, offspring_genotypes=NULL, maps_genetic=NULL, maps_physical=NULL, no.warn=FALSE, verbose=FALSE, debugMode=0)
+	createPopulation(offspring_phenotypes, founders, founders_groups, offspring_genotypes, maps_genetic, maps_physical, no.warn=FALSE, verbose=FALSE,debugMode=0)
 }
 
 \arguments{
- \item{offspring_phenotypes}{ matrix containing offspring phenotype data (have to be supported, if not - function quits with error}
- \item{founders}{ matrix containing founders phenotype data (optional)}
+ \item{offspring_phenotypes}{ matrix containing offspring phenotype data (have to be supported, if not - function quits with error)}
+ \item{founders}{ matrix containing founders phenotype data (have to be supported, if not - function quits with error)}
+  \item{founders_groups}{ specify groups im founders data (have to be supported, if not - function quits with error)}
  \item{offspring_genotypes}{ matrix containing offspring genotype data (optional)}
  \item{maps_genetic}{ matrix containing genetic map (optional)}
  \item{maps_physical}{ matrix containing physical map (optional)}
@@ -33,16 +34,17 @@
 }
 
 \author{
-	Konrad Zych \email{konrad.zych@uj.edu.pl}
+	Konrad Zych \email{konrad.zych@uj.edu.pl}, Danny Arends \email{Danny.Arends@gmail.com}
 	Maintainer: Konrad Zych \email{konrad.zych@uj.edu.pl}
-	Under tender patronage of: Danny Arends \email{Danny.Arends@gmail.com}
 }
 
 \examples{
-	setwd(paste(.Library,"pheno2geno/data",sep="/"))
-	founders <- read.table("founders_phenotypes.txt",sep="")
-	offspring <- read.table("offspring_phenotypes.txt",sep="")
-	population <- createPopulation(offspring)
+	### simulating data
+	population <- fakePopulation()
+	offspring <- population$offspring$phenotypes
+	founders <- population$founders$phenotypes
+	founders_groups <- population$founders$groups
+	population <- createPopulation(offspring,founders,founders_groups)
 }
 
 \seealso{
