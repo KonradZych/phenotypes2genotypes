@@ -51,8 +51,8 @@ print.population <- function(x,...){
 		}else{
 			stop("No phenotype data for offspring, this is not a valid population object\n")
 		}
-		if(!(is.null(x$offspring$genotypes$read))){
-			cat("\tGenotypes:",ncol(x$offspring$genotypes),"\n",...)
+		if(!(is.null(x$offspring$genotypes$real))){
+			cat("\tGenotypes:",ncol(x$offspring$genotypes$real),"\n",...)
 		}else{
 			cat("\tGenotypes: None\n",...)
 		}

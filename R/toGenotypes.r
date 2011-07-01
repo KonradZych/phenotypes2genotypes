@@ -362,7 +362,7 @@ splitPhenoRowEM.internal <- function(x, offspring, founders, overlapInd, proport
 	print(x)
 	nrDistributions <- length(proportion)
 	result <- rep(0,length(offspring[x,]))
-	EM <- cat(normalmixEM(sort(offspring[x,]), k=nrDistributions, maxrestarts=0, maxit = 100,fast=TRUE),file=NULL)
+	EM <- normalmixEM(sort(offspring[x,]), k=nrDistributions, maxrestarts=0, maxit = 100,fast=TRUE)
 	if(up==1){
 		genotypes <- c(0:(nrDistributions-1))
 	}else if(up==0){
