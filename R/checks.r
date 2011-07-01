@@ -7,7 +7,7 @@
 #
 # 
 # first written June 2011
-# last modified June 2011
+# last modified July 2011
 # last modified in version: 0.8.1
 # in current version: active, in main workflow
 #
