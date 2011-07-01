@@ -45,6 +45,7 @@
 #
 ############################################################################################################
 findDiffExpressed <- function(population,verbose=FALSE,debugMode=0,...){
+	is.population(population)
 	s<-proc.time()
 	if(is.null(population$founders$phenotypes)) stop("No founders phenotype data provided\n")
 	if(is.null(population$founders$groups)) stop("No information about founders groups data provided\n")

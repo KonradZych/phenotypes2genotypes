@@ -48,7 +48,7 @@
 ############################################################################################################
 plotParentalExpression <- function(population, markers=1:100, groupLabels=c(0,0,1,1)){
 	#*******checks*******
-	if(class(population)!="population")
+	is.population(population)
 	
 	#*******remove too short chromosomes*******
 	if(nrow(population$founders$phenotypes)<length(markers)){
@@ -90,9 +90,7 @@ plotParentalExpression <- function(population, markers=1:100, groupLabels=c(0,0,
 ############################################################################################################
 plotChildrenExpression <- function(population, markers=1:100){
 	### checks
-	if(is.null(population)||(class(population)!="population")) stop("No population object provided.\n")
-	if(is.null(population$offspring$phenotypes)) stop("No offspring data in population object supported.\n")
-	if(is.null(population$founders$phenotypes)) stop("No founders data in population object supported.\n")
+	is.population(population)
 	
 	### function itself
 	if(nrow(population$offspring$phenotypes)<length(markers)){
@@ -136,30 +134,22 @@ plotChildrenExpression <- function(population, markers=1:100){
 #
 ############################################################################################################
 plotMapComparison <- function(cross, coloringMode=1,map=c("genetic","physical")){ 
-		
+	
+	crossContainsMap.internal(cross, map)
 	#*******objects containing all information needen for function execution*******
 	ys <- getYLocs.internal(cross)
 	if(map=="genetic"){
-		if(!is.null(cross$maps$genetic)){
 			xs <- cross$maps$genetic[rownames(ys[[1]]),]
 			#*******chromosomes lengths*******
 			referenceChrom <- chromosomesLengths.internal(cross$maps$genetic)
 			xs[,2] <- xs[,2] + referenceChrom[xs[,1]]
-		}else{
-			stop("map=genetic selected, but ther is no genetic map in cross$maps$genetic\n")
-		}
 	}else if(map=="physical"){
-		if(!is.null(cross$maps$physical)){
 			xs <- cross$maps$physical[rownames(ys[[1]]),]
 			#*******chromosomes lengths*******
 			referenceChrom <- chromosomesLengths.internal(cross$maps$physical)
 			xs[,2] <- xs[,2] + referenceChrom[xs[,1]]
-		}else{
-			stop("map=physical selected, but ther is no physical map in cross$maps$physical\n")
-		}
-	}else{
-		stop("Choosemap=genetic or physical\n")
 	}
+	
 	#*******positions of markers*******
 	predictedLocs <- ys[[1]][,-1]
 	referenceLocs <- xs[,2]

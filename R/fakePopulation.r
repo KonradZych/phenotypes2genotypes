@@ -89,6 +89,7 @@ fakePopulation <- function(nrFounders,...){
 	geno[which(geno==2)] <- 0
 	foundersGroups <- c(rep(0,(nrFounders/2)),rep(1,(nrFounders/2)))
 	population <- createPopulation(pheno, founders, foundersGroups, geno, map, map)
+	is.population(population)
 	invisible(population)
 }
 

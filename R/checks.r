@@ -155,5 +155,39 @@ inListCheck.internal <- function(objectToBeChecked,objectName,listOfPossibleElem
 #
 ############################################################################################################
 is.population <- function(objectToBeChecked){
-	if(is.null(objectToBeChecked)||class(objectToBeChecked)!="population") stop("Supported object is empty!\n")
+	if(is.null(objectToBeChecked)) stop("Supported object is empty!\n")
+	if(is.null(class(objectToBeChecked)!="population") stop("Supported object is not of a class population.\n")
+	if(is.null(population$offspring$phenotypes)) stop("No offspring phenotype data found, this is not a valid object of class population.\n")
+	if(is.null(population$founders$phenotypes)) stop("No founders phenotype data found, this is not a valid object of class population.\n")
+	if(is.null(population$founders$groups)) stop("No information about founders groups found, this is not a valid object of class population.\n")
+}
+
+############################################################################################################
+#									*** crossContainsMap.internal  ***
+#
+# DESCRIPTION:
+# 	checking if crss object contains specified type of map
+# 
+# PARAMETERS:
+# 	cross - object of class cross, containing physical or genetic map
+#	map - which map should be used for comparison:
+#			- genetic - genetic map from cross$maps$genetic
+#			- physical - physical map from cross$maps$physical
+# 
+# OUTPUT:
+#	none
+#
+############################################################################################################
+crossContainsMap.internal <- function(cross,map=c("genetic","physical"))
+	if(map="genetic"){
+		if(is.null(cross$maps$genetic)){
+			stop("Selected map=genetic, but there is no genetic map in cross$maps$genetic")
+		}
+	}else if(map="physical"){
+		if(is.null(cross$maps$physical)){
+			stop("Selected map=physical, but there is no physical map in cross$maps$physical")
+		}
+	}else{
+		stop("Parameter map should be either genetic or physical")
+	}
 }
