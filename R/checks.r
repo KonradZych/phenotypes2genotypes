@@ -179,11 +179,11 @@ is.population <- function(objectToBeChecked){
 #
 ############################################################################################################
 crossContainsMap.internal <- function(cross,map=c("genetic","physical"))
-	if(map="genetic"){
+	if(map=="genetic"){
 		if(is.null(cross$maps$genetic)){
 			stop("Selected map=genetic, but there is no genetic map in cross$maps$genetic")
 		}
-	}else if(map="physical"){
+	}else if(map=="physical"){
 		if(is.null(cross$maps$physical)){
 			stop("Selected map=physical, but there is no physical map in cross$maps$physical")
 		}
