@@ -1,14 +1,14 @@
 #################################################################################
 #
-# preprocessData.R
+# findDiffExpressed.R
 #
 # Copyright (c) 2011, Konrad Zych
 #
 # Modified by Danny Arends
 # 
 # first written March 2011
-# last modified June 2011
-# last modified in version: 0.7.2
+# last modified July 2011
+# last modified in version: 0.8.1
 # in current version: active, in main workflow
 #
 #     This program is free software; you can redistribute it and/or
@@ -23,28 +23,36 @@
 #     A copy of the GNU General Public License, version 3, is available
 #     at http://www.r-project.org/Licenses/GPL-3
 #
-# Contains: preprocessData 
+# Contains: findDiffExpressed 
 #
 #################################################################################
 
 ############################################################################################################
-#preprocessData: Using Rank Product analysis to select differentially expressed genes.
+#									*** findDiffExpressed ***
+#
+# DESCRIPTION:
+#	Using Rank Product analysis to select differentially expressed genes.
 # 
-# population - Population type object, must contain founders phenotypic data.
-# groupLabels - Specify which column of founders data belongs to group 0 and which to group 1.
-# verbose - Be verbose
-# debugMode - 1: Print our checks, 2: print additional time information
+# PARAMETERS:
+# 	population - Object of class population , must contain founders phenotypic data.
+# 	groupLabels - Specify which column of founders data belongs to group 0 and which to group 1.
+# 	verbose - Be verbose
+# 	debugMode - 1: Print our checks, 2: print additional time information
+# 	... - parameters send to RP function
+# 
+# OUTPUT:
+#	object of class population containing object of class RP in $founders$RP
 #
 ############################################################################################################
-preprocessData <- function(population,groupLabels=c(0,0,1,1),verbose=FALSE,debugMode=0,...){
-	s2<-proc.time()
-	rankProdRes <- invisible(RP(population$founders$phenotypes,groupLabels,...))
+findDiffExpressed <- function(population,verbose=FALSE,debugMode=0,...){
+	is.population(population)
+	s<-proc.time()
+	if(is.null(population$founders$phenotypes)) stop("No founders phenotype data provided\n")
+	if(is.null(population$founders$groups)) stop("No information about founders groups data provided\n")
+	rankProdRes <- invisible(RP(population$founders$phenotypes,population$founders$groups,...))
 	population$founders$RP <- rankProdRes
-	population$founders$groups <- groupLabels
-	population$parameters$preprocessData <- list("object of population class", groupLabels,verbose,debugMode)
-	names(population$parameters$preprocessData) <- c("population", "groupLabels", "verbose", "debugMode")
 	class(population) <- "population"
-	e2<-proc.time()
-	if(verbose && debugMode==2)cat("Data preprocessing done in:",(e2-s2)[3],"seconds.\n")
+	e<-proc.time()
+	if(verbose && debugMode==2)cat("Data preprocessing done in:",(e-s)[3],"seconds.\n")
 	invisible(population)
 }

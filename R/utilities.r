@@ -7,8 +7,8 @@
 # Modified by Danny Arends
 # 
 # first written March 2011
-# last modified June 2011
-# last modified in version: 0.7.2
+# last modified July 2011
+# last modified in version: 0.8.1
 # in current version: active, not in main workflow
 #
 #     This program is free software; you can redistribute it and/or
@@ -23,112 +23,266 @@
 #     A copy of the GNU General Public License, version 3, is available
 #     at http://www.r-project.org/Licenses/GPL-3
 #
-# Contains: cleanMap, print.population, removeChromosomes.internal
+# Contains: print.population, removeIndividuals, doCleanUp.internal
 #
 ############################################################################################################
 
 ############################################################################################################
-#cleanMap - Removes markers that cause the recombination map to expand more than a given percentage (of its total length)
-# 
-# cross - R/qtl cross type object
-# difPercentage - If by removing a marker the map gets shorter by this percentage (or more). The marker will be dropped.
-# verbose - Be verbose
-# debugMode - 1: Print our checks, 2: print additional time information 
+#									*** print.population ***
 #
-############################################################################################################
-cleanMap <- function(cross, difPercentage, verbose=FALSE, debugMode=0){
-	if(verbose && debugMode==1) cat("cleanMap starting withour errors in checkpoint.\n")
-	s <- proc.time()
-	for(i in 1:length(cross$geno)){
-		begMarkers <- length(cross$geno[[i]]$map)
-		begLength <- max(cross$geno[[i]]$map)
-		for(j in names(cross$geno[[i]]$map)){
-			if(max(cross$geno[[i]]$map)>150){
-				cur_max <- max(cross$geno[[i]]$map)
-				cross2 <- drop.markers(cross,j)
-				newmap <- est.map(cross2,offset=0)
-				cross2 <- replace.map(cross2, newmap)
-				new_max <- max(cross2$geno[[i]]$map)
-				dif <- cur_max-new_max
-				if(dif > (difPercentage/100 * cur_max)){
-					if(verbose) cat("------Removed marker:",j,"to make chromosome",i,"map smaller from",cur_max,"to",new_max,"\n")
-					cross <- cross2
-				}
-			}
-		}
-		removed <- begMarkers-length(cross$geno[[i]]$map)
-		if(removed>0)cat("Removed",removed,"out of",begMarkers,"markers on chromosome",i," which led to shortening map from ",begLength,"to",max(cross$geno[[i]]$map),"(",100*(begLength-max(cross$geno[[i]]$map))/begLength,"%)\n")
-	}
-	e <- proc.time()
-	if(verbose && debugMode==2)cat("Map cleaning done in:",(e-s)[3],"seconds.\n")
-	invisible(cross)
-}
-
-############################################################################################################
-#print.population - Overwrites the print function for objects of class "population"
+# DESCRIPTION:
+#	overwrites the print function for objects of class "population"
 # 
-# x - object of class population
-# ... - passed to cats
+# PARAMETERS:
+# 	x - object of class population
+# 	... - passed to cats
+# 
+# OUTPUT:
+#	none
 #
 ############################################################################################################
 print.population <- function(x,...){
-	cat("*************************************************************************************\n")
-	cat("This is object of class population, too complex to print it, so we provide you with summary.\n")
+	cat("This is object of class \"population\"\n  It is too complex to print, so we provide just this summary.\n")
 	if(!(is.null(x$offspring))){
+    cat("Offspring:\n",...)
 		if(!(is.null(x$offspring$phenotypes))){
-			cat("Object contains phenotypic data for",ncol(x$offspring$phenotypes),"offspring individuals covering",nrow(x$offspring$phenotypes),"probes.\n",...)
+			cat("\tPhenotypes:",ncol(x$offspring$phenotypes),"\n",...)
+      cat("\tMarkers:",nrow(x$offspring$phenotypes),"\n",...)
 		}else{
-			stop("There is no phenotypic data for offspring in this object. This is not acceptable in real ril object.\n",...)
+			stop("No phenotype data for offspring, this is not a valid population object\n")
 		}
 		if(!(is.null(x$offspring$genotypes$read))){
-			cat("Object contains genotypic data for",ncol(x$offspring$phenotypes),"offspring individuals covering",nrow(x$offspring$phenotypes),"probes.\n",...)
+			cat("\tGenotypes:",ncol(x$offspring$genotypes),"\n",...)
 		}else{
-			cat("There is no genotypic data for offspring in this object.\n",...)
+			cat("\tGenotypes: None\n",...)
 		}
-		if(!(is.null(x$offspring$map))){
-			cat("Object contains physical map covering",nrow(x$offspring$map),"markers from",length(table(x$offspring$map[,1])),"chromosomes.\n",...)
+		if(!(is.null(x$maps$genetic))){
+			cat("\tGenetic map:",nrow(x$maps$genetic),"markers, ",length(table(x$maps$genetic[,1]))," chromosomes\n",...)
 		}else{
-			cat("There is no physical genetic map in this object.\n")
+			cat("\ttGenetic map: None\n")
 		}
+		if(!(is.null(x$maps$physical))){
+			cat("\tPhysical map:",nrow(x$maps$physical),"markers, ",length(table(x$maps$physical[,1]))," chromosomes\n",...)
+		}else{
+			cat("\tPhysical ap: None\n")
+		}    
 	}else{
-		cat("WARNING: There is no phenotypic data for offspring. This is not acceptable in real ril object.\n",...)
+		stop("No phenotype data for offspring, this is not a valid population object\n")
 	}
 	
 	if(!(is.null(x$founders))){
+    cat("Founders:\n",...)
 		if(!(is.null(x$founders$phenotypes))){
-			cat("Object contains phenotypic data for",ncol(x$founders$phenotypes),"founders individuals covering",nrow(x$founders$phenotypes),"probes.\n",...)
+			cat("\tPhenotypes:",ncol(x$founders$phenotypes),"\n",...)
+      cat("\tMarkers:",nrow(x$founders$phenotypes),"\n",...)
 		}else{
-			stop("There is no phenotypic data for parents in this object. This is not acceptable in real ril object.\n",...)
+			stop("No phenotype data for founders, this is not a valid population object\n")
 		}
 		if(!(is.null(x$founders$RP))){
-			cat("Object contains RP analysis results.\n",...)
+			cat("\tDifferential expression: Detected\n",...)
 		}else{
-			cat("There is no RP analysis result in this object.\n",...)
+			cat("\tDifferential expression: Not Detected (please: use findDiffExpressed) \n",...)
 		}
 		if(!(is.null(x$founders$groups))){
-			cat("Parental groups are as following:",x$founders$groups,"\n",...)
+			cat("\tFounder groups:",x$founders$groups,"\n",...)
 		}else{
-			cat("There is no information about founders groups in this object.\n",...)
+			stop("No information about founders groups\n",...)
 		}
 	}else{
-		cat("WARNING: There is no phenotypic data for parents. This is not acceptable in real ril object.\n",...)
+		stop("No phenotype data for founders, this is not a valid population object\n")
 	}
-	cat("*************************************************************************************\n")
 }
 
 ############################################################################################################
-#removeChromosomes.internal: Removes chromosomes from a cross object
+#									*** removeIndividuals ***
+#
+# DESCRIPTION:
+#	Function to remove individual(s) from population object. 
 # 
-# cross - object of R/qtl cross type
-# numberOfChromosomes - Expected number of chromosomes
+# PARAMETERS:
+# 	population - object of class population
+# 	individuals - individuals to be romved specified by their names
+#
+# OUTPUT:
+#	object of class population
 #
 ############################################################################################################
-removeChromosomes.internal <- function(cross, numberOfChromosomes){
-	for(i in length(cross$geno):(numberOfChromosomes+1)){
-		cat("removing chromosome:",i," markers:",names(cross$geno[[i]]$map),"\n")
-		cross$rmv <- cbind(cross$rmv,cross$geno[[i]]$data)
-		cross <- drop.markers(cross, names(cross$geno[[i]]$map))
-		names(cross$geno) <- 1:length(cross$geno)
+removeIndividuals <- function(population,individuals,verbose=FALSE){
+	is.population(population)
+	for(ind in individuals){
+		if(ind%in%colnames(population$offspring$genotypes$real)){
+			population$offspring$genotypes$real <- population$offspring$genotypes$real[,-which(colnames(population$offspring$genotypes$real)==ind)]
+			if(verbose)cat("Removed",ind,"from population$offspring$genotypes$real\n")
+		}
+		if(ind%in%colnames(population$offspring$phenotypes)){
+			population$offspring$phenotypes <- population$offspring$phenotypes[,-which(colnames(population$offspring$phenotypes)==ind)]
+			if(verbose)cat("Removed",ind,"from population$offspring$phenotypes\n")
+		}
+		if(ind%in%colnames(population$founders$phenotypes)){
+			population$founders$phenotypes <- population$founders$phenotypes[,-which(colnames(population$founders$phenotypes)==ind)]
+			if(verbose)cat("Removed",ind,"from population$founders$phenotypes\n")
+		}
 	}
-	invisible(cross)
+	invisible(population)
+}
+
+
+############################################################################################################
+#									*** doCleanUp.internal ***
+#
+# DESCRIPTION:
+#	better garbage collection 
+# 
+# PARAMETERS:
+#	verbose - be verbose
+#
+# OUTPUT:
+#	none
+#
+############################################################################################################
+doCleanUp.internal <- function(verbose=FALSE){
+	before <- gc()[2,3]
+	bf <- before
+	after <- gc()[2,3]
+	while(before!=after){
+		before <- after
+		after <- gc()[2,3]
+	}
+	if(verbose) cat("Cleaned up memory from:",bf,"to:",after,"\n")
+}
+
+############################################################################################################
+#									*** write.population ***
+#
+# DESCRIPTION:
+#	writing population object to specific population file
+# 
+# PARAMETERS:
+#	population - object of class population
+#	outputFile - name of the output file
+#	verbose - be verbose
+#
+# OUTPUT:
+#	none
+#
+############################################################################################################
+write.population <- function(population,outputFile="population.txt",verbose=FALSE){
+	is.population(population)
+	firstLine <- vector(mode="numeric",length=6)
+	firstLine[1] <- nrow(population$offspring$phenotypes)
+	firstLine[2] <- nrow(population$founders$phenotypes)
+	firstLine[3] <- length(population$founders$groups)
+	if(!is.null(population$offspring$genotypes$real)){
+		firstLine[4] <- nrow(population$offspring$genotypes$real)
+	}else{
+		firstLine[4] <- NA
+	}
+	if(!is.null(population$maps$genetic)){
+		firstLine[5] <- nrow(population$maps$genetic)
+	}else{
+		firstLine[5] <- NA
+	}
+	if(!is.null(population$maps$physical)){
+		firstLine[6] <- nrow(population$maps$physical)
+	}else{
+		firstLine[6] <- NA
+	}
+	cat(firstLine,"\n",file=outputFile,append=FALSE)
+	
+	write.table(population$offspring$phenotypes,file=outputFile,sep="\t",quote=FALSE,append=TRUE)
+	if(verbose) cat("Offspring phenotype data written into",outputFile,"\n")
+	
+	write.table(population$founders$phenotypes,file=outputFile,sep="\t",quote=FALSE,append=TRUE)
+	if(verbose) cat("Founders phenotype data written into",outputFile,"\n")
+	
+	cat(population$founders$groups,"\n",file=outputFile,append=TRUE)
+	if(verbose) cat("Information about founders groups data written into",outputFile,"\n")
+	
+	if(!is.null(population$offspring$genotypes$real)){
+		write.table(population$offspring$genotypes$real,file=outputFile,sep="\t",quote=FALSE,append=TRUE)
+		if(verbose) cat("Offspring genotype data written into",outputFile,"\n")
+	}else{
+		if(verbose) cat("Offspring genotype data not found.\n")
+	}
+	
+	if(!is.null(population$maps$genetic)){
+		write.table(population$maps$genetic,file=outputFile,sep="\t",quote=FALSE,append=TRUE,col.names=FALSE)
+		if(verbose) cat("Genetic map written into",outputFile,"\n")
+	}else{
+		if(verbose) cat("Genetic map not found.\n")
+	}
+	
+	if(!is.null(population$maps$physical)){
+		write.table(population$maps$physical,file=outputFile,sep="\t",quote=FALSE,append=TRUE,col.names=FALSE)
+		if(verbose) cat("Physical map written into",outputFile,"\n")
+	}else{
+		if(verbose) cat("Physical map not found.\n")
+	}
+}
+
+############################################################################################################
+#									*** read.population ***
+#
+# DESCRIPTION:
+#	reading specific population file into object of class population  
+# 
+# PARAMETERS:
+#	filename - name of the population file
+#	verbose - be verbose
+#
+# OUTPUT:
+#	object of class population
+#
+############################################################################################################
+read.population <- function(filename="population.txt",verbose=FALSE){
+	firstLine <- as.matrix(read.table(filename,sep="",nrow=1))
+	if(length(firstLine)!=6) stop("This is not a correct population file.\n")
+	cur_skip <- 1
+	if(!is.na(firstLine[1])){
+		offspring_phenotypes <- as.matrix(read.table(filename,sep="\t",nrow=firstLine[1],skip=cur_skip,header=TRUE))
+		if(verbose) cat("Offspring phenotype data read from",filename,"\n")
+	}else{
+		stop("This is not a correct population file.\n")
+	}
+	cur_skip <- cur_skip + firstLine[1] + 1
+	if(!is.na(firstLine[2])){
+		founders_phenotypes <- as.matrix(read.table(filename,sep="\t",nrow=firstLine[2],skip=cur_skip,header=TRUE))
+		if(verbose) cat("Founders phenotype data read from",filename,"\n")
+	}else{
+		stop("This is not a correct population file.\n")
+	}
+	cur_skip <- cur_skip + firstLine[2] + 1
+	if(!is.na(firstLine[3])){
+		founders_groups <- as.matrix(read.table(filename,sep="",nrow=1,skip=cur_skip))
+		if(verbose) cat("Information about founders groups read from",filename,"\n")
+	}else{
+		stop("This is not a correct population file.\n")
+	}
+	population <- createPopulation(offspring_phenotypes,founders_phenotypes, founders_groups, verbose=verbose)
+	cur_skip <- cur_skip + 1
+	if(!is.na(firstLine[4])){
+		offspring_genotypes <- as.matrix(read.table(filename,sep="",nrow=firstLine[4],skip=cur_skip,header=TRUE))
+		if(verbose) cat("Offspring genotype data read from",filename,"\n")
+		cur_skip <- cur_skip + firstLine[4] + 1
+		population <- intoPopulation(population,offspring_genotypes,"offspring$genotypes",verbose=verbose)
+	}else{
+		if(verbose) cat("Offspring genotype data not found in",filename,"\n")
+	}
+	if(!is.na(firstLine[5])){
+		maps_genetic <- as.matrix(read.table(filename,sep="",nrow=firstLine[5],skip=cur_skip,header=FALSE,row.names=1))
+		if(verbose) cat("Genetic map read from",filename,"\n")
+		cur_skip <- cur_skip + firstLine[5]
+		population <- intoPopulation(population,maps_genetic,"maps$genetic",verbose=verbose)
+	}else{
+		if(verbose) cat("Genetic map not found in",filename,"\n")
+	}
+	if(!is.na(firstLine[6])){
+		maps_physical <- as.matrix(read.table(filename,sep="",nrow=firstLine[6],skip=cur_skip,header=FALSE,row.names=1))
+		if(verbose) cat("Physical map read from",filename,"\n")
+		population <- intoPopulation(population,maps_physical,"maps$physical",verbose=verbose)
+	}else{
+		if(verbose) cat("Physical map not found in",filename,"\n")
+	}
+	is.population(population)
+	invisible(population)
 }

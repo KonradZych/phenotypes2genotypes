@@ -12,7 +12,7 @@
 }
 
 \usage{
-	intoPopulation(population, dataObject, dataType=c("founders","offspring$phenotypes","offspring$genotypes","maps$genetic","maps$physical"),verbose=FALSE,debugMode=0)
+	intoPopulation(population, dataObject, dataType=c("founders","offspring$phenotypes","founders$group","offspring$genotypes","maps$genetic","maps$physical"),verbose=FALSE,debugMode=0)
 }
 
 \arguments{
@@ -24,6 +24,7 @@
 	\itemize{
 		\item{founders}{ - founders phenotype}
 		\item{offspring$phenotypes }{ - offspring phenotype}
+		\item{founders$group }{ - specifying groups in founders phenotypes}
 		\item{offspring$genotypes}{ - offspring genotype}
 		\item{maps$genetic}{ - genetic map}
 		\item{maps$physical}{ - physical map}
@@ -34,7 +35,7 @@
 }
 
 \value{
-  Object of class population. See ?createPopulation for more details about structure.
+  Object of class population. See \code{\link{createPopulation}} for description.
 }
 
 \details{
@@ -42,19 +43,18 @@
 }
 
 \author{
-	Konrad Zych \email{konrad.zych@uj.edu.pl}
+	Konrad Zych \email{konrad.zych@uj.edu.pl}, Danny Arends \email{Danny.Arends@gmail.com}
 	Maintainer: Konrad Zych \email{konrad.zych@uj.edu.pl}
-	Under tender patronage of: Danny Arends \email{Danny.Arends@gmail.com}
 }
 
 \examples{
-	\dontrun{
-		setwd(paste(.Library,"pheno2geno/data",sep="/"))
-		founders <- read.table("founders_phenotypes.txt",sep="")
-		offspring <- read.table("offspring_phenotypes.txt",sep="")
-		population <- createPopulation(offspring)
-		population <- intoPopulation(population, founders, "founders")
-	}
+	population <- fakePopulation()
+	offspring <- population$offspring$phenotypes
+	founders <- population$founders$phenotypes
+	founders_groups <- population$founders$groups
+	maps_genetic <- population$maps$genetic
+	population <- createPopulation(offspring,founders,founders_groups)
+	population <- intoPopulation(population,maps_genetic,"maps$genetic")
 }
 
 \seealso{
