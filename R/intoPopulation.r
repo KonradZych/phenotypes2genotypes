@@ -7,8 +7,8 @@
 # Modified by Danny Arends
 # 
 # first written March 2011
-# last modified June 2011
-# last modified in version: 0.7.2
+# last modified July 2011
+# last modified in version: 0.8.1
 # in current version: active, not in main workflow
 #
 #     This program is free software; you can redistribute it and/or
@@ -38,31 +38,36 @@
 # maps$physical - matrix containing physical map (optional)
 #
 ############################################################################################################
-createPopulation <- function(offspring_phenotypes=NULL, founders=NULL, offspring_genotypes=NULL, maps_genetic=NULL, maps_physical=NULL, no.warn=FALSE, verbose=FALSE,debugMode=0){
+createPopulation <- function(offspring_phenotypes, founders, founders_groups, offspring_genotypes, maps_genetic, maps_physical, no.warn=FALSE, verbose=FALSE,debugMode=0){
 	if(verbose && debugMode==1) cat("createPopulation starting.\n")
 	s <- proc.time()
 	population <- NULL
-	if(is.null(offspring_phenotypes)){
+	if(missing(offspring_phenotypes)){
 		stop("No offspring phenotype data provided!\n")
 	}else{
 		population <- intoPopulationSub.internal(population, offspring_phenotypes, "offspring$phenotypes", verbose, debugMode)
 	}
-	if(is.null(founders)){
-		if(!(no.warn))warning("No founders phenotype data provided. Strongly recommend to supply this data using intoPopulation.\n")
+	if(missing(founders)){
+		stop("No founders phenotype data provided!\n")
 	}else{
 		population <- intoPopulationSub.internal(population, founders, "founders", verbose, debugMode)
 	}
-	if(is.null(offspring_genotypes)){
+	if(missing(founders_groups)){
+		stop("No information about founders groups provided!\n")
+	}else{
+		population <- intoPopulationSub.internal(population, founders_groups, "founders$groups", verbose, debugMode)
+	}
+	if(missing(offspring_genotypes)){
 		if(verbose && !(no.warn))cat("No offspring genotypic data provided. You can supply it later using intoPopulation.\n")
 	}else{
 		population <- intoPopulationSub.internal(population, offspring_genotypes, "offspring$genotypes", verbose, debugMode)
 	}
-	if(is.null(maps_genetic)){
+	if(missing(maps_genetic)){
 		if(verbose && !(no.warn))cat("No genotic map provided. You can supply it later using intoPopulation.\n")
 	}else{
 		population <- intoPopulationSub.internal(population, maps_genetic, "maps$genetic", verbose, debugMode)
 	}
-	if(is.null(maps_physical)){
+	if(missing(maps_physical)){
 		if(verbose && !(no.warn))cat("No physical map provided.  You can supply it later using intoPopulation.\n")
 	}else{
 		population <- intoPopulationSub.internal(population, maps_physical, "maps$physical", verbose, debugMode)
@@ -70,6 +75,7 @@ createPopulation <- function(offspring_phenotypes=NULL, founders=NULL, offspring
 	if(is.null(population)) stop("No data provided!\n")
 	class(population) <- "population"
 	e <- proc.time()
+	is.population(population)
 	cat("createPopulation done in:",(e-s)[3],"seconds.\n")
 	invisible(population)
 }
@@ -87,9 +93,9 @@ createPopulation <- function(offspring_phenotypes=NULL, founders=NULL, offspring
 # 	-  maps$physical - physical map
 #
 ############################################################################################################
-intoPopulation <- function(population, dataObject, dataType=c("founders","offspring$phenotypes","offspring$genotypes","maps$genetic","maps$physical"),verbose=FALSE,debugMode=0){
+intoPopulation <- function(population, dataObject, dataType=c("founders","offspring$phenotypes","founders$group","offspring$genotypes","maps$genetic","maps$physical"),verbose=FALSE,debugMode=0){
 	### checks
-	if(is.null(population)) stop("No population object provided!\n")
+	is.population(population)
 	inListCheck.internal(dataType,"dataType",c("founders","offspring$phenotypes","offspring$genotypes","maps$genetic","maps$physical"))
 	if(verbose && debugMode==1) cat("intoPopulation starting without errors in checkpoints.\n")
 	if(length(dataType)>1) {
@@ -122,14 +128,17 @@ intoPopulation <- function(population, dataObject, dataType=c("founders","offspr
 # 	-  maps$physical - physical map
 #
 ############################################################################################################
-intoPopulationSub.internal <- function(population, dataObject, dataType=c("founders","offspring$phenotypes","offspring$genotypes","maps$genetic","maps$physical"),verbose=FALSE,debugMode=0){
+intoPopulationSub.internal <- function(population, dataObject, dataType=c("founders","offspring$phenotypes","founders$groups","offspring$genotypes","maps$genetic","maps$physical"),verbose=FALSE,debugMode=0){
 	if(dataType=="founders" || dataType=="offspring$phenotypes"){
 		population <- intoPopulationSubPheno.internal(population,dataObject,dataType, verbose, debugMode)
 	}else if(dataType=="offspring$genotypes"){
 		population <- intoPopulationSubGeno.internal(population,dataObject, verbose, debugMode)
 	}else if(dataType=="maps$genetic"||dataType=="maps$physical"){
 		population <- intoPopulationSubMap.internal(population,dataObject, dataType, verbose, debugMode)
+	}else if(dataType=="founders$groups"){
+		population$founders$groups <- dataObject
 	}
+	invisible(population)
 }
 
 ############################################################################################################
@@ -162,7 +171,7 @@ intoPopulationSubPheno.internal <- function(population, dataObject, dataType=c("
 		
 		### removing faulty columns
 		if(!(is.null(columns))){
-			cat("Following  columns are not numeric and cannot be converted into numeric:",columns," so will be removed.\n")
+			if(verbose) cat("Following  columns are not numeric and cannot be converted into numeric:",columns," so will be removed.\n")
 			dataObject <- dataObject[,-columns]
 		}
 		
@@ -177,7 +186,7 @@ intoPopulationSubPheno.internal <- function(population, dataObject, dataType=c("
 		
 		### removing faulty rows
 		if(!(is.null(rows))){
-			cat("Following  rows are not numeric and cannot be converted into numeric:",rows," so will be removed.\n")
+			if(verbose)cat("Following  rows are not numeric and cannot be converted into numeric:",rows," so will be removed.\n")
 			dataObject <- dataObject[-rows,]
 		}
 		
@@ -213,7 +222,7 @@ intoPopulationSubPheno.internal <- function(population, dataObject, dataType=c("
 		stop("No data provided for ",dataType,"!\n")
 	}
 	e <- proc.time()
-	cat("intoPopulation for",dataType,"done in:",(e-s)[3],"seconds.\n")
+	if(verbose&&debugMode==2)cat("intoPopulation for",dataType,"done in:",(e-s)[3],"seconds.\n")
 	invisible(population)
 }
 
@@ -247,7 +256,7 @@ intoPopulationSubGeno.internal <- function(population, dataObject, verbose=FALSE
 		
 		### removing faulty columns
 		if(!(is.null(columns))){
-			cat("Following  columns are not numeric and cannot be converted into numeric:",columns," so will be removed.\n")
+			if(verbose)cat("Following  columns are not numeric and cannot be converted into numeric:",columns," so will be removed.\n")
 			dataObject <- dataObject[,-columns]
 		}
 		
@@ -262,7 +271,7 @@ intoPopulationSubGeno.internal <- function(population, dataObject, verbose=FALSE
 		
 		### removing faulty rows
 		if(!(is.null(rows))){
-			cat("Following  rows are not numeric and cannot be converted into numeric:",rows," so will be removed.\n")
+			if(verbose)cat("Following  rows are not numeric and cannot be converted into numeric:",rows," so will be removed.\n")
 			dataObject <- dataObject[-rows,]
 		}
 		
@@ -291,7 +300,7 @@ intoPopulationSubGeno.internal <- function(population, dataObject, verbose=FALSE
 		stop("No data provided for offspring$genotypes !\n")
 	}
 	e <- proc.time()
-	cat("intoPopulation for offspring$genotypes done in:",(e-s)[3],"seconds.\n")
+	if(verbose&&debugMode==2)cat("intoPopulation for offspring$genotypes done in:",(e-s)[3],"seconds.\n")
 	invisible(population)
 }
 
@@ -329,6 +338,6 @@ intoPopulationSubMap.internal <- function(population, dataObject, dataType=c("ma
 		stop("No data provided for ",dataType,"!\n")
 	}
 	e <- proc.time()
-	cat("intoPopulation for",dataType,"done in:",(e-s)[3],"seconds.\n")
+	if(verbose&&debugMode==2)cat("intoPopulation for",dataType,"done in:",(e-s)[3],"seconds.\n")
 	invisible(population)
 }

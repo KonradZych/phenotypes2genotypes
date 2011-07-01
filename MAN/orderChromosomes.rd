@@ -1,20 +1,19 @@
-\name{plotMapComparison}
-\alias{plotMapComparison}
-\alias{coloringMode}
+\name{orderChromosomes}
+\alias{orderChromosomes}
 
-\title{Plotting routine for comparison of two genetic maps.}
+
+\title{Order chromosomes.}
 
 \description{
-  Plotting routine for comparison of two genetic maps.
+  Order chromosomes of object of class cross using majority rule.
 }
 
 \usage{
-	plotMapComparison(cross, coloringMode=1, map=c("genetic","physical"))
+	orderChromosomes(cross,map=c("genetic","physical"),verbose=FALSE)
 }
 
 \arguments{
- \item{cross}{ R/qtl cross type object.}
- \item{coloringMode}{ 1 - rainbow colors 2 - black for cis and red for trans located markers. }
+ \item{cross}{ object of class cross}
  \item{map}{ 
   Which genotypic matrix should be saved to file:
   \itemize{
@@ -22,10 +21,11 @@
     \item{physical}{ - physical map from cross$maps$physical}
   }
   }
+ \item{verbose}{ Be verbose}
 }
 
 \value{
-	Plot.
+  object of class cross
 }
 
 \details{
@@ -38,14 +38,17 @@
 }
 
 \examples{
+	### simulating data
 	population <- fakePopulation()
 	cross <- toGenotypes(population,genotype="real",orderUsing="map_genetic")
-	plotMapComparison(cross,map="genetic")
+	cross <- orderChromosomes(cross,"physical",verbose=TRUE)
+	### not much happens, cause the are already ordered nicely
 }
 
 \seealso{
-  \code{\link{plotChildrenExpression}}
-  \code{\link{plotParentalExpression}} 
+  \code{\link{readFiles}}
+  \code{\link{findDiffExpressed}}
+  \code{\link{toGenotypes}}
 }
 
 \keyword{manip}
