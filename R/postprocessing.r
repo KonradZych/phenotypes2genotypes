@@ -15,7 +15,7 @@
 #     modify it under the terms of the GNU General Public License,
 #     version 3, as published by the Free Software Foundation.
 #
-#     This program is distributed in the hope that it will be useful,
+#     This program is distributed in the hope that it will be useful
 #     but without any warranty; without even the implied warranty of
 #     merchantability or fitness for a particular purpose.  See the GNU
 #     General Public License, version 3, for more details.
@@ -37,12 +37,16 @@
 # 
 # PARAMETERS:
 # 	cross - object of class cross, containing physical or genetic map
-# 
+# 	map - which map should be used for comparison:
+#			- genetic - genetic map from cross$maps$genetic
+#			- physical - physical map from cross$maps$physical
+#	verbose - be verbose
+#
 # OUTPUT:
 #	object of class cross
 #
 ############################################################################################################
-segregateChromosomes <- function(cross,map=c("genetic","physical"),verbose=FALSE){
+orderChromosomes <- function(cross,map=c("genetic","physical"),verbose=FALSE){
 	crossContainsMap.internal(cross,map)
 	output <- majorityRule.internal(cross,map)
 	if(map=="genetic"){

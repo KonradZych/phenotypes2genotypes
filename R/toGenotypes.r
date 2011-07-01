@@ -72,7 +72,7 @@ toGenotypes <- function(population, genotype=c("simulated","real"), orderUsing=c
 	if(margin < 0 || margin > proportion) stop("Margin is a percentage (0,proportion)")
 	if(verbose && debugMode==1) cat("toGenotypes starting withour errors in checkpoint.\n")
 	inListCheck.internal(genotype,"genotype",c("simulated","real"))
-	inListCheck.internal(orderUsing,"orderUsing",c("none,""map_genetic","map_physical"))
+	inListCheck.internal(orderUsing,"orderUsing",c("none","map_genetic","map_physical"))
 	
 	
 	#*******CONVERTING CHILDREN PHENOTYPIC DATA TO GENOTYPES*******
