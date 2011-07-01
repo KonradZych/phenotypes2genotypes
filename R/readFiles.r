@@ -7,8 +7,8 @@
 # Modified by Danny Arends
 # 
 # first written March 2011
-# last modified June 2011
-# last modified in version: 0.7.1
+# last modified July 2011
+# last modified in version: 0.8.1
 # in current version: active, in main workflow
 #
 #     This program is free software; you can redistribute it and/or
@@ -30,28 +30,39 @@
 #############################################################################################
 
 ############################################################################################################
-#readFiles: reads geno/phenotypic files into R environment into special object.
+#									*** readFiles ***
+#
+# DESCRIPTION:
+#	reads geno/phenotypic files into R environment into special object.
 # 
-# offspring - Core used to specify names of children phenotypic ("offspring_phenotypes.txt") and genotypic ("offspring_genotypes.txt") files.
-# founders - Core used to specify names of founders phenotypic ("founders_phenotypes.txt") file.
-# map - Core used to specify names of genetic ("map_genetic.txt") and physical ("map_physical.txt") map files.
-# sep - Separator of values in files. Passed directly to read.table, so "" is a wildcard meaning whitespace.
-# verbose - Be verbose
-# debugMode - 1: Print our checks, 2: print additional time information
+# PARAMETERS:
+# 	offspring - Core used to specify names of children phenotypic ("offspring_phenotypes.txt") and genotypic ("offspring_genotypes.txt") files.
+# 	founders - Core used to specify names of founders phenotypic ("founders_phenotypes.txt") file.
+# 	map - Core used to specify names of genetic ("map_genetic.txt") and physical ("map_physical.txt") map files.
+#	founders_groups - specify founders groups
+# 	verbose - Be verbose
+# 	debugMode - 1: Print our checks, 2: print additional time information
+#
+# OUTPUT:
+#	object of class population 
 #
 ############################################################################################################
-readFiles <- function(offspring="offspring",founders="founders",map="maps",sep="",verbose=FALSE,debugMode=0){
+readFiles <- function(offspring="offspring",founders="founders",map="maps",founders_groups,verbose=FALSE,debugMode=0){
 	#**********INITIALIZING FUNCTION*************
 	s <- proc.time()
 	if(verbose && debugMode==1) cat("readFiles starting.\n")
 	population <- NULL
+	if(missing(founders_groups)){ stop("Specify parental groups!\n")
+	}else{ population$founders$groups <- founders_groups}
 	
 	#**********READING CHILDREN PHENOTYPIC DATA*************
 	filename <- paste(offspring,"_phenotypes.txt",sep="")
 	if(file.exists(filename)){
 		if(verbose) cat("Found phenotypic file for offspring:",filename,"and will store  it in population$offspring$phenotypes\n")
-		offspring_phenotypes <- read.table(filename,sep=sep,header=TRUE)
+		offspring_phenotypes <- read.table(filename,sep="\t",header=TRUE)
+		offspring_phenotypes <- as.matrix(offspring_phenotypes)
 		population <- createPopulation(offspring_phenotypes,no.warn=TRUE)
+		doCleanUp.internal()
 	}else{
 		stop("No phenotype file for offspring: ",filename," this file is essentiall, you have to provide it\n")
 	}
@@ -59,9 +70,11 @@ readFiles <- function(offspring="offspring",founders="founders",map="maps",sep="
 	#**********READING CHILDREN GENOTYPIC DATA*************
 	filename <- paste(offspring,"_genotypes.txt",sep="")
 	if(file.exists(filename)){
-		if(verbose) cat("Found genotypic file for offspring:",filename,"and will store  it in population$offspring$genotypes$read\n")
-		offspring_genotypes <- read.table(filename,sep=sep,header=TRUE)
+		if(verbose) cat("Found genotypic file for offspring:",filename,"and will store  it in population$offspring$genotypes$real\n")
+		offspring_genotypes <- read.table(filename,sep="\t",header=TRUE)
+		offspring_genotypes <- as.matrix(offspring_genotypes)
 		population <- intoPopulation(population, offspring_genotypes, "offspring$genotypes")
+		doCleanUp.internal()
 	}else{
 		if(verbose)cat("No genotypic file for offspring:",filename,"genotypic data for offspring will be simulated\n")
 	}
@@ -70,10 +83,12 @@ readFiles <- function(offspring="offspring",founders="founders",map="maps",sep="
 	filename <- paste(founders,"_phenotypes.txt",sep="")
 	if(file.exists(filename)){
 		if(verbose) cat("Found phenotypic file for parents:",filename,"and will store it in population$founders$phenotypes\n")
-		founders <- read.table(filename,sep=sep,header=TRUE)
+		founders <- read.table(filename,sep="\t",header=TRUE)
+		founders <- as.matrix(founders)
 		population <- intoPopulation(population, founders, "founders")
 		#removing from founders probes that are not in children:
 		population$founders$phenotypes <- mapMarkers.internal(population$founders$phenotypes,population$offspring$phenotypes, mapMode=1, verbose=verbose)
+		doCleanUp.internal()
 	}else{
 		warning("No phenotype file for parents: ",filename,". Strongly recommend to supply this data.\n")
 	}
@@ -81,10 +96,11 @@ readFiles <- function(offspring="offspring",founders="founders",map="maps",sep="
 	#**********READING GENETIC MAP*************
 	filename <- paste(map,"_genetic.txt",sep="")
 	if(file.exists(filename)){
-		if(verbose) cat("Found genotypic file for offspring:",filename,"and will store  it in population$offspring$genotypes$read\n")
-		maps_genetic <- read.table(filename,sep=sep,row.names=1,header=FALSE)
+		if(verbose) cat("Found genotypic file for offspring:",filename,"and will store  it in population$maps$genetic\n")
+		maps_genetic <- read.table(filename,sep="\t",row.names=1,header=FALSE)
 		maps_genetic <- as.matrix(maps_genetic)
 		population <- intoPopulation(population, maps_genetic, "maps$genetic")
+		doCleanUp.internal()
 	}else{
 		if(verbose)cat("No genetic map file:",filename,".\n")
 	}
@@ -92,10 +108,11 @@ readFiles <- function(offspring="offspring",founders="founders",map="maps",sep="
 	#**********READING PHYSICAL MAP*************
 	filename <- paste(map,"_physical.txt",sep="")
 	if(file.exists(filename)){
-		if(verbose) cat("Found genotypic file for offspring:",filename,"and will store  it in population$offspring$genotypes$read\n")
-		physical <-	read.table(filename,sep=sep,row.names=1,header=FALSE)
+		if(verbose) cat("Found genotypic file for offspring:",filename,"and will store  it in population$maps$physical\n")
+		physical <-	read.table(filename,sep="\t",row.names=1,header=FALSE)
 		physical <- as.matrix(physical)
 		population <- intoPopulation(population, physical, "maps$physical")
+		doCleanUp.internal()
 	}else{
 		if(verbose)cat("No physical map file:",filename,".\n")
 	}
@@ -103,19 +120,25 @@ readFiles <- function(offspring="offspring",founders="founders",map="maps",sep="
 	#**********FINALIZING FUNCTION*************
 	e <- proc.time()
 	if(verbose) cat("readFiles done in",(e-s)[3],"seconds.\n")
-	population$parameters$readFiles <- list(offspring, founders,sep=sep,verbose,debugMode)
-	names(population$parameters$readFiles) <- c("offspring", "founders", "sep", "verbose", "debugMode")
 	class(population) <- "population"
+	doCleanUp.internal()
 	invisible(population)
 }
 
 ############################################################################################################
-#mapMarkers.internal: removes from matrix1 cols or rows, which are not present in second (coparing using col/rownames)
+#									*** mapMarkers.internal ***
+#
+# DESCRIPTION:
+#	removes from matrix1 cols or rows, which are not present in second (coparing using col/rownames)
 # 
-# expressionMatrix1, expressionMatrix2 - matrices with data of any type
-# mapMode - 1 - map rows, 2 - map cols
-# verbose - Be verbose
-# debugMode - 1: Print our checks, 2: print additional time information
+# PARAMETERS:
+# 	expressionMatrix1, expressionMatrix2 - matrices with data of any type
+# 	mapMode - 1 - map rows, 2 - map cols
+# 	verbose - Be verbose
+# 	debugMode - 1: Print our checks, 2: print additional time information
+#
+# OUTPUT:
+#	object of class population 
 #
 ############################################################################################################
 mapMarkers.internal <- function(expressionMatrix1, expressionMatrix2, mapMode=2, verbose=FALSE, debugMode=0){

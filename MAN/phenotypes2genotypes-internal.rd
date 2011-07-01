@@ -7,38 +7,44 @@
 \alias{writeGenotypes.internal}
 \alias{writeGenotypesMap.internal}
 \alias{cleanNames.internal}
-\alias{segregateChromosomes.internal}
+\alias{crossContainsMap.internal}
 \alias{mergeChromosomes.internal}
 \alias{majorityRule.internal}
+\alias{doCleanUp.internal}
 
 \alias{convertToGenotypes.internal}
-\alias{splitRow.internal}
+\alias{splitPheno.internal}
 \alias{filterRowSub.internal }
 \alias{filterRow.internal}
 \alias{sortMap.internal}
-\alias{mixtureEM.internal}
-\alias{mixtureEMSub.internal}
 
 \alias{getChromosome.internal}
 \alias{getYLocs.internal}
+\alias{chromosomesLengths.internal}
 \alias{makeChromPal.internal}
 \alias{makeTransPal.internal}
 \alias{switchChromosomes.internal}
 \alias{removeChromosomes.internal}
+\alias{removeChromosomesSub.internal}
 
 \alias{checkMu.internal}
-\alias{splitRowSubEM.internal}
-\alias{splitRowSub.internal}
+\alias{splitPhenoRowEM.internal}
+\alias{splitPhenoRow.internal}
 \alias{print.population}
 \alias{intoPopulationSubPheno.internal}
 \alias{intoPopulationSubGeno.internal}
 \alias{intoPopulationSubMap.internal}
+\alias{is.population}
 
 
 \alias{inRangeCheck.internal}
 \alias{numericCheck.internal}
 \alias{inListCheck.internal}
 \alias{genotypeCheck.internal}
+
+\alias{fakePheno.internal}
+\alias{fakeFounders.internal}
+\alias{convertMap.internal}
 
 
 
@@ -54,9 +60,8 @@
 
 
 \author{ 
-	Konrad Zych \email{konrad.zych@uj.edu.pl}
+	Konrad Zych \email{konrad.zych@uj.edu.pl}, Danny Arends \email{Danny.Arends@gmail.com}
 	Maintainer: Konrad Zych \email{konrad.zych@uj.edu.pl}
-	Under tender patronage of: Danny Arends \email{Danny.Arends@gmail.com}
 }
 
 \keyword{internal}

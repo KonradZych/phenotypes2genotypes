@@ -7,8 +7,8 @@
 # Modified by Danny Arends
 # 
 # first written March 2011
-# last modified June 2011
-# last modified in version: 0.7.2
+# last modified July 2011
+# last modified in version: 0.8.1
 # in current version: active, internal in main workflow
 #
 #     This program is free software; you can redistribute it and/or
@@ -31,19 +31,25 @@
 
 
 ############################################################################################################
-#genotypesToCross.internal- produces from genotypic matrix file containing object of type cross, reads it 
-# into R a returns
-# 
-# population - population type object, must contain founders phenotypic data.
-# use - save "real" gentypes, "simulated" genotypes otr simulated genotypes ordered using "map" from gff file
-# outputFile - file where object of type cross is being saved
-# verbose - Be verbose
-# debugMode - 1: Print our checks, 2: print additional time information
+#									*** genotypesToCross.internal ***
 #
+# DESCRIPTION:
+#	produces from genotypic matrix file containing object of type cross, reads it into R a returns
+# 
+# PARAMETERS:
+# 	population - population type object, must contain founders phenotypic data.
+# 	use - save "real" gentypes, "simulated" genotypes otr simulated genotypes ordered using "map" from gff file
+# 	outputFile - file where object of type cross is being saved
+# 	verbose - Be verbose
+# 	debugMode - 1: Print our checks, 2: print additional time information
+#
+# OUTPUT:
+#	object of class cross
 #
 ############################################################################################################
-genotypesToCross.internal <- function(population, genotype=c("simulated","real"), orderUsing=c("map_genetic","map_physical",NULL), outputFile="mycross.csv", verbose=FALSE, debugMode=0){
+genotypesToCross.internal <- function(population, genotype=c("simulated","real"), orderUsing=c("none","map_genetic","map_physical"), outputFile="mycross.csv", verbose=FALSE, debugMode=0){
 	###CHECKS
+	is.population(population)
 	if(verbose && debugMode==1) cat("genotypesToCross starting.\n")
 	s <- proc.time()
 	
@@ -61,14 +67,16 @@ genotypesToCross.internal <- function(population, genotype=c("simulated","real")
 #**********WRITING GENOTYPIC DATA TO FILE*************
 	if(genotype=="real"){
 		if(is.null(population$offspring$genotypes$real)){
-			stop("Use = real chosen, but there is no real genotypic data in population$offspring$genotypes$read\n")
+			stop("Use = real chosen, but there is no real genotypic data in population$offspring$genotypes$real\n")
 		}else{
-			if(is.null(orderUsing)){
+			if(orderUsing=="none"){
 				writeGenotypes.internal(population$offspring$genotypes$real, chr=1, outputFile=outputFile, verbose=verbose, debugMode=debugMode)
 			}else if(orderUsing=="map_physical"){
+				population$maps$physical <- mapMarkers.internal(population$maps$physical,population$offspring$genotypes$real, mapMode=1, verbose=verbose)
 				if(is.null(population$maps$physical)) stop("orderUsing = map_physical chosen, but no physical map provided in population$maps$physical\n")
 				writeGenotypes.internal(population$offspring$genotypes$real, chr=population$maps$physical[rownames(population$offspring$genotypes$real),1], positions=population$maps$physical[rownames(population$offspring$genotypes$real),2], outputFile=outputFile, verbose=verbose, debugMode=debugMode)
 			}else if(orderUsing=="map_genetic"){
+				population$maps$genetic <- mapMarkers.internal(population$maps$genetic,population$offspring$genotypes$real, mapMode=1, verbose=verbose)
 				if(is.null(population$maps$genetic)) stop("orderUsing = map_physical chosen, but no genetic map provided in population$maps$genetic\n")
 				writeGenotypes.internal(population$offspring$genotypes$real, chr=population$maps$genetic[rownames(population$offspring$genotypes$real),1], positions=population$maps$genetic[rownames(population$offspring$genotypes$real),2], outputFile=outputFile, verbose=verbose, debugMode=debugMode)
 			}
@@ -79,12 +87,14 @@ genotypesToCross.internal <- function(population, genotype=c("simulated","real")
 		if(is.null(population$offspring$genotypes$simulated)){
 			stop("Use = simulated chosen, but there is no simulated genotypic data in population$offspring$genotypes$simulated\n")
 		}else{
-			if(is.null(orderUsing)){
+			if(orderUsing=="none"){
 				writeGenotypes.internal(population$offspring$genotypes$simulated, chr=1, outputFile=outputFile, verbose=verbose, debugMode=debugMode)
 			}else if(orderUsing=="map_physical"){
+				population$maps$physical <- mapMarkers.internal(population$maps$physical,population$offspring$genotypes$simulated, mapMode=1, verbose=verbose)
 				if(is.null(population$maps$physical)) stop("orderUsing = map_physical chosen, but no physical map provided in population$maps$physical\n")
 				writeGenotypes.internal(population$offspring$genotypes$simulated, chr=population$maps$physical[rownames(population$offspring$genotypes$simulated),1], positions=population$maps$physical[rownames(population$offspring$genotypes$simulated),2], outputFile=outputFile, verbose=verbose, debugMode=debugMode)
 			}else if(orderUsing=="map_genetic"){
+				population$maps$genetic <- mapMarkers.internal(population$maps$genetic,population$offspring$genotypes$simulated, mapMode=1, verbose=verbose)
 				if(is.null(population$maps$genetic)) stop("orderUsing = map_physical chosen, but no genetic map provided in population$maps$genetic\n")
 				writeGenotypes.internal(population$offspring$genotypes$simulated, chr=population$maps$genetic[rownames(population$offspring$genotypes$simulated),1], positions=population$maps$genetic[rownames(population$offspring$genotypes$simulated),2], outputFile=outputFile, verbose=verbose, debugMode=debugMode)
 			}
@@ -100,16 +110,20 @@ genotypesToCross.internal <- function(population, genotype=c("simulated","real")
 }
 
 ############################################################################################################
-#writePhenotypes.internal - sub function of genotypesToCross - writes phenotypes to file
-# 
-# population - Ril type object, must contain founders phenotypic data.
-# use - save "real" gentypes, "simulated" genotypes otr simulated genotypes ordered using "map" from gff file
-# outputFile - file where object of type cross is being saved
-# verbose - Be verbose
-# debugMode - 1: Print our checks, 2: print additional time information
+#									*** writePhenotypes.internal ***
 #
-# REMOVED: expressionMatrix - columns: individuals, rows: markers;
-# 		   limit - how many phenotypes should be written
+# DESCRIPTION:
+#	sub function of genotypesToCross - writes phenotypes to file
+# 
+# PARAMETERS:
+# 	population - Ril type object, must contain founders phenotypic data.
+# 	use - save "real" gentypes, "simulated" genotypes otr simulated genotypes ordered using "map" from gff file
+# 	outputFile - file where object of type cross is being saved
+# 	verbose - Be verbose
+# 	debugMode - 1: Print our checks, 2: print additional time information
+#
+# OUTPUT:
+#	none
 #
 ############################################################################################################
 writePhenotypes.internal <- function(population, genotype, outputFile, verbose=FALSE, debugMode=0){
@@ -141,19 +155,26 @@ writePhenotypes.internal <- function(population, genotype, outputFile, verbose=F
 }
 
 ############################################################################################################
-#writeGenotypes.internal - sub function of genotypesToCross and writeGenotypesMap - writes genotypes 
-# (one chromosome at the time) to file
+#									*** writeGenotypes.internal ***
+#
+# DESCRIPTION:
+#	sub function of genotypesToCross and writeGenotypesMap - writes genotypes (one chromosome at the time) 
+#	to file
 # 
-# genotypeMatrix - matrix of genotypic data, rows - markers, cols - individuals
-# chr - chromosome currently being written
-# outputFile - file where object of type cross is being saved
-# verbose - Be verbose
-# debugMode - 1: Print our checks, 2: print additional time information
+# PARAMETERS:
+# 	genotypeMatrix - matrix of genotypic data, rows - markers, cols - individuals
+# 	chr - chromosome currently being written
+# 	outputFile - file where object of type cross is being saved
+# 	verbose - Be verbose
+# 	debugMode - 1: Print our checks, 2: print additional time information
+#
+# OUTPUT:
+#	none
 #
 ############################################################################################################
 writeGenotypes.internal <- function(genotypeMatrix,chr=1,positions=NULL,outputFile,verbose=FALSE,debugMode=0){
 	sl <- proc.time()
-	if(verbose && debugMode==1) cat("writePhenotypes starting.\n")
+	if(verbose && debugMode==1) cat("writeGenotypes starting.\n")
 	if(is.null(positions)) positions <- 1:nrow(genotypeMatrix)
 	else if(length(positions)!=length(1:nrow(genotypeMatrix))) stop("Posistions object is not correct, check help files.\n")
 	if(verbose && debugMode==1) cat("writeGenotypes starting.\n")
@@ -165,9 +186,16 @@ writeGenotypes.internal <- function(genotypeMatrix,chr=1,positions=NULL,outputFi
 }
 
 ############################################################################################################
-#cleanNames.internal - changing names that will crush read.cross
+#									*** cleanNames.internal ***
+#
+# DESCRIPTION:
+#	changing names that will crush read.cross
 # 
-# matrixToBeCleaned - matrix of any data type
+# PARAMETERS:
+# 	matrixToBeCleaned - matrix of any data type
+#
+# OUTPUT:
+#	matrix of any data type
 #
 ############################################################################################################
 cleanNames.internal <- function(matrixToBeCleaned){
