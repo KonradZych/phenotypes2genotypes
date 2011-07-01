@@ -35,58 +35,34 @@
 #	simulating population object 
 # 
 # PARAMETERS:
-#	nrFounders - number of founders to be simulated
-#	... - parameters send to sim.cross, most important:
-#		type - type of the cross - "riself" for two-way RIL
-#		n.ind - number of offspring individuals
+#	n.founders - number of founders to be simulated:
+#	type - type of the cross - "riself" for two-way RIL
+#	n.offspring - number of offspring individuals
+#	... - parameters send to sim.cross, most important
 #
 # OUTPUT:
 #	object of class population
 #
 ############################################################################################################
-fakePopulation <- function(nrFounders = 4,...){
-	if(nrFounders<4) nrFounders <- 4
-	if(!(nrFounders%%2==0)) nrFounders <- nrFounders+1
-	map <- sim.map()
-	if(!missing(...)){
-		dots <- list(...)
-		if ("type" %in% names(dots)){
-			type <- dots$type
-			#dots <- dots[[-which(names(dots)=="type")]]
-		}else{
-			type <- "riself"
-		}
-		if ("n.ind" %in% names(dots)){
-			n.ind <- dots$n.ind
-			#dots <- dots[[-which(names(dots)=="n.ind")]]
-		}else{
-			n.ind <- 250
-		}
-		if ("model" %in% names(dots)){
-			model <- dots$model
-			#dots <- dots[[-which(names(dots)=="model")]]
-		}else{
-			model <- rbind(c(1,45,1,1),c(5,20,0.5,-0.5))
-		}
-	}else{
-		type <- "riself"
-		n.ind <- 250
-		model <- rbind(c(1,45,1,1),c(5,20,0.5,-0.5))
-	}
-	fake <- sim.cross(map,type=type, n.ind=n.ind, model = model)
+fakePopulation <- function(n.founders = 4, n.offspring = 250, n.markers=100, type = c("f2", "bc", "risib", "riself"),n.chromosomes=10, ...){
+	type <- match.arg(type)
+	if(n.founders<4) n.founders <- 4
+	if(!(n.founders%%2==0)) n.founders <- n.founders+1
+	map <- sim.map(rep(100,n.chromosomes),n.mar=n.markers)
+	fake <- sim.cross(map,type=type, n.ind=n.offspring, ...)
 	geno <- t(pull.geno(fake))
 	map <- convertMap.internal(map)
 	colnames(geno) <- paste("RIL",1:ncol(geno),sep="_")
 	pheno <- t(apply(geno,1,fakePheno.internal))
 	rownames(pheno) <- rownames(geno)
 	colnames(pheno) <- colnames(geno)
-	founders <- t(apply(pheno,1,fakeFounders.internal,nrFounders))
+	founders <- t(apply(pheno,1,fakeFounders.internal,n.founders))
 	rownames(founders) <- rownames(geno)
-	colnames(founders) <- 1:nrFounders
-	colnames(founders)[1:(nrFounders/2)] <- paste("Founder",1,1:(nrFounders/2),sep="_")
-	colnames(founders)[(nrFounders/2+1):nrFounders] <- paste("Founder",2,(nrFounders/2+1):nrFounders,sep="_")
+	colnames(founders) <- 1:n.founders
+	colnames(founders)[1:(n.founders/2)] <- paste("Founder",1,1:(n.founders/2),sep="_")
+	colnames(founders)[(n.founders/2+1):n.founders] <- paste("Founder",2,(n.founders/2+1):n.founders,sep="_")
 	geno[which(geno==2)] <- 0
-	foundersGroups <- c(rep(0,(nrFounders/2)),rep(1,(nrFounders/2)))
+	foundersGroups <- c(rep(0,(n.founders/2)),rep(1,(n.founders/2)))
 	population <- createPopulation(pheno, founders, foundersGroups, geno, map, map)
 	is.population(population)
 	invisible(population)
@@ -105,9 +81,9 @@ fakePopulation <- function(nrFounders = 4,...){
 #	row of offspring phenotype matrix
 #
 ############################################################################################################
-fakePheno.internal <- function(genoRow){
-	scalingF <- runif(1,1,10)
-	errorF <- runif(length(genoRow),0,3)
+fakePheno.internal <- function(genoRow,maxScale=10,maxError=3){
+	scalingF <- runif(1,1,maxScale)
+	errorF <- runif(length(genoRow),0,maxError)
 	genoRow <- (genoRow*scalingF) + errorF
 	invisible(genoRow)
 }
@@ -125,10 +101,10 @@ fakePheno.internal <- function(genoRow){
 #	row of parental phenotype matrix
 #
 ############################################################################################################
-fakeFounders.internal <- function(phenoRow,nrFounders){
-	errorF <- runif(nrFounders,0,3)
+fakeFounders.internal <- function(phenoRow,n.founders){
+	errorF <- runif(n.founders,0,3)
 	cur_mean <- mean(phenoRow)
-	foundersRow <- c(rep((cur_mean-0.1*cur_mean),(nrFounders/2)),rep((cur_mean-0.1*cur_mean),(nrFounders/2))) + errorF
+	foundersRow <- c(rep((cur_mean-0.1*cur_mean),(n.founders/2)),rep((cur_mean-0.1*cur_mean),(n.founders/2))) + errorF
 	invisible(foundersRow)
 }
 
