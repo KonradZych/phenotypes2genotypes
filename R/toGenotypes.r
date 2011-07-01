@@ -59,7 +59,7 @@
 ############################################################################################################
 toGenotypes <- function(population, genotype=c("simulated","real"), orderUsing=c("none","map_genetic","map_physical"), splitMethod=c("EM","mean"),treshold=0.01, overlapInd = 0, proportion = c(50,50), margin = 15, verbose=FALSE, debugMode=0,...){
 	#*******CHECKS*******
-	if(missing(orderUsing)) orderUsing <- NULL
+	is.population(population)
 	s<-proc.time()
 	if(proportion < 1 || proportion > 99) stop("Proportion is a percentage (1,99)")
 	if(any(!(is.numeric(population$founders$phenotypes)))){
@@ -72,7 +72,7 @@ toGenotypes <- function(population, genotype=c("simulated","real"), orderUsing=c
 	if(margin < 0 || margin > proportion) stop("Margin is a percentage (0,proportion)")
 	if(verbose && debugMode==1) cat("toGenotypes starting withour errors in checkpoint.\n")
 	inListCheck.internal(genotype,"genotype",c("simulated","real"))
-	inListCheck.internal(orderUsing,"orderUsing",c("map_genetic","map_physical"))
+	inListCheck.internal(orderUsing,"orderUsing",c("none,""map_genetic","map_physical"))
 	
 	
 	#*******CONVERTING CHILDREN PHENOTYPIC DATA TO GENOTYPES*******

@@ -108,6 +108,7 @@ print.population <- function(x,...){
 #
 ############################################################################################################
 removeIndividuals <- function(population,individuals,verbose=FALSE){
+	is.population(population)
 	for(ind in individuals){
 		if(ind%in%colnames(population$offspring$genotypes$real)){
 			population$offspring$genotypes$real <- population$offspring$genotypes$real[,-which(colnames(population$offspring$genotypes$real)==ind)]
@@ -282,5 +283,6 @@ read.population <- function(filename="population.txt",verbose=FALSE){
 	}else{
 		if(verbose) cat("Physical map not found in",filename,"\n")
 	}
+	is.population(population)
 	invisible(population)
 }
