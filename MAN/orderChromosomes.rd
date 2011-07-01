@@ -41,7 +41,6 @@
 	### simulating data
 	population <- fakePopulation()
 	cross <- toGenotypes(population,genotype="real",orderUsing="map_genetic")
-	### dangerous
 	cross <- orderChromosomes(cross,"physical,"verbose=TRUE)
 }
 
