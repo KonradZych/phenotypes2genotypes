@@ -44,8 +44,7 @@
 #	object of class population
 #
 ############################################################################################################
-fakePopulation <- function(nrFounders,...){
-	if(missing(nrFounders)) nrFounders <- 4
+fakePopulation <- function(nrFounders = 4,...){
 	if(nrFounders<4) nrFounders <- 4
 	if(!(nrFounders%%2==0)) nrFounders <- nrFounders+1
 	map <- sim.map()
