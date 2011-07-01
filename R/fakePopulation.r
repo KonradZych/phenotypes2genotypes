@@ -53,19 +53,19 @@ fakePopulation <- function(nrFounders,...){
 		dots <- list(...)
 		if ("type" %in% names(dots)){
 			type <- dots$type
-			dots <- dots[[-which(names(dots)=="type")]]
+			#dots <- dots[[-which(names(dots)=="type")]]
 		}else{
 			type <- "riself"
 		}
 		if ("n.ind" %in% names(dots)){
 			n.ind <- dots$n.ind
-			dots <- dots[[-which(names(dots)=="n.ind")]]
+			#dots <- dots[[-which(names(dots)=="n.ind")]]
 		}else{
 			n.ind <- 250
 		}
 		if ("model" %in% names(dots)){
 			model <- dots$model
-			dots <- dots[[-which(names(dots)=="model")]]
+			#dots <- dots[[-which(names(dots)=="model")]]
 		}else{
 			model <- rbind(c(1,45,1,1),c(5,20,0.5,-0.5))
 		}
