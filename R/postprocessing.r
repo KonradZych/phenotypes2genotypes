@@ -1,6 +1,6 @@
 ############################################################################################################
 #
-# toGenotypes.R
+# postprocessing.R
 #
 # Copyright (c) 2011, Konrad Zych
 #
@@ -23,15 +23,14 @@
 #     A copy of the GNU General Public License, version 3, is available
 #     at http://www.r-project.org/Licenses/GPL-3
 #
-# Contains: toGenotypes
-#           sortMap.internal, majorityRule.internal, mergeChromosomes.internal, removeChromosomes.internal,
-#			removeChromosomesSub.internal, cleanMap 
+# Contains: orderChromosomes, majorityRule.internal, mergeChromosomes.internal, cleanMap
+#			switchChromosomes.internal, removeChromosomes.internal, removeChromosomesSub.internal,
 #
 ############################################################################################################
 
 
 ############################################################################################################
-#									*** segragateChromosomes.internal ***
+#									*** orderChromosomes ***
 #
 # DESCRIPTION:
 # 	ordering chromosomes using physical map and majority rule
@@ -43,19 +42,22 @@
 #	object of class cross
 #
 ############################################################################################################
-segregateChromosomes.internal <- function(cross,map=c("genetic","physical"),verbose=FALSE){
+segregateChromosomes <- function(cross,map=c("genetic","physical"),verbose=FALSE){
 	crossContainsMap.internal(cross,map)
 	output <- majorityRule.internal(cross,map)
+	if(map=="genetic"){
+			cur_map <- cross$maps$genetic
+	}else if(map=="physical"){
+			cur_map <- cross$maps$physical
+	}	
 	print(output)
 	### until every chr on phys map is match exactly once
 	while(max(apply(output,2,sum))>1){
 		toMerge <- which(apply(output,2,sum)>1)
 		for(curToMerge in toMerge){
 			curMerge <- which(output[,curToMerge]==max(output[,curToMerge]))
-			map <- cross$maps$physical
 			cross <- mergeChromosomes.internal(cross,curMerge,curMerge[1])
-			cross$maps$physical <- map
-			output <- majorityRule.internal(cross,map)
+			output <- majorityRule.internal(cross,cur_map)
 		}
 	}
 	
@@ -67,11 +69,12 @@ segregateChromosomes.internal <- function(cross,map=c("genetic","physical"),verb
 		for(l in 1:ncol(output)){
 			cur <- which(output[,l]==max(output[,l]))
 			if(cur!=l)cross <- switchChromosomes.internal(cross,cur,l)
-			output <- majorityRule.internal(cross,map)
+			output <- majorityRule.internal(cross,cur_map)
 		}
 		order2 <- output
 	}
 	names(cross$geno) <- 1:length(cross$geno)
+	cross$maps$physical <- cur_map
 	invisible(cross)
 }
 
@@ -92,13 +95,13 @@ segregateChromosomes.internal <- function(cross,map=c("genetic","physical"),verb
 #	vector with new ordering of chromosomes inside cross object
 #
 ############################################################################################################
-majorityRule.internal <- function(cross,map=c("genetic","physical")){
-	knchrom <- length(table(cross$maps$physical[,1]))
+majorityRule.internal <- function(cross,cur_map){
+	knchrom <- length(table(cur_map[,1]))
 	result <- matrix(0, length(cross$geno), knchrom)
 	output <- matrix(0, length(cross$geno), knchrom)
 	for(i in 1:length(cross$geno)){
 		cur_ys <- colnames(cross$geno[[i]]$data)
-		cur_xs <- cross$maps$physical[cur_ys,]
+		cur_xs <- cur_map[cur_ys,]
 		for(j in 1:knchrom){
 			result[i,j] <- sum(cur_xs[,1]==j)/nrow(cur_xs)
 		}
@@ -233,7 +236,7 @@ removeChromosomesSub.internal <- function(cross, chr,verbose=FALSE){
 }
 
 ############################################################################################################
-#									*** cleanMap ***
+#										*** cleanMap ***
 #
 # DESCRIPTION:
 #	removes markers that cause the recombination map to expand more than a given percentage (of its total
