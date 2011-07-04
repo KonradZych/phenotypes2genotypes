@@ -66,7 +66,7 @@
 
 	population <- fakePopulation(type="bc")
 	population <- findDiffExpressed(population)
-	cross <- toGenotypes(population,genotype="simulated",splitMethod="EM",proportion=c(50,50),orderUsing="map_physical",treshold=0.1)
+	cross <- toGenotypes(population,genotype="simulated",splitMethod="EM",proportion=c(25,75),orderUsing="none",treshold=0.1)
 	plot.rf(cross, main="bc toGenotypes example")
 
 	population <- fakePopulation(type="riself")
