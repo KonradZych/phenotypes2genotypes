@@ -61,15 +61,18 @@
 	set.seed(102)
 	population <- fakePopulation(type="f2")
 	population <- findDiffExpressed(population)
-	cross <- toGenotypes(population,genotype="simulated",splitMethod="EM",proportion=c(25,50,25),orderUsing="map_genetic")
+	cross <- toGenotypes(population,genotype="simulated",splitMethod="EM",proportion=c(25,50,25),orderUsing="map_genetic",treshold=0.1)
+	plot.rf(cross, main="f2 toGenotypes example")
 
 	population <- fakePopulation(type="bc")
 	population <- findDiffExpressed(population)
-	cross <- toGenotypes(population,genotype="simulated",splitMethod="EM",proportion=c(50,50),orderUsing="map_physical")
+	cross <- toGenotypes(population,genotype="simulated",splitMethod="EM",proportion=c(50,50),orderUsing="map_physical",treshold=0.1)
+	plot.rf(cross, main="bc toGenotypes example")
 
 	population <- fakePopulation(type="riself")
 	population <- findDiffExpressed(population)
-	cross <- toGenotypes(population,genotype="simulated",splitMethod="mean",proportion=c(50,50),orderUsing="map_genetic")
+	cross <- toGenotypes(population,genotype="simulated",splitMethod="mean",proportion=c(50,50),orderUsing="map_genetic",treshold=0.1)
+	plot.rf(cross, main="riself toGenotypes example")
 }
 
 \seealso{
