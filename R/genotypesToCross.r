@@ -69,6 +69,7 @@ genotypesToCross.internal <- function(population, genotype=c("simulated","real")
 		if(is.null(population$offspring$genotypes$real)){
 			stop("Use = real chosen, but there is no real genotypic data in population$offspring$genotypes$real\n")
 		}else{
+			genoL <- length(table(population$offspring$genotypes$real))
 			if(orderUsing=="none"){
 				writeGenotypes.internal(population$offspring$genotypes$real, chr=1, outputFile=outputFile, verbose=verbose, debugMode=debugMode)
 			}else if(orderUsing=="map_physical"){
@@ -87,6 +88,7 @@ genotypesToCross.internal <- function(population, genotype=c("simulated","real")
 		if(is.null(population$offspring$genotypes$simulated)){
 			stop("Use = simulated chosen, but there is no simulated genotypic data in population$offspring$genotypes$simulated\n")
 		}else{
+			genoL <- length(table(population$offspring$genotypes$simulated))
 			if(orderUsing=="none"){
 				writeGenotypes.internal(population$offspring$genotypes$simulated, chr=1, outputFile=outputFile, verbose=verbose, debugMode=debugMode)
 			}else if(orderUsing=="map_physical"){
@@ -101,8 +103,14 @@ genotypesToCross.internal <- function(population, genotype=c("simulated","real")
 		}
 	}	
 
+if(genoL==2){
+	genotypes <- c(0,1)
+}else if(genoL==3){
+	genotypes <- c(0,1,2)
+}
+	
 #**********READING CROSS FILE TO R*************
-	cross <- invisible(read.cross("csvr",file=outputFile, genotypes=c(0,1)))
+	cross <- invisible(read.cross("csvr",file=outputFile, genotypes=genotypes))
 	class(cross)[1] <- "riself"
 	e <- proc.time()
 	if(verbose) cat("genotypesToCross done in",(e-s)[3],"seconds.\n")
