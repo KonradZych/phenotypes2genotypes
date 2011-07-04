@@ -94,6 +94,9 @@ toGenotypes <- function(population, genotype=c("simulated","real"), orderUsing=c
 	if(!(is.null(population$maps$physical))) cross$maps$physical <- population$maps$physical
 	if(!(is.null(population$maps$genetic))) cross$maps$genetic <- population$maps$genetic
 	
+	#*******ADDING REAL GENOTYPE TO THE CROSS*******
+	if(!(is.null(population$offspring$genotypes$real))&genotype=="simulated") cross$genotypes$real <- population$offspring$genotypes$real
+	
 	#*******RETURNING CROSS OBJECT*******
 	e<-proc.time()
 	if(verbose) cat("toGenotypes done in",(e-s)[3],"seconds\n")
@@ -370,9 +373,9 @@ splitPhenoRowEM.internal <- function(x, offspring, founders, overlapInd, proport
 	}
 	len <- vector(mode="numeric",length=nrDistributions)
 	for(i in 1:nrDistributions){
-		len[i]<-length(offspring[x,])*EM$lambda[i]
+		len[i]<-length(offspring[x,])*EM$lambda[which(EM$mu==sort(EM$mu)[i])]
 		startVal <- sum(len[1:i-1])
-		offspring[x,which(offspring[x,] %in% sort(offspring[x,])[startVal:(startVal+len[i])])] <- genotypes[i]
+		result[which(offspring[x,] %in% sort(offspring[x,])[startVal:(startVal+len[i])])] <- genotypes[i]
 	}
 	#result <- checkMu.internal(EM)
 	if(checkMu.internal(EM)){
