@@ -52,6 +52,9 @@ fakePopulation <- function(n.founders = 4, n.offspring = 250, n.markers=100, typ
 	map <- sim.map(rep(100,n.chromosomes),n.mar=n.markers)
 	fake <- sim.cross(map,type=type, n.ind=n.offspring, ...)
 	geno <- t(pull.geno(fake))
+	if(type=="bc"){
+		geno <- t(apply(geno,1,simBC.internal))
+	}
 	map <- convertMap.internal(map)
 	colnames(geno) <- paste("RIL",1:ncol(geno),sep="_")
 	pheno <- t(apply(geno,1,fakePheno.internal))
@@ -132,3 +135,40 @@ convertMap.internal <- function(map){
 	}
 	invisible(map_)
 }
+
+############################################################################################################
+#									*** simBC.internal ***
+#
+# DESCRIPTION:
+#	convert rqtl type map into population type one
+# 
+# PARAMETERS:
+#	map - map of cross type (list with names - names of chromosomes, elements o the list - markers and their
+#		  positions)
+#
+# OUTPUT:
+#	map of population class type - rownames - names of the markers, first column - numbers of chromosomes,
+#		second - position of the marker on chromosome
+#
+############################################################################################################
+simBC.internal <- function(genoRow){
+	n.ind <- length(genoRow)
+	toCount <- round(runif(1,1,2))
+	toChange <- (3-toCount)
+	numberOfToCount <- sum(genoRow==toCount)
+	errorRate <- round(n.ind*(runif(1,0,5)/100))
+	expected <- round(0.75*n.ind)
+	cat(numberOfToCount,expected,errorRate,"\n")
+	while(numberOfToCount<(expected-errorRate)){
+		genoRow[round(runif(1,1,length(genoRow)))] <- toCount
+		numberOfToCount <- sum(genoRow==toCount)
+	}
+	while(numberOfToCount>(expected+errorRate)){
+		genoRow[round(runif(1,1,length(genoRow)))] <- toChange
+		numberOfToCount <- sum(genoRow==toCount)
+	}
+	other <- sum(genoRow==toChange)
+	cat(numberOfToCount,other ,"\n")
+	invisible(genoRow)
+}
+
