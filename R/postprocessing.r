@@ -28,6 +28,70 @@
 #
 ############################################################################################################
 
+############################################################################################################
+#									*** postProc ***
+#
+# DESCRIPTION:
+# 	post processing obtained cross object to achieve best genetic map
+# 
+# PARAMETERS:
+# 	cross - object of class cross, containing physical or genetic map
+# 	n.linkGroups - expected number of linkage groups
+# 	max.rf.range - range, within which max.rf parameter of formLinkageGroup will be checked
+# 	min.lod.range - range, within which min.lod parameter of formLinkageGroup will be checked
+#	verbose - be verbose
+#
+# OUTPUT:
+#	object of class cross
+#
+############################################################################################################
+postProc <- function(cross,n.linkGroups,max.rf.range=c(0.15,0.30),min.lod.range=c(0,3),verbose=FALSE){
+	filename <- "postProctemp.tmp"
+	cross <- est.rf(cross)
+	crossLength <- sum(nmar(cross))
+	minDist <- round(crossLength*0.05)
+	if(minDist<3) minDist <- 3
+	cat("",file=filename)
+	if(length(max.rf.range)==2) max.rf.range[3] <- 0.01
+	if(length(min.lod.range)==2) min.lod.range[3] <- 1
+	if(length(max.rf.range)!=3) stop("max.rf.range should be provided with 2 or 3 arguments, see ?postProc\n")
+	if(length(min.lod.range)!=3) stop("min.lod.range should be provided with 2 or 3 arguments ?postProc\n")
+	if(any(!(is.numeric(max.rf.range)))) stop("max.rf.range should contain only numerics\n")
+	if(any(!(is.numeric(min.lod.range)))) stop("max.rf.range should contain only numerics\n")
+	cur.rf <- max.rf.range[1]
+	while(cur.rf<=max.rf.range[2]){
+		cur.lod <- min.lod.range[1]
+		while(cur.lod<=min.lod.range[2]){
+			cross_ <- formLinkageGroups(cross, max.rf=cur.rf, min.lod=cur.lod, reorgMarkers=TRUE, verbose=verbose)
+			cross_
+			cat(cur.rf,cur.lod,length(cross_$geno),file=filename,sep="\t",append=TRUE)
+			cat("\t",file=filename,append=TRUE)
+			cross__ <- removeChromosomes.internal(cross_,minNrOfMarkers=minDist,verbose=verbose)
+			cat(length(cross__$geno),(sum(nmar(cross__))/crossLength),file=filename,sep="\t",append=TRUE)
+			cat("\t",file=filename,append=TRUE)
+			cross__ <- removeChromosomes.internal(cross_,numberOfChromosomes=n.linkGroups,verbose=verbose)
+			cat(length(cross__$geno),(sum(nmar(cross__))/crossLength),file=filename,sep="\t",append=TRUE)
+			cat("\n",file=filename,append=TRUE)
+			cross_ <- NULL
+			cross__ <- NULL
+			doCleanUp.internal()
+			cur.lod <- cur.lod + min.lod.range[3]
+		}
+		cur.rf <- cur.rf + max.rf.range[3]
+	}
+	results <- as.matrix(read.table(filename,sep="\t"))
+	results <- cbind(results,apply(results,1,scoreResults.internal,n.linkGroups))
+	invisible(results)
+}
+
+scoreResults.internal <- function(resultRow,n.linkGroups){
+	score <- 0
+	score <- score + abs(resultRow[3]-n.linkGroups)*(-100)
+	score <- score + abs(resultRow[4]-n.linkGroups)*(-100)
+	score <- score + abs(resultRow[6]-n.linkGroups)*(-500)
+	score <- score + resultRow[5]*100 + resultRow[7]*100
+	invisible(score)
+}
 
 ############################################################################################################
 #									*** orderChromosomes ***
@@ -192,24 +256,29 @@ switchChromosomes.internal <- function(cross, chr1, chr2){
 #	object of class cross
 #
 ############################################################################################################
-removeChromosomes.internal <- function(cross, numberOfChromosomes, chromosomesToBeRmv, minNrOfMarkers){
+removeChromosomes.internal <- function(cross, numberOfChromosomes, chromosomesToBeRmv, minNrOfMarkers,verbose=FALSE){
 	if(is.null(cross)&&!(any(class(cross)=="cross"))) stop("Not a cross object!\n")
 	if(!(missing(numberOfChromosomes))){
-		for(i in length(cross$geno):(numberOfChromosomes+1)){
-			cross <- removeChromosomesSub.internal(cross,i)
+		if(numberOfChromosomes<length(cross$geno)){
+			for(i in length(cross$geno):(numberOfChromosomes+1)){
+				cross <- removeChromosomesSub.internal(cross,i,verbose)
+			}
 		}
 	}else if(!(missing(chromosomesToBeRmv))){
 		for(i in chromosomesToBeRmv){
 			if(!(i%in%names(cross$geno))){
 				stop("There is no chromosome called ",i,"\n")
 			}else{
-				cross <- removeChromosomesSub.internal(cross,i)
+				cross <- removeChromosomesSub.internal(cross,i,verbose)
 			}
 		}
 	}else if(!(missing(minNrOfMarkers))){
-		for(i in length(cross$geno):1){
-			if(length(cross$geno[[i]]$map)<minNrOfMarkers){
-				cross <- removeChromosomesSub.internal(cross,i)
+		if(length(cross$geno)>1){
+			if(length(cross_$geno[[1]]$map)<minNrOfMarkers) minNrOfMarkers <- length(cross_$geno[[1]]$map)-1
+			for(i in length(cross$geno):1){
+				if(length(cross$geno[[i]]$map)<minNrOfMarkers){
+					cross <- removeChromosomesSub.internal(cross,i,verbose)
+				}
 			}
 		}
 	}else{
