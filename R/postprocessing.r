@@ -66,10 +66,10 @@ postProc <- function(cross,n.linkGroups,max.rf.range=c(0.15,0.30),min.lod.range=
 			cross_
 			cat(cur.rf,cur.lod,length(cross_$geno),file=filename,sep="\t",append=TRUE)
 			cat("\t",file=filename,append=TRUE)
-			cross__ <- removeChromosomes.internal(cross_,minNrOfMarkers=minDist,verbose=verbose)
+			cross__ <- removeTooSmallChromosomes(cross_,minNrOfMarkers=minDist,verbose=verbose)
 			cat(length(cross__$geno),(sum(nmar(cross__))/crossLength),file=filename,sep="\t",append=TRUE)
 			cat("\t",file=filename,append=TRUE)
-			cross__ <- removeChromosomes.internal(cross_,numberOfChromosomes=n.linkGroups,verbose=verbose)
+			cross__ <- reduceChromosomesNumber(cross_,numberOfChromosomes=n.linkGroups,verbose=verbose)
 			cat(length(cross__$geno),(sum(nmar(cross__))/crossLength),file=filename,sep="\t",append=TRUE)
 			cat("\n",file=filename,append=TRUE)
 			cross_ <- NULL
@@ -239,24 +239,21 @@ switchChromosomes.internal <- function(cross, chr1, chr2){
 
 
 ############################################################################################################
-#									*** removeChromosomes.internal ***
+#									*** reduceChromosomesNumber ***
 #
 # DESCRIPTION:
 #	Function to remove chromosomes from cross object. Those can specified in three ways described below.
 # 
 # PARAMETERS:
 # 	cross - object of class cross
-# 	#parameters to specify chromosomes to be removed:
 # 	numberOfChromosomes - how many chromosomes should stay (remove all but 1:numberOfChromosomes)
-# 	chromosomesToBeRmv - explicitly provide functions with NAMES of chromosomes to be removed
-# 	minNrOfMarkers - specify minimal number of markers chromosome is allowed to have (remove all that have
-#					 less markers than that)
+#	verbose - be verbose
 # 
 # OUTPUT:
 #	object of class cross
 #
 ############################################################################################################
-removeChromosomes.internal <- function(cross, numberOfChromosomes, chromosomesToBeRmv, minNrOfMarkers,verbose=FALSE){
+reduceChromosomesNumber <- function(cross, numberOfChromosomes,verbose=FALSE){
 	if(is.null(cross)&&!(any(class(cross)=="cross"))) stop("Not a cross object!\n")
 	if(!(missing(numberOfChromosomes))){
 		if(numberOfChromosomes<length(cross$geno)){
@@ -264,7 +261,30 @@ removeChromosomes.internal <- function(cross, numberOfChromosomes, chromosomesTo
 				cross <- removeChromosomesSub.internal(cross,i,verbose)
 			}
 		}
-	}else if(!(missing(chromosomesToBeRmv))){
+	}else{
+		stop("You have to provide one of following: numberOfChromosomes, chromosomes or minLength")
+	}
+	invisible(cross)
+}
+
+############################################################################################################
+#									*** removeChromosomes ***
+#
+# DESCRIPTION:
+#	Function to remove chromosomes from cross object. Those can specified in three ways described below.
+# 
+# PARAMETERS:
+# 	numberOfChromosomes - how many chromosomes should stay (remove all but 1:numberOfChromosomes)
+# 	chromosomesToBeRmv - explicitly provide functions with NAMES of chromosomes to be removed
+#	verbose - be verbose
+# 
+# OUTPUT:
+#	object of class cross
+#
+############################################################################################################
+removeChromosomes <- function(cross, chromosomesToBeRmv, verbose=FALSE){
+	if(is.null(cross)&&!(any(class(cross)=="cross"))) stop("Not a cross object!\n")
+	if(!(missing(chromosomesToBeRmv))){
 		for(i in chromosomesToBeRmv){
 			if(!(i%in%names(cross$geno))){
 				stop("There is no chromosome called ",i,"\n")
@@ -272,7 +292,31 @@ removeChromosomes.internal <- function(cross, numberOfChromosomes, chromosomesTo
 				cross <- removeChromosomesSub.internal(cross,i,verbose)
 			}
 		}
-	}else if(!(missing(minNrOfMarkers))){
+	}else{
+		stop("You have to provide one of following: numberOfChromosomes, chromosomes or minLength")
+	}
+	invisible(cross)
+}
+
+############################################################################################################
+#									*** removeTooSmallChromosomes ***
+#
+# DESCRIPTION:
+#	Function to remove chromosomes from cross object. Those can specified in three ways described below.
+# 
+# PARAMETERS:
+# 	cross - object of class cross
+#	verbose - be verbose
+# 	minNrOfMarkers - specify minimal number of markers chromosome is allowed to have (remove all that have
+#					 less markers than that)
+# 
+# OUTPUT:
+#	object of class cross
+#
+############################################################################################################
+removeTooSmallChromosomes <- function(cross, minNrOfMarkers, verbose=FALSE){
+	if(is.null(cross)&&!(any(class(cross)=="cross"))) stop("Not a cross object!\n")
+	if(!(missing(minNrOfMarkers))){
 		if(length(cross$geno)>1){
 			if(length(cross_$geno[[1]]$map)<minNrOfMarkers) minNrOfMarkers <- length(cross_$geno[[1]]$map)-1
 			for(i in length(cross$geno):1){
