@@ -50,7 +50,7 @@ fakePopulation <- function(n.founders = 4, n.offspring = 250, n.markers=100, typ
 	if(!(n.founders%%2==0)) n.founders <- n.founders+1
 	if(length(type)>1) type <- type[1]
 	map <- sim.map(rep(100,n.chromosomes),n.mar=(n.markers/n.chromosomes))
-	fake <- sim.cross(map,type=type, n.ind=n.offspring, ...)
+	fake <- sim.cross(map,type=type, n.ind=n.offspring, include.x=FALSE, ...)
 	geno <- t(pull.geno(fake))
 	if(type=="bc"){
 		geno <- t(apply(geno,1,simBC.internal))

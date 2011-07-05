@@ -253,7 +253,7 @@ splitPhenoRow.internal <- function(x, offspring, founders, overlapInd, proportio
 		result[which(a)] <- genotypes[1]
 		result[which(b)] <- genotypes[2]
 		result[which(offspring[x,] == splitVal)] <- NA
-		result <- filterRow.internal(result, overlapInd, proportion, margin, genotypes)
+		result <- filterRow.internal(result, proportion, margin, genotypes)
 	}else if(length(proportion)==3){
 		### splitting into 0/1/2 genotypes
 		if(up==1){
@@ -293,7 +293,7 @@ splitPhenoRow.internal <- function(x, offspring, founders, overlapInd, proportio
 #	genotype row if it meets requirments or NULL
 #
 ############################################################################################################
-filterRow.internal <- function(result, overlapInd, proportion, margin, genotypes){
+filterRow.internal <- function(result, proportion, margin, genotypes){
 	### creating inverted genotypes matrix, to be sure, that we won't filter out anythng in correct proportion
 	### this function returns either unchanged result vector, which is then rbinded to other results, or
 	### NULL, which is ignored by rbind, and we drop current result
@@ -302,9 +302,9 @@ filterRow.internal <- function(result, overlapInd, proportion, margin, genotypes
 	}else if(length(proportion)==3){
 		genotypes2 <- genotypes[c(3,2,1)]
 	}
-	if(filterRowSub.internal(result,overlapInd,proportion, margin, genotypes)){
+	if(filterRowSub.internal(result, overlapInd, proportion, margin, genotypes)){
 		invisible(result)
-	}else if(filterRowSub.internal(result,overlapInd,proportion, margin, genotypes)){
+	}else if(filterRowSub.internal(result, overlapInd, proportion, margin, genotypes)){
 		invisible(result)
 	}else{
 		return(NULL)
@@ -327,9 +327,10 @@ filterRow.internal <- function(result, overlapInd, proportion, margin, genotypes
 #	boolean
 #
 ############################################################################################################
-filterRowSub.internal <- function(result, overlapInd, proportion, margin, genotypes){
+filterRowSub.internal <- function(genotypeRow, overlapInd, proportion, margin, genotypes){
+	if(sum(is.na(genotypeRow)) > overlapInd) return(FALSE)
 	for(i in 1:length(proportion)){
-		cur <- sum(result==genotypes[i])/length(result) * 100
+		cur <- sum(genotypeRow==genotypes[i])/length(genotypeRow) * 100
 		if(is.na(cur)) return(FALSE)
 		upLimit <- proportion[i] + margin/2
 		downLimit <- proportion[i] - margin/2
@@ -378,8 +379,8 @@ splitPhenoRowEM.internal <- function(x, offspring, founders, overlapInd, proport
 		result[which(offspring[x,] %in% sort(offspring[x,])[startVal:(startVal+len[i])])] <- genotypes[i]
 	}
 	#result <- checkMu.internal(EM)
-	if(checkMu.internal(EM)){
-		result <- filterRow.internal(result, overlapInd, proportion, margin, genotypes)
+	if(checkMu.internal(result,EM,overlapInd)){
+		result <- filterRow.internal(result, proportion, margin, genotypes)
 	}else{
 		result<- NULL
 	}
@@ -393,15 +394,20 @@ splitPhenoRowEM.internal <- function(x, offspring, founders, overlapInd, proport
 #	checking if fitted normal distributions do not overlap
 # 
 # PARAMETERS:
+# 	result - currently processed row
 # 	EM - output of normalmixEM function
+# 	overlapInd - how many individuals are allowed to be overlapping between distributions
 # 
 # OUTPUT:
 #	boolean
 #
 ############################################################################################################
-checkMu.internal <- function(EM){
+checkMu.internal <- function(result,EM,overlapInd){
 	for(i in 2:length(EM$mu)){
-		if((EM$mu[i]-EM$sigma[i])<(EM$mu[i-1]+EM$sigma[i-1])) return(FALSE)
+		if((EM$mu[i]-EM$sigma[i])<(EM$mu[i-1]+EM$sigma[i-1])){
+			if(sum())
+			return(FALSE)
+		}		
 	}
 	return(TRUE)
 }
