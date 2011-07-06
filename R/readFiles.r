@@ -71,7 +71,7 @@ readFiles <- function(offspring="offspring",founders="founders",map="maps",found
 		if(verbose) cat("Found phenotypic file for parents:",filename,"and will store it in population$founders$phenotypes\n")
 		founders <- read.table(filename,sep="\t",header=TRUE)
 		founders <- as.matrix(founders)
-		population <- intoPopulation(population, founders, "founders")
+		population <- intoPopulationSub.internal(population, founders, "founders")
 		#removing from founders probes that are not in children:
 		population$founders$phenotypes <- mapMarkers.internal(population$founders$phenotypes,population$offspring$phenotypes, mapMode=1, verbose=verbose)
 		doCleanUp.internal()
