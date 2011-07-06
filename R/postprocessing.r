@@ -42,7 +42,17 @@
 #	verbose - be verbose
 #
 # OUTPUT:
-#	object of class cross
+#	matrix conatining 8 cols:
+#		#1 max.rf used in analysis
+#		#2 min.lod used in analysis
+#		#3 number of linkage groups obtained using values 1 and 2 by formLinkageGroups
+#		#4 number of linkage groups left after removing groups with less then 0.5% of all markers (or less
+#			than 3 markers if 0.5% of all of them is less than 3
+#		#5 percentage of markers in groups from point 4
+#		#6 number of linkage groups left after removing groups with number higher than n.linkGroups (so 
+#			exactly n.linkGroups or less
+#		#7 percentage of markers in groups from point 6
+#		#8 score obtained by scoreResults.internal (the higher, the better match we have)
 #
 ############################################################################################################
 postProc <- function(cross,n.linkGroups,max.rf.range=c(0.15,0.30),min.lod.range=c(0,3),verbose=FALSE){
@@ -84,11 +94,25 @@ postProc <- function(cross,n.linkGroups,max.rf.range=c(0.15,0.30),min.lod.range=
 	invisible(results)
 }
 
+############################################################################################################
+#									*** scoreResults.internal ***
+#
+# DESCRIPTION:
+# 	simpel scoring of results obtained by postProc
+# 
+# PARAMETERS:
+# 	resultRow - row of matrix obtained using postProc
+# 	n.linkGroups - expected number of linkage groups
+#
+# OUTPUT:
+#	integer
+#
+############################################################################################################
 scoreResults.internal <- function(resultRow,n.linkGroups){
 	score <- 0
 	score <- score + abs(resultRow[3]-n.linkGroups)*(-100)
 	score <- score + abs(resultRow[4]-n.linkGroups)*(-100)
-	score <- score + abs(resultRow[6]-n.linkGroups)*(-500)
+	score <- score + abs(resultRow[6]-n.linkGroups)*(-100)
 	score <- score + resultRow[5]*100 + resultRow[7]*100
 	invisible(score)
 }

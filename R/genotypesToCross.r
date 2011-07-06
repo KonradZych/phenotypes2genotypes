@@ -52,7 +52,8 @@ genotypesToCross.internal <- function(population, genotype=c("simulated","real")
 	is.population(population)
 	if(verbose && debugMode==1) cat("genotypesToCross starting.\n")
 	s <- proc.time()
-	
+	if(orderUsing=="map_physical"&&is.null(population$maps$physical)) stop("orderUsing=map_physical chosen, but there is no map in population$maps$physical\n")
+	if(orderUsing=="map_genetic"&&is.null(population$maps$genetic)) stop("orderUsing=map_genetic chosen, but there is no map in population$maps$genetic\n")
 	
 #**********WRITING PHENOTYPIC DATA TO FILE*************
 	if(!is.null(population$offspring$phenotypes)){
