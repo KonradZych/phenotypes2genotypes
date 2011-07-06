@@ -57,6 +57,7 @@
 ############################################################################################################
 postProc <- function(cross,n.linkGroups,max.rf.range=c(0.15,0.30),min.lod.range=c(0,3),verbose=FALSE){
 	filename <- "postProctemp.tmp"
+	if(missing(n.linkGroups)) stop("n.linkGroups in an obligatory parameter")
 	cross <- est.rf(cross)
 	crossLength <- sum(nmar(cross))
 	minDist <- round(crossLength*0.05)
@@ -73,7 +74,6 @@ postProc <- function(cross,n.linkGroups,max.rf.range=c(0.15,0.30),min.lod.range=
 		cur.lod <- min.lod.range[1]
 		while(cur.lod<=min.lod.range[2]){
 			cross_ <- formLinkageGroups(cross, max.rf=cur.rf, min.lod=cur.lod, reorgMarkers=TRUE, verbose=verbose)
-			cross_
 			cat(cur.rf,cur.lod,length(cross_$geno),file=filename,sep="\t",append=TRUE)
 			cat("\t",file=filename,append=TRUE)
 			cross__ <- removeTooSmallChromosomes(cross_,minNrOfMarkers=minDist,verbose=verbose)
@@ -342,7 +342,7 @@ removeTooSmallChromosomes <- function(cross, minNrOfMarkers, verbose=FALSE){
 	if(is.null(cross)&&!(any(class(cross)=="cross"))) stop("Not a cross object!\n")
 	if(!(missing(minNrOfMarkers))){
 		if(length(cross$geno)>1){
-			if(length(cross_$geno[[1]]$map)<minNrOfMarkers) minNrOfMarkers <- length(cross_$geno[[1]]$map)-1
+			if(length(cross$geno[[1]]$map)<minNrOfMarkers) minNrOfMarkers <- length(cross$geno[[1]]$map)-1
 			for(i in length(cross$geno):1){
 				if(length(cross$geno[[i]]$map)<minNrOfMarkers){
 					cross <- removeChromosomesSub.internal(cross,i,verbose)
