@@ -49,7 +49,6 @@
 # 	margin - Proportion is allowed to varry between this margin (2 sided)
 # 	minChrLength -if maximal distance between the markers in the chromosome is lower than this value,
 #		whole chromosome will be dropped
-# 	... - Parameters passed to formLinkageGroups.
 # 	verbose - Be verbose
 # 	debugMode - 1: Print our checks, 2: print additional time information
 # 
@@ -57,7 +56,7 @@
 #	object of class cross
 #
 ############################################################################################################
-toGenotypes <- function(population, genotype=c("simulated","real"), orderUsing=c("none","map_genetic","map_physical"), splitMethod=c("EM","mean"),treshold=0.01, overlapInd = 0, proportion = c(50,50), margin = 15, verbose=FALSE, debugMode=0,...){
+toGenotypes <- function(population, genotype=c("simulated","real"), orderUsing=c("none","map_genetic","map_physical"), splitMethod=c("EM","mean"),treshold=0.01, overlapInd = 0, proportion = c(50,50), margin = 15, verbose=FALSE, debugMode=0){
 	#*******CHECKS*******
 	is.population(population)
 	s<-proc.time()
