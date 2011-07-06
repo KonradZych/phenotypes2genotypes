@@ -52,8 +52,6 @@ readFiles <- function(offspring="offspring",founders="founders",map="maps",found
 	s <- proc.time()
 	if(verbose && debugMode==1) cat("readFiles starting.\n")
 	population <- NULL
-	if(missing(founders_groups)){ stop("Specify parental groups!\n")
-	}else{ population$founders$groups <- founders_groups}
 	
 	#**********READING CHILDREN PHENOTYPIC DATA*************
 	filename <- paste(offspring,"_phenotypes.txt",sep="")
@@ -61,22 +59,10 @@ readFiles <- function(offspring="offspring",founders="founders",map="maps",found
 		if(verbose) cat("Found phenotypic file for offspring:",filename,"and will store  it in population$offspring$phenotypes\n")
 		offspring_phenotypes <- read.table(filename,sep="\t",header=TRUE)
 		offspring_phenotypes <- as.matrix(offspring_phenotypes)
-		population <- createPopulation(offspring_phenotypes,no.warn=TRUE)
+		population <- intoPopulationSub.internal(population,offspring_phenotypes,"offspring$phenotypes")
 		doCleanUp.internal()
 	}else{
 		stop("No phenotype file for offspring: ",filename," this file is essentiall, you have to provide it\n")
-	}
-	
-	#**********READING CHILDREN GENOTYPIC DATA*************
-	filename <- paste(offspring,"_genotypes.txt",sep="")
-	if(file.exists(filename)){
-		if(verbose) cat("Found genotypic file for offspring:",filename,"and will store  it in population$offspring$genotypes$real\n")
-		offspring_genotypes <- read.table(filename,sep="\t",header=TRUE)
-		offspring_genotypes <- as.matrix(offspring_genotypes)
-		population <- intoPopulation(population, offspring_genotypes, "offspring$genotypes")
-		doCleanUp.internal()
-	}else{
-		if(verbose)cat("No genotypic file for offspring:",filename,"genotypic data for offspring will be simulated\n")
 	}
 	
 	#**********READING PARENTAL PHENOTYPIC DATA*************
@@ -90,7 +76,32 @@ readFiles <- function(offspring="offspring",founders="founders",map="maps",found
 		population$founders$phenotypes <- mapMarkers.internal(population$founders$phenotypes,population$offspring$phenotypes, mapMode=1, verbose=verbose)
 		doCleanUp.internal()
 	}else{
-		warning("No phenotype file for parents: ",filename,". Strongly recommend to supply this data.\n")
+		stop("No phenotype file for parents: ",filename," this file is essentiall, you have to provide it\n")
+	}
+		
+	#**********FOUNDERS GROUPS*************
+	if(missing(founders_groups)){ 
+		stop("Specify founders_groups!\n")
+	}else{
+		if(length(founders_groups)!=ncol(population$founders$phenotypes)){
+			stop("Length of founders_groups should be equal to the number of columns in founder phenotype file.")
+		}else if((sum(founders_groups==1)+sum(founders_groups==0))!=length(founders_groups)){
+			stop("founders_groups should contain only 0s and 1s.")
+		}else{
+			population$founders$groups <- founders_groups
+		}
+	}
+	
+	#**********READING CHILDREN GENOTYPIC DATA*************
+	filename <- paste(offspring,"_genotypes.txt",sep="")
+	if(file.exists(filename)){
+		if(verbose) cat("Found genotypic file for offspring:",filename,"and will store  it in population$offspring$genotypes$real\n")
+		offspring_genotypes <- read.table(filename,sep="\t",header=TRUE)
+		offspring_genotypes <- as.matrix(offspring_genotypes)
+		population <- intoPopulation(population, offspring_genotypes, "offspring$genotypes")
+		doCleanUp.internal()
+	}else{
+		if(verbose)cat("No genotypic file for offspring:",filename,"genotypic data for offspring will be simulated\n")
 	}
 	
 	#**********READING GENETIC MAP*************
