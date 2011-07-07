@@ -52,6 +52,9 @@ readFiles <- function(offspring="offspring",founders="founders",map="maps",found
 	s <- proc.time()
 	if(verbose && debugMode==1) cat("readFiles starting.\n")
 	population <- NULL
+	if(missing(founders_groups)){ 
+		stop("Specify founders_groups!\n")
+	}
 	
 	#**********READING CHILDREN PHENOTYPIC DATA*************
 	filename <- paste(offspring,"_phenotypes.txt",sep="")
@@ -80,16 +83,12 @@ readFiles <- function(offspring="offspring",founders="founders",map="maps",found
 	}
 		
 	#**********FOUNDERS GROUPS*************
-	if(missing(founders_groups)){ 
-		stop("Specify founders_groups!\n")
+	if(length(founders_groups)!=ncol(population$founders$phenotypes)){
+		stop("Length of founders_groups should be equal to the number of columns in founder phenotype file.")
+	}else if((sum(founders_groups==1)+sum(founders_groups==0))!=length(founders_groups)){
+		stop("founders_groups should contain only 0s and 1s.")
 	}else{
-		if(length(founders_groups)!=ncol(population$founders$phenotypes)){
-			stop("Length of founders_groups should be equal to the number of columns in founder phenotype file.")
-		}else if((sum(founders_groups==1)+sum(founders_groups==0))!=length(founders_groups)){
-			stop("founders_groups should contain only 0s and 1s.")
-		}else{
-			population$founders$groups <- founders_groups
-		}
+		population$founders$groups <- founders_groups
 	}
 	
 	#**********READING CHILDREN GENOTYPIC DATA*************
