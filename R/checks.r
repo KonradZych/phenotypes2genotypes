@@ -191,3 +191,25 @@ crossContainsMap.internal <- function(cross,map=c("genetic","physical")){
 		stop("Parameter map should be either genetic or physical")
 	}
 }
+
+############################################################################################################
+#									*** defaultCheck.internal  ***
+#
+# DESCRIPTION:
+# 	making sure that default parameter is used, when parameter is speicified by =c("","")
+# 
+# PARAMETERS:
+# 	parameterToBeChecked
+#	maxLength
+# 
+# OUTPUT:
+#	default parameter from list of possible
+#
+############################################################################################################
+defaultCheck.internal <- function(parameterToBeChecked,nameOfParameter,maxLength){
+	if(length(parameterToBeChecked)==maxLength){
+		parameterToBeChecked <- parameterToBeChecked[1]
+	}else if(length(parameterToBeChecked)!=1){
+		stop("wrong parameter ",nameOfParameter," length, choose one out of possible\n")
+	}
+}
