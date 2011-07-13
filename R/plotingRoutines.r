@@ -8,7 +8,7 @@
 # 
 # first written March 2011
 # last modified July 2011
-# last modified in version: 0.8.1
+# last modified in version: 0.8.5
 # in current version: active, not in main workflow
 #
 #     This program is free software; you can redistribute it and/or
@@ -324,8 +324,8 @@ makeTransPal.internal <- function(ys1,xs){
 #	function calculating lengths of chromosomes in given map
 # 
 # PARAMETERS:
-# 	map - genetic por physical map (matrix with two cols - 1 - chromome nr, 2- postion on chromosome),
-#		  rownames - names of markers
+# 	map - genetic or physical map (matrix with two cols - 1 - chromome nr, 2- postion on chromosome),
+#		rownames - names of markers
 #
 # OUTPUT:
 #	vector of lengths of chromosomes
@@ -383,4 +383,61 @@ plotMarkerDistribution <- function(phenotypeRow,nrDistributions,logarithmic=FALS
 		yfit <- yfit*diff(h[[i]][1:2])*length(x) 
 		lines(xfit, yfit, col=colorP[i%%3+1], lwd=2)
 	}
+}
+
+############################################################################################################
+#									*** chromosomesCorelationPlot ***
+#
+# DESCRIPTION:
+#	plot image show correlation between chromosomes of maps inside cross object
+# 
+# PARAMETERS:
+# 	cross - object of R/qtl cross type
+# 	map - which map should be used for comparison:
+#			- genetic - genetic map from cross$maps$genetic
+#			- physical - physical map from cross$maps$physical
+# 
+# OUTPUT:
+#	plot
+#
+############################################################################################################
+chromosomesCorelationPlot <- function(cross, coloringMode=1,map=c("genetic","physical")){ 
+	inListCheck.internal(map,"map",c("genetic","physical"))
+	crossContainsMap.internal(cross,map)
+	if(map=="genetic"){
+		cur_map <- cross$maps$genetic
+	}else if(map=="physical"){
+		cur_map <- cross$maps$physical
+	}
+	image(chromosomesCorelationMatrix(cross,cur_map))
+}
+
+############################################################################################################
+#									*** chromosomesCorelationMatrix ***
+#
+# DESCRIPTION:
+#	function calculating matrix of corelations between chromosomes
+# 
+# PARAMETERS:
+# 	cross - object of R/qtl cross type
+# 	cur_map - map to be used in comparison
+# 
+# OUTPUT:
+#	matrix of corelations
+#
+############################################################################################################
+chromosomesCorelationMatrix <- function(cross, cur_map){
+	### add mapMarkers here and in bestCorelated
+	knchrom <- length(table(cur_map[,1]))
+	result <- matrix(0, nmar(cross), nrow(cur_map))
+	rownames(result) <- markernames(cross)
+	colnames(result) <- rownames(cur_map)
+	for(i in 1:length(cross$geno)){
+		cur_ys <- cross$geno[[i]]$data
+		for(j in 1:knchrom){
+			cur_xs <- t(cross$genotypes$real[rownames(cur_map)[which(cur_map[,1]==j)],])
+			result[colnames(cur_ys),colnames(cur_xs)] <- cor(cbind(cur_ys,cur_xs),use="pairwise.complete.obs")
+		}
+	}
+	invisible(result)
 }

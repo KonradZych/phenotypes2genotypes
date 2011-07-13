@@ -35,6 +35,7 @@
 \alias{intoPopulationSubGeno.internal}
 \alias{intoPopulationSubMap.internal}
 \alias{selectMarkersUsingMap.internal}
+\alias{chromosomesCorelationMatrix}
 \alias{is.population}
 
 
