@@ -24,8 +24,8 @@
 #     at http://www.r-project.org/Licenses/GPL-3
 #
 # Contains: toGenotypes
-#           convertToGenotypes.internal, splitRow.internal, filterGenotypes.internal, filterRow.internal,
-# 			splitRowSubEM.internal, checkMu.internal
+#           convertToGenotypes.internal, splitPheno.internal, selectMarkersUsingMap.internal,
+#			filterGenotypes.internal, filterRow.internal, splitRowSubEM.internal, checkMu.internal
 #
 ############################################################################################################
 
@@ -245,69 +245,6 @@ splitPheno.internal <- function(offspring, founders, overlapInd, proportion, mar
 		}
 	}
 	invisible(list(output,markerNames))
-}
-
-############################################################################################################
-#									*** splitPhenoRow.internal ***
-#
-# DESCRIPTION:
-#	subfunction of splitRow.internal, splitting one row
-# 
-# PARAMETERS:
-# 	x - name of currently processed row
-# 	offspring - matrix of up/down regulated genes in offspring
-# 	founders - matrix of up/down regulated genes in parents
-# 	overlapInd - Number of individuals that are allowed in the overlap
-# 	proportion - Proportion of individuals expected to carrying a certain genotype 
-# 	margin - Proportion is allowed to varry between this margin (2 sided)
-# 	groupLabels - Specify which column of founders data belongs to group 0 and which to group 1.
-# 	up - 1 - genes up 0 - down regulated
-# 
-# OUTPUT:
-#	genotype row
-#
-############################################################################################################
-splitPhenoRow.internal <- function(x, offspring, founders, overlapInd, proportion, margin, groupLabels, up=1){
-	### initialization
-	result <- rep(0,length(offspring[x,]))
-	
-	### splitting
-	if(length(proportion)==2){
-		### splitting into 0/1 genotypes
-		if(up==1){
-			genotypes <- c(0,1)
-		}else if(up==0){
-			genotypes <- c(1,0)
-		}
-		A <- founders[x,which(groupLabels==0)]
-		B <- founders[x,which(groupLabels==1)]
-		splitVal <- mean(mean(A,na.rm=TRUE),mean(B,na.rm=TRUE))
-		offspring[x,which(is.na(offspring[x,]))] <- splitVal
-		a <- offspring[x,] > splitVal
-		b <- offspring[x,] < splitVal
-		result[which(a)] <- genotypes[1]
-		result[which(b)] <- genotypes[2]
-		result[which(offspring[x,] == splitVal)] <- NA
-		result <- filterRow.internal(result, overlapInd, proportion, margin, genotypes)
-	}else if(length(proportion)==3){
-		### splitting into 0/1/2 genotypes
-		if(up==1){
-			genotypes <- c(0,1,2)
-		}else if(up==0){
-			genotypes <- c(2,1,0)
-		}
-		meanVal <- mean(offspring[x,],na.rm=TRUE)
-		sdVal <- sd(offspring[x,],na.rm=TRUE)
-		subSplitValDown <- meanVal - sdVal
-		subSplitValUp <- meanVal + sdVal
-		result[which(offspring[x,] < subSplitValDown )] <- genotypes[1]
-		result[which(offspring[x,] > subSplitValUp )] <- genotypes[3]
-		result[which((offspring[x,] > subSplitValDown )&&(offspring[x,] < subSplitValUp ))] <- genotypes[2]
-		result[which(offspring[x,] == meanVal)] <- NA
-		result <- filterRow.internal(result, overlapInd, proportion, margin, genotypes)
-	}
-	
-	invisible(result)
 }
 
 ############################################################################################################
