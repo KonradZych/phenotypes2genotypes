@@ -15,7 +15,7 @@
 }
 
 \usage{
-  toGenotypes(population, genotype=c("simulated","real"), orderUsing=c("none","map_genetic","map_physical"), splitMethod=c("EM","mean"),treshold=0.01, overlapInd = 0, proportion = c(50,50), margin = 15, verbose=FALSE, debugMode=0)
+  toGenotypes(population, genotype=c("simulated","real"), orderUsing=c("none","map_genetic","map_physical"),treshold=0.01, overlapInd = 0, proportion = c(50,50), margin = 15, verbose=FALSE, debugMode=0)
 }
 
 \arguments{
@@ -34,7 +34,6 @@
     \item{map_physical}{ - simulated data orderd using supplied physical map}
   }
   }
- \item{splitMethod}{ Splitting markers using founders mean value or more sofisticated fitting of normal distributions by EM algoritm.}
  \item{treshold}{ If Rank Product pval for gene is lower that this value, we assume it is being diff. expressed.}
  \item{overlapInd}{ Number of individuals that are allowed in the overlap }
  \item{proportion}{ Proportion of individuals expected to carrying a certain genotype }
@@ -60,17 +59,17 @@
 	set.seed(102)
 	population <- fakePopulation(type="f2")
 	population <- findDiffExpressed(population)
-	cross <- toGenotypes(population,genotype="simulated",splitMethod="EM",proportion=c(25,50,25),orderUsing="map_genetic",treshold=0.1)
+	cross <- toGenotypes(population,genotype="simulated",proportion=c(25,50,25),orderUsing="map_genetic",treshold=0.1)
 	plot.rf(cross, main="f2 toGenotypes example")
 
 	population <- fakePopulation(type="bc")
 	population <- findDiffExpressed(population)
-	cross <- toGenotypes(population,genotype="simulated",splitMethod="EM",proportion=c(25,75),orderUsing="none",treshold=0.1)
+	cross <- toGenotypes(population,genotype="simulated",proportion=c(25,75),orderUsing="none",treshold=0.1)
 	plot.rf(cross, main="bc toGenotypes example")
 
 	population <- fakePopulation(type="riself")
 	population <- findDiffExpressed(population)
-	cross <- toGenotypes(population,genotype="simulated",splitMethod="EM",proportion=c(50,50),orderUsing="map_genetic",treshold=0.1)
+	cross <- toGenotypes(population,genotype="simulated",proportion=c(50,50),orderUsing="map_genetic",treshold=0.1)
 	plot.rf(cross, main="riself toGenotypes example")
 }
 

@@ -56,7 +56,7 @@
 #	object of class cross
 #
 ############################################################################################################
-toGenotypes <- function(population, genotype=c("simulated","real"), orderUsing=c("none","map_genetic","map_physical"), splitMethod=c("EM","mean"),treshold=0.01, overlapInd = 0, proportion = c(50,50), margin = 15, verbose=FALSE, debugMode=0){
+toGenotypes <- function(population, genotype=c("simulated","real"), orderUsing=c("none","map_genetic","map_physical"),treshold=0.01, overlapInd = 0, proportion = c(50,50), margin = 15, verbose=FALSE, debugMode=0){
 	#*******CHECKS*******
 	is.population(population)
 	s<-proc.time()
@@ -77,7 +77,7 @@ toGenotypes <- function(population, genotype=c("simulated","real"), orderUsing=c
 	#*******CONVERTING CHILDREN PHENOTYPIC DATA TO GENOTYPES*******
 	if(genotype=="simulated"){
 		s1 <- proc.time()
-		population <- convertToGenotypes.internal(population, orderUsing, splitMethod, treshold, overlapInd, proportion, margin, verbose, debugMode)
+		population <- convertToGenotypes.internal(population, orderUsing, treshold, overlapInd, proportion, margin, verbose, debugMode)
 		e1 <- proc.time()
 		if(verbose && debugMode==2)cat("Converting phenotypes to genotypes done in:",(e1-s1)[3],"seconds.\n")
 	}
@@ -124,7 +124,7 @@ toGenotypes <- function(population, genotype=c("simulated","real"), orderUsing=c
 #	object of class population
 #
 ############################################################################################################
-convertToGenotypes.internal <- function(population, orderUsing, splitMethod, treshold, overlapInd, proportion, margin, verbose=FALSE, debugMode=0){
+convertToGenotypes.internal <- function(population, orderUsing, treshold, overlapInd, proportion, margin, verbose=FALSE, debugMode=0){
 	### initialization
 	if(verbose && debugMode==1) cat("convertToGenotypes starting.\n")
 	output <- NULL
@@ -136,14 +136,14 @@ convertToGenotypes.internal <- function(population, orderUsing, splitMethod, tre
 	upBelowTreshold <- which(population$founders$RP$pval[1] < treshold)
 	upSelected <- upBelowTreshold[which(upBelowTreshold%in%upNotNull)]
 	upParental <- population$founders$phenotypes[upSelected,]
-	upParental <- checkMarkersOnMap.internal(upParental,population,orderUsing,verbose,debugMode)
+	upParental <- selectMarkersUsingMap.internal(upParental,population,orderUsing,verbose,debugMode)
 	upRils <- population$offspring$phenotypes[rownames(upParental),]
 	### down-regulated
 	downNotNull <- which(population$founders$RP$pval[2] > 0)
 	downBelowTreshold <- which(population$founders$RP$pval[2] < treshold)
 	downSelected <- downBelowTreshold[which(downBelowTreshold%in%downNotNull)]
 	downParental <- population$founders$phenotypes[downSelected,]
-	downParental <- checkMarkersOnMap.internal(downParental,population,orderUsing,verbose,debugMode)
+	downParental <- selectMarkersUsingMap.internal(downParental,population,orderUsing,verbose,debugMode)
 	downRils <- population$offspring$phenotypes[rownames(downParental),]
 	
 	### checking if anything is selected and if yes - processing
@@ -151,19 +151,19 @@ convertToGenotypes.internal <- function(population, orderUsing, splitMethod, tre
 		if(!(is.null(dim(downRils)))){
 			# best situation
 			if(verbose) cat("Selected ",nrow(upRils),"upregulated markers and ",nrow(downRils),"downregulated markers.\n")
-			cur <- splitPheno.internal(downRils, downParental, splitMethod, overlapInd, proportion, margin, population$founders$groups, 0)
+			cur <- splitPheno.internal(downRils, downParental, overlapInd, proportion, margin, population$founders$groups, 0)
 			output <- rbind(output,cur[[1]])
 			markerNames <- c(markerNames,cur[[2]])
 		}else{
 			if(verbose) cat("Selected ",nrow(upRils),"upregulated markers.\n")
 		}
-		cur <- splitPheno.internal(upRils, upParental, splitMethod, overlapInd, proportion, margin, population$founders$groups, 1)
+		cur <- splitPheno.internal(upRils, upParental, overlapInd, proportion, margin, population$founders$groups, 1)
 		output <- rbind(output,cur[[1]])
 		markerNames <- c(markerNames,cur[[2]])
 	}else{
 		if(!(is.null(dim(downRils)))){
 			if(verbose) cat("Selected ",nrow(downRils),"downregulated markers.\n")
-			cur <- splitPheno.internal(downRils, downParental, splitMethod, overlapInd, proportion, margin, population$founders$groups, 0)
+			cur <- splitPheno.internal(downRils, downParental, overlapInd, proportion, margin, population$founders$groups, 0)
 			output <- rbind(output,cur[[1]])
 			markerNames <- c(markerNames,cur[[2]])
 		}else{
@@ -198,7 +198,7 @@ convertToGenotypes.internal <- function(population, orderUsing, splitMethod, tre
 #	object of class population
 #
 ############################################################################################################
-checkMarkersOnMap.internal <- function(phenotypeMatrix,population,orderUsing,verbose,debugMode){
+selectMarkersUsingMap.internal <- function(phenotypeMatrix,population,orderUsing,verbose,debugMode){
 	if(orderUsing!="none"){
 		if(orderUsing=="map_genetic"){
 			if(any(!(rownames(phenotypeMatrix)%in%rownames(population$maps$genetic)))){
@@ -234,15 +234,11 @@ checkMarkersOnMap.internal <- function(phenotypeMatrix,population,orderUsing,ver
 #	list containg genotype matrix and names of selected markers
 #
 ############################################################################################################
-splitPheno.internal <- function(offspring, founders, splitMethod, overlapInd, proportion, margin, groupLabels, up){
+splitPheno.internal <- function(offspring, founders, overlapInd, proportion, margin, groupLabels, up){
 	output <- NULL
 	markerNames <- NULL
 	for(x in rownames(offspring)){
-		if(splitMethod=="mean"){
-			cur <- splitPhenoRow.internal(x, offspring, founders, overlapInd, proportion, margin, groupLabels, up)
-		}else if(splitMethod=="EM"){
-			cur <- splitPhenoRowEM.internal(x, offspring, founders, overlapInd, proportion, margin, groupLabels, up)
-		}
+		cur <- splitPhenoRowEM.internal(x, offspring, founders, overlapInd, proportion, margin, groupLabels, up)
 		if(!(is.null(cur))){
 			output <- rbind(output,cur)
 			markerNames <- c(markerNames,x)
