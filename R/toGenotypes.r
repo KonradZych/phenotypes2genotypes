@@ -77,7 +77,7 @@ toGenotypes <- function(population, genotype=c("simulated","real"), orderUsing=c
 	#*******CONVERTING CHILDREN PHENOTYPIC DATA TO GENOTYPES*******
 	if(genotype=="simulated"){
 		s1 <- proc.time()
-		population <- convertToGenotypes.internal(population, splitMethod, treshold, overlapInd, proportion, margin, verbose, debugMode)
+		population <- convertToGenotypes.internal(population, orderUsing, splitMethod, treshold, overlapInd, proportion, margin, verbose, debugMode)
 		e1 <- proc.time()
 		if(verbose && debugMode==2)cat("Converting phenotypes to genotypes done in:",(e1-s1)[3],"seconds.\n")
 	}
@@ -110,6 +110,9 @@ toGenotypes <- function(population, genotype=c("simulated","real"), orderUsing=c
 # 
 # PARAMETERS:
 # 	population - object of class population, must contain founders phenotypic data.
+# 	orderUsing- which map should be used to order markers (default - none)
+# 		- map_genetic - genetic map
+#		- map_physical - physical map
 # 	treshold - if Rank Product pval for gene is lower that this value, we assume it is being diff. expressed.
 # 	overlapInd - number of individuals that are allowed in the overlap
 # 	proportion - proportion of individuals expected to carrying a certain genotype 
@@ -121,7 +124,7 @@ toGenotypes <- function(population, genotype=c("simulated","real"), orderUsing=c
 #	object of class population
 #
 ############################################################################################################
-convertToGenotypes.internal <- function(population, splitMethod, treshold, overlapInd, proportion, margin, verbose=FALSE, debugMode=0){
+convertToGenotypes.internal <- function(population, orderUsing, splitMethod, treshold, overlapInd, proportion, margin, verbose=FALSE, debugMode=0){
 	### initialization
 	if(verbose && debugMode==1) cat("convertToGenotypes starting.\n")
 	output <- NULL
@@ -133,12 +136,14 @@ convertToGenotypes.internal <- function(population, splitMethod, treshold, overl
 	upBelowTreshold <- which(population$founders$RP$pval[1] < treshold)
 	upSelected <- upBelowTreshold[which(upBelowTreshold%in%upNotNull)]
 	upParental <- population$founders$phenotypes[upSelected,]
+	upParental <- checkMarkersOnMap.internal(upParental,population,orderUsing,verbose,debugMode)
 	upRils <- population$offspring$phenotypes[rownames(upParental),]
 	### down-regulated
 	downNotNull <- which(population$founders$RP$pval[2] > 0)
 	downBelowTreshold <- which(population$founders$RP$pval[2] < treshold)
 	downSelected <- downBelowTreshold[which(downBelowTreshold%in%downNotNull)]
 	downParental <- population$founders$phenotypes[downSelected,]
+	downParental <- checkMarkersOnMap.internal(downParental,population,orderUsing,verbose,debugMode)
 	downRils <- population$offspring$phenotypes[rownames(downParental),]
 	
 	### checking if anything is selected and if yes - processing
@@ -175,6 +180,42 @@ convertToGenotypes.internal <- function(population, splitMethod, treshold, overl
 }
 
 ############################################################################################################
+#									*** selectMarkersUsingMap.internal ***
+#
+# DESCRIPTION:
+#	selecting from phenpotypeMatrix only markers present on map selected for ordering
+# 
+# PARAMETERS:
+# 	phenotypeMatrix - matrix - rows - markers, cols - individuals
+# 	population - object of class population, must contain founders phenotypic data.
+# 	orderUsing- which map should be used to order markers (default - none)
+# 		- map_genetic - genetic map
+#		- map_physical - physical map
+# 	verbose - be verbose
+# 	debugMode - 1: Print our checks, 2: print additional time information 
+# 
+# OUTPUT:
+#	object of class population
+#
+############################################################################################################
+checkMarkersOnMap.internal <- function(phenotypeMatrix,population,orderUsing,verbose,debugMode){
+	if(orderUsing!="none"){
+		if(orderUsing=="map_genetic"){
+			if(any(!(rownames(phenotypeMatrix)%in%rownames(population$maps$genetic)))){
+				cat("Not all markers selected for genotype reconstruction are present on genetic map.\n")
+				phenotypeMatrix <- mapMarkers.internal(phenotypeMatrix,population$maps$genetic,1,verbose,debugMode)
+			}
+		}else if(orderUsing=="map_physical"){
+			if(any(!(rownames(phenotypeMatrix)%in%rownames(population$maps$physical)))){
+				cat("Not all markers selected for genotype reconstruction are present on physical map.\n")
+				phenotypeMatrix <- mapMarkers.internal(phenotypeMatrix,population$maps$physical,1,verbose,debugMode)
+			}
+		}
+	}
+	invisible(phenotypeMatrix)
+}
+
+############################################################################################################
 #									*** splitPheno.internal ***
 #
 # DESCRIPTION:
@@ -196,7 +237,6 @@ convertToGenotypes.internal <- function(population, splitMethod, treshold, overl
 splitPheno.internal <- function(offspring, founders, splitMethod, overlapInd, proportion, margin, groupLabels, up){
 	output <- NULL
 	markerNames <- NULL
-	cat("population:",nrow(offspring),"founders:",nrow(founders),"\n")
 	for(x in rownames(offspring)){
 		if(splitMethod=="mean"){
 			cur <- splitPhenoRow.internal(x, offspring, founders, overlapInd, proportion, margin, groupLabels, up)
