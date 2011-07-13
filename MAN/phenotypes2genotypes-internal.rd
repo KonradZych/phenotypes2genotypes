@@ -34,6 +34,7 @@
 \alias{intoPopulationSubPheno.internal}
 \alias{intoPopulationSubGeno.internal}
 \alias{intoPopulationSubMap.internal}
+\alias{selectMarkersUsingMap.internal}
 \alias{is.population}
 
 
