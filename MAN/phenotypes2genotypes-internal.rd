@@ -46,6 +46,16 @@
 \alias{fakeFounders.internal}
 \alias{convertMap.internal}
 
+\alias{bestCorelated.internal}
+\alias{defaultCheck.internal}
+\alias{fLG.internal}
+\alias{getAdditionsOfCross.internal}
+\alias{orderChromosomesC.internal}
+\alias{orderChromosomesMR.internal}
+\alias{putAdditionsOfCross.internal}
+\alias{simBC.internal}
+\alias{scoreResults.internal}
+\alias{postProc}
 
 
 \title{Internal pheno2geno functions}

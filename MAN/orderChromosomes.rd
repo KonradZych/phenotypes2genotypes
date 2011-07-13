@@ -9,13 +9,20 @@
 }
 
 \usage{
-	orderChromosomes(cross,map=c("genetic","physical"),verbose=FALSE)
+	orderChromosomes(cross,method=c("majority","corelation"),map=c("genetic","physical"),verbose=FALSE)
 }
 
 \arguments{
  \item{cross}{ object of class cross}
- \item{map}{ 
-  Which genotypic matrix should be saved to file:
+ \item{method}{ 
+  Which method should be used to compare (see details)
+  \itemize{
+    \item{majority}{ - majority}
+    \item{corelation}{ - best corelation}
+  }
+  }
+  \item{map}{ 
+  Which map should be used for comparison:
   \itemize{
     \item{genetic}{ - genetic map from cross$maps$genetic}
     \item{physical}{ - physical map from cross$maps$physical}
@@ -41,7 +48,7 @@
 	### simulating data
 	population <- fakePopulation()
 	cross <- toGenotypes(population,genotype="real",orderUsing="map_genetic")
-	cross <- orderChromosomes(cross,"physical",verbose=TRUE)
+	cross <- orderChromosomes(cross,method="majority",map="physical",verbose=TRUE)
 	### not much happens, cause the are already ordered nicely
 }
 

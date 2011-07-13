@@ -98,7 +98,7 @@ postProc <- function(cross,n.linkGroups,max.rf.range=c(0.15,0.30),min.lod.range=
 #									*** scoreResults.internal ***
 #
 # DESCRIPTION:
-# 	simpel scoring of results obtained by postProc
+# 	simple scoring of results obtained by postProc
 # 
 # PARAMETERS:
 # 	resultRow - row of matrix obtained using postProc
@@ -115,6 +115,34 @@ scoreResults.internal <- function(resultRow,n.linkGroups){
 	score <- score + abs(resultRow[6]-n.linkGroups)*(-100)
 	score <- score + resultRow[5]*100 + resultRow[7]*100
 	invisible(score)
+}
+
+fLG.internal <- function(cross,max.rf,min.lod){
+	additions <- getAdditionsOfCross.internal(cross)
+	cross <- formLinkageGroups(cross, reorgMarkers=TRUE,max.rf=max.rf,min.lod=min.lod)
+	cross <- putAdditionsOfCross.internal(cross, additions)
+	invisible(cross)
+}
+
+getAdditionsOfCross.internal <-function(cross){
+	additions <- NULL
+	if(!(is.null(cross$maps$physical))){
+		additions$map_p <- cross$maps$physical 
+	}
+	if(!(is.null(cross$maps$genetic))){
+		additions$map_g <-cross$maps$genetic
+	}
+	if(!(is.null(cross$genotypes$real))){
+		additions$geno <- cross$genotypes$real 
+	}
+	invisible(additions)
+}
+
+putAdditionsOfCross.internal <-function(cross,additions){
+	if(!is.null(additions$map_p)) cross$maps$physical <- additions$map_p
+	if(!is.null(additions$map_g)) cross$maps$genetic <- additions$map_g
+	if(!is.null(additions$geno)) cross$genotypes$real <- additions$geno
+	invisible(cross)
 }
 
 ############################################################################################################
@@ -134,14 +162,132 @@ scoreResults.internal <- function(resultRow,n.linkGroups){
 #	object of class cross
 #
 ############################################################################################################
-orderChromosomes <- function(cross,map=c("genetic","physical"),verbose=FALSE){
-	crossContainsMap.internal(cross,map)
+orderChromosomes <- function(cross,method=c("majority","corelation"),map=c("genetic","physical"),verbose=FALSE){
+	additions <- getAdditionsOfCross.internal(cross)
+	defaultCheck.internal(method, "method", 2)
+	defaultCheck.internal(map, "map", 2)
 	inListCheck.internal(map,"map",c("genetic","physical"))
+	inListCheck.internal(method,"method",c("majority","corelation"))
+	crossContainsMap.internal(cross,map)
 	if(map=="genetic"){
-			cur_map <- cross$maps$genetic
+		cur_map <- cross$maps$genetic
 	}else if(map=="physical"){
-			cur_map <- cross$maps$physical
+		cur_map <- cross$maps$physical
 	}
+	if(method=="majority"){
+		cross <- orderChromosomesMR.internal(cross, cur_map, verbose)
+	}else{
+		cross <- orderChromosomesC.internal(cross, cur_map, verbose)
+	}
+	cross <- putAdditionsOfCross.internal(cross, additions)
+	invisible(cross)
+}
+
+############################################################################################################
+#									*** orderChromosomesC.internal ***
+#
+# DESCRIPTION:
+# 	simpel scoring of results obtained by postProc
+# 
+# PARAMETERS:
+# 	resultRow - row of matrix obtained using postProc
+# 	n.linkGroups - expected number of linkage groups
+#
+# OUTPUT:
+#	integer
+#
+############################################################################################################
+orderChromosomesC.internal <- function(cross,cur_map,verbose=FALSE){
+	output <- bestCorelated.internal(cross,cur_map)
+	### until every chr on phys map is match exactly once
+	while(max(apply(output,2,sum))>1){
+		toMerge <- which(apply(output,2,sum)>1)
+		for(curToMerge in toMerge){
+			curMerge <- which(output[,curToMerge]==max(output[,curToMerge]))
+			cross <- mergeChromosomes.internal(cross,curMerge,curMerge[1])
+			output <- bestCorelated.internal(cross,cur_map)
+		}
+	}
+	if(verbose) cat(output,"\n")
+	order1 <- matrix(0,ncol(output),nrow(output))
+	order2 <- matrix(1,ncol(output),nrow(output))
+	### until next iteration doesn't change the result
+	while(any(order1!=order2)){
+		order1 <- output
+		for(l in 1:ncol(output)){
+			cur <- which(output[,l]==max(output[,l]))
+			if(cur!=l)cross <- switchChromosomes.internal(cross,cur,l)
+			output <-bestCorelated.internal(cross,cur_map)
+		}
+		order2 <- output
+	}
+	names(cross$geno) <- 1:length(cross$geno)
+	invisible(cross)
+}
+
+############################################################################################################
+#									*** bestCorelated.internal ***
+#
+# DESCRIPTION:
+# 	subfunction of segragateChromosomes.internal, returns matrix showing for every reco map chromosome from 
+#	which physicall map chromosome majority of markers comes
+# 
+# PARAMETERS:
+# 	cross - object of class cross, containing physical or genetic map
+#	map - which map should be used for comparison:
+#			- genetic - genetic map from cross$maps$genetic
+#			- physical - physical map from cross$maps$physical
+# 
+# OUTPUT:
+#	vector with new ordering of chromosomes inside cross object
+#
+############################################################################################################
+bestCorelated.internal <- function(cross,cur_map){
+	knchrom <- length(table(cur_map[,1]))
+	result <- matrix(0, length(cross$geno), knchrom)
+	output <- matrix(0, length(cross$geno), knchrom)
+	for(i in 1:length(cross$geno)){
+		cur_ys <- cross$geno[[i]]$data[c(-25,-39,-99),]
+		for(j in 1:knchrom){
+			cur_xs <- t(cross$genotypes$real[rownames(cur_map)[which(cur_map[,1]==j)],c(-70,-74)])
+			result[i,j] <- mean(cor(cbind(cur_ys,cur_xs),use="pairwise.complete.obs"))
+		}
+		output[i,which(result[i,]==max(result[i,]))] <- 1
+	}
+	rownames(result) <- 1:nrow(result)
+	colnames(result) <- 1:ncol(result)
+	rownames(output) <- 1:nrow(output)
+	colnames(output) <- 1:ncol(output)
+	
+	if(min(apply(output,2,max))!=1){
+		toCheck <- which(apply(output,2,sum)!=1)
+		for(x in toCheck){
+			output[,x] <- 0
+			output[which(result[,x]==max(result[,x])),x] <- 1
+		}
+	}	
+	print(output)
+	invisible(output)
+}
+
+############################################################################################################
+#									*** orderChromosomesMR.internal ***
+#
+# DESCRIPTION:
+# 	ordering chromosomes using physical map and majority rule
+# 
+# PARAMETERS:
+# 	cross - object of class cross, containing physical or genetic map
+# 	map - which map should be used for comparison:
+#			- genetic - genetic map from cross$maps$genetic
+#			- physical - physical map from cross$maps$physical
+#	verbose - be verbose
+#
+# OUTPUT:
+#	object of class cross
+#
+############################################################################################################
+orderChromosomesMR.internal <- function(cross,cur_map,verbose=FALSE){
 	output <- majorityRule.internal(cross,cur_map)
 	### until every chr on phys map is match exactly once
 	while(max(apply(output,2,sum))>1){
@@ -166,7 +312,6 @@ orderChromosomes <- function(cross,map=c("genetic","physical"),verbose=FALSE){
 		order2 <- output
 	}
 	names(cross$geno) <- 1:length(cross$geno)
-	cross$maps$physical <- cur_map
 	invisible(cross)
 }
 
@@ -370,9 +515,11 @@ removeTooSmallChromosomes <- function(cross, minNrOfMarkers, verbose=FALSE){
 #
 ############################################################################################################
 removeChromosomesSub.internal <- function(cross, chr,verbose=FALSE){
+	additions <- getAdditionsOfCross.internal(cross)
 	if(verbose)cat("removing chromosome:",chr," markers:",names(cross$geno[[chr]]$map),"\n")
 	cross$rmv <- cbind(cross$rmv,cross$geno[[chr]]$data)
 	cross <- drop.markers(cross, names(cross$geno[[chr]]$map))
+	cross <- putAdditionsOfCross.internal(cross, additions)
 	invisible(cross)
 }
 
