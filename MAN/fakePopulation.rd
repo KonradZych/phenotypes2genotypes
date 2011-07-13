@@ -9,12 +9,14 @@
 }
 
 \usage{
-	fakePopulation(n.founders = 4, n.offspring = 250, type = c("f2", "bc", "risib", "riself"),...)
+	fakePopulation(n.founders = 4, n.offspring = 250, n.markers=1000,n.chromosomes=10, type = c("f2", "bc", "risib", "riself"), ...)
 }
 
 \arguments{
  \item{n.founders}{ number of founders to be simulated}
- \item{n.offspring}{ number of offspring individuals}
+ \item{n.offspring}{ number of offspring individuals to be simulated}
+ \item{n.markers}{ number of markers individuals to be simulated}
+ \item{n.chromosomes}{ number of chromosomes individuals to be simulated}
  \item{type}{ type of the cross - "riself" for two-way RIL}
  \item{...}{ to be passed to sim.cross
  }

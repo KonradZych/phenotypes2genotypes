@@ -15,7 +15,7 @@
 }
 
 \usage{
-  toGenotypes(population, genotype=c("simulated","real"), orderUsing=c("none","map_genetic","map_physical"), splitMethod=c("EM","mean"),treshold=0.01, overlapInd = 0, proportion = c(50,50), margin = 15, verbose=FALSE, debugMode=0,...)
+  toGenotypes(population, genotype=c("simulated","real"), orderUsing=c("none","map_genetic","map_physical"), splitMethod=c("EM","mean"),treshold=0.01, overlapInd = 0, proportion = c(50,50), margin = 15, verbose=FALSE, debugMode=0)
 }
 
 \arguments{
@@ -41,7 +41,6 @@
  \item{margin}{ Proportion is allowed to varry between this margin (2 sided) }
  \item{verbose}{ Be verbose}
  \item{debugMode}{ 1: Print our checks, 2: print additional time information }
-  \item{...}{ Parameters passed to \code{\link[qtl]{formLinkageGroups}}. }
 }
 
 \value{
@@ -71,7 +70,7 @@
 
 	population <- fakePopulation(type="riself")
 	population <- findDiffExpressed(population)
-	cross <- toGenotypes(population,genotype="simulated",splitMethod="mean",proportion=c(50,50),orderUsing="map_genetic",treshold=0.1)
+	cross <- toGenotypes(population,genotype="simulated",splitMethod="EM",proportion=c(50,50),orderUsing="map_genetic",treshold=0.1)
 	plot.rf(cross, main="riself toGenotypes example")
 }
 

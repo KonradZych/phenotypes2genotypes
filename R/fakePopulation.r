@@ -36,15 +36,17 @@
 # 
 # PARAMETERS:
 #	n.founders - number of founders to be simulated:
-#	type - type of the cross - "riself" for two-way RIL
 #	n.offspring - number of offspring individuals
+#	n.markers - number of markers individuals to be simulated
+#	n.chromosomes - number of chromosomes individuals to be simulated
+#	type - type of the cross - "riself" for two-way RIL
 #	... - parameters send to sim.cross, most important
 #
 # OUTPUT:
 #	object of class population
 #
 ############################################################################################################
-fakePopulation <- function(n.founders = 4, n.offspring = 250, n.markers=100, type = c("f2", "bc", "risib", "riself"),n.chromosomes=10, ...){
+fakePopulation <- function(n.founders = 4, n.offspring = 250, n.markers=1000,n.chromosomes=10, type = c("f2", "bc", "risib", "riself"), ...){
 	type <- match.arg(type)
 	if(n.founders<4) n.founders <- 4
 	if(!(n.founders%%2==0)) n.founders <- n.founders+1

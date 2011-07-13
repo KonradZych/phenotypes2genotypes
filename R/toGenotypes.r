@@ -94,7 +94,7 @@ toGenotypes <- function(population, genotype=c("simulated","real"), orderUsing=c
 	if(!(is.null(population$maps$genetic))) cross$maps$genetic <- population$maps$genetic
 	
 	#*******ADDING REAL GENOTYPE TO THE CROSS*******
-	if(!(is.null(population$offspring$genotypes$real))&genotype=="simulated") cross$genotypes$real <- population$offspring$genotypes$real
+	if(!(is.null(population$offspring$genotypes$real))&&genotype=="simulated") cross$genotypes$real <- population$offspring$genotypes$real
 	
 	#*******RETURNING CROSS OBJECT*******
 	e<-proc.time()
