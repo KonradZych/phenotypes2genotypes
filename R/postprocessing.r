@@ -8,7 +8,7 @@
 # 
 # first written March 2011
 # last modified July 2011
-# last modified in version: 0.8.1 
+# last modified in version: 0.8.5 
 # in current version: active, in main workflow
 #
 #     This program is free software; you can redistribute it and/or
@@ -247,9 +247,9 @@ bestCorelated.internal <- function(cross,cur_map){
 	result <- matrix(0, length(cross$geno), knchrom)
 	output <- matrix(0, length(cross$geno), knchrom)
 	for(i in 1:length(cross$geno)){
-		cur_ys <- cross$geno[[i]]$data[c(-25,-39,-99),]
+		cur_ys <- cross$geno[[i]]$data[,]
 		for(j in 1:knchrom){
-			cur_xs <- t(cross$genotypes$real[rownames(cur_map)[which(cur_map[,1]==j)],c(-70,-74)])
+			cur_xs <- t(cross$genotypes$real[rownames(cur_map)[which(cur_map[,1]==j)],])
 			result[i,j] <- mean(cor(cbind(cur_ys,cur_xs),use="pairwise.complete.obs"))
 		}
 		output[i,which(result[i,]==max(result[i,]))] <- 1
