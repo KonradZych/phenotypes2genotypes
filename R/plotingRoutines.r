@@ -401,7 +401,7 @@ plotMarkerDistribution <- function(phenotypeRow,nrDistributions,logarithmic=FALS
 #	plot
 #
 ############################################################################################################
-chromosomesCorelationPlot <- function(cross, coloringMode=1,map=c("genetic","physical")){ 
+chromosomesCorelationPlot <- function(cross, map=c("genetic","physical")){ 
 	inListCheck.internal(map,"map",c("genetic","physical"))
 	crossContainsMap.internal(cross,map)
 	if(map=="genetic"){
@@ -409,11 +409,11 @@ chromosomesCorelationPlot <- function(cross, coloringMode=1,map=c("genetic","phy
 	}else if(map=="physical"){
 		cur_map <- cross$maps$physical
 	}
-	image(chromosomesCorelationMatrix(cross,cur_map))
+	image(chromosomesCorelationMatrix.internal(cross,cur_map))
 }
 
 ############################################################################################################
-#									*** chromosomesCorelationMatrix ***
+#									*** chromosomesCorelationMatrix.internal ***
 #
 # DESCRIPTION:
 #	function calculating matrix of corelations between chromosomes
@@ -426,18 +426,38 @@ chromosomesCorelationPlot <- function(cross, coloringMode=1,map=c("genetic","phy
 #	matrix of corelations
 #
 ############################################################################################################
-chromosomesCorelationMatrix <- function(cross, cur_map){
+chromosomesCorelationMatrix.internal <- function(cross, cur_map){
 	### add mapMarkers here and in bestCorelated
 	knchrom <- length(table(cur_map[,1]))
-	result <- matrix(0, nmar(cross), nrow(cur_map))
+	result <- matrix(0, sum(nmar(cross)), nrow(cur_map))
 	rownames(result) <- markernames(cross)
 	colnames(result) <- rownames(cur_map)
 	for(i in 1:length(cross$geno)){
-		cur_ys <- cross$geno[[i]]$data
+		cur_ys <- cross$geno[[i]]$data[,]
 		for(j in 1:knchrom){
 			cur_xs <- t(cross$genotypes$real[rownames(cur_map)[which(cur_map[,1]==j)],])
-			result[colnames(cur_ys),colnames(cur_xs)] <- cor(cbind(cur_ys,cur_xs),use="pairwise.complete.obs")
+			corM <- cor(cur_ys,cur_xs,use="pairwise.complete.obs")
+			#cat(dim(cur_xs),"\n",dim(cur_ys),"\n",dim(result),"\n",dim(corM),"\n",dim(result[colnames(cur_ys),colnames(cur_xs)]),"\n")
+			result[colnames(cur_ys),colnames(cur_xs)] <- corM
 		}
 	}
 	invisible(result)
 }
+
+############################################################################################################
+#									*** chromosomesCorelationPlot ***
+#
+# DESCRIPTION:
+#	plot image show correlation between chromosomes of maps inside cross object
+# 
+# PARAMETERS:
+# 	cross - object of R/qtl cross type
+# 	map - which map should be used for comparison:
+#			- genetic - genetic map from cross$maps$genetic
+#			- physical - physical map from cross$maps$physical
+# 
+# OUTPUT:
+#	plot
+#
+############################################################################################################
+
