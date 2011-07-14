@@ -205,21 +205,9 @@ orderChromosomesC.internal <- function(cross,cur_map,verbose=FALSE){
 		for(curToMerge in toMerge){
 			curMerge <- which(output[,curToMerge]==max(output[,curToMerge]))
 			cross <- mergeChromosomes.internal(cross,curMerge,curMerge[1])
-			output <- bestCorelated.internal(cross,cur_map)
+			cross <- bestCorelated.internal(cross,cur_map)
 		}
 	}
-	if(verbose) cat(output,"\n")
-	order1 <- matrix(0,ncol(output),nrow(output))
-	order2 <- matrix(1,ncol(output),nrow(output))
-	### until next iteration doesn't change the result
-	while(any(order1!=order2)){
-		order1 <- output
-		for(l in 1:ncol(output)){
-			cur <- which(output[,l]==max(output[,l]))
-			if(cur!=l)cross <- switchChromosomes.internal(cross,cur,l)
-			output <-bestCorelated.internal(cross,cur_map)
-		}
-		order2 <- output
 	}
 	names(cross$geno) <- 1:length(cross$geno)
 	invisible(cross)
@@ -245,29 +233,21 @@ orderChromosomesC.internal <- function(cross,cur_map,verbose=FALSE){
 bestCorelated.internal <- function(cross,cur_map){
 	knchrom <- length(table(cur_map[,1]))
 	result <- matrix(0, length(cross$geno), knchrom)
-	output <- matrix(0, length(cross$geno), knchrom)
-	for(i in 1:length(cross$geno)){
-		cur_ys <- cross$geno[[i]]$data[,]
-		for(j in 1:knchrom){
-			cur_xs <- t(cross$genotypes$real[rownames(cur_map)[which(cur_map[,1]==j)],])
-			result[i,j] <- mean(cor(cbind(cur_ys,cur_xs),use="pairwise.complete.obs"))
+	for(i in 1:knchrom){
+		cur_xs <- t(cross$genotypes$real[rownames(cur_map)[which(cur_map[,1]==i)],])
+		for(j in 1:length(cross$geno)){
+			cur_ys <- cross$geno[[j]]$data[c(-25,-39,-99),]
+			for(k in 1:ncol(cur_ys)){
+				cat(dim(cur_xs),"\n",dim(cur_ys),"\n")
+				if(mean(cor(cur_ys[,k],cur_xs,use="pairwise.complete.obs"))>0.5){
+					cross <- movemarker(cross,colnames(cur_ys)[k],i)
+				}
+			}
 		}
-		output[i,which(result[i,]==max(result[i,]))] <- 1
 	}
 	rownames(result) <- 1:nrow(result)
-	colnames(result) <- 1:ncol(result)
-	rownames(output) <- 1:nrow(output)
-	colnames(output) <- 1:ncol(output)
-	
-	if(min(apply(output,2,max))!=1){
-		toCheck <- which(apply(output,2,sum)!=1)
-		for(x in toCheck){
-			output[,x] <- 0
-			output[which(result[,x]==max(result[,x])),x] <- 1
-		}
-	}	
-	print(output)
-	invisible(output)
+	colnames(result) <- 1:ncol(result)	
+	invisible(cross)
 }
 
 ############################################################################################################
