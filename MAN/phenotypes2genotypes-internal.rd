@@ -56,6 +56,7 @@
 \alias{orderChromosomesMR.internal}
 \alias{putAdditionsOfCross.internal}
 \alias{simBC.internal}
+\alias{chromosomesCorelationMatrix.internal}
 \alias{scoreResults.internal}
 \alias{postProc}
 
