@@ -337,7 +337,7 @@ majorityRule.internal <- function(cross,cur_map){
 	result <- matrix(0, length(cross$geno), knchrom)
 	output <- matrix(0, length(cross$geno), knchrom)
 	for(i in 1:length(cross$geno)){
-		cur_ys <- colnames(cross$geno[[i]]$data)
+		cur_ys <- colnames(cross$geno[[i]]$data)[colnames(cross$geno[[i]]$data)%in%rownames(cur_map)]
 		cur_xs <- cur_map[cur_ys,]
 		for(j in 1:knchrom){
 			result[i,j] <- sum(cur_xs[,1]==j)/nrow(cur_xs)
