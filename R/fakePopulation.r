@@ -109,8 +109,9 @@ fakePheno.internal <- function(genoRow,maxScale=10,maxError=3){
 ############################################################################################################
 fakeFounders.internal <- function(phenoRow,n.founders){
 	errorF <- runif(n.founders,0,3)
+	diffExprRate <- runif(1,0,1)
 	cur_mean <- mean(phenoRow)
-	foundersRow <- c(rep((cur_mean-0.1*cur_mean),(n.founders/2)),rep((cur_mean-0.1*cur_mean),(n.founders/2))) + errorF
+	foundersRow <- c(rep((cur_mean-diffExprRate*cur_mean),(n.founders/2)),rep((cur_mean+diffExprRate*cur_mean),(n.founders/2))) + errorF
 	invisible(foundersRow)
 }
 
