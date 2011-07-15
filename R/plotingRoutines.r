@@ -341,15 +341,29 @@ chromosomesLengths.internal <- function(map){
 }
 
 ############################################################################################################
-#plotMarkerDistribution: plotting histogram of distribution of values for single marker and specified number
-# of normal distribution curves, fitted to data using EM algorithm
+#									*** plotMarkerDistribution ***
+#
+# DESCRIPTION:
+#	plotting histogram of distribution of values for single marker and specified number of normal distribution 
+#	curves, fitted to data using EM algorithm
 # 
-# phenotypeRow - phenotypic data for single marker
-# nrDistributions - numbers of normal distributions to be fitted
-# logarithmic - TRUE - log(data) will be used instead of raw data
-# PROBABLY WILL BE REMOVED
+# PARAMETERS:
+# 	population - population type object, must contain founders phenotypic data.
+# 	marker - marker to be printed numbers or names 
+# 	nrDistributions - numbers of normal distributions to be fitted
+# 	logarithmic - TRUE - log(data) will be used instead of raw data
+#
+# OUTPUT:
+#	plot
+#
 ############################################################################################################
-plotMarkerDistribution <- function(phenotypeRow,nrDistributions,logarithmic=FALSE){
+plotMarkerDistribution <- function(population,marker,nrDistributions,logarithmic=FALSE){
+	if(missing(population)) stop("population object not provided.\n")
+	if(missing(marker)) stop("marker not specified.\n")
+	if(missing(nrDistributions)) stop("nrDistributions not specified.\n")
+	if(length(marker)!=1) stop("plotMarkerDistribution can plot only one marker art once.\n")
+	is.population(population)
+	phenotypeRow <- population$offspring$phenotypes[marker,]
 	if(logarithmic) phenotypeRow <- log(phenotypeRow)
 	EM<-normalmixEM(phenotypeRow, k=nrDistributions)
 	if(logarithmic){
@@ -357,13 +371,10 @@ plotMarkerDistribution <- function(phenotypeRow,nrDistributions,logarithmic=FALS
 	}else{
 		xlab <- "expression values"
 	}
-	h <- vector(mode="numeric",length=nrDistributions)
+	h <- NULL
 	len <- vector(mode="numeric",length=nrDistributions)
-	print(EM$mu)
-	print(EM$lambda)
 	for(i in 1:nrDistributions){
 		len[i]<-length(phenotypeRow)*EM$lambda[which(EM$mu==sort(EM$mu)[i])]
-		print(EM$lambda[which(EM$mu==sort(EM$mu)[i])])
 		startVal <- sum(len[1:i-1])
 		x <- sort(phenotypeRow)[startVal:(startVal+len[i])]
 		h[i] <- hist(x,breaks=50)
