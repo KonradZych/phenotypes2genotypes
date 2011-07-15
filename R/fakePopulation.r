@@ -46,7 +46,7 @@
 #	object of class population
 #
 ############################################################################################################
-fakePopulation <- function(n.founders = 4, n.offspring = 250, n.markers=1000,n.chromosomes=10, type = c("f2", "bc", "risib", "riself"), ...){
+fakePopulation <- function(n.founders = 4, n.offspring = 250, n.markers=1000,n.chromosomes=10, type = c("riself", "f2", "bc", "risib"), ...){
 	type <- match.arg(type)
 	if(n.founders<4) n.founders <- 4
 	if(!(n.founders%%2==0)) n.founders <- n.founders+1
