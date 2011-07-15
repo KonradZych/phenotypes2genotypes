@@ -3,6 +3,9 @@
 \usepackage{fullpage}
 \usepackage[english]{babel}
 \usepackage{blindtext}
+\usepackage{url}
+\usepackage[round]{natbib}
+\usepackage{Sweave}
 \usepackage{graphicx}
 \addtolength{\oddsidemargin}{-0.4in}
 \addtolength{\evensidemargin}{-0.3in}
@@ -23,7 +26,7 @@ Danny Arends\,$^{2,}$,
 \newpage
 \section{General introduction}
 
-{\noindent}Genetical Genomics (citation) is powerful method, providing world of life sciences with tool to look deep inside the complex relation between genetic information stored by DNA and final outcome of its processing - phenotype. And because this is the core dogma of modern biology, every method helping us to understand it better is of high importance to scientific world. 
+{\noindent}Genetical Genomics \citep{Jansen:2001388} is powerful method, providing world of life sciences with tool to look deep inside the complex relation between genetic information stored by DNA and final outcome of its processing - phenotype. And because this is the core dogma of modern biology, every method helping us to understand it better is of high importance to scientific world. 
 
 {\noindent}Great power often comes for high price, though. To perform GG studies one has to obtain both phenotypic and genotypic data, that are subsequently being matched. This not only elevates costs of experiment, but also introduces number of human errors, e.g. mismatching/mislabeling of arrays.
 
@@ -63,26 +66,46 @@ To store all the necessary information and mainupulate it easily we developed ob
 \end{itemize}
 \includegraphics[scale=0.22]{population.jpg}
  \end{multicols}
+
 \newpage
 \section{Basic workflow}
 \subsection{Loading data into workflow}
-\subsubsection{Introduction}
-If data is formatted as specified in chapter 2 and files are having default names, you just have to type: population <-  readFiles() into Rgui (make sure your working directory is the one containing data files) and it's all done. If you want to customize your files names, that can be done, but only to some extend. First of all you're able only to specify "cores": 
-\begin{itemize}
-\item  founders core, then name of the file containing founders phenotype data should be founders core\_phenotypes.txt
-\item  offspring core,  then name of the file containing offspring phenotype data should be offspring core\_phenotypes.txt and file containing genotype data should be called offspring core\_genotypes.tx
-\item maps core, then file maps core\_genetic.txt contains genetic map, while maps core\_physical.txt - physical map.
-\end{itemize}
-If you are more advanced in R and want to use your own data files of different names and/or structure, see section 4.1.
-\subsubsection{Example of function call}
-> \$ population <- readFiles()
+\subsubsection{readFiles function}
+If data is formatted as specified in chapter 2 and files are having default names, you just have to type: 
+<<<echo=TRUE, eval=FALSE>>=
+population <- readFiles(founders_groups=c(0,0,1,1))
+@
+ into Rgui (make sure your working directory is the one containing data files) and it's all done. Parameter founders\_groups specifies in which column of parental file which parent is. Eg. you measured gene expression of both parents twice. Results for one of those are in first two columns, for the other - in following two. Then your function call will look exactly like one given above. 
+If you don't like words founders, offspring and map and would like to use more friendly parents, children and treasure\_map instead, just type:
+<<<echo=TRUE, eval=FALSE>>=
+population <- readFiles(offspring="children",founders="parents",map="treasure_map", 
+	founders_groups=c(0,0,1,1))
+@
+Function will then look for eg genetic map in file treasure\_map\_genetic.txt.
+\subsubsection{createPopulation function}
+Loading data from files is not always the best idea. Imagine you loaded your data into R already, for example to normalize it. Saving it back to disk and reading again into R means wasting your time. In this case you can use createPopulation function:
+<<<echo=TRUE, eval=FALSE>>=
+population <- createPopulation(offspring_phenotypes, founders, founders_groups, offspring_genotypes, maps_genetic, maps_physical)
+@
+just listing objects that contain phenotype, genotype data and maps. For example if you have phenotype matrix called phenotypes for both founders(columns 1-4) and offspring(5-100) you can load that into population object using:
+<<<echo=TRUE, eval=FALSE>>=
+population <- createPopulation(phenotypes[,1:4],phenotypes[,5:100],c(0,0,1,1))
+@
+\subsubsection{faking population object}
+Sometimes you nedd pretty simple and small dataset to do samoe testing on. Or to be able to play with, to learn how to use the package. Like in this manual. In this step fakePopulation function comes handy: 
+<<<echo=TRUE, eval=TRUE>>=
+population <- fakePopulation()
+@
+There is a lot of parameters you can provide to this function to get more sophisticated datasets, but for our use default one (founders measured twice, 250 offspring individuals, 1000 markers spread evenly over 10 chromosomes, RIL population obtained using selfing) will be perfect. 
 \subsection{Rank product analysis}
 \subsubsection{Introduction}
-Rank Product is a powerful method to detect genes showing differential expression, especially in microarray experiments (citation). As so, it fits our needs perfectly and that's why it's incorporated into our workflow. For vast majority of the cases user just has to specify parental groups. This means providing function with a vector of 0s and 1s, specifying for each column of parental phenotype file which parent data does it contain. E.g. we measured both parents twice and first two columns contain information about first parent and other two about second. Then parental groups should be c(0,0,1,1) and function should be called: >  \$ population <- preprocessData(population,c(0,0,1,1))
+Rank Product \citep{Hong:2006} is a powerful method to detect genes showing differential expression, especially in microarray experiments (citation). As so, it fits our needs perfectly and that's why it's incorporated into our workflow. For vast majority of the cases user just has to specify parental groups. This means providing function with a vector of 0s and 1s, specifying for each column of parental phenotype file which parent data does it contain. E.g. we measured both parents twice and first two columns contain information about first parent and other two about second. Then parental groups should be c(0,0,1,1) and function should be called: >  \$ population <- preprocessData(population,c(0,0,1,1))
 
 {\noindent}If you're more experienced user and would like to provide RP function with additional parameters, it's possible. Just provide preprocessData funtion with them and they will be send directly to RP function. For further information see help files of RP and preprocessData functions.
 \subsubsection{Example of function call}
->  \$ population <- preprocessData(population,c(0,0,1,1))
+<<<echo=TRUE, eval=FALSE>>=
+population <- findDiffExpressed(population)
+@
 \subsection{toGenotypes function}
 After RankProduct analysis is done, it's time for magic to happen,  very essence of this package - creating genetic map out of gene expression data. If you're dataset come from experiment using of most common experimental breeding schemes - Recombinant Inbreed Lines, F2 or Back Cross, you should use corresponding set of parameters, described in section 3.4. If your breeding scheme is different, you will find all necessary information in sections 3.5 - 3.8.
 \subsection{Preoptimized parameters for most common experimental crosses}
@@ -152,4 +175,6 @@ First step in toGenotypes analysis is selecting appropriate markers. Those are o
 \section{Package development \& collaboration}
 \newpage
 \section{References}
+\bibliographystyle{plainnat}
+\bibliography{manual}
 \end{document}
