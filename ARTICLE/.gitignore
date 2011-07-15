@@ -1,4 +1,7 @@
 manual.pdf
 manual.log
+manual.bbl
+manual.blg
 manual.aux
+Sweave.sty
 manual.synctex.gz
