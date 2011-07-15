@@ -37,14 +37,14 @@ Load the library in the R interface by the following command (in R):
 To read in data files:
     
     $ > setwd(paste(.Library,"pheno2geno/data",sep="/"))
-    $ > ril <- readFiles()             
+    $ > population <- readFiles(founders_groups=c(0,0,1,1))             
     $ WARNING: There is no genotypic file for rils: children_genotypes.txt genotypic data for rils will be simulated
     $ WARNING: There is no map file for rils: children_probes.txt further processing will take place without taking it into account
 
 
 To start RankProd analysis:
 
-    $ > ril <- preprocessData(ril)
+    $ > population <- findDiffExpressed(population)
 	
 
 Data files
@@ -52,7 +52,7 @@ Data files
 Our workflow is based on assumption that data files provided to our software have certain names (can be modified by user) and format (unmodifiable). 
 To be sure your analysis runs smoothly please acknowledge data format specification included in readFiles help file in DETAILS section, you can access by:
     
-	$ > ?readFile
+	$ > ?readFiles
 
 
 TODO
