@@ -81,8 +81,8 @@ If data is formatted as specified in chapter 2 and files are having default name
 If you don't like words founders, offspring and map and would like to use more friendly parents, children and treasure\_map instead, just type:
 \begin{Schunk}
 \begin{Sinput}
-> population <- readFiles(offspring = "children", founders = "parents", map = "treasure_map", 
-+     founders_groups = c(0, 0, 1, 1))
+> population <- readFiles(offspring = "children", founders = "parents", map = "treasure_map", founders_groups = c(0, 
++     0, 1, 1))
 \end{Sinput}
 \end{Schunk}
 Function will then look for eg genetic map in file treasure\_map\_genetic.txt.
@@ -100,6 +100,32 @@ just listing objects that contain phenotype, genotype data and maps. For example
 > population <- createPopulation(phenotypes[, 1:4], phenotypes[, 5:100], c(0, 0, 1, 1))
 \end{Sinput}
 \end{Schunk}
+\subsubsection{faking population object}
+Sometimes you nedd pretty simple and small dataset to do samoe testing on. Or to be able to play with, to learn how to use the package. Like in this manual. In this step fakePopulation function comes handy: 
+\begin{Schunk}
+\begin{Sinput}
+> population <- fakePopulation()
+\end{Sinput}
+\end{Schunk}
+There is a lot of parameters you can provide to this function to get more sophisticated datasets, but for our use default one (founders measured twice, 250 offspring individuals, 1000 markers spread evenly over 10 chromosomes, 
+RIL population obtained using selfing) will be perfect. 
+\newpage
+\subsection{Inspecting data}
+\subsubsection{Founders data}
+We provide you we function to plot founders data for brief inspection. Let's inspect first 20 markers of just faked population object:
+\begin{Schunk}
+\begin{Sinput}
+> plotParentalExpression(population, 1:20)
+\end{Sinput}
+\end{Schunk}
+\begin{Schunk}
+\begin{Sinput}
+> plotParentalExpression(population, 1:20)
+\end{Sinput}
+\end{Schunk}
+\includegraphics{manual-007}
+On the plot you can see phenotype values for founders (empty circles - blue for parent "0" and red for parent "1").
+\newpage
 \subsection{Rank product analysis}
 \subsubsection{Introduction}
 Rank Product \citep{Hong:2006} is a powerful method to detect genes showing differential expression, especially in microarray experiments (citation). As so, it fits our needs perfectly and that's why it's incorporated into our workflow. For vast majority of the cases user just has to specify parental groups. This means providing function with a vector of 0s and 1s, specifying for each column of parental phenotype file which parent data does it contain. E.g. we measured both parents twice and first two columns contain information about first parent and other two about second. Then parental groups should be c(0,0,1,1) and function should be called: >  \$ population <- preprocessData(population,c(0,0,1,1))
@@ -111,6 +137,7 @@ Rank Product \citep{Hong:2006} is a powerful method to detect genes showing diff
 > population <- findDiffExpressed(population)
 \end{Sinput}
 \end{Schunk}
+
 \subsection{toGenotypes function}
 After RankProduct analysis is done, it's time for magic to happen,  very essence of this package - creating genetic map out of gene expression data. If you're dataset come from experiment using of most common experimental breeding schemes - Recombinant Inbreed Lines, F2 or Back Cross, you should use corresponding set of parameters, described in section 3.4. If your breeding scheme is different, you will find all necessary information in sections 3.5 - 3.8.
 \subsection{Preoptimized parameters for most common experimental crosses}

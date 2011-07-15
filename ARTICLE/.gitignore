@@ -1,7 +1,8 @@
-manual.pdf
-manual.log
-manual.bbl
-manual.blg
-manual.aux
+*.log
+*.bbl
+*.blg
+*.aux
 Sweave.sty
-manual.synctex.gz
+*.synctex.gz
+*.pdf
+*.eps
