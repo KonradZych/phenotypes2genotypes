@@ -9,7 +9,7 @@
 }
 
 \usage{
-	fakePopulation(n.founders = 4, n.offspring = 250, n.markers=1000,n.chromosomes=10, type = c("f2", "bc", "risib", "riself"), ...)
+	fakePopulation(n.founders = 4, n.offspring = 250, n.markers=1000,n.chromosomes=10, type = c("riself", "f2", "bc", "risib"), ...)
 }
 
 \arguments{
