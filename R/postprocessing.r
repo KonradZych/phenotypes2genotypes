@@ -208,7 +208,6 @@ orderChromosomesC.internal <- function(cross,cur_map,verbose=FALSE){
 			cross <- bestCorelated.internal(cross,cur_map)
 		}
 	}
-	}
 	names(cross$geno) <- 1:length(cross$geno)
 	invisible(cross)
 }
