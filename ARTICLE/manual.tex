@@ -1,5 +1,6 @@
 \documentclass{article}
 \usepackage{multicol}
+\usepackage{multirow}
 \usepackage{fullpage}
 \usepackage[english]{babel}
 \usepackage{blindtext}
@@ -81,8 +82,8 @@ If data is formatted as specified in chapter 2 and files are having default name
 If you don't like words founders, offspring and map and would like to use more friendly parents, children and treasure\_map instead, just type:
 \begin{Schunk}
 \begin{Sinput}
-> population <- readFiles(offspring = "children", founders = "parents", map = "treasure_map", founders_groups = c(0, 
-+     0, 1, 1))
+> population <- readFiles(offspring = "children", founders = "parents", 
++     map = "treasure_map", founders_groups = c(0, 0, 1, 1))
 \end{Sinput}
 \end{Schunk}
 Function will then look for eg genetic map in file treasure\_map\_genetic.txt.
@@ -90,18 +91,19 @@ Function will then look for eg genetic map in file treasure\_map\_genetic.txt.
 Loading data from files is not always the best idea. Imagine you loaded your data into R already, for example to normalize it. Saving it back to disk and reading again into R means wasting your time. In this case you can use createPopulation function:
 \begin{Schunk}
 \begin{Sinput}
-> population <- createPopulation(offspring_phenotypes, founders, founders_groups, offspring_genotypes, 
-+     maps_genetic, maps_physical)
+> population <- createPopulation(offspring_phenotypes, founders, 
++     founders_groups, offspring_genotypes, maps_genetic, maps_physical)
 \end{Sinput}
 \end{Schunk}
 just listing objects that contain phenotype, genotype data and maps. For example if you have phenotype matrix called phenotypes for both founders(columns 1-4) and offspring(5-100) you can load that into population object using:
 \begin{Schunk}
 \begin{Sinput}
-> population <- createPopulation(phenotypes[, 1:4], phenotypes[, 5:100], c(0, 0, 1, 1))
+> population <- createPopulation(phenotypes[, 1:4], phenotypes[, 
++     5:100], c(0, 0, 1, 1))
 \end{Sinput}
 \end{Schunk}
 \subsubsection{faking population object}
-Sometimes you nedd pretty simple and small dataset to do samoe testing on. Or to be able to play with, to learn how to use the package. Like in this manual. In this step fakePopulation function comes handy: 
+Sometimes you nede pretty simple and small dataset to do samoe testing on. Or to be able to play with, to learn how to use the package. Like in this manual. In this step fakePopulation function comes handy: 
 \begin{Schunk}
 \begin{Sinput}
 > population <- fakePopulation()
@@ -113,57 +115,209 @@ RIL population obtained using selfing) will be perfect.
 \subsection{Inspecting data}
 \subsubsection{Founders data}
 We provide you we function to plot founders data for brief inspection. Let's inspect first 20 markers of just faked population object:
+
 \begin{Schunk}
 \begin{Sinput}
 > plotParentalExpression(population, 1:20)
 \end{Sinput}
 \end{Schunk}
+\includegraphics{manual-006}
+
+{\noindent}Empty circles (blue for parent "0" and red for parent "1") on the plot show gene expression values, green lines - mean values for each marker.
+\newpage
+\subsubsection{Offspring data}
+We can also inspect gene expression values for offspring. To show plot for first 20 markers:
 \begin{Schunk}
 \begin{Sinput}
-> plotParentalExpression(population, 1:20)
+> plotChildrenExpression(population, 1:20)
 \end{Sinput}
 \end{Schunk}
 \includegraphics{manual-007}
-On the plot you can see phenotype values for founders (empty circles - blue for parent "0" and red for parent "1").
+
+{\noindent}Boxplot (in black) shows gene expression values for offspring. On those, founders data is overlayed, depicted as in plotParentalExpression.
+\newpage
+\subsubsection{Single markers distribution}
+This kind of plot gives possibility to make sure that our data is distributed as we supposed. In our case, RIL with selfing, we expect in all markers mixture of two normal distributions.
+In our example we will look at values for third marker:
+\begin{Schunk}
+\begin{Sinput}
+> plotMarkerDistribution(population, 3, 2)
+\end{Sinput}
+\end{Schunk}
+\includegraphics{manual-008}
+
+{\noindent}First parameter is object of class population, then number or name of marker to be shown and number of normal distributions to be fitted (more than 1).
 \newpage
 \subsection{Rank product analysis}
-\subsubsection{Introduction}
-Rank Product \citep{Hong:2006} is a powerful method to detect genes showing differential expression, especially in microarray experiments (citation). As so, it fits our needs perfectly and that's why it's incorporated into our workflow. For vast majority of the cases user just has to specify parental groups. This means providing function with a vector of 0s and 1s, specifying for each column of parental phenotype file which parent data does it contain. E.g. we measured both parents twice and first two columns contain information about first parent and other two about second. Then parental groups should be c(0,0,1,1) and function should be called: >  \$ population <- preprocessData(population,c(0,0,1,1))
+RankProd \citep{Hong:2006} is a R package using Rank Product \citep{Breitling200483} method to detect genes showing differential expression, especially in microarray experiments. As so, it fits our needs perfectly and that's why it's incorporated into our workflow. 
+In majority of cases object of class population is the only parameter while calling findDiffExpressed function. RP, main function of RankProd, is always verbose, so exptect something like:
+\begin{Schunk}
+\begin{Sinput}
+> population <- findDiffExpressed(population)
+\end{Sinput}
+\begin{Soutput}
+Rank Product analysis for two-class case 
+ 
+Starting 100 permutations... 
+Computing pfp .. 
+Outputing the results .. 
+\end{Soutput}
+\end{Schunk}
 
-{\noindent}If you're more experienced user and would like to provide RP function with additional parameters, it's possible. Just provide preprocessData funtion with them and they will be send directly to RP function. For further information see help files of RP and preprocessData functions.
-\subsubsection{Example of function call}
+{\noindent}If you're more experienced user and would like to provide RP function with additional parameters, it's possible. Just provide preprocessData funtion with them and they will be send directly to RP function. For further information see help file of RP.
+
+\subsection{toGenotypes function - introduction}
+After RankProduct analysis is done, it's time for magic to happen,  very essence of this package - creating genetic map out of gene expression data. Because this function call is much more complicated than any other in the 
+package, we summarized parameters in table below:
+\begin{Schunk}
+\begin{Sinput}
+> cross <- toGenotypes(population, genotype = c("simulated", "real"), 
++     orderUsing = c("none", "map_genetic", "map_physical"), treshold = 0.01, 
++     overlapInd = 0, proportion = c(50, 50), margin = 15, verbose = FALSE, 
++     debugMode = 0)
+\end{Sinput}
+\end{Schunk}
+
+\begin{tabular}{ | c | p{5.5cm} | p{3cm} | p{4.5cm}| }
+  \hline                       
+  parameter name & description & possible values & description \\ \hline
+  population & object of class population &  &  \\ \hline
+  \multirow{2}{*}{genotype} & which genotype data should be & simulated & simulated by toGenotypes \\ \cline{3-4}
+  & saved in cross object & real & provided by user \\ \hline  
+   \multirow{3}{*}{orderUsing} & which map should be used to order markers in output cross object& none & markers are placed on one chromosome with 1 cM distance in between \\ \cline{3-4}
+  &  & map\_genetic & genetic map \\ \cline{3-4} 
+  &  & map\_physical & physical map \\ \hline  
+  treshold & treshold p-value to classify gene as differentially expressed & \multicolumn{2}{|c|}{0-1} \\ \hline
+  overlapInd & how many individuals may overlap between distributions & \multicolumn{2}{|c|}{0-nr of individuals}  \\ \hline
+  proportion & specifying how many normal distributions are expected and percentage of individuals in every group  & \multicolumn{2}{|c|}{vector of 0-100 summing up to 100}  \\ \hline
+  margin & proportion is allowed to varry between this margin (2 sided)  & \multicolumn{2}{|c|}{0-min(proportion)}  \\ \hline
+\end{tabular}
+\newpage
+\subsection{Example function call for RILs}
+In data from RIL population (like one we faked in section 3.1.3), we expect two normal distributions in gene expression data. Each group should contain 50 percent of individuals. Proportion parameter should then have value c(50,50).
+This is default one. We would like to save genotype data created by toGenotypes and order it using genetic map. For all the other parameters we use default values.  Function call then should look like:
+\begin{Schunk}
+\begin{Sinput}
+> cross <- toGenotypes(population, genotype = "simulated", orderUsing = "map_genetic", 
++     treshold = 0.01, overlapInd = 0, proportion = c(50, 50), 
++     margin = 15, verbose = FALSE, debugMode = 0)
+\end{Sinput}
+\end{Schunk}
+
+{\noindent}After function is executed, our data is stored inside (a bit enhanced) cross object. We can use R/qtl functions to plot it. Most informative plots will be:
+
+{\noindent}- plot.rf - showing recombination factors between markers
+\begin{Schunk}
+\begin{Sinput}
+> plot.rf(cross)
+\end{Sinput}
+\end{Schunk}
+\includegraphics{manual-012}
+\newpage
+{\noindent}- plot.map - showing how markers are spread on the chromosomes
+\begin{Schunk}
+\begin{Sinput}
+> plot.map(cross)
+\end{Sinput}
+\end{Schunk}
+\includegraphics{manual-013}
+\newpage
+{\noindent}- geno.image showing our newly created genotypes
+\begin{Schunk}
+\begin{Sinput}
+> geno.image(cross)
+\end{Sinput}
+\end{Schunk}
+\includegraphics{manual-014}
+\newpage
+\subsection{Example workflow for BC}
+
+
+	
+	plot.rf(cross, main="bc toGenotypes example")
+
+{\noindent}We start with faking population object with data for Back Cross:
+\begin{Schunk}
+\begin{Sinput}
+> population <- fakePopulation(type = "bc")
+\end{Sinput}
+\end{Schunk}
+
+{\noindent}The only, but very important difference lays in distribution of the data. We can inspect it using plotMarkerDistribution:
+\begin{Schunk}
+\begin{Sinput}
+> plotMarkerDistribution(population, 3, 2)
+\end{Sinput}
+\end{Schunk}
+\includegraphics{manual-016}
+
+{\noindent}Next step, Rank Product analysis, is exactly the same as for RILs:
 \begin{Schunk}
 \begin{Sinput}
 > population <- findDiffExpressed(population)
 \end{Sinput}
 \end{Schunk}
 
-\subsection{toGenotypes function}
-After RankProduct analysis is done, it's time for magic to happen,  very essence of this package - creating genetic map out of gene expression data. If you're dataset come from experiment using of most common experimental breeding schemes - Recombinant Inbreed Lines, F2 or Back Cross, you should use corresponding set of parameters, described in section 3.4. If your breeding scheme is different, you will find all necessary information in sections 3.5 - 3.8.
-\subsection{Preoptimized parameters for most common experimental crosses}
-\subsubsection{Introduction}
-We prepared preoptimized sets for most common experimental breeding schemes - Recombinant Inbreed Lines, F2 or Back Cross. You can just select one corresponding to your dataset, copy/paste it into R and everything is done for you. You still may be curious what exactly is happening and/or modify given sets to better suit your needs (e.g. more strict selection of the markers).
-\subsubsection{Example of function call}
-\subsection{Selecting appriopriate markers}
-First step in toGenotypes analysis is selecting appropriate markers. Those are ones clearly differentially expressed between the parents. And having results from rank product you just have to specify p-value that determines whether difference in expression is significant(parameter threshold, default - 0.05). Normally it's 0.05 or 0.01. If you want to use all of your markers use threshold 0.5. Using any value above that will cause duplications (genes will be selected both as up- and down-regulated).
-\subsection{Splitting selected markers} 
-{\noindent}Once the appropriate markers are selected, they have to undergo splitting procedure, which means gene expression values are either assigned as 0 or 1, depending on which parent they come from. There are two methods to do so, as listed below.
-\subsubsection{Parental mean splitting}
-\blindtext
-\subsubsection{EM splitting}
-\blindtext
-\subsection{Filtering markers}
-\blindtext
-\subsection{Cross object}
-\blindtext[2]
-\subsubsection{Creating cross object}
-\blindtext
-\subsubsection{Forming linkage groups and \\* ordering markers}
-\blindtext
-\subsubsection{Augmenting cross object}
-\blindtext
+\newpage
+{\noindent}After checking distribution of the data (obviously checking distribution of one marker is not enough, but that step is just for visual inspection, toGenotypes is
+checking distribution of markers automatically) and finding differentially expressed genes, we can use toGenotypes function:
+\begin{Schunk}
+\begin{Sinput}
+> cross <- toGenotypes(population, genotype = "simulated", proportion = c(25, 
++     75), orderUsing = "map_genetic", treshold = 0.1)
+\end{Sinput}
+\end{Schunk}
+
+{\noindent}And plot recombination factors between individuals:
+\begin{Schunk}
+\begin{Sinput}
+> plot.rf(cross, main = "BC workflow example")
+\end{Sinput}
+\end{Schunk}
+\includegraphics{manual-019}
 
 \newpage
+\subsection{Example workflow for F2 cross}
+{\noindent}Again we start with faking population object. This time with data for F2 cross:
+\begin{Schunk}
+\begin{Sinput}
+> population <- fakePopulation(type = "f2")
+\end{Sinput}
+\end{Schunk}
+
+{\noindent}This time we expect totally different distribution of data. Mixture of three normal distributions with proportions 25/50/25:
+\begin{Schunk}
+\begin{Sinput}
+> plotMarkerDistribution(population, 3, 3)
+\end{Sinput}
+\end{Schunk}
+\includegraphics{manual-021}
+
+{\noindent}Finding differentially expressed genes we still do the same:
+\begin{Schunk}
+\begin{Sinput}
+> population <- findDiffExpressed(population)
+\end{Sinput}
+\end{Schunk}
+
+\newpage
+{\noindent}Finally, we can use toGenotypes function:
+\begin{Schunk}
+\begin{Sinput}
+> cross <- toGenotypes(population, genotype = "simulated", proportion = c(25, 
++     50, 25), orderUsing = "map_genetic", treshold = 0.1)
+\end{Sinput}
+\end{Schunk}
+
+{\noindent}And plot recombination factors between individuals:
+\begin{Schunk}
+\begin{Sinput}
+> plot.rf(cross, main = "f2 toGenotypes example")
+\end{Sinput}
+\end{Schunk}
+\includegraphics{manual-024}
+
+
 \section{Advanced options/modifications}
 
 \subsection{Using data files with different \\* structure}

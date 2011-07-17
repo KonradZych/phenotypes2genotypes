@@ -6,3 +6,4 @@ Sweave.sty
 *.synctex.gz
 *.pdf
 *.eps
+*.csv
