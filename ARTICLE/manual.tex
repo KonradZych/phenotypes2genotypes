@@ -1,6 +1,5 @@
 \documentclass{article}
 \usepackage{multicol}
-\usepackage{multirow}
 \usepackage{fullpage}
 \usepackage[english]{babel}
 \usepackage{blindtext}
@@ -56,18 +55,6 @@ This data is optional and could be used for comparison with map created by our s
 \subsubsection{Physical map}
 Exactly the same as in genetic map, but position on chromosome should be in Mbp.
 
-
-\subsection{Population object}
-\begin{multicols}{2}
-To store all the necessary information and mainupulate it easily we developed object of class population (schematically shown on figure 1). It's divided in three main parts:
-\begin{itemize}
-\item  founders part, storing founders phenotype data, information about founders groups used by RankProduct analysis (see 3.2) and results of this analysis (RP object, futher documentation about it is available in help file of RP function),
-\item  offspring part, storing founders phenotype and genotype data (read from file and/or simulated by our software),
-\item maps part, storing genetic and/or physical map
-\end{itemize}
-\includegraphics[scale=0.22]{population.jpg}
- \end{multicols}
-
 \newpage
 \section{Basic workflow}
 \subsection{Loading data into workflow}
@@ -86,7 +73,12 @@ If you don't like words founders, offspring and map and would like to use more f
 +     map = "treasure_map", founders_groups = c(0, 0, 1, 1))
 \end{Sinput}
 \end{Schunk}
-Function will then look for eg genetic map in file treasure\_map\_genetic.txt.
+{\noindent}Function will then look for eg genetic map in file treasure\_map\_genetic.txt.For more info about the function type in R:
+\begin{Schunk}
+\begin{Sinput}
+> `?`(createPopulation)
+\end{Sinput}
+\end{Schunk}
 \subsubsection{createPopulation function}
 Loading data from files is not always the best idea. Imagine you loaded your data into R already, for example to normalize it. Saving it back to disk and reading again into R means wasting your time. In this case you can use createPopulation function:
 \begin{Schunk}
@@ -102,6 +94,12 @@ just listing objects that contain phenotype, genotype data and maps. For example
 +     5:100], c(0, 0, 1, 1))
 \end{Sinput}
 \end{Schunk}
+{\noindent}For more info about the function type in R:
+\begin{Schunk}
+\begin{Sinput}
+> `?`(createPopulation)
+\end{Sinput}
+\end{Schunk}
 \subsubsection{faking population object}
 Sometimes you nede pretty simple and small dataset to do samoe testing on. Or to be able to play with, to learn how to use the package. Like in this manual. In this step fakePopulation function comes handy: 
 \begin{Schunk}
@@ -109,8 +107,13 @@ Sometimes you nede pretty simple and small dataset to do samoe testing on. Or to
 > population <- fakePopulation()
 \end{Sinput}
 \end{Schunk}
-There is a lot of parameters you can provide to this function to get more sophisticated datasets, but for our use default one (founders measured twice, 250 offspring individuals, 1000 markers spread evenly over 10 chromosomes, 
-RIL population obtained using selfing) will be perfect. 
+{\noindent}There is a lot of parameters you can provide to this function to get more sophisticated datasets, but for our use default one (founders measured twice, 250 offspring individuals, 1000 markers spread evenly over 10 chromosomes, 
+RIL population obtained using selfing) will be perfect. For more info about the function type in R:
+\begin{Schunk}
+\begin{Sinput}
+> `?`(fakePopulation)
+\end{Sinput}
+\end{Schunk}
 \newpage
 \subsection{Inspecting data}
 \subsubsection{Founders data}
@@ -121,7 +124,7 @@ We provide you we function to plot founders data for brief inspection. Let's ins
 > plotParentalExpression(population, 1:20)
 \end{Sinput}
 \end{Schunk}
-\includegraphics{manual-006}
+\includegraphics{manual-009}
 
 {\noindent}Empty circles (blue for parent "0" and red for parent "1") on the plot show gene expression values, green lines - mean values for each marker.
 \newpage
@@ -132,7 +135,7 @@ We can also inspect gene expression values for offspring. To show plot for first
 > plotChildrenExpression(population, 1:20)
 \end{Sinput}
 \end{Schunk}
-\includegraphics{manual-007}
+\includegraphics{manual-010}
 
 {\noindent}Boxplot (in black) shows gene expression values for offspring. On those, founders data is overlayed, depicted as in plotParentalExpression.
 \newpage
@@ -144,7 +147,7 @@ In our example we will look at values for third marker:
 > plotMarkerDistribution(population, 3, 2)
 \end{Sinput}
 \end{Schunk}
-\includegraphics{manual-008}
+\includegraphics{manual-011}
 
 {\noindent}First parameter is object of class population, then number or name of marker to be shown and number of normal distributions to be fitted (more than 1).
 \newpage
@@ -168,39 +171,30 @@ Outputing the results ..
 
 \subsection{toGenotypes function - introduction}
 After RankProduct analysis is done, it's time for magic to happen,  very essence of this package - creating genetic map out of gene expression data. Because this function call is much more complicated than any other in the 
-package, we summarized parameters in table below:
+package, we summarized most important parameters in table below:
+
+ \begin{tabular}{ | c | p{5.5cm} | p{4.5cm}| }
+  \hline                       
+  parameter name & description & possible values \\ \hline
+  treshold & treshold p-value to classify gene as differentially expressed & 0-1 \\ \hline
+  overlapInd & how many individuals may overlap between distributions & 0-nr of individuals  \\ \hline
+  proportion & specifying how many normal distributions are expected and percentage of individuals in every group  & vector of 0-100 summing up to 100  \\ \hline
+  margin & proportion is allowed to varry between this margin (2 sided)  & 0-min(proportion) \\ \hline
+\end{tabular}
+
+{\noindent}and we strongly recommend to see help file of this function:
 \begin{Schunk}
 \begin{Sinput}
-> cross <- toGenotypes(population, genotype = c("simulated", "real"), 
-+     orderUsing = c("none", "map_genetic", "map_physical"), treshold = 0.01, 
-+     overlapInd = 0, proportion = c(50, 50), margin = 15, verbose = FALSE, 
-+     debugMode = 0)
+> `?`(toGenotypes)
 \end{Sinput}
 \end{Schunk}
 
-\begin{tabular}{ | c | p{5.5cm} | p{3cm} | p{4.5cm}| }
-  \hline                       
-  parameter name & description & possible values & description \\ \hline
-  population & object of class population &  &  \\ \hline
-  \multirow{2}{*}{genotype} & which genotype data should be & simulated & simulated by toGenotypes \\ \cline{3-4}
-  & saved in cross object & real & provided by user \\ \hline  
-   \multirow{3}{*}{orderUsing} & which map should be used to order markers in output cross object& none & markers are placed on one chromosome with 1 cM distance in between \\ \cline{3-4}
-  &  & map\_genetic & genetic map \\ \cline{3-4} 
-  &  & map\_physical & physical map \\ \hline  
-  treshold & treshold p-value to classify gene as differentially expressed & \multicolumn{2}{|c|}{0-1} \\ \hline
-  overlapInd & how many individuals may overlap between distributions & \multicolumn{2}{|c|}{0-nr of individuals}  \\ \hline
-  proportion & specifying how many normal distributions are expected and percentage of individuals in every group  & \multicolumn{2}{|c|}{vector of 0-100 summing up to 100}  \\ \hline
-  margin & proportion is allowed to varry between this margin (2 sided)  & \multicolumn{2}{|c|}{0-min(proportion)}  \\ \hline
-\end{tabular}
-\newpage
 \subsection{Example function call for RILs}
 In data from RIL population (like one we faked in section 3.1.3), we expect two normal distributions in gene expression data. Each group should contain 50 percent of individuals. Proportion parameter should then have value c(50,50).
-This is default one. We would like to save genotype data created by toGenotypes and order it using genetic map. For all the other parameters we use default values.  Function call then should look like:
+This is default one. We would like to save genotype data created by toGenotypes and order it using genetic map. In this case for all the parameters we use default values.  Function call then should look like:
 \begin{Schunk}
 \begin{Sinput}
-> cross <- toGenotypes(population, genotype = "simulated", orderUsing = "map_genetic", 
-+     treshold = 0.01, overlapInd = 0, proportion = c(50, 50), 
-+     margin = 15, verbose = FALSE, debugMode = 0)
+> cross <- toGenotypes(population)
 \end{Sinput}
 \end{Schunk}
 
@@ -212,7 +206,7 @@ This is default one. We would like to save genotype data created by toGenotypes 
 > plot.rf(cross)
 \end{Sinput}
 \end{Schunk}
-\includegraphics{manual-012}
+\includegraphics{manual-015}
 \newpage
 {\noindent}- plot.map - showing how markers are spread on the chromosomes
 \begin{Schunk}
@@ -220,7 +214,7 @@ This is default one. We would like to save genotype data created by toGenotypes 
 > plot.map(cross)
 \end{Sinput}
 \end{Schunk}
-\includegraphics{manual-013}
+\includegraphics{manual-016}
 \newpage
 {\noindent}- geno.image showing our newly created genotypes
 \begin{Schunk}
@@ -228,7 +222,7 @@ This is default one. We would like to save genotype data created by toGenotypes 
 > geno.image(cross)
 \end{Sinput}
 \end{Schunk}
-\includegraphics{manual-014}
+\includegraphics{manual-017}
 \newpage
 \subsection{Example workflow for BC}
 
@@ -249,7 +243,6 @@ This is default one. We would like to save genotype data created by toGenotypes 
 > plotMarkerDistribution(population, 3, 2)
 \end{Sinput}
 \end{Schunk}
-\includegraphics{manual-016}
 
 {\noindent}Next step, Rank Product analysis, is exactly the same as for RILs:
 \begin{Schunk}
@@ -274,7 +267,6 @@ checking distribution of markers automatically) and finding differentially expre
 > plot.rf(cross, main = "BC workflow example")
 \end{Sinput}
 \end{Schunk}
-\includegraphics{manual-019}
 
 \newpage
 \subsection{Example workflow for F2 cross}
@@ -291,7 +283,6 @@ checking distribution of markers automatically) and finding differentially expre
 > plotMarkerDistribution(population, 3, 3)
 \end{Sinput}
 \end{Schunk}
-\includegraphics{manual-021}
 
 {\noindent}Finding differentially expressed genes we still do the same:
 \begin{Schunk}
@@ -315,12 +306,11 @@ checking distribution of markers automatically) and finding differentially expre
 > plot.rf(cross, main = "f2 toGenotypes example")
 \end{Sinput}
 \end{Schunk}
-\includegraphics{manual-024}
 
+\newpage
+\section{Postprocessing of cross object}
 
-\section{Advanced options/modifications}
-
-\subsection{Using data files with different \\* structure}
+\subsection{Comparing created map to }
 \blindtext
 \subsection{Rank product analysis}
 \blindtext
