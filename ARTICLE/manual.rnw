@@ -1,6 +1,5 @@
 \documentclass{article}
 \usepackage{multicol}
-\usepackage{multirow}
 \usepackage{fullpage}
 \usepackage[english]{babel}
 \usepackage{blindtext}
@@ -56,18 +55,6 @@ This data is optional and could be used for comparison with map created by our s
 \subsubsection{Physical map}
 Exactly the same as in genetic map, but position on chromosome should be in Mbp.
 
-
-\subsection{Population object}
-\begin{multicols}{2}
-To store all the necessary information and mainupulate it easily we developed object of class population (schematically shown on figure 1). It's divided in three main parts:
-\begin{itemize}
-\item  founders part, storing founders phenotype data, information about founders groups used by RankProduct analysis (see 3.2) and results of this analysis (RP object, futher documentation about it is available in help file of RP function),
-\item  offspring part, storing founders phenotype and genotype data (read from file and/or simulated by our software),
-\item maps part, storing genetic and/or physical map
-\end{itemize}
-\includegraphics[scale=0.22]{population.jpg}
- \end{multicols}
-
 \newpage
 \section{Basic workflow}
 \subsection{Loading data into workflow}
@@ -82,7 +69,10 @@ If you don't like words founders, offspring and map and would like to use more f
 population <- readFiles(offspring="children",founders="parents",map="treasure_map", 
 	founders_groups=c(0,0,1,1))
 @
-Function will then look for eg genetic map in file treasure\_map\_genetic.txt.
+{\noindent}Function will then look for eg genetic map in file treasure\_map\_genetic.txt.For more info about the function type in R:
+<<<echo=TRUE, eval=FALSE>>=
+?createPopulation
+@
 \subsubsection{createPopulation function}
 Loading data from files is not always the best idea. Imagine you loaded your data into R already, for example to normalize it. Saving it back to disk and reading again into R means wasting your time. In this case you can use createPopulation function:
 <<<echo=TRUE, eval=FALSE>>=
@@ -92,13 +82,20 @@ just listing objects that contain phenotype, genotype data and maps. For example
 <<<echo=TRUE, eval=FALSE>>=
 population <- createPopulation(phenotypes[,1:4],phenotypes[,5:100],c(0,0,1,1))
 @
+{\noindent}For more info about the function type in R:
+<<<echo=TRUE, eval=FALSE>>=
+?createPopulation
+@
 \subsubsection{faking population object}
 Sometimes you nede pretty simple and small dataset to do samoe testing on. Or to be able to play with, to learn how to use the package. Like in this manual. In this step fakePopulation function comes handy: 
 <<<echo=TRUE, eval=TRUE,  results=hide>>=
 population <- fakePopulation()
 @
-There is a lot of parameters you can provide to this function to get more sophisticated datasets, but for our use default one (founders measured twice, 250 offspring individuals, 1000 markers spread evenly over 10 chromosomes, 
-RIL population obtained using selfing) will be perfect. 
+{\noindent}There is a lot of parameters you can provide to this function to get more sophisticated datasets, but for our use default one (founders measured twice, 250 offspring individuals, 1000 markers spread evenly over 10 chromosomes, 
+RIL population obtained using selfing) will be perfect. For more info about the function type in R:
+<<<echo=TRUE, eval=FALSE>>=
+?fakePopulation
+@
 \newpage
 \subsection{Inspecting data}
 \subsubsection{Founders data}
@@ -138,31 +135,27 @@ population <- findDiffExpressed(population)
 
 \subsection{toGenotypes function - introduction}
 After RankProduct analysis is done, it's time for magic to happen,  very essence of this package - creating genetic map out of gene expression data. Because this function call is much more complicated than any other in the 
-package, we summarized parameters in table below:
+package, we summarized most important parameters in table below:
+
+ \begin{tabular}{ | c | p{5.5cm} | p{4.5cm}| }
+  \hline                       
+  parameter name & description & possible values \\ \hline
+  treshold & treshold p-value to classify gene as differentially expressed & 0-1 \\ \hline
+  overlapInd & how many individuals may overlap between distributions & 0-nr of individuals  \\ \hline
+  proportion & specifying how many normal distributions are expected and percentage of individuals in every group  & vector of 0-100 summing up to 100  \\ \hline
+  margin & proportion is allowed to varry between this margin (2 sided)  & 0-min(proportion) \\ \hline
+\end{tabular}
+
+{\noindent}and we strongly recommend to see help file of this function:
 <<<echo=TRUE, eval=FALSE>>=
-cross <- toGenotypes(population, genotype=c("simulated","real"), orderUsing=c("none","map_genetic","map_physical"),treshold=0.01, overlapInd = 0, proportion = c(50,50), margin = 15, verbose=FALSE, debugMode=0)
+?toGenotypes
 @
 
-\begin{tabular}{ | c | p{5.5cm} | p{3cm} | p{4.5cm}| }
-  \hline                       
-  parameter name & description & possible values & description \\ \hline
-  population & object of class population &  &  \\ \hline
-  \multirow{2}{*}{genotype} & which genotype data should be & simulated & simulated by toGenotypes \\ \cline{3-4}
-  & saved in cross object & real & provided by user \\ \hline  
-   \multirow{3}{*}{orderUsing} & which map should be used to order markers in output cross object& none & markers are placed on one chromosome with 1 cM distance in between \\ \cline{3-4}
-  &  & map\_genetic & genetic map \\ \cline{3-4} 
-  &  & map\_physical & physical map \\ \hline  
-  treshold & treshold p-value to classify gene as differentially expressed & \multicolumn{2}{|c|}{0-1} \\ \hline
-  overlapInd & how many individuals may overlap between distributions & \multicolumn{2}{|c|}{0-nr of individuals}  \\ \hline
-  proportion & specifying how many normal distributions are expected and percentage of individuals in every group  & \multicolumn{2}{|c|}{vector of 0-100 summing up to 100}  \\ \hline
-  margin & proportion is allowed to varry between this margin (2 sided)  & \multicolumn{2}{|c|}{0-min(proportion)}  \\ \hline
-\end{tabular}
-\newpage
 \subsection{Example function call for RILs}
 In data from RIL population (like one we faked in section 3.1.3), we expect two normal distributions in gene expression data. Each group should contain 50 percent of individuals. Proportion parameter should then have value c(50,50).
-This is default one. We would like to save genotype data created by toGenotypes and order it using genetic map. For all the other parameters we use default values.  Function call then should look like:
+This is default one. We would like to save genotype data created by toGenotypes and order it using genetic map. In this case for all the parameters we use default values.  Function call then should look like:
 <<<echo=TRUE, eval=TRUE, results=hide>>=
-cross <- toGenotypes(population, genotype="simulated", orderUsing="map_genetic",treshold=0.01, overlapInd = 0, proportion = c(50,50), margin = 15, verbose=FALSE, debugMode=0)
+cross <- toGenotypes(population)
 @
 
 {\noindent}After function is executed, our data is stored inside (a bit enhanced) cross object. We can use R/qtl functions to plot it. Most informative plots will be:
@@ -189,64 +182,64 @@ geno.image(cross)
 	plot.rf(cross, main="bc toGenotypes example")
 
 {\noindent}We start with faking population object with data for Back Cross:
-<<<echo=FALSE, eval=TRUE, results=hide>>=
+<<<echo=FALSE, eval=FALSE, results=hide>>=
 population <- fakePopulation(type="bc")
 @
 
 {\noindent}The only, but very important difference lays in distribution of the data. We can inspect it using plotMarkerDistribution:
-<<<echo=FALSE, fig=TRUE, results=hide>>=
+<<<echo=FALSE, fig=FALSE, results=hide>>=
 plotMarkerDistribution(population,3,2)
 @
 
 {\noindent}Next step, Rank Product analysis, is exactly the same as for RILs:
-<<<echo=FALSE, eval=TRUE, results=hide>>=
+<<<echo=FALSE, eval=FALSE, results=hide>>=
 population <- findDiffExpressed(population)
 @
 
 \newpage
 {\noindent}After checking distribution of the data (obviously checking distribution of one marker is not enough, but that step is just for visual inspection, toGenotypes is
 checking distribution of markers automatically) and finding differentially expressed genes, we can use toGenotypes function:
-<<<echo=FALSE, eval=TRUE, results=hide>>=
+<<<echo=FALSE, eval=FALSE, results=hide>>=
 cross <- toGenotypes(population,genotype="simulated",proportion=c(25,75),orderUsing="map_genetic",treshold=0.1)
 @
 
 {\noindent}And plot recombination factors between individuals:
-<<<echo=FALSE, fig=TRUE, results=hide>>=
+<<<echo=FALSE, fig=FALSE, results=hide>>=
 plot.rf(cross, main="BC workflow example")
 @
 
 \newpage
 \subsection{Example workflow for F2 cross}
 {\noindent}Again we start with faking population object. This time with data for F2 cross:
-<<<echo=FALSE, eval=TRUE, results=hide>>=
+<<<echo=FALSE, eval=FALSE, results=hide>>=
 population <- fakePopulation(type="f2")
 @
 
 {\noindent}This time we expect totally different distribution of data. Mixture of three normal distributions with proportions 25/50/25:
-<<<echo=FALSE, fig=TRUE, results=hide>>=
+<<<echo=FALSE, fig=FALSE, results=hide>>=
 plotMarkerDistribution(population,3,3)
 @
 
 {\noindent}Finding differentially expressed genes we still do the same:
-<<<echo=FALSE, eval=TRUE, results=hide>>=
+<<<echo=FALSE, eval=FALSE, results=hide>>=
 population <- findDiffExpressed(population)
 @
 
 \newpage
 {\noindent}Finally, we can use toGenotypes function:
-<<<echo=FALSE, eval=TRUE, results=hide>>=
+<<<echo=FALSE, eval=FALSE, results=hide>>=
 cross <- toGenotypes(population,genotype="simulated",proportion=c(25,50,25),orderUsing="map_genetic",treshold=0.1)
 @
 
 {\noindent}And plot recombination factors between individuals:
-<<<echo=FALSE, fig=TRUE, results=hide>>=
+<<<echo=FALSE, fig=FALSE, results=hide>>=
 plot.rf(cross, main="f2 toGenotypes example")
 @
 
+\newpage
+\section{Postprocessing of cross object}
 
-\section{Advanced options/modifications}
-
-\subsection{Using data files with different \\* structure}
+\subsection{Comparing created map to }
 \blindtext
 \subsection{Rank product analysis}
 \blindtext
