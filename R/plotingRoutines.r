@@ -455,20 +455,3 @@ chromosomesCorelationMatrix.internal <- function(cross, cur_map){
 	invisible(result)
 }
 
-############################################################################################################
-#									*** chromosomesCorelationPlot ***
-#
-# DESCRIPTION:
-#	plot image show correlation between chromosomes of maps inside cross object
-# 
-# PARAMETERS:
-# 	cross - object of R/qtl cross type
-# 	map - which map should be used for comparison:
-#			- genetic - genetic map from cross$maps$genetic
-#			- physical - physical map from cross$maps$physical
-# 
-# OUTPUT:
-#	plot
-#
-############################################################################################################
-
