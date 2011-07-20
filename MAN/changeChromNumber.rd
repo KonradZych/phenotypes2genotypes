@@ -46,7 +46,7 @@
 	set.seed(102)
 	population <- fakePopulation(type="riself",n.markers=2000)
 	population <- findDiffExpressed(population)
-	cross <- toGenotypes(population,genotype="simulated",proportion=c(50,50),orderUsing="map_genetic",treshold=0.1)
+	cross <- toGenotypes(population,genotype="simulated",proportion=c(50,50),orderUsing="map_genetic",treshold=0.01)
 	plot.rf(cross, main="riself toGenotypes example")
 	cross_ <- reduceChromosomesNumber(cross,5,verb=TRUE)
 	plot.rf(cross_, main="Leaving only 5 chromosomes")
