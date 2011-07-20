@@ -225,11 +225,13 @@ orderChromosomesC.internal <- function(cross,cur_map,corTreshold,verbose=FALSE){
 	if(verbose) cat("Reordering markers \n")
 	for(x in 1:max(cur_map[,1])){
 		if(verbose) cat("- chr ",x," -\n")
+		oldnames <- rownames(cur_map)[which(cur_map[,1]==x)]
+		if(verbose) cat("adding",length(oldnames),"old markers\n")
 		toputtogether <- mnames[output==x]
-		cross_$geno[[x]]$data <- pull.geno(cross)[,toputtogether]
+		cross_$geno[[x]]$data <- cbind(pull.geno(cross)[c(-25,-39,-99),toputtogether],t(cross$genotypes$real[oldnames,c(-70,-74)]))
 		newmap <- 1:length(toputtogether)
 		names(newmap) <- toputtogether
-		cross_$geno[[x]]$map <- newmap
+		cross_$geno[[x]]$map <- unlist(c(newmap,cur_map[oldnames,2]))
 	}
 	names(cross_$geno) <- 1:length(cross_$geno)
 	for(i in 1:length(cross_$geno)){
