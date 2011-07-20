@@ -23,7 +23,7 @@
 #     A copy of the GNU General Public License, version 3, is available
 #     at http://www.r-project.org/Licenses/GPL-3
 #
-# Contains: orderChromosomes, majorityRule.internal, mergeChromosomes.internal, cleanMap
+# Contains: orderChromosomes, majorityRule.internal, mergeChromosomes.internal,
 #			switchChromosomes.internal, removeChromosomes.internal, removeChromosomesSub.internal,
 #
 ############################################################################################################
@@ -55,8 +55,43 @@
 #		#8 score obtained by scoreResults.internal (the higher, the better match we have)
 #
 ############################################################################################################
-
-
+postProc <- function(cross,n.linkGroups,max.rf.range=c(0.15,0.30),min.lod.range=c(0,3),verbose=FALSE){
+	filename <- "postProctemp.tmp"
+	if(missing(n.linkGroups)) stop("n.linkGroups in an obligatory parameter")
+	cross <- est.rf(cross)
+	crossLength <- sum(nmar(cross))
+	minDist <- round(crossLength*0.05)
+	if(minDist<3) minDist <- 3
+	cat("",file=filename)
+	if(length(max.rf.range)==2) max.rf.range[3] <- 0.01
+	if(length(min.lod.range)==2) min.lod.range[3] <- 1
+	if(length(max.rf.range)!=3) stop("max.rf.range should be provided with 2 or 3 arguments, see ?postProc\n")
+	if(length(min.lod.range)!=3) stop("min.lod.range should be provided with 2 or 3 arguments ?postProc\n")
+	if(any(!(is.numeric(max.rf.range)))) stop("max.rf.range should contain only numerics\n")
+	if(any(!(is.numeric(min.lod.range)))) stop("max.rf.range should contain only numerics\n")
+	cur.rf <- max.rf.range[1]
+	while(cur.rf<=max.rf.range[2]){
+		cur.lod <- min.lod.range[1]
+		while(cur.lod<=min.lod.range[2]){
+			cross_ <- formLinkageGroups(cross, max.rf=cur.rf, min.lod=cur.lod, reorgMarkers=TRUE, verbose=verbose)
+			cat(cur.rf,cur.lod,length(cross_$geno),file=filename,sep="\t",append=TRUE)
+			cat("\t",file=filename,append=TRUE)
+			cross__ <- removeTooSmallChromosomes(cross_,minNrOfMarkers=minDist,verbose=verbose)
+			cat(length(cross__$geno),(sum(nmar(cross__))/crossLength),file=filename,sep="\t",append=TRUE)
+			cat("\t",file=filename,append=TRUE)
+			cross__ <- reduceChromosomesNumber(cross_,numberOfChromosomes=n.linkGroups,verbose=verbose)
+			cat(length(cross__$geno),(sum(nmar(cross__))/crossLength),file=filename,sep="\t",append=TRUE)
+			cat("\n",file=filename,append=TRUE)
+			cross_ <- NULL
+			cross__ <- NULL
+			doCleanUp.internal()
+			cur.lod <- cur.lod + min.lod.range[3]
+		}
+		cur.rf <- cur.rf + max.rf.range[3]
+	}
+	results <- as.matrix(read.table(filename,sep="\t"))
+	results <- cbind(results,apply(results,1,scoreResults.internal,n.linkGroups))
+}
 
 ############################################################################################################
 #									*** scoreResults.internal ***
@@ -81,13 +116,19 @@ scoreResults.internal <- function(resultRow,n.linkGroups){
 	invisible(score)
 }
 
-fLG.internal <- function(cross,max.rf,min.lod){
-	additions <- getAdditionsOfCross.internal(cross)
-	cross <- formLinkageGroups(cross, reorgMarkers=TRUE,max.rf=max.rf,min.lod=min.lod)
-	cross <- putAdditionsOfCross.internal(cross, additions)
-	invisible(cross)
-}
-
+############################################################################################################
+#									*** getAdditionsOfCross.internal ***
+#
+# DESCRIPTION:
+# 	returning additions of cross object
+# 
+# PARAMETERS:
+# 	cross - object of class cross
+#
+# OUTPUT:
+#	additions of cross object (maps, genotypes)
+#
+############################################################################################################
 getAdditionsOfCross.internal <-function(cross){
 	additions <- NULL
 	if(!(is.null(cross$maps$physical))){
@@ -102,6 +143,20 @@ getAdditionsOfCross.internal <-function(cross){
 	invisible(additions)
 }
 
+############################################################################################################
+#									*** putAdditionsOfCross.internal ***
+#
+# DESCRIPTION:
+# 	putting additions to cross object
+# 
+# PARAMETERS:
+# 	cross - object of class cross
+# 	additions - object containing additions returned by getAdditionsOfCross.internal
+#
+# OUTPUT:
+#	object of class cross with additions
+#
+############################################################################################################
 putAdditionsOfCross.internal <-function(cross,additions){
 	if(!is.null(additions$map_p)) cross$maps$physical <- additions$map_p
 	if(!is.null(additions$map_g)) cross$maps$genetic <- additions$map_g
@@ -126,7 +181,7 @@ putAdditionsOfCross.internal <-function(cross,additions){
 #	object of class cross
 #
 ############################################################################################################
-orderChromosomes <- function(cross,method=c("majority","corelation"),map=c("genetic","physical"),verbose=FALSE){
+orderChromosomes <- function(cross,method=c("majority","corelation"),map=c("genetic","physical"),corTreshold=0.6,verbose=FALSE){
 	additions <- getAdditionsOfCross.internal(cross)
 	defaultCheck.internal(method, "method", 2)
 	defaultCheck.internal(map, "map", 2)
@@ -141,7 +196,7 @@ orderChromosomes <- function(cross,method=c("majority","corelation"),map=c("gene
 	if(method=="majority"){
 		cross <- orderChromosomesMR.internal(cross, cur_map, verbose)
 	}else{
-		cross <- orderChromosomesC.internal(cross, cur_map, verbose)
+		cross <- orderChromosomesC.internal(cross, cur_map, corTreshold, verbose)
 	}
 	cross <- putAdditionsOfCross.internal(cross, additions)
 	invisible(cross)
@@ -162,8 +217,8 @@ orderChromosomes <- function(cross,method=c("majority","corelation"),map=c("gene
 #	integer
 #
 ############################################################################################################
-orderChromosomesC.internal <- function(cross,cur_map,verbose=FALSE){
-	output <- bestCorelated.internal(cross,cur_map,verbose)
+orderChromosomesC.internal <- function(cross,cur_map,corTreshold,verbose=FALSE){
+	output <- bestCorelated.internal(cross,cur_map,corTreshold,verbose)
 	mnames <- markernames(cross)
 	cross_ <- cross
 	cross_$geno <- vector(max(cur_map[,1]), mode="list")
@@ -242,13 +297,13 @@ orderChromosomesMR.internal <- function(cross,cur_map,verbose=FALSE){
 #	vector with new ordering of chromosomes inside cross object
 #
 ############################################################################################################
-bestCorelated.internal <- function(cross,cur_map,verbose=FALSE){
+bestCorelated.internal <- function(cross,cur_map,corTreshold,verbose=FALSE){
 	output <- NULL
 	if(verbose) cat("Calculating corelations for markers \n")
 	for(y in 1:ncol(pull.geno(cross))){
 		if(verbose) if(y%%100==0) cat(y,"/",ncol(pull.geno(cross)),"\n")
 		findout <- apply(cross$genotypes$real[,],1,function(x){cor(x,pull.geno(cross)[,y],use="pairwise.complete.obs")})
-		if(max(findout)>=0.6){
+		if(max(findout)>=corTreshold){
 			maxcor <- which.max(findout)
 			output <- c(output,cross$maps$genetic[names(maxcor),1])
 		}else{
@@ -291,7 +346,6 @@ majorityRule.internal <- function(cross,cur_map){
 	}	
 	rownames(output) <- 1:nrow(output)
 	colnames(output) <- 1:ncol(output)
-	output <- processOutput.internal(output)
 	if(min(apply(output,2,max))!=1){
 		toCheck <- which(apply(output,2,sum)!=1)
 		for(x in toCheck){
@@ -463,52 +517,5 @@ removeChromosomesSub.internal <- function(cross, chr,verbose=FALSE){
 	cross$rmv <- cbind(cross$rmv,cross$geno[[chr]]$data)
 	cross <- drop.markers(cross, names(cross$geno[[chr]]$map))
 	cross <- putAdditionsOfCross.internal(cross, additions)
-	invisible(cross)
-}
-
-############################################################################################################
-#										*** cleanMap ***
-#
-# DESCRIPTION:
-#	removes markers that cause the recombination map to expand more than a given percentage (of its total
-#	length)
-# 
-# PARAMETERS:
-# 	cross - R/qtl cross type object
-# 	difPercentage - If by removing a marker the map gets shorter by this percentage (or more). The marker 
-#		will be dropped.
-#	minChrLenght - chromosomes shorter than that won't be processed
-# 	verbose - Be verbose
-# 	debugMode - 1: Print our checks, 2: print additional time information 
-# 
-# OUTPUT:
-#	object of class cross
-#
-############################################################################################################
-cleanMap <- function(cross, difPercentage, minChrLenght,verbose=FALSE, debugMode=0){
-	if(verbose && debugMode==1) cat("cleanMap starting withour errors in checkpoint.\n")
-	s <- proc.time()
-	for(i in 1:length(cross$geno)){
-		begMarkers <- length(cross$geno[[i]]$map)
-		begLength <- max(cross$geno[[i]]$map)
-		for(j in names(cross$geno[[i]]$map)){
-			if(max(cross$geno[[i]]$map)>minChrLenght){
-				cur_max <- max(cross$geno[[i]]$map)
-				cross2 <- drop.markers(cross,j)
-				newmap <- est.map(cross2,offset=0)
-				cross2 <- replace.map(cross2, newmap)
-				new_max <- max(cross2$geno[[i]]$map)
-				dif <- cur_max-new_max
-				if(dif > (difPercentage/100 * cur_max)){
-					if(verbose) cat("------Removed marker:",j,"to make chromosome",i,"map smaller from",cur_max,"to",new_max,"\n")
-					cross <- cross2
-				}
-			}
-		}
-		removed <- begMarkers-length(cross$geno[[i]]$map)
-		if(removed>0)cat("Removed",removed,"out of",begMarkers,"markers on chromosome",i," which led to shortening map from ",begLength,"to",max(cross$geno[[i]]$map),"(",100*(begLength-max(cross$geno[[i]]$map))/begLength,"%)\n")
-	}
-	e <- proc.time()
-	if(verbose && debugMode==2)cat("Map cleaning done in:",(e-s)[3],"seconds.\n")
 	invisible(cross)
 }

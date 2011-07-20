@@ -44,7 +44,7 @@
 
 \examples{
 	set.seed(102)
-	population <- fakePopulation(type="riself",n.markers=2000)
+	population <- fakePopulation(type="riself",n.markers=1000)
 	population <- findDiffExpressed(population)
 	cross <- toGenotypes(population,genotype="simulated",proportion=c(50,50),orderUsing="map_genetic",treshold=0.01)
 	plot.rf(cross, main="riself toGenotypes example")

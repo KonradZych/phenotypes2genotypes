@@ -9,7 +9,7 @@
 }
 
 \usage{
-	orderChromosomes(cross,method=c("majority","corelation"),map=c("genetic","physical"),verbose=FALSE)
+	orderChromosomes(cross,method=c("majority","corelation"),map=c("genetic","physical"),corTreshold=0.6,verbose=FALSE)
 }
 
 \arguments{
@@ -28,6 +28,7 @@
     \item{physical}{ - physical map from cross$maps$physical}
   }
   }
+ \item{corTreshold}{ used if method=corelation (otherwise ignored) - markers not having corelation above this number with any of chromosomes are removed}
  \item{verbose}{ Be verbose}
 }
 
@@ -46,9 +47,12 @@
 
 \examples{
 	### simulating data
-	population <- fakePopulation()
-	cross <- toGenotypes(population,genotype="real",orderUsing="map_genetic")
-	cross <- orderChromosomes(cross,method="majority",map="physical",verbose=TRUE)
+	population <- fakePopulation(type="riself",n.markers=1000)
+	population <- findDiffExpressed(population)
+	cross <- toGenotypes(population,genotype="simulated",proportion=c(50,50),orderUsing="none",treshold=0.01)
+	plot.rf(cross)
+	cross <- orderChromosomes(cross,method="corelation",map="physical",corTreshold=0,verbose=TRUE)
+	plot.rf(cross)
 	### not much happens, cause the are already ordered nicely
 }
 

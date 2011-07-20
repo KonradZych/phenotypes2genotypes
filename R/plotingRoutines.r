@@ -349,7 +349,7 @@ chromosomesLengths.internal <- function(map){
 # 
 # PARAMETERS:
 # 	population - population type object, must contain founders phenotypic data.
-# 	marker - marker to be printed numbers or names 
+# 	marker - number or name of marker to be printed 
 # 	nrDistributions - numbers of normal distributions to be fitted
 # 	logarithmic - TRUE - log(data) will be used instead of raw data
 #

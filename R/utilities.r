@@ -69,7 +69,7 @@ print.population <- function(x,...){
 	}else{
 		stop("No phenotype data for offspring, this is not a valid population object\n")
 	}
-	
+
 	if(!(is.null(x$founders))){
     cat("Founders:\n",...)
 		if(!(is.null(x$founders$phenotypes))){
@@ -188,30 +188,30 @@ write.population <- function(population,outputFile="population.txt",verbose=FALS
 		firstLine[6] <- NA
 	}
 	cat(firstLine,"\n",file=outputFile,append=FALSE)
-	
+
 	write.table(population$offspring$phenotypes,file=outputFile,sep="\t",quote=FALSE,append=TRUE)
 	if(verbose) cat("Offspring phenotype data written into",outputFile,"\n")
-	
+
 	write.table(population$founders$phenotypes,file=outputFile,sep="\t",quote=FALSE,append=TRUE)
 	if(verbose) cat("Founders phenotype data written into",outputFile,"\n")
-	
+
 	cat(population$founders$groups,"\n",file=outputFile,append=TRUE)
 	if(verbose) cat("Information about founders groups data written into",outputFile,"\n")
-	
+
 	if(!is.null(population$offspring$genotypes$real)){
 		write.table(population$offspring$genotypes$real,file=outputFile,sep="\t",quote=FALSE,append=TRUE)
 		if(verbose) cat("Offspring genotype data written into",outputFile,"\n")
 	}else{
 		if(verbose) cat("Offspring genotype data not found.\n")
 	}
-	
+
 	if(!is.null(population$maps$genetic)){
 		write.table(population$maps$genetic,file=outputFile,sep="\t",quote=FALSE,append=TRUE,col.names=FALSE)
 		if(verbose) cat("Genetic map written into",outputFile,"\n")
 	}else{
 		if(verbose) cat("Genetic map not found.\n")
 	}
-	
+
 	if(!is.null(population$maps$physical)){
 		write.table(population$maps$physical,file=outputFile,sep="\t",quote=FALSE,append=TRUE,col.names=FALSE)
 		if(verbose) cat("Physical map written into",outputFile,"\n")
@@ -234,55 +234,90 @@ write.population <- function(population,outputFile="population.txt",verbose=FALS
 #	object of class population
 #
 ############################################################################################################
-read.population <- function(filename="population.txt",verbose=FALSE){
-	firstLine <- as.matrix(read.table(filename,sep="",nrow=1))
-	if(length(firstLine)!=6) stop("This is not a correct population file.\n")
-	cur_skip <- 1
-	if(!is.na(firstLine[1])){
-		offspring_phenotypes <- as.matrix(read.table(filename,sep="\t",nrow=firstLine[1],skip=cur_skip,header=TRUE))
-		if(verbose) cat("Offspring phenotype data read from",filename,"\n")
-	}else{
-		stop("This is not a correct population file.\n")
-	}
-	cur_skip <- cur_skip + firstLine[1] + 1
-	if(!is.na(firstLine[2])){
-		founders_phenotypes <- as.matrix(read.table(filename,sep="\t",nrow=firstLine[2],skip=cur_skip,header=TRUE))
-		if(verbose) cat("Founders phenotype data read from",filename,"\n")
-	}else{
-		stop("This is not a correct population file.\n")
-	}
-	cur_skip <- cur_skip + firstLine[2] + 1
-	if(!is.na(firstLine[3])){
-		founders_groups <- as.matrix(read.table(filename,sep="",nrow=1,skip=cur_skip))
-		if(verbose) cat("Information about founders groups read from",filename,"\n")
-	}else{
-		stop("This is not a correct population file.\n")
-	}
-	population <- createPopulation(offspring_phenotypes,founders_phenotypes, founders_groups, verbose=verbose)
-	cur_skip <- cur_skip + 1
-	if(!is.na(firstLine[4])){
-		offspring_genotypes <- as.matrix(read.table(filename,sep="",nrow=firstLine[4],skip=cur_skip,header=TRUE))
-		if(verbose) cat("Offspring genotype data read from",filename,"\n")
-		cur_skip <- cur_skip + firstLine[4] + 1
-		population <- intoPopulation(population,offspring_genotypes,"offspring$genotypes",verbose=verbose)
-	}else{
-		if(verbose) cat("Offspring genotype data not found in",filename,"\n")
-	}
-	if(!is.na(firstLine[5])){
-		maps_genetic <- as.matrix(read.table(filename,sep="",nrow=firstLine[5],skip=cur_skip,header=FALSE,row.names=1))
-		if(verbose) cat("Genetic map read from",filename,"\n")
-		cur_skip <- cur_skip + firstLine[5]
-		population <- intoPopulation(population,maps_genetic,"maps$genetic",verbose=verbose)
-	}else{
-		if(verbose) cat("Genetic map not found in",filename,"\n")
-	}
-	if(!is.na(firstLine[6])){
-		maps_physical <- as.matrix(read.table(filename,sep="",nrow=firstLine[6],skip=cur_skip,header=FALSE,row.names=1))
-		if(verbose) cat("Physical map read from",filename,"\n")
-		population <- intoPopulation(population,maps_physical,"maps$physical",verbose=verbose)
-	}else{
-		if(verbose) cat("Physical map not found in",filename,"\n")
-	}
-	is.population(population)
-	invisible(population)
+read.population <- function (filename = "population.txt", verbose = FALSE){
+    firstLine <- as.matrix(read.table(filename, sep = "", nrow = 1))
+    if (length(firstLine) != 6) 
+        stop("This is not a correct population file.\n")
+    cur_skip <- 1
+    if (!is.na(firstLine[1])) {
+        offspring_phenotypes <- as.matrix(read.table(filename, 
+            sep = "\t", nrow = firstLine[1], skip = cur_skip, 
+            header = TRUE))
+        if (verbose) 
+            cat("Offspring phenotype data read from", filename, 
+                "\n")
+    }
+    else {
+        stop("This is not a correct population file.\n")
+    }
+    cur_skip <- cur_skip + firstLine[1] + 1
+    if (!is.na(firstLine[2])) {
+        founders_phenotypes <- as.matrix(read.table(filename, 
+            sep = "\t", nrow = firstLine[2], skip = cur_skip, 
+            header = TRUE))
+        if (verbose) 
+            cat("Founders phenotype data read from", filename, 
+                "\n")
+    }
+    else {
+        stop("This is not a correct population file.\n")
+    }
+    cur_skip <- cur_skip + firstLine[2] + 1
+    if (!is.na(firstLine[3])) {
+        founders_groups <- as.matrix(read.table(filename, sep = "", 
+            nrow = 1, skip = cur_skip))
+        if (verbose) 
+            cat("Information about founders groups read from", 
+                filename, "\n")
+    }
+    else {
+        stop("This is not a correct population file.\n")
+    }
+    population <- createPopulation(offspring_phenotypes, founders_phenotypes, 
+        founders_groups, verbose = verbose)
+    cur_skip <- cur_skip + 1
+    if (!is.na(firstLine[4])) {
+        offspring_genotypes <- as.matrix(read.table(filename, 
+            sep = "", nrow = firstLine[4], skip = cur_skip, header = TRUE))
+        if (verbose) 
+            cat("Offspring genotype data read from", filename, 
+                "\n")
+        cur_skip <- cur_skip + firstLine[4] + 1
+        population <- intoPopulation(population, offspring_genotypes, 
+            "offspring$genotypes", verbose = verbose)
+    }
+    else {
+        if (verbose) 
+            cat("Offspring genotype data not found in", filename, 
+                "\n")
+    }
+    if (!is.na(firstLine[5])) {
+        maps_genetic <- as.matrix(read.table(filename, sep = "", 
+            nrow = firstLine[5], skip = cur_skip, header = FALSE, 
+            row.names = 1))
+        if (verbose) 
+            cat("Genetic map read from", filename, "\n")
+        cur_skip <- cur_skip + firstLine[5]
+        population <- intoPopulation(population, maps_genetic, 
+            "maps$genetic", verbose = verbose)
+    }
+    else {
+        if (verbose) 
+            cat("Genetic map not found in", filename, "\n")
+    }
+    if (!is.na(firstLine[6])) {
+        maps_physical <- as.matrix(read.table(filename, sep = "", 
+            nrow = firstLine[6], skip = cur_skip, header = FALSE, 
+            row.names = 1))
+        if (verbose) 
+            cat("Physical map read from", filename, "\n")
+        population <- intoPopulation(population, maps_physical, 
+            "maps$physical", verbose = verbose)
+    }
+    else {
+        if (verbose) 
+            cat("Physical map not found in", filename, "\n")
+    }
+    is.population(population)
+    invisible(population)
 }
