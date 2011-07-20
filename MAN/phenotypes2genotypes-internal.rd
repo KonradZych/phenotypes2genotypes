@@ -50,7 +50,6 @@
 
 \alias{bestCorelated.internal}
 \alias{defaultCheck.internal}
-\alias{fLG.internal}
 \alias{getAdditionsOfCross.internal}
 \alias{orderChromosomesC.internal}
 \alias{orderChromosomesMR.internal}
@@ -59,6 +58,7 @@
 \alias{chromosomesCorelationMatrix.internal}
 \alias{scoreResults.internal}
 \alias{postProc}
+\alias{chromosomesCorelationPlot}
 
 
 \title{Internal pheno2geno functions}

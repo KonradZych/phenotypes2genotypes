@@ -11,11 +11,12 @@
 }
 
 \usage{
-	plotMarkerDistribution(phenotypeRow,nrDistributions,logarithmic=FALSE)
+	plotMarkerDistribution(population,marker,nrDistributions,logarithmic=FALSE)
 }
 
 \arguments{
- \item{phenotypeRow}{ phenotypic data for single marker}
+ \item{population}{ population type object, must contain parental phenotypic data}
+ \item{marker}{ number or name of marker to be printed }
  \item{nrDistributions}{ numbers of normal distributions to be fitted}
  \item{logarithmic}{ TRUE - log(data) is used instead of raw data }
 }
