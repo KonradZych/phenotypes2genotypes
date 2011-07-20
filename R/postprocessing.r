@@ -222,21 +222,23 @@ orderChromosomesC.internal <- function(cross,cur_map,corTreshold,verbose=FALSE){
 	mnames <- markernames(cross)
 	cross_ <- cross
 	cross_$geno <- vector(max(cur_map[,1]), mode="list")
+	cross_$pheno <- pull.pheno(cross)[c(-25,-39,-99),]
 	if(verbose) cat("Reordering markers \n")
 	for(x in 1:max(cur_map[,1])){
 		if(verbose) cat("- chr ",x," -\n")
 		oldnames <- rownames(cur_map)[which(cur_map[,1]==x)]
-		if(verbose) cat("adding",length(oldnames),"old markers\n")
 		toputtogether <- mnames[output==x]
+		if(verbose) cat("adding",length(oldnames),"old markers\n")
 		cross_$geno[[x]]$data <- cbind(pull.geno(cross)[c(-25,-39,-99),toputtogether],t(cross$genotypes$real[oldnames,c(-70,-74)]))
-		newmap <- 1:length(toputtogether)
-		names(newmap) <- toputtogether
-		cross_$geno[[x]]$map <- unlist(c(newmap,cur_map[oldnames,2]))
+		newmap <- 1:(length(toputtogether)+length(oldnames))
+		names(newmap) <- c(toputtogether,oldnames)
+		cross_$geno[[x]]$map <- c(newmap)
 	}
 	names(cross_$geno) <- 1:length(cross_$geno)
 	for(i in 1:length(cross_$geno)){
 		class(cross_$geno[[i]]) <- "A"
 	}
+	cross_ <- orderMarkers(cross_,verbose=verbose,use.ripple=F)
 	invisible(cross_)
 }
 
@@ -312,7 +314,6 @@ bestCorelated.internal <- function(cross,cur_map,corTreshold,verbose=FALSE){
 			output <- c(output,0)
 		}		
 	}
-	print(output)
 	invisible(output)
 }
 
