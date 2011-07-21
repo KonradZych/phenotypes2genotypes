@@ -24,8 +24,9 @@ Danny Arends\,$^{2,}$,
 2. Groningen Bioinformatics Center, University of Groningen, The Netherlands
 
 \newpage
-\section{General introduction}
 
+\section{General introduction}
+\begin{multicols}{2}
 {\noindent}Genetical Genomics \citep{Jansen:2001388} is powerful method, providing world of life sciences with tool to look deep inside the complex relation between genetic information stored by DNA and final outcome of its processing - phenotype. And because this is the core dogma of modern biology, every method helping us to understand it better is of high importance to scientific world. 
 
 {\noindent}Great power often comes for high price, though. To perform GG studies one has to obtain both phenotypic and genotypic data, that are subsequently being matched. This not only elevates costs of experiment, but also introduces number of human errors, e.g. mismatching/mislabeling of arrays.
@@ -38,10 +39,10 @@ R packages contribute to power of this language more than anything. Using then, 
 > install me
 > or what?
 or use Packages menu (just click on Install Packages, select a mirror and than select package pheno2geno).
+\end{multicols}
 
-\newpage
 \section{Data}
-
+\begin{multicols}{2}
 \subsection{Data files' structure}
 {\noindent}In order to ensure smooth work of our package, we specified strict rules about data files provided. If below mentioned requirements are met and filenames are default, user don't have to provide reading function with any parameters. If your more advanced R user, your data files are of different format or you have data already inside R environment, please see section 4.1. 
 \subsubsection{Phenotype data for offspring}
@@ -54,8 +55,9 @@ This data is optional and doesn't have any impact on analysis, could be only use
 This data is optional and could be used for comparison with map created by our software or for ordering markers in output cross. Default filename is maps\_genetic.txt. File should contain three columns - marker name, chromosome number and position on chromosome in cM. Second and third column should contain numeric values without NAs, NaNs, etc. First column should contain unique marker names, matching ones in phenotype files.
 \subsubsection{Physical map}
 Exactly the same as in genetic map, but position on chromosome should be in Mbp.
-
+\end{multicols}
 \newpage
+
 \section{Basic workflow}
 \subsection{Loading data into workflow}
 \subsubsection{readFiles function}
