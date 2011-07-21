@@ -156,10 +156,10 @@ fakeFounders.internal <- function(phenoRow,n.founders){
 #
 ############################################################################################################
 fakePhysicalMap.internal <- function(map){
-	for(i in 1:nrow(map){
+	for(i in 1:nrow(map)){
 		errorF <- runif(n.founders,0,100)
 		if(errorF>90){
-			newChrom <- runif(1,1,(max(map[,1]))
+			newChrom <- runif(1,1,(max(map[,1])))
 			map[i,1] <- newChrom
 		}
 	}
