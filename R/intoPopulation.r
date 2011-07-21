@@ -135,6 +135,13 @@ intoPopulation <- function(population, dataObject, dataType=c("founders","offspr
 #
 ############################################################################################################
 intoPopulationSub.internal <- function(population, dataObject, dataType=c("founders","offspring$phenotypes","founders$groups","offspring$genotypes","maps$genetic","maps$physical"),verbose=FALSE,debugMode=0){
+	if(dataType!="founders$groups"){
+		if(class(dataObject)=="data.frame"){
+			dataObject <- as.matrix(dataObject)
+		}else if(class(dataObject)!="matrix"){
+			stop("dataObject should be either matrix or data frame")
+		}
+	}
 	if(dataType=="founders" || dataType=="offspring$phenotypes"){
 		population <- intoPopulationSubPheno.internal(population,dataObject,dataType, verbose, debugMode)
 	}else if(dataType=="offspring$genotypes"){
