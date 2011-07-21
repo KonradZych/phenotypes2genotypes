@@ -8,7 +8,7 @@
 # 
 # first written March 2011
 # last modified July 2011
-# last modified in version: 0.8.6
+# last modified in version: 0.8.7
 # in current version: active, not in main workflow
 #
 #     This program is free software; you can redistribute it and/or
@@ -76,7 +76,13 @@ createPopulation <- function(offspring_phenotypes, founders, founders_groups, of
 	class(population) <- "population"
 	e <- proc.time()
 	is.population(population)
-	cat("createPopulation done in:",(e-s)[3],"seconds.\n")
+	if(verbose){
+		if(debugMode==2){
+			cat("createPopulation done in:",(e-s)[3],"seconds.\n")
+		}else{
+			cat("createPopulation finished\n")
+		}
+	}
 	invisible(population)
 }
 

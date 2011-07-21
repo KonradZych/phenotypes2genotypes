@@ -8,7 +8,7 @@
 # 
 # first written March 2011
 # last modified July 2011
-# last modified in version: 0.8.6
+# last modified in version: 0.8.7
 # in current version: active, not in main workflow
 #
 #     This program is free software; you can redistribute it and/or
@@ -46,7 +46,7 @@
 #	object of class population
 #
 ############################################################################################################
-fakePopulation <- function(n.founders = 4, n.offspring = 250, n.markers=1000,n.chromosomes=10, type = c("riself", "f2", "bc", "risib"), ...){
+fakePopulation <- function(n.founders = 4, n.offspring = 250, n.markers=1000,n.chromosomes=10, type = c("riself", "f2", "bc", "risib"), verbose=FALSE,...){
 	### checks
 	n.founders <- defaultCheck.internal(n.founders,"n.founders",1)
 	n.offspring <- defaultCheck.internal(n.offspring,"n.offspring",1)
@@ -96,7 +96,7 @@ fakePopulation <- function(n.founders = 4, n.offspring = 250, n.markers=1000,n.c
 	colnames(founders)[(n.founders/2+1):n.founders] <- paste("Founder",2,(n.founders/2+1):n.founders,sep="_")
 	geno[which(geno==2)] <- 0
 	foundersGroups <- c(rep(0,(n.founders/2)),rep(1,(n.founders/2)))
-	population <- createPopulation(pheno, founders, foundersGroups, geno, map, physicalMap)
+	population <- createPopulation(pheno, founders, foundersGroups, geno, map, physicalMap,verbose=verbose)
 	is.population(population)
 	invisible(population)
 }
