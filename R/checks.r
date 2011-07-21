@@ -212,4 +212,5 @@ defaultCheck.internal <- function(parameterToBeChecked,nameOfParameter,maxLength
 	}else if(length(parameterToBeChecked)!=1){
 		stop("wrong parameter ",nameOfParameter," length, choose one out of possible\n")
 	}
+	invisible(parameterToBeChecked)
 }
