@@ -107,3 +107,55 @@ Sometimes you nede pretty simple and small dataset to do samoe testing on. Or to
 \begin{Schunk}
 \begin{Sinput}
 > population <- fakePopulation()
+\end{Sinput}
+\end{Schunk}
+{\noindent}There is a lot of parameters you can provide to this function to get more sophisticated datasets, but for our use default one (founders measured twice, 250 offspring individuals, 1000 markers spread evenly over 10 chromosomes, 
+RIL population obtained using selfing) will be perfect. For more info about the function type in R:
+\begin{Schunk}
+\begin{Sinput}
+> `?`(fakePopulation)
+\end{Sinput}
+\end{Schunk}
+\newpage
+\subsection{Inspecting data}
+\subsubsection{Founders data}
+We provide you we function to plot founders data for brief inspection. Let's inspect first 20 markers of just faked population object:
+
+\begin{Schunk}
+\begin{Sinput}
+> plotParentalExpression(population, 1:20)
+\end{Sinput}
+\end{Schunk}
+\includegraphics{manual-009}
+
+{\noindent}Empty circles (blue for parent "0" and red for parent "1") on the plot show gene expression values, green lines - mean values for each marker.
+\newpage
+\subsubsection{Offspring data}
+We can also inspect gene expression values for offspring. To show plot for first 20 markers:
+\begin{Schunk}
+\begin{Sinput}
+> plotChildrenExpression(population, 1:20)
+\end{Sinput}
+\end{Schunk}
+\includegraphics{manual-010}
+
+{\noindent}Boxplot (in black) shows gene expression values for offspring. On those, founders data is overlayed, depicted as in plotParentalExpression.
+\newpage
+\subsubsection{Single markers distribution}
+This kind of plot gives possibility to make sure that our data is distributed as we supposed. In our case, RIL with selfing, we expect in all markers mixture of two normal distributions.
+In our example we will look at values for third marker:
+\begin{Schunk}
+\begin{Sinput}
+> plotMarkerDistribution(population, 3, 2)
+\end{Sinput}
+\end{Schunk}
+\includegraphics{manual-011}
+
+{\noindent}First parameter is object of class population, then number or name of marker to be shown and number of normal distributions to be fitted (more than 1).
+\newpage
+\subsection{Rank product analysis}
+RankProd \citep{Hong:2006} is a R package using Rank Product \citep{Breitling200483} method to detect genes showing differential expression, especially in microarray experiments. As so, it fits our needs perfectly and that's why it's incorporated into our workflow. 
+In majority of cases object of class population is the only parameter while calling findDiffExpressed function. RP, main function of RankProd, is always verbose, so exptect something like:
+\begin{Schunk}
+\begin{Sinput}
+> population <- findDiffExpressed(population)
