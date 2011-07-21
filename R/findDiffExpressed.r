@@ -8,7 +8,7 @@
 # 
 # first written March 2011
 # last modified July 2011
-# last modified in version: 0.8.5
+# last modified in version: 0.8.7
 # in current version: active, in main workflow
 #
 #     This program is free software; you can redistribute it and/or
@@ -47,9 +47,7 @@
 findDiffExpressed <- function(population,verbose=FALSE,debugMode=0,...){
 	is.population(population)
 	s<-proc.time()
-	if(is.null(population$founders$phenotypes)) stop("No founders phenotype data provided\n")
-	if(is.null(population$founders$groups)) stop("No information about founders groups data provided\n")
-	rankProdRes <- invisible(RP(population$founders$phenotypes,population$founders$groups,...))
+	rankProdRes <- RP(population$founders$phenotypes,population$founders$groups,...)
 	population$founders$RP <- rankProdRes
 	class(population) <- "population"
 	e<-proc.time()
