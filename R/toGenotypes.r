@@ -74,14 +74,18 @@ toGenotypes <- function(population, genotype=c("simulated","real"), orderUsing=c
 	inListCheck.internal(orderUsing,"orderUsing",c("none","map_genetic","map_physical"))
 	
 	
-	#*******CONVERTING CHILDREN PHENOTYPIC DATA TO GENOTYPES*******
 	if(genotype=="simulated"){
+		#*******CONVERTING CHILDREN PHENOTYPIC DATA TO GENOTYPES*******
 		s1 <- proc.time()
 		population <- convertToGenotypes.internal(population, orderUsing, treshold, overlapInd, proportion, margin, verbose, debugMode)
 		e1 <- proc.time()
 		if(verbose && debugMode==2)cat("Converting phenotypes to genotypes done in:",(e1-s1)[3],"seconds.\n")
+		#*******SMOOTHING GENOTYPES*******
+		s1 <- proc.time()
+		population <- smoothGeno(population, verbose)
+		e1 <- proc.time()
+		if(verbose && debugMode==2)cat("Smoothing genotypes done in:",(e1-s1)[3],"seconds.\n")
 	}
-	
 	
 	#*******SAVING CROSS OBJECT*******
 	s1 <- proc.time()
@@ -417,4 +421,58 @@ middleDistribution <- function(offspring,result,EM){
 		print(sum(offspring>down && offspring<up))
 	}
 	invisible(result)
+}
+
+############################################################################################################
+#									*** checkMu.internal ***
+#
+# DESCRIPTION:
+#	checking if fitted normal distributions do not overlap
+# 
+# PARAMETERS:
+# 	offspring - currently processed row
+# 	EM - output of normalmixEM function
+# 	overlapInd - how many individuals are allowed to be overlapping between distributions
+# 
+# OUTPUT:
+#	boolean
+#
+############################################################################################################
+smoothGeno <- function(population,verbose){
+	old_geno <- population$offspring$genotypes$simulated
+	geno <- population$offspring$genotypes$simulated
+	geno <- apply(geno,2,smoothGenoCol.internal)
+	if(verbose) cat("changed",sum(geno!=old_geno)/length(geno)*100,"% values because of genetyping error\n")
+	population$genotypes$simulated <- geno
+	invisible(population)
+}
+
+############################################################################################################
+#									*** checkMu.internal ***
+#
+# DESCRIPTION:
+#	checking if fitted normal distributions do not overlap
+# 
+# PARAMETERS:
+# 	offspring - currently processed row
+# 	EM - output of normalmixEM function
+# 	overlapInd - how many individuals are allowed to be overlapping between distributions
+# 
+# OUTPUT:
+#	boolean
+#
+############################################################################################################
+smoothGenoCol.internal <- function(genoCol){
+	if((genoCol[1]!=genoCol[2])&&(genoCol[1]!=genoCol[3])&&(genoCol[2]==genoCol[3])){
+		genoCol[1] <- genoCol[2]
+	}
+	for(i in 2:(length(genoCol)-1)){
+		if((genoCol[i]!=genoCol[i-1])&&(genoCol[i]!=genoCol[i+1])&&(genoCol[i-1]==genoCol[i+1])){
+			genoCol[i] <- genoCol[i-1]
+		}
+	}
+	if((genoCol[(length(genoCol))]!=genoCol[(length(genoCol)-1)])&&(genoCol[(length(genoCol))]!=genoCol[(length(genoCol)-2)])&&(genoCol[(length(genoCol)-1)]==genoCol[(length(genoCol)-2)])){
+		genoCol[(length(genoCol))] <- genoCol[(length(genoCol)-1)]
+	}
+	invisible(genoCol)
 }
