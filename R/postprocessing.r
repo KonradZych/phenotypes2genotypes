@@ -558,7 +558,7 @@ removeChromosomesSub.internal <- function(cross, chr,verbose=FALSE){
 #
 ############################################################################################################
 smoothGeno <- function(cross,verbose=FALSE){
-	cross <- lapply(cross$geno,smoothGenoSub.internal)
+	cross$geno <- lapply(cross$geno,smoothGenoSub.internal,verbose)
 	cross <- est.rf(cross)
 	invisible(cross)
 }
@@ -581,8 +581,8 @@ smoothGeno <- function(cross,verbose=FALSE){
 smoothGenoSub.internal <- function(geno,verbose){
 	old_geno <- geno$data
 	geno <- old_geno
-	geno <- apply(geno,1,smoothGenoRow.internal)
-	if(verbose) cat("changed",sum(geno!=old_geno)/length(geno)*100,"% values because of genetyping error\n")
+	geno <- t(apply(geno,1,smoothGenoRow.internal))
+	if(verbose) cat("changed",sum(geno!=old_geno)/length(geno)*100,"% values because of genotyping error\n")
 	geno$data <- geno
 	invisible(geno)
 }
