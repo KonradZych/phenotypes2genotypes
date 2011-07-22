@@ -94,7 +94,7 @@ toGenotypes <- function(population, genotype=c("simulated","real"), orderUsing=c
 	if(verbose && debugMode==2)cat("Creating cross object done in:",(e1-s1)[3],"seconds.\n")
 	
 	#**********ORDERING MARKERS*************
-	if(orderUsing=="none"){ cross <- orderMarkers(cross,use.ripple=F,verbose=F)}
+	#if(orderUsing=="none"){ cross <- orderMarkers(cross,use.ripple=F,verbose=F)}
 	
 	#*******ADDING MAPS TO THE CROSS*******
 	if(!(is.null(population$maps$physical))) cross$maps$physical <- population$maps$physical
@@ -423,56 +423,3 @@ middleDistribution <- function(offspring,result,EM){
 	invisible(result)
 }
 
-############################################################################################################
-#									*** checkMu.internal ***
-#
-# DESCRIPTION:
-#	checking if fitted normal distributions do not overlap
-# 
-# PARAMETERS:
-# 	offspring - currently processed row
-# 	EM - output of normalmixEM function
-# 	overlapInd - how many individuals are allowed to be overlapping between distributions
-# 
-# OUTPUT:
-#	boolean
-#
-############################################################################################################
-smoothGeno <- function(population,verbose){
-	old_geno <- population$offspring$genotypes$simulated
-	geno <- population$offspring$genotypes$simulated
-	geno <- apply(geno,2,smoothGenoCol.internal)
-	if(verbose) cat("changed",sum(geno!=old_geno)/length(geno)*100,"% values because of genetyping error\n")
-	population$genotypes$simulated <- geno
-	invisible(population)
-}
-
-############################################################################################################
-#									*** checkMu.internal ***
-#
-# DESCRIPTION:
-#	checking if fitted normal distributions do not overlap
-# 
-# PARAMETERS:
-# 	offspring - currently processed row
-# 	EM - output of normalmixEM function
-# 	overlapInd - how many individuals are allowed to be overlapping between distributions
-# 
-# OUTPUT:
-#	boolean
-#
-############################################################################################################
-smoothGenoCol.internal <- function(genoCol){
-	if((genoCol[1]!=genoCol[2])&&(genoCol[1]!=genoCol[3])&&(genoCol[2]==genoCol[3])){
-		genoCol[1] <- genoCol[2]
-	}
-	for(i in 2:(length(genoCol)-1)){
-		if((genoCol[i]!=genoCol[i-1])&&(genoCol[i]!=genoCol[i+1])&&(genoCol[i-1]==genoCol[i+1])){
-			genoCol[i] <- genoCol[i-1]
-		}
-	}
-	if((genoCol[(length(genoCol))]!=genoCol[(length(genoCol)-1)])&&(genoCol[(length(genoCol))]!=genoCol[(length(genoCol)-2)])&&(genoCol[(length(genoCol)-1)]==genoCol[(length(genoCol)-2)])){
-		genoCol[(length(genoCol))] <- genoCol[(length(genoCol)-1)]
-	}
-	invisible(genoCol)
-}
