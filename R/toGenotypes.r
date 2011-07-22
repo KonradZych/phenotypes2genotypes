@@ -150,14 +150,16 @@ convertToGenotypes.internal <- function(population, orderUsing, treshold, overla
 	if(!(is.null(dim(upRils)))){
 		if(!(is.null(dim(downRils)))){
 			# best situation
-			if(verbose) cat("Selected ",nrow(upRils),"upregulated markers.\n")
-			cur <- splitPheno.internal(upRils, upParental, overlapInd, proportion, margin, population$founders$groups, 1)
+			if(verbose) cat("Selected ",nrow(upRils),"upregulated markers and ",nrow(downRils),"downregulated markers.\n")
+			cur <- splitPheno.internal(downRils, downParental, overlapInd, proportion, margin, population$founders$groups, 0)
 			output <- rbind(output,cur[[1]])
 			markerNames <- c(markerNames,cur[[2]])
 		}else{
 			if(verbose) cat("Selected ",nrow(upRils),"upregulated markers.\n")
+			cur <- splitPheno.internal(upRils, upParental, overlapInd, proportion, margin, population$founders$groups, 1)
+			output <- rbind(output,cur[[1]])
+			markerNames <- c(markerNames,cur[[2]])
 		}
-
 	}else{
 		if(!(is.null(dim(downRils)))){
 			if(verbose) cat("Selected ",nrow(downRils),"downregulated markers.\n")
