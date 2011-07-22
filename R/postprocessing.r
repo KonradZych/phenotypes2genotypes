@@ -186,10 +186,8 @@ putAdditionsOfCross.internal <-function(cross,additions){
 #
 ############################################################################################################
 checkBeforeOrdering <- function(cross,map){
-	defaultCheck.internal(method, "method", 2)
 	defaultCheck.internal(map, "map", 2)
 	inListCheck.internal(map,"map",c("genetic","physical"))
-	inListCheck.internal(method,"method",c("majority","corelation"))
 	crossContainsMap.internal(cross,map)
 	if(map=="genetic"){
 		cur_map <- cross$maps$genetic
@@ -559,7 +557,7 @@ removeChromosomesSub.internal <- function(cross, chr,verbose=FALSE){
 #	boolean
 #
 ############################################################################################################
-smoothGeno <- function(cross){
+smoothGeno <- function(cross,verbose=FALSE){
 	cross <- lapply(cross$geno,smoothGenoSub.internal)
 	cross <- est.rf(cross)
 	invisible(cross)
@@ -580,7 +578,7 @@ smoothGeno <- function(cross){
 #	boolean
 #
 ############################################################################################################
-smoothGenoSub.internal <- function(geno){
+smoothGenoSub.internal <- function(geno,verbose){
 	old_geno <- geno$data
 	geno <- old_geno
 	geno <- apply(geno,1,smoothGenoRow.internal)
