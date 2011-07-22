@@ -543,3 +543,78 @@ removeChromosomesSub.internal <- function(cross, chr,verbose=FALSE){
 	cross <- putAdditionsOfCross.internal(cross, additions)
 	invisible(cross)
 }
+
+############################################################################################################
+#									*** checkMu.internal ***
+#
+# DESCRIPTION:
+#	checking if fitted normal distributions do not overlap
+# 
+# PARAMETERS:
+# 	offspring - currently processed row
+# 	EM - output of normalmixEM function
+# 	overlapInd - how many individuals are allowed to be overlapping between distributions
+# 
+# OUTPUT:
+#	boolean
+#
+############################################################################################################
+smoothGeno <- function(cross){
+	cross <- lapply(cross$geno,smoothGenoSub.internal)
+	cross <- est.rf(cross)
+	invisible(cross)
+}
+
+############################################################################################################
+#									*** checkMu.internal ***
+#
+# DESCRIPTION:
+#	checking if fitted normal distributions do not overlap
+# 
+# PARAMETERS:
+# 	offspring - currently processed row
+# 	EM - output of normalmixEM function
+# 	overlapInd - how many individuals are allowed to be overlapping between distributions
+# 
+# OUTPUT:
+#	boolean
+#
+############################################################################################################
+smoothGenoSub.internal <- function(geno){
+	old_geno <- geno$data
+	geno <- old_geno
+	geno <- apply(geno,1,smoothGenoRow.internal)
+	if(verbose) cat("changed",sum(geno!=old_geno)/length(geno)*100,"% values because of genetyping error\n")
+	geno$data <- geno
+	invisible(geno)
+}
+
+############################################################################################################
+#									*** checkMu.internal ***
+#
+# DESCRIPTION:
+#	checking if fitted normal distributions do not overlap
+# 
+# PARAMETERS:
+# 	offspring - currently processed row
+# 	EM - output of normalmixEM function
+# 	overlapInd - how many individuals are allowed to be overlapping between distributions
+# 
+# OUTPUT:
+#	boolean
+#
+############################################################################################################
+smoothGenoRow.internal <- function(genoRow){
+	if((genoRow[1]!=genoRow[2])&&(genoRow[1]!=genoRow[3])&&(genoRow[2]==genoRow[3])){
+		genoRow[1] <- genoRow[2]
+	}
+	for(i in 2:(length(genoRow)-1)){
+		if((genoRow[i]!=genoRow[i-1])&&(genoRow[i]!=genoRow[i+1])&&(genoRow[i-1]==genoRow[i+1])){
+			genoRow[i] <- genoRow[i-1]
+		}
+	}
+	if((genoRow[(length(genoRow))]!=genoRow[(length(genoRow)-1)])&&(genoRow[(length(genoRow))]!=genoRow[(length(genoRow)-2)])&&(genoRow[(length(genoRow)-1)]==genoRow[(length(genoRow)-2)])){
+		genoRow[(length(genoRow))] <- genoRow[(length(genoRow)-1)]
+	}
+	invisible(genoRow)
+}
