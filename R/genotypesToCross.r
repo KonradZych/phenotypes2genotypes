@@ -112,12 +112,9 @@ genotypesToCross.internal <- function(population, genotype=c("simulated","real")
 		}
 	}	
 
-	
-
-	
 #**********READING CROSS FILE TO R*************
 	cross <- invisible(read.cross("csvr",file=outputFile, genotypes=genotypes))
-	class(cross)[1] <- "riself"
+	
 	e <- proc.time()
 	if(verbose) cat("genotypesToCross done in",(e-s)[3],"seconds.\n")
 	invisible(cross)

@@ -89,6 +89,9 @@ toGenotypes <- function(population, genotype=c("simulated","real"), orderUsing=c
 	e1 <- proc.time()
 	if(verbose && debugMode==2)cat("Creating cross object done in:",(e1-s1)[3],"seconds.\n")
 	
+	#**********ORDERING MARKERS*************
+	if(orderUsing=="none"){ cross <- orderMarkers(cross,use.ripple=F,verbose=F)}
+	
 	#*******ADDING MAPS TO THE CROSS*******
 	if(!(is.null(population$maps$physical))) cross$maps$physical <- population$maps$physical
 	if(!(is.null(population$maps$genetic))) cross$maps$genetic <- population$maps$genetic
@@ -381,10 +384,10 @@ splitPhenoRowEM.internal <- function(x, offspring, founders, overlapInd, proport
 ############################################################################################################
 checkMu.internal <- function(offspring,EM,overlapInd){
 	for(i in 2:length(EM$mu)){
-		up <- EM$mu[i]-EM$sigma[i]
-		down <- EM$mu[i-1]+EM$sigma[i-1]
+		up <- EM$mu[i]-2*EM$sigma[i]
+		down <- EM$mu[i-1]+2*EM$sigma[i-1]
 		if((up)<(down)){
-			if(sum(offspring<down && offspring>up)){
+			if(sum(offspring<down && offspring>up)>overlapInd){
 				return(FALSE)
 			}
 		}		

@@ -46,15 +46,15 @@ or use Packages menu (just click on Install Packages, select a mirror and than s
 \subsection{Data files' structure}
 {\noindent}In order to ensure smooth work of our package, we specified strict rules about data files provided. If below mentioned requirements are met and filenames are default, user don't have to provide reading function with any parameters. If your more advanced R user, your data files are of different format or you have data already inside R environment, please see section 4.1. 
 \subsubsection{Phenotype data for offspring}
-This data is crucial and analysis cannot be run without it. Default filename is offspring\_phenotypes.txt. Rows correspond to markers and columns to individuals. File should contain only numeric values apart from first row, containing unique column names and first column containing unique row names. Rows and columns with non-numeric values are removed. All values should be separated by tabs. In normal practice first row has one element less then others (no column name for column containing rownames).
+This data is crucial and analysis cannot be run without it. Default filename is \emph{offspring\_phenotypes.txt}. Rows correspond to markers and columns to individuals. File should contain only numeric values apart from first row, containing unique column names and first column containing unique row names. Rows and columns with non-numeric values are removed. All values should be separated by tabs. In normal practice first row has one element less then others (no column name for column containing rownames).
 \subsubsection{Phenotype data for founders}
-This data is optional but really important for the analysis, so we recommend to provide it. Default filename is founders\_phenotypes.txt. Data structure inside the file should be the same as in offspring phenotype file. Also row names should match, because non-matching rows are removed.
+This data is optional but really important for the analysis, so we recommend to provide it. Default filename is \emph{founders\_phenotypes.txt}. Data structure inside the file should be the same as in offspring phenotype file. Also row names should match, because non-matching rows are removed.
 \subsubsection{Genotype data for offspring}
-This data is optional and doesn't have any impact on analysis, could be only used for creating cross object out of existing data using our software. Default filename is offspring\_genotypes.txt. Genotypes should be coded as 0,1 and NA. Data structure inside the file should be the same as in offspring and founders phenotype files. Row names should match, because non-matching rows are removed. 
+This data is optional and doesn't have any impact on analysis, could be only used for creating cross object out of existing data using our software. Default filename is \emph{offspring\_genotypes.txt}. Genotypes should be coded as 0,1 and NA. Data structure inside the file should be the same as in offspring and founders phenotype files. Row names should match, because non-matching rows are removed. 
 \subsubsection{Genetic map}
-This data is optional and could be used for comparison with map created by our software or for ordering markers in output cross. Default filename is maps\_genetic.txt. File should contain three columns - marker name, chromosome number and position on chromosome in cM. Second and third column should contain numeric values without NAs, NaNs, etc. First column should contain unique marker names, matching ones in phenotype files.
+This data is optional and could be used for comparison with map created by our software or for ordering markers in output cross. Default filename is \emph{maps\_genetic.txt}. File should contain three columns - marker name, chromosome number and position on chromosome in cM. Second and third column should contain numeric values without NAs, NaNs, etc. First column should contain unique marker names, matching ones in phenotype files.
 \subsubsection{Physical map}
-Exactly the same as in genetic map, but position on chromosome should be in Mbp.
+Exactly the same as in genetic map, but position on chromosome should be in Mbp. Default filename is \emph{maps\_physical.txt}.
 \end{multicols}
 \newpage
 
@@ -65,7 +65,7 @@ If data is formatted as specified in chapter 2 and files are having default name
 <<<echo=TRUE, eval=FALSE>>=
 population <- readFiles(founders_groups=c(0,0,1,1))
 @
- into Rgui (make sure your working directory is the one containing data files) and it's all done. Parameter founders\_groups specifies in which column of parental file which parent is. Eg. you measured gene expression of both parents twice. Results for one of those are in first two columns, for the other - in following two. Then your function call will look exactly like one given above. 
+ into Rgui (make sure your working directory is the one containing data files) and it's all done. Parameter \emph{founders\_groups} specifies in which column of parental file which parent is. Eg. you measured gene expression of both parents twice. Results for one of those are in first two columns, for the other - in following two. Then your function call will look exactly like one given above. 
 If you don't like words founders, offspring and map and would like to use more friendly parents, children and treasure\_map instead, just type:
 <<<echo=TRUE, eval=FALSE>>=
 population <- readFiles(offspring="children",founders="parents",map="treasure_map", 
@@ -104,25 +104,24 @@ RIL population obtained using selfing) will be perfect. For more info about the 
 We provide you we function to plot founders data for brief inspection. Let's inspect first 20 markers of just faked population object:
 
 <<<echo=FALSE, fig=TRUE>>=
+op <- par(mfrow=c(2,2))
 plotParentalExpression(population,1:20)
+plotChildrenExpression(population,1:20)
+plotMarkerDistribution(population,3,2)
 @
 
 {\noindent}Empty circles (blue for parent "0" and red for parent "1") on the plot show gene expression values, green lines - mean values for each marker.
-\newpage
+
 \subsubsection{Offspring data}
 We can also inspect gene expression values for offspring. To show plot for first 20 markers:
-<<<echo=FALSE, fig=TRUE>>=
-plotChildrenExpression(population,1:20)
-@
+
 
 {\noindent}Boxplot (in black) shows gene expression values for offspring. On those, founders data is overlayed, depicted as in plotParentalExpression.
 \newpage
 \subsubsection{Single markers distribution}
 This kind of plot gives possibility to make sure that our data is distributed as we supposed. In our case, RIL with selfing, we expect in all markers mixture of two normal distributions.
 In our example we will look at values for third marker:
-<<<echo=FALSE, fig=TRUE, results=hide>>=
-plotMarkerDistribution(population,3,2)
-@
+
 
 {\noindent}First parameter is object of class population, then number or name of marker to be shown and number of normal distributions to be fitted (more than 1).
 \newpage
@@ -131,6 +130,12 @@ RankProd \citep{Hong:2006} is a R package using Rank Product \citep{Breitling200
 In majority of cases object of class population is the only parameter while calling findDiffExpressed function. RP, main function of RankProd, is always verbose, so exptect something like:
 <<<echo=TRUE, eval=TRUE>>=
 population <- findDiffExpressed(population)
+@
+
+{\noindent}Results are stored in \emph{population\$founders\$RP}. \emph{RP} object is quite complicated, but most important for us is part containing p-values for every gene to be up and down regulated \emph{(RP\$pval)}. To show those values for first 10 genes
+we can use small function called showRPpval:
+<<<echo=TRUE, eval=TRUE>>=
+showRPpval(population,markers=1:10)
 @
 
 {\noindent}If you're more experienced user and would like to provide RP function with additional parameters, it's possible. Just provide preprocessData funtion with them and they will be send directly to RP function. For further information see help file of RP.
@@ -160,22 +165,12 @@ This is default one. We would like to save genotype data created by toGenotypes 
 cross <- toGenotypes(population)
 @
 
-{\noindent}After function is executed, our data is stored inside (a bit enhanced) cross object. We can use R/qtl functions to plot it. Most informative plots will be:
-
-{\noindent}- plot.rf - showing recombination factors between markers
+{\noindent}After function is executed, our data is stored inside (a bit enhanced) cross object. We can use R/qtl functions to plot it. Most informative plot will be plot.rf - showing recombination factors between markers
 <<<echo=FALSE, fig=TRUE, results=hide>>=
 plot.rf(cross)
 @
-\newpage
-{\noindent}- plot.map - showing how markers are spread on the chromosomes
-<<<echo=FALSE, fig=TRUE, results=hide>>=
-plot.map(cross)
-@
-\newpage
-{\noindent}- geno.image showing our newly created genotypes
-<<<echo=FALSE, fig=TRUE, results=hide>>=
-geno.image(cross)
-@
+
+{\noindent}Our plot looks dissappointing. 
 \newpage
 \subsection{Example workflow for BC}
 

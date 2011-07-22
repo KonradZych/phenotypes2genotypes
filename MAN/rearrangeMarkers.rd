@@ -1,27 +1,26 @@
-\name{orderChromosomes}
-\alias{orderChromosomes}
+\name{rearrangeMarkers}
+\alias{rearrangeMarkers}
 
 
-\title{Order chromosomes.}
+\title{Rearrangeing markers.}
 
 \description{
-  Order chromosomes of object of class cross using majority rule.
+  Rearrangeing markers of object of class cross using corelation.
 }
 
 \usage{
-	orderChromosomes(cross,map=c("genetic","physical"),corTreshold,addMarkers=FALSE,verbose=FALSE)
+	rearrangeMarkers(cross,map=c("genetic","physical"),verbose=FALSE)
 }
 
 \arguments{
  \item{cross}{ object of class cross}
- \item{map}{ 
+  \item{map}{ 
   Which map should be used for comparison:
   \itemize{
     \item{genetic}{ - genetic map from cross$maps$genetic}
     \item{physical}{ - physical map from cross$maps$physical}
   }
   }
- \item{corTreshold}{ used if method=corelation (otherwise ignored) - markers not having corelation above this number with any of chromosomes are removed}
  \item{verbose}{ Be verbose}
 }
 
@@ -44,9 +43,8 @@
 	population <- findDiffExpressed(population)
 	cross <- toGenotypes(population,genotype="simulated",proportion=c(50,50),orderUsing="map_genetic",treshold=0.01)
 	plot.rf(cross)
-	cross <- orderChromosomes(cross,map="physical",verbose=TRUE)
+	cross <- rearrangeMarkers(cross,map="physical",verbose=TRUE)
 	plot.rf(cross)
-
 }
 
 \seealso{
@@ -56,4 +54,3 @@
 }
 
 \keyword{manip}
-
