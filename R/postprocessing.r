@@ -217,7 +217,7 @@ checkBeforeOrdering <- function(cross,map){
 #	object of class cross
 #
 ############################################################################################################
-rearrangeMarkers <- function(cross,map=c("genetic","physical"),corTreshold,addMarkers=FALSE,verbose=FALSE){
+rearrangeMarkers <- function(cross,map=c("genetic","physical"),corTreshold=0.6,addMarkers=FALSE,verbose=FALSE){
 	cur_map <- checkBeforeOrdering(cross,map)
 	additions <- getAdditionsOfCross.internal(cross)
 	output <- bestCorelated.internal(cross,cur_map,corTreshold,verbose)
