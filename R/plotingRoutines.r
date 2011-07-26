@@ -248,8 +248,10 @@ getYLocs.internal <- function(cross){
 	chrlength <- as.vector(unlist(lapply(locs,max)),mode="numeric")
 	locs <- as.numeric(unlist(locs))
 	summaryLengths <- rep(0,length(chrlength))
-	for(x in 2:length(chrlength)){
-		summaryLengths[x] <- max(chrlength[x-1]) + summaryLengths[x-1] + 0.15 * max((chrlength))
+	if(length(chrlength)>1){
+		for(x in 2:length(chrlength)){
+			summaryLengths[x] <- max(chrlength[x-1]) + summaryLengths[x-1] + 0.15 * max((chrlength))
+		}
 	}
 	chrids <- getChromosome.internal(cross)
 	result <- matrix(0,length(locs),2)
