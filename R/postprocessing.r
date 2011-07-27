@@ -543,7 +543,7 @@ removeChromosomesSub.internal <- function(cross, chr,verbose=FALSE){
 }
 
 ############################################################################################################
-#									*** checkMu.internal ***
+#									*** smoothGeno ***
 #
 # DESCRIPTION:
 #	checking if fitted normal distributions do not overlap
@@ -558,13 +558,17 @@ removeChromosomesSub.internal <- function(cross, chr,verbose=FALSE){
 #
 ############################################################################################################
 smoothGeno <- function(cross,verbose=FALSE){
-	cross$geno <- lapply(cross$geno,smoothGenoSub.internal,verbose)
+	n.ind <- nind(cross)
+	cross_geno <- lapply(cross$geno,smoothGenoSub.internal,verbose)
+	for(i in 1:length(cross_geno)){
+		cross$geno[[i]] <- cross_geno[[i]]
+	}
 	cross <- est.rf(cross)
 	invisible(cross)
 }
 
 ############################################################################################################
-#									*** checkMu.internal ***
+#									*** smoothGenoSub.internal ***
 #
 # DESCRIPTION:
 #	checking if fitted normal distributions do not overlap
@@ -579,16 +583,16 @@ smoothGeno <- function(cross,verbose=FALSE){
 #
 ############################################################################################################
 smoothGenoSub.internal <- function(geno,verbose){
-	old_geno <- geno$data
-	geno <- old_geno
-	geno <- t(apply(geno,1,smoothGenoRow.internal))
-	if(verbose) cat("changed",sum(geno!=old_geno)/length(geno)*100,"% values because of genotyping error\n")
-	geno$data <- geno
+	old_genotype <- geno$data
+	genotype <- old_genotype
+	genotype <- t(apply(genotype,1,smoothGenoRow.internal))
+	if(verbose) cat("changed",sum(genotype!=old_genotype)/length(genotype)*100,"% values because of genotyping error\n")
+	geno$data <- genotype
 	invisible(geno)
 }
 
 ############################################################################################################
-#									*** checkMu.internal ***
+#									*** smoothGenoRow.internal ***
 #
 # DESCRIPTION:
 #	checking if fitted normal distributions do not overlap
