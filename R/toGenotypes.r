@@ -80,11 +80,6 @@ toGenotypes <- function(population, genotype=c("simulated","real"), orderUsing=c
 		population <- convertToGenotypes.internal(population, orderUsing, treshold, overlapInd, proportion, margin, verbose, debugMode)
 		e1 <- proc.time()
 		if(verbose && debugMode==2)cat("Converting phenotypes to genotypes done in:",(e1-s1)[3],"seconds.\n")
-		#*******SMOOTHING GENOTYPES*******
-		s1 <- proc.time()
-		population <- smoothGeno(population, verbose)
-		e1 <- proc.time()
-		if(verbose && debugMode==2)cat("Smoothing genotypes done in:",(e1-s1)[3],"seconds.\n")
 	}
 	
 	#*******SAVING CROSS OBJECT*******
@@ -94,14 +89,21 @@ toGenotypes <- function(population, genotype=c("simulated","real"), orderUsing=c
 	if(verbose && debugMode==2)cat("Creating cross object done in:",(e1-s1)[3],"seconds.\n")
 	
 	#**********ORDERING MARKERS*************
-	#if(orderUsing=="none"){ cross <- orderMarkers(cross,use.ripple=F,verbose=F)}
+	if(orderUsing=="none"){ cross <- orderMarkers(cross,use.ripple=F,verbose=F)}
 	
+	#*******SMOOTHING GENOTYPES*******
+	s1 <- proc.time()
+	population <- smoothGeno(population, verbose)
+	e1 <- proc.time()
+	if(verbose && debugMode==2)cat("Smoothing genotypes done in:",(e1-s1)[3],"seconds.\n")
+		
 	#*******ADDING MAPS TO THE CROSS*******
 	if(!(is.null(population$maps$physical))) cross$maps$physical <- population$maps$physical
 	if(!(is.null(population$maps$genetic))) cross$maps$genetic <- population$maps$genetic
 	
 	#*******ADDING REAL GENOTYPE TO THE CROSS*******
 	if(!(is.null(population$offspring$genotypes$real))&&genotype=="simulated") cross$genotypes$real <- population$offspring$genotypes$real
+	
 	
 	#*******RETURNING CROSS OBJECT*******
 	e<-proc.time()
