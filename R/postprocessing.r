@@ -231,7 +231,7 @@ rearrangeMarkers <- function(cross,map=c("genetic","physical"),corTreshold=0.6,a
 		oldnames <- rownames(cur_map)[which(cur_map[,1]==x)]
 		toputtogether <- mnames[output==x]
 		if(addMarkers){
-			if(verbose) cat("adding",length(oldnames),"old markers\n")
+			if(verbose) cat("adding",dim(pull.geno(cross)[,toputtogether]),"old markers\n",dim(t(cross$genotypes$real[oldnames,])),"old markers\n")
 			cross_$geno[[x]]$data <- cbind(pull.geno(cross)[,toputtogether],t(cross$genotypes$real[oldnames,]))
 			newmap <- 1:(length(toputtogether)+length(oldnames))
 			names(newmap) <- c(toputtogether,oldnames)
@@ -325,7 +325,7 @@ bestCorelated.internal <- function(cross,cur_map,corTreshold,verbose=FALSE){
 	if(verbose) cat("Calculating corelations for markers \n")
 	for(y in 1:ncol(pull.geno(cross))){
 		if(verbose) if(y%%100==0) cat(y,"/",ncol(pull.geno(cross)),"\n")
-		findout <- apply(cross$genotypes$real[,c(-70,-74)],1,function(x){cor(x,pull.geno(cross)[c(-25,-39,-99),y],use="pairwise.complete.obs")})
+		findout <- apply(cross$genotypes$real,1,function(x){cor(x,pull.geno(cross)[,y],use="pairwise.complete.obs")})
 		if(max(findout)>=corTreshold){
 			maxcor <- which.max(findout)
 			output <- c(output,cross$maps$genetic[names(maxcor),1])
