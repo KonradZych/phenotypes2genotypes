@@ -48,10 +48,10 @@
 ############################################################################################################
 fakePopulation <- function(n.founders = 4, n.offspring = 250, n.markers=1000,n.chromosomes=10, type = c("riself", "f2", "bc", "risib"), verbose=FALSE,...){
 	### checks
-	n.founders <- defaultCheck.internal(n.founders,"n.founders",1)
-	n.offspring <- defaultCheck.internal(n.offspring,"n.offspring",1)
-	n.markers <- defaultCheck.internal(n.markers,"n.markers",1)
-	n.chromosomes <- defaultCheck.internal(n.chromosomes,"n.chromosomes",1)
+	n.founders <- defaultCheck.internal(n.founders,"n.founders",1,4)
+	n.offspring <- defaultCheck.internal(n.offspring,"n.offspring",1,250)
+	n.markers <- defaultCheck.internal(n.markers,"n.markers",1,1000)
+	n.chromosomes <- defaultCheck.internal(n.chromosomes,"n.chromosomes",1,10)
 	if(!(is.numeric(n.founders))) stop("n.founders should be numeric\n")
 	if(!(is.numeric(n.offspring))) stop("n.offspring should be numeric\n")
 	if(!(is.numeric(n.markers))) stop("n.markers should be numeric\n")
