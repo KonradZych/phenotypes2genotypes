@@ -138,7 +138,7 @@ plotMapComparison <- function(cross,map=c("genetic","physical"), coloringMode=1)
 	crossContainsMap.internal(cross, map)
 	#*******objects containing all information needen for function execution*******
 	ys <- getYLocs.internal(cross)
-	map <- defaultCheck.internal(map,"map",2)
+	map <- defaultCheck.internal(map,"map",2,"genetic")
 	print(map)
 	cat("---   1   ---\n")
 	if(map[1]=="genetic"){
@@ -463,3 +463,22 @@ chromosomesCorelationMatrix.internal <- function(cross, cur_map){
 	invisible(result)
 }
 
+projectOldMarkers <- function(cross,map=c("genetic","physical"),label=c("positions","names")){
+	curMap <- checkBeforeOrdering(cross,map)
+	label <- defaultCheck.internal(label, "label", 2,"positions")
+	qc <- curMap[,1]
+	qp_ <- NULL
+	inListCheck.internal(label,"label",c("positions","names"))
+	for(i in 1:14){
+		qp_ <- c(qp_,cross_$geno[[i]]$map)
+	}
+	qp <- qp_[rownames(cross$maps$genetic)]
+	if(label=="positions"){
+		qn <- curMap[,2]
+	}else{
+		qn <- rownames(curMap)
+	}
+	cross <- sim.geno(cross_)
+	qtl <- makeqtl(cross,qc,qp,qn)
+	plot(qtl)
+}

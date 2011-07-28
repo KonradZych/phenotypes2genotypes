@@ -186,7 +186,7 @@ putAdditionsOfCross.internal <-function(cross,additions){
 #
 ############################################################################################################
 checkBeforeOrdering <- function(cross,map){
-	defaultCheck.internal(map, "map", 2)
+	map <- defaultCheck.internal(map, "map", 2, "genetic")
 	inListCheck.internal(map,"map",c("genetic","physical"))
 	crossContainsMap.internal(cross,map)
 	if(map=="genetic"){
@@ -557,13 +557,14 @@ removeChromosomesSub.internal <- function(cross, chr,verbose=FALSE){
 #	boolean
 #
 ############################################################################################################
-smoothGeno <- function(cross,verbose=FALSE){
+smoothGeno <- function(cross,windowSize=1,verbose=FALSE){
 	n.ind <- nind(cross)
-	cross_geno <- lapply(cross$geno,smoothGenoSub.internal,verbose)
+	cross_geno <- lapply(cross$geno,smoothGenoSub.internal,windowSize,verbose)
 	for(i in 1:length(cross_geno)){
-		cross$geno[[i]] <- cross_geno[[i]]
+		cross$geno[[i]]$data <- cross_geno[[i]]$data
 	}
 	cross <- est.rf(cross)
+	cross <- recalculateMap.internal(cross)
 	invisible(cross)
 }
 
@@ -582,10 +583,10 @@ smoothGeno <- function(cross,verbose=FALSE){
 #	boolean
 #
 ############################################################################################################
-smoothGenoSub.internal <- function(geno,verbose){
+smoothGenoSub.internal <- function(geno,windowSize,verbose){
 	old_genotype <- geno$data
 	genotype <- old_genotype
-	genotype <- t(apply(genotype,1,smoothGenoRow.internal))
+	genotype <- t(apply(genotype,1,smoothGenoRow.internal,windowSize))
 	if(verbose) cat("changed",sum(genotype!=old_genotype)/length(genotype)*100,"% values because of genotyping error\n")
 	geno$data <- genotype
 	invisible(geno)
@@ -606,17 +607,23 @@ smoothGenoSub.internal <- function(geno,verbose){
 #	boolean
 #
 ############################################################################################################
-smoothGenoRow.internal <- function(genoRow){
-	if((genoRow[1]!=genoRow[2])&&(genoRow[1]!=genoRow[3])&&(genoRow[2]==genoRow[3])){
-		genoRow[1] <- genoRow[2]
+smoothGenoRow.internal <- function(genoRow,windowSize){
+	if(any(genoRow[1:windowSize]!=genoRow[windowSize+1])&&any(genoRow[1:windowSize]!=genoRow[windowSize+2])&&(genoRow[windowSize+1]==genoRow[windowSize+2])){
+		genoRow[1:windowSize] <- genoRow[windowSize+1]
 	}
-	for(i in 2:(length(genoRow)-1)){
-		if((genoRow[i]!=genoRow[i-1])&&(genoRow[i]!=genoRow[i+1])&&(genoRow[i-1]==genoRow[i+1])){
-			genoRow[i] <- genoRow[i-1]
+	for(i in 2:(length(genoRow)-windowSize-1)){
+		if(any(genoRow[i:(i+windowSize)]!=genoRow[i-1])&&any(genoRow[i:(i+windowSize)]!=genoRow[i+windowSize+1])&&(genoRow[i-1]==genoRow[i+windowSize+1])){
+			genoRow[i:(i+windowSize)] <- genoRow[i-1]
 		}
 	}
-	if((genoRow[(length(genoRow))]!=genoRow[(length(genoRow)-1)])&&(genoRow[(length(genoRow))]!=genoRow[(length(genoRow)-2)])&&(genoRow[(length(genoRow)-1)]==genoRow[(length(genoRow)-2)])){
-		genoRow[(length(genoRow))] <- genoRow[(length(genoRow)-1)]
+	if(any(genoRow[(length(genoRow)-windowSize):(length(genoRow))]!=genoRow[(length(genoRow)-windowSize-1)])&&any(genoRow[(length(genoRow)-windowSize):(length(genoRow))]!=genoRow[(length(genoRow)-windowSize-2)])&&(genoRow[(length(genoRow)-windowSize-1)]==genoRow[(length(genoRow)-windowSize-2)])){
+		genoRow[(length(genoRow)-windowSize):(length(genoRow))] <- genoRow[(length(genoRow)-windowSize-1)]
 	}
 	invisible(genoRow)
+}
+
+recalculateMap.internal <- function(cross){
+	newmap <- est.map(cross,offset=0)
+	cross2 <- replace.map(cross, newmap)
+	invisible(cross)
 }
