@@ -91,11 +91,6 @@ toGenotypes <- function(population, genotype=c("simulated","real"), orderUsing=c
 	#**********ORDERING MARKERS*************
 	if(orderUsing=="none"){ cross <- orderMarkers(cross,use.ripple=F,verbose=F)}
 	
-	#*******SMOOTHING GENOTYPES*******
-	s1 <- proc.time()
-	population <- smoothGeno(population, verbose)
-	e1 <- proc.time()
-	if(verbose && debugMode==2)cat("Smoothing genotypes done in:",(e1-s1)[3],"seconds.\n")
 		
 	#*******ADDING MAPS TO THE CROSS*******
 	if(!(is.null(population$maps$physical))) cross$maps$physical <- population$maps$physical

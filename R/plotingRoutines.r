@@ -470,7 +470,7 @@ projectOldMarkers <- function(cross,map=c("genetic","physical"),label=c("positio
 	qp_ <- NULL
 	inListCheck.internal(label,"label",c("positions","names"))
 	for(i in 1:14){
-		qp_ <- c(qp_,cross_$geno[[i]]$map)
+		qp_ <- c(qp_,cross$geno[[i]]$map)
 	}
 	qp <- qp_[rownames(cross$maps$genetic)]
 	if(label=="positions"){
@@ -478,7 +478,7 @@ projectOldMarkers <- function(cross,map=c("genetic","physical"),label=c("positio
 	}else{
 		qn <- rownames(curMap)
 	}
-	cross <- sim.geno(cross_)
+	cross <- sim.geno(cross)
 	qtl <- makeqtl(cross,qc,qp,qn)
 	plot(qtl)
 }

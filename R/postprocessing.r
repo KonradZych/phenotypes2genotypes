@@ -558,11 +558,14 @@ removeChromosomesSub.internal <- function(cross, chr,verbose=FALSE){
 #
 ############################################################################################################
 smoothGeno <- function(cross,windowSize=1,verbose=FALSE){
+	if(!any(class(cross) == "cross")) stop("Input should have class \"cross\".")
+	cross <- fill.geno(cross)
 	n.ind <- nind(cross)
 	cross_geno <- lapply(cross$geno,smoothGenoSub.internal,windowSize,verbose)
 	for(i in 1:length(cross_geno)){
 		cross$geno[[i]]$data <- cross_geno[[i]]$data
 	}
+	additions <- getAdditionsOfCross.internal(cross)
 	cross <- est.rf(cross)
 	cross <- recalculateMap.internal(cross)
 	invisible(cross)
@@ -622,8 +625,8 @@ smoothGenoRow.internal <- function(genoRow,windowSize){
 	invisible(genoRow)
 }
 
-recalculateMap.internal <- function(cross){
-	newmap <- est.map(cross,offset=0)
+recalculateMap.internal <- function(cross,...){
+	newmap <- est.map(cross,offset=0,...)
 	cross2 <- replace.map(cross, newmap)
 	invisible(cross)
 }
