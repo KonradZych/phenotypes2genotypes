@@ -44,8 +44,8 @@
 	population <- findDiffExpressed(population)
 	cross <- toGenotypes(population,genotype="simulated",proportion=c(50,50),orderUsing="map_genetic",treshold=0.01)
 	plot.rf(cross)
-	cross <- orderChromosomes(cross,map="physical",verbose=TRUE)
-	plot.rf(cross)
+	#cross <- orderChromosomes(cross,map="physical",verbose=TRUE) ### - sth weird!
+	#plot.rf(cross)
 
 }
 
