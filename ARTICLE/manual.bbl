@@ -1,0 +1,39 @@
+\begin{thebibliography}{3}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Breitling et~al.(2004)Breitling, Armengaud, Amtmann, and
+  Herzyk]{Breitling200483}
+Rainer Breitling, Patrick Armengaud, Anna Amtmann, and Pawel Herzyk.
+\newblock Rank products: a simple, yet powerful, new method to detect
+  differentially regulated genes in replicated microarray experiments.
+\newblock \emph{FEBS Letters}, 573\penalty0 (1-3):\penalty0 83 -- 92, 2004.
+\newblock ISSN 0014-5793.
+\newblock \doi{DOI: 10.1016/j.febslet.2004.07.055}.
+\newblock URL
+  \url{http://www.sciencedirect.com/science/article/pii/S0014579304009354}.
+
+\bibitem[Hong et~al.(2006)Hong, Breitling, McEntee, Wittner, Nemhauser, and
+  Chory]{Hong:2006}
+F.~Hong, R.~Breitling, C.~W. McEntee, B.~S. Wittner, J.~L. Nemhauser, and
+  J.~Chory.
+\newblock Rankprod: A bioconductor package for detecting differentially
+  expressed genes in meta-analysis.
+\newblock \emph{Bioinformatics}, 22\penalty0 (22):\penalty0 2825--2827, 2006.
+\newblock \doi{DOI: 10.1093/bioinformatics/btl476}.
+\newblock URL
+  \url{http://bioinformatics.oxfordjournals.org/content/22/22/2825.full}.
+
+\bibitem[Jansen and Nap(2001)]{Jansen:2001388}
+Ritsert~C. Jansen and Jan-Peter Nap.
+\newblock Genetical genomics: the added value from segregation.
+\newblock \emph{Trends in Genetics}, 17\penalty0 (7):\penalty0 388 -- 391,
+  2001.
+\newblock \doi{DOI: 10.1016/S0168-9525(01)02310-1}.
+\newblock URL
+  \url{http://www.sciencedirect.com/science/article/pii/S0168952501023101}.
+
+\end{thebibliography}
