@@ -1,0 +1,829 @@
+This is pdfTeX, Version 3.1415926-1.40.11 (MiKTeX 2.9 64-bit) (preloaded format=pdflatex 2011.6.13)  17 JUL 2011 23:24
+entering extended mode
+**G:/git/phenotypes2genotypes/ARTICLE/manual.tex
+(G:/git/phenotypes2genotypes/ARTICLE/manual.tex
+LaTeX2e <2009/09/24>
+Babel <v3.8l> and hyphenation patterns for english, afrikaans, ancientgreek, ar
+abic, armenian, assamese, basque, bengali, bokmal, bulgarian, catalan, coptic, 
+croatian, czech, danish, dutch, esperanto, estonian, farsi, finnish, french, ga
+lician, german, german-x-2009-06-19, greek, gujarati, hindi, hungarian, iceland
+ic, indonesian, interlingua, irish, italian, kannada, kurmanji, lao, latin, lat
+vian, lithuanian, malayalam, marathi, mongolian, mongolianlmc, monogreek, ngerm
+an, ngerman-x-2009-06-19, nynorsk, oriya, panjabi, pinyin, polish, portuguese, 
+romanian, russian, sanskrit, serbian, slovak, slovenian, spanish, swedish, swis
+sgerman, tamil, telugu, turkish, turkmen, ukenglish, ukrainian, uppersorbian, u
+senglishmax, welsh, loaded.
+("C:\Program Files\MiKTeX 2.9\tex\latex\base\article.cls"
+Document Class: article 2007/10/19 v1.4h Standard LaTeX document class
+("C:\Program Files\MiKTeX 2.9\tex\latex\base\size10.clo"
+File: size10.clo 2007/10/19 v1.4h Standard LaTeX file (size option)
+)
+\c@part=\count79
+\c@section=\count80
+\c@subsection=\count81
+\c@subsubsection=\count82
+\c@paragraph=\count83
+\c@subparagraph=\count84
+\c@figure=\count85
+\c@table=\count86
+\abovecaptionskip=\skip41
+\belowcaptionskip=\skip42
+\bibindent=\dimen102
+)
+("C:\Program Files\MiKTeX 2.9\tex\latex\tools\multicol.sty"
+Package: multicol 2008/12/05 v1.6h multicolumn formatting (FMi)
+\c@tracingmulticols=\count87
+\mult@box=\box26
+\multicol@leftmargin=\dimen103
+\c@unbalance=\count88
+\c@collectmore=\count89
+\doublecol@number=\count90
+\multicoltolerance=\count91
+\multicolpretolerance=\count92
+\full@width=\dimen104
+\page@free=\dimen105
+\premulticols=\dimen106
+\postmulticols=\dimen107
+\multicolsep=\skip43
+\multicolbaselineskip=\skip44
+\partial@page=\box27
+\last@line=\box28
+\mult@rightbox=\box29
+\mult@grightbox=\box30
+\mult@gfirstbox=\box31
+\mult@firstbox=\box32
+\@tempa=\box33
+\@tempa=\box34
+\@tempa=\box35
+\@tempa=\box36
+\@tempa=\box37
+\@tempa=\box38
+\@tempa=\box39
+\@tempa=\box40
+\@tempa=\box41
+\@tempa=\box42
+\@tempa=\box43
+\@tempa=\box44
+\@tempa=\box45
+\@tempa=\box46
+\@tempa=\box47
+\@tempa=\box48
+\@tempa=\box49
+\c@columnbadness=\count93
+\c@finalcolumnbadness=\count94
+\last@try=\dimen108
+\multicolovershoot=\dimen109
+\multicolundershoot=\dimen110
+\mult@nat@firstbox=\box50
+\colbreak@box=\box51
+)
+("C:\Program Files\MiKTeX 2.9\tex\latex\multirow\multirow.sty"
+\bigstrutjot=\dimen111
+)
+("C:\Program Files\MiKTeX 2.9\tex\latex\preprint\fullpage.sty"
+Package: fullpage 1999/02/23 1.1 (PWD)
+\FP@margin=\skip45
+)
+("C:\Program Files\MiKTeX 2.9\tex\generic\babel\babel.sty"
+Package: babel 2008/07/06 v3.8l The Babel package
+
+*************************************
+* Local config file bblopts.cfg used
+*
+("C:\Program Files\MiKTeX 2.9\tex\latex\00miktex\bblopts.cfg"
+File: bblopts.cfg 2006/07/31 v1.0 MiKTeX 'babel' configuration
+)
+("C:\Program Files\MiKTeX 2.9\tex\generic\babel\english.ldf"
+Language: english 2005/03/30 v3.3o English support from the babel system
+
+("C:\Program Files\MiKTeX 2.9\tex\generic\babel\babel.def"
+File: babel.def 2008/07/06 v3.8l Babel common definitions
+\babel@savecnt=\count95
+\U@D=\dimen112
+)
+\l@canadian = a dialect from \language\l@american 
+\l@australian = a dialect from \language\l@british 
+\l@newzealand = a dialect from \language\l@british 
+))
+("C:\Program Files\MiKTeX 2.9\tex\latex\blindtext\blindtext.sty"
+Package: blindtext 2009/12/29 V1.9c blindtext-Package
+
+("C:\Program Files\MiKTeX 2.9\tex\latex\tools\xspace.sty"
+Package: xspace 2006/05/08 v1.12 Space after command names (DPC,MH)
+)
+\c@blindtext=\count96
+\c@Blindtext=\count97
+\blind@countxx=\count98
+\blindtext@numBlindtext=\count99
+\blind@countyy=\count100
+\c@blindlist=\count101
+\c@blindlistlevel=\count102
+\c@blindlist@level=\count103
+\blind@listitem=\count104
+\c@blind@listcount=\count105
+\c@blind@levelcount=\count106
+\blind@mathformula=\count107
+\blind@Mathformula=\count108
+)
+("C:\Program Files\MiKTeX 2.9\tex\latex\ltxmisc\url.sty"
+\Urlmuskip=\muskip10
+Package: url 2006/04/12  ver 3.3  Verb mode for urls, etc.
+)
+("C:\Program Files\MiKTeX 2.9\tex\latex\natbib\natbib.sty"
+Package: natbib 2010/09/13 8.31b (PWD, AO)
+\bibhang=\skip46
+\bibsep=\skip47
+LaTeX Info: Redefining \cite on input line 694.
+\c@NAT@ctr=\count109
+)
+(G:\git\phenotypes2genotypes\ARTICLE\Sweave.sty
+Package: Sweave 
+
+("C:\Program Files\MiKTeX 2.9\tex\latex\base\ifthen.sty"
+Package: ifthen 2001/05/26 v1.1c Standard LaTeX ifthen package (DPC)
+)
+("C:\Program Files\MiKTeX 2.9\tex\latex\graphics\graphicx.sty"
+Package: graphicx 1999/02/16 v1.0f Enhanced LaTeX Graphics (DPC,SPQR)
+
+("C:\Program Files\MiKTeX 2.9\tex\latex\graphics\keyval.sty"
+Package: keyval 1999/03/16 v1.13 key=value parser (DPC)
+\KV@toks@=\toks14
+)
+("C:\Program Files\MiKTeX 2.9\tex\latex\graphics\graphics.sty"
+Package: graphics 2009/02/05 v1.0o Standard LaTeX Graphics (DPC,SPQR)
+
+("C:\Program Files\MiKTeX 2.9\tex\latex\graphics\trig.sty"
+Package: trig 1999/03/16 v1.09 sin cos tan (DPC)
+)
+("C:\Program Files\MiKTeX 2.9\tex\latex\00miktex\graphics.cfg"
+File: graphics.cfg 2007/01/18 v1.5 graphics configuration of teTeX/TeXLive
+)
+Package graphics Info: Driver file: pdftex.def on input line 91.
+
+("C:\Program Files\MiKTeX 2.9\tex\latex\pdftex-def\pdftex.def"
+File: pdftex.def 2011/01/28 v0.05d Graphics/color for pdfTeX
+\Gread@gobject=\count110
+))
+\Gin@req@height=\dimen113
+\Gin@req@width=\dimen114
+)
+("C:\Program Files\MiKTeX 2.9\tex\latex\fancyvrb\fancyvrb.sty"
+Package: fancyvrb 2008/02/07
+
+Style option: `fancyvrb' v2.7a, with DG/SPQR fixes, and firstline=lastline fix 
+<2008/02/07> (tvz)
+\FV@CodeLineNo=\count111
+\FV@InFile=\read1
+\FV@TabBox=\box52
+\c@FancyVerbLine=\count112
+\FV@StepNumber=\count113
+\FV@OutFile=\write3
+) ("C:\Program Files\MiKTeX 2.9\tex\latex\upquote\upquote.sty"
+Package: upquote 2003/08/11 v1.1 Covington's upright-quote modification to verb
+atim and verb
+ ("C:\Program Files\MiKTeX 2.9\tex\latex\base\textcomp.sty"
+Package: textcomp 2005/09/27 v1.99g Standard LaTeX package
+Package textcomp Info: Sub-encoding information:
+(textcomp)               5 = only ISO-Adobe without \textcurrency
+(textcomp)               4 = 5 + \texteuro
+(textcomp)               3 = 4 + \textohm
+(textcomp)               2 = 3 + \textestimated + \textcurrency
+(textcomp)               1 = TS1 - \textcircled - \t
+(textcomp)               0 = TS1 (full)
+(textcomp)             Font families with sub-encoding setting implement
+(textcomp)             only a restricted character set as indicated.
+(textcomp)             Family '?' is the default used for unknown fonts.
+(textcomp)             See the documentation for details.
+Package textcomp Info: Setting ? sub-encoding to TS1/1 on input line 71.
+
+("C:\Program Files\MiKTeX 2.9\tex\latex\base\ts1enc.def"
+File: ts1enc.def 2001/06/05 v3.0e (jk/car/fm) Standard LaTeX file
+)
+LaTeX Info: Redefining \oldstylenums on input line 266.
+Package textcomp Info: Setting cmr sub-encoding to TS1/0 on input line 281.
+Package textcomp Info: Setting cmss sub-encoding to TS1/0 on input line 282.
+Package textcomp Info: Setting cmtt sub-encoding to TS1/0 on input line 283.
+Package textcomp Info: Setting cmvtt sub-encoding to TS1/0 on input line 284.
+Package textcomp Info: Setting cmbr sub-encoding to TS1/0 on input line 285.
+Package textcomp Info: Setting cmtl sub-encoding to TS1/0 on input line 286.
+Package textcomp Info: Setting ccr sub-encoding to TS1/0 on input line 287.
+Package textcomp Info: Setting ptm sub-encoding to TS1/4 on input line 288.
+Package textcomp Info: Setting pcr sub-encoding to TS1/4 on input line 289.
+Package textcomp Info: Setting phv sub-encoding to TS1/4 on input line 290.
+Package textcomp Info: Setting ppl sub-encoding to TS1/3 on input line 291.
+Package textcomp Info: Setting pag sub-encoding to TS1/4 on input line 292.
+Package textcomp Info: Setting pbk sub-encoding to TS1/4 on input line 293.
+Package textcomp Info: Setting pnc sub-encoding to TS1/4 on input line 294.
+Package textcomp Info: Setting pzc sub-encoding to TS1/4 on input line 295.
+Package textcomp Info: Setting bch sub-encoding to TS1/4 on input line 296.
+Package textcomp Info: Setting put sub-encoding to TS1/5 on input line 297.
+Package textcomp Info: Setting uag sub-encoding to TS1/5 on input line 298.
+Package textcomp Info: Setting ugq sub-encoding to TS1/5 on input line 299.
+Package textcomp Info: Setting ul8 sub-encoding to TS1/4 on input line 300.
+Package textcomp Info: Setting ul9 sub-encoding to TS1/4 on input line 301.
+Package textcomp Info: Setting augie sub-encoding to TS1/5 on input line 302.
+Package textcomp Info: Setting dayrom sub-encoding to TS1/3 on input line 303.
+Package textcomp Info: Setting dayroms sub-encoding to TS1/3 on input line 304.
+
+Package textcomp Info: Setting pxr sub-encoding to TS1/0 on input line 305.
+Package textcomp Info: Setting pxss sub-encoding to TS1/0 on input line 306.
+Package textcomp Info: Setting pxtt sub-encoding to TS1/0 on input line 307.
+Package textcomp Info: Setting txr sub-encoding to TS1/0 on input line 308.
+Package textcomp Info: Setting txss sub-encoding to TS1/0 on input line 309.
+Package textcomp Info: Setting txtt sub-encoding to TS1/0 on input line 310.
+Package textcomp Info: Setting futs sub-encoding to TS1/4 on input line 311.
+Package textcomp Info: Setting futx sub-encoding to TS1/4 on input line 312.
+Package textcomp Info: Setting futj sub-encoding to TS1/4 on input line 313.
+Package textcomp Info: Setting hlh sub-encoding to TS1/3 on input line 314.
+Package textcomp Info: Setting hls sub-encoding to TS1/3 on input line 315.
+Package textcomp Info: Setting hlst sub-encoding to TS1/3 on input line 316.
+Package textcomp Info: Setting hlct sub-encoding to TS1/5 on input line 317.
+Package textcomp Info: Setting hlx sub-encoding to TS1/5 on input line 318.
+Package textcomp Info: Setting hlce sub-encoding to TS1/5 on input line 319.
+Package textcomp Info: Setting hlcn sub-encoding to TS1/5 on input line 320.
+Package textcomp Info: Setting hlcw sub-encoding to TS1/5 on input line 321.
+Package textcomp Info: Setting hlcf sub-encoding to TS1/5 on input line 322.
+Package textcomp Info: Setting pplx sub-encoding to TS1/3 on input line 323.
+Package textcomp Info: Setting pplj sub-encoding to TS1/3 on input line 324.
+Package textcomp Info: Setting ptmx sub-encoding to TS1/4 on input line 325.
+Package textcomp Info: Setting ptmj sub-encoding to TS1/4 on input line 326.
+))
+("C:\Program Files\MiKTeX 2.9\tex\latex\base\fontenc.sty"
+Package: fontenc 2005/09/27 v1.99g Standard LaTeX package
+
+("C:\Program Files\MiKTeX 2.9\tex\latex\base\t1enc.def"
+File: t1enc.def 2005/09/27 v1.99g Standard LaTeX file
+LaTeX Font Info:    Redeclaring font encoding T1 on input line 43.
+))
+("C:\Program Files\MiKTeX 2.9\tex\latex\ae\ae.sty"
+Package: ae 2001/02/12 1.3 Almost European Computer Modern
+
+("C:\Program Files\MiKTeX 2.9\tex\latex\base\fontenc.sty"
+Package: fontenc 2005/09/27 v1.99g Standard LaTeX package
+
+("C:\Program Files\MiKTeX 2.9\tex\latex\base\t1enc.def"
+File: t1enc.def 2005/09/27 v1.99g Standard LaTeX file
+LaTeX Font Info:    Redeclaring font encoding T1 on input line 43.
+)
+LaTeX Font Info:    Try loading font information for T1+aer on input line 100.
+
+("C:\Program Files\MiKTeX 2.9\tex\latex\ae\t1aer.fd"
+File: t1aer.fd 1997/11/16 Font definitions for T1/aer.
+))))
+(G:\git\phenotypes2genotypes\ARTICLE\manual.aux)
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 16.
+LaTeX Font Info:    ... okay on input line 16.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 16.
+LaTeX Font Info:    ... okay on input line 16.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 16.
+LaTeX Font Info:    ... okay on input line 16.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 16.
+LaTeX Font Info:    ... okay on input line 16.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 16.
+LaTeX Font Info:    ... okay on input line 16.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 16.
+LaTeX Font Info:    ... okay on input line 16.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 16.
+LaTeX Font Info:    Try loading font information for TS1+cmr on input line 16.
+
+("C:\Program Files\MiKTeX 2.9\tex\latex\base\ts1cmr.fd"
+File: ts1cmr.fd 1999/05/25 v2.5h Standard LaTeX font definitions
+)
+LaTeX Font Info:    ... okay on input line 16.
+
+("C:\Program Files\MiKTeX 2.9\tex\context\base\supp-pdf.mkii"
+[Loading MPS to PDF converter (version 2006.09.02).]
+\scratchcounter=\count114
+\scratchdimen=\dimen115
+\scratchbox=\box53
+\nofMPsegments=\count115
+\nofMParguments=\count116
+\everyMPshowfont=\toks15
+\MPscratchCnt=\count117
+\MPscratchDim=\dimen116
+\MPnumerator=\count118
+\makeMPintoPDFobject=\count119
+\everyMPtoPDFconversion=\toks16
+)
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <12> on input line 23.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <8> on input line 23.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <6> on input line 23.
+ [1
+
+{C:/ProgramData/MiKTeX/2.9/pdftex/config/pdftex.map}] [2]
+LaTeX Font Info:    Try loading font information for TS1+aer on input line 64.
+LaTeX Font Info:    No file TS1aer.fd. on input line 64.
+
+
+LaTeX Font Warning: Font shape `TS1/aer/m/n' undefined
+(Font)              using `TS1/cmr/m/n' instead
+(Font)              for symbol `textbullet' on input line 64.
+
+<population.jpg, id=15, 1138.2525pt x 865.2325pt>
+File: population.jpg Graphic file (type jpg)
+ <use population.jpg>
+Overfull \hbox (161.12001pt too wide) in paragraph at lines 68--69
+[] 
+ []
+
+[3]
+Overfull \vbox (162.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (161.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (160.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (159.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (158.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (157.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (156.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (155.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (154.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (153.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (152.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (151.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (150.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (149.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (148.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (147.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (146.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (145.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (144.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (143.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (142.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (141.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (140.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (139.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (138.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (137.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (136.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (135.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (134.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (133.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (132.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (131.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (130.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (129.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (128.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (127.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (126.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (125.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (124.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (123.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (122.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (121.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (120.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (119.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (118.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (117.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (116.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (115.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (114.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (113.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (112.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (111.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (110.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (109.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (108.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (107.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (106.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (105.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (104.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (103.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (102.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (101.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (100.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (99.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (98.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (97.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (96.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (95.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (94.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (93.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (92.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (91.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (90.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (89.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (88.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (87.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (86.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (85.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (84.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (83.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (82.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (81.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (80.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (79.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (78.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (77.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (76.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (75.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (74.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (73.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (72.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (71.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (70.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (69.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (68.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (67.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (66.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (65.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (64.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (63.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (62.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (61.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (60.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (59.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (58.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (57.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (56.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (55.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (54.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (53.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (52.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (51.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (50.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (49.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (48.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (47.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (46.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (45.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (44.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (43.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (42.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (41.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (40.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (39.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (38.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (37.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (36.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (35.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (34.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (33.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (32.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (31.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (30.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (29.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (28.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (27.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (26.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (25.44057pt too high) has occurred while \output is active []
+
+
+Overfull \vbox (24.44057pt too high) has occurred while \output is active []
+
+
+[4 <G:/git/phenotypes2genotypes/ARTICLE/population.jpg>]
+LaTeX Font Info:    Try loading font information for T1+aett on input line 77.
+
+("C:\Program Files\MiKTeX 2.9\tex\latex\ae\t1aett.fd"
+File: t1aett.fd 1997/11/16 Font definitions for T1/aett.
+) [5]
+<manual-006.pdf, id=28, 433.62pt x 433.62pt>
+File: manual-006.pdf Graphic file (type pdf)
+ <use manual-006.pdf> [6 <G:/git/phenotypes2genotypes/ARTICLE/manual-006.pdf>]
+<manual-007.pdf, id=37, 433.62pt x 433.62pt>
+File: manual-007.pdf Graphic file (type pdf)
+ <use manual-007.pdf> [7 <G:/git/phenotypes2genotypes/ARTICLE/manual-007.pdf>]
+<manual-008.pdf, id=46, 433.62pt x 433.62pt>
+File: manual-008.pdf Graphic file (type pdf)
+ <use manual-008.pdf> [8 <G:/git/phenotypes2genotypes/ARTICLE/manual-008.pdf>]
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <7> on input line 181.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <5> on input line 181.
+ [9]
+<manual-012.pdf, id=58, 433.62pt x 433.62pt>
+File: manual-012.pdf Graphic file (type pdf)
+ <use manual-012.pdf> [10 <G:/git/phenotypes2genotypes/ARTICLE/manual-012.pdf>]
+
+<manual-013.pdf, id=66, 433.62pt x 433.62pt>
+File: manual-013.pdf Graphic file (type pdf)
+ <use manual-013.pdf> [11 <G:/git/phenotypes2genotypes/ARTICLE/manual-013.pdf>]
+
+<manual-014.pdf, id=74, 433.62pt x 433.62pt>
+File: manual-014.pdf Graphic file (type pdf)
+ <use manual-014.pdf> [12 <G:/git/phenotypes2genotypes/ARTICLE/manual-014.pdf>]
+
+<manual-016.pdf, id=82, 433.62pt x 433.62pt>
+File: manual-016.pdf Graphic file (type pdf)
+ <use manual-016.pdf> [13 <G:/git/phenotypes2genotypes/ARTICLE/manual-016.pdf>]
+
+<manual-019.pdf, id=91, 433.62pt x 433.62pt>
+File: manual-019.pdf Graphic file (type pdf)
+ <use manual-019.pdf> [14 <G:/git/phenotypes2genotypes/ARTICLE/manual-019.pdf>]
+
+<manual-021.pdf, id=99, 433.62pt x 433.62pt>
+File: manual-021.pdf Graphic file (type pdf)
+ <use manual-021.pdf> [15 <G:/git/phenotypes2genotypes/ARTICLE/manual-021.pdf>]
+
+<manual-024.pdf, id=107, 433.62pt x 433.62pt>
+File: manual-024.pdf Graphic file (type pdf)
+ <use manual-024.pdf> [16 <G:/git/phenotypes2genotypes/ARTICLE/manual-024.pdf>]
+ [17] [18] [19] [20] [21]
+(G:\git\phenotypes2genotypes\ARTICLE\manual.bbl) [22]
+(G:\git\phenotypes2genotypes\ARTICLE\manual.aux)
+
+LaTeX Font Warning: Some font shapes were not available, defaults substituted.
+
+ ) 
+Here is how much of TeX's memory you used:
+ 3231 strings out of 494053
+ 43476 string characters out of 3148600
+ 105668 words of memory out of 3000000
+ 6435 multiletter control sequences out of 15000+200000
+ 29538 words of font info for 64 fonts, out of 3000000 for 9000
+ 715 hyphenation exceptions out of 8191
+ 35i,8n,23p,555b,266s stack positions out of 5000i,500n,10000p,200000b,50000s
+ <C:\Users\Konrad\AppData\Local\MiKTeX\2.9\fonts\pk\ljfour\jknappen\ec\dpi600
+\tcrm1000.pk><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmbx10
+.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmbx12.pfb><C:
+/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmmi10.pfb><C:/Program
+ Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmmi8.pfb><C:/Program Files/Mi
+KTeX 2.9/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/Program Files/MiKTeX 2.9/
+fonts/type1/public/amsfonts/cm/cmr12.pfb><C:/Program Files/MiKTeX 2.9/fonts/typ
+e1/public/amsfonts/cm/cmr17.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public
+/amsfonts/cm/cmr8.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/
+cm/cmsltt10.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmt
+i10.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmtt10.pfb>
+
+Output written on manual.pdf (22 pages, 2904306 bytes).
+PDF statistics:
+ 174 PDF objects out of 1000 (max. 8388607)
+ 0 named destinations out of 1000 (max. 500000)
+ 56 words of extra memory for PDF output out of 10000 (max. 10000000)
+

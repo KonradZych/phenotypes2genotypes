@@ -231,7 +231,6 @@ rearrangeMarkers <- function(cross,map=c("genetic","physical"),corTreshold=0.6,a
 		oldnames <- rownames(cur_map)[which(cur_map[,1]==x)]
 		toputtogether <- mnames[output==x]
 		if(addMarkers){
-			if(verbose) cat("adding",dim(pull.geno(cross)[,toputtogether]),"old markers\n",dim(t(cross$genotypes$real[oldnames,])),"old markers\n")
 			cross_$geno[[x]]$data <- cbind(pull.geno(cross)[,toputtogether],t(cross$genotypes$real[oldnames,]))
 			newmap <- 1:(length(toputtogether)+length(oldnames))
 			names(newmap) <- c(toputtogether,oldnames)
@@ -240,17 +239,13 @@ rearrangeMarkers <- function(cross,map=c("genetic","physical"),corTreshold=0.6,a
 			newmap <- 1:length(toputtogether)
 			names(newmap) <- toputtogether
 		}
-		cat("- done ",1," -\n")
 		cross_$geno[[x]]$map <- c(newmap)
 	}
-	cat("- done ",2," -\n")
 	names(cross_$geno) <- 1:length(cross_$geno)
 	for(i in 1:length(cross_$geno)){
 		class(cross_$geno[[i]]) <- "A"
 	}
-	cat("- done ",3," -\n")
-	cross_ <- orderMarkers(cross_,verbose=verbose,use.ripple=F)
-	cat("- done ",4," -\n")
+	#cross_ <- orderMarkers(cross_,verbose=verbose,use.ripple=F)
 	cross <- putAdditionsOfCross.internal(cross, additions)
 	invisible(cross_)
 }
