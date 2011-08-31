@@ -178,7 +178,6 @@ convertToGenotypes.internal <- function(population, orderUsing, treshold, overla
 	### putting results inside population object
 	if(is.null(dim(output))) stop("No markers selected.")
 	population$offspring$genotypes$simulated <- output
-	cat(length(markerNames),dim(population$offspring$genotypes$simulated),"\n")
 	colnames(population$offspring$genotypes$simulated) <- colnames(upRils)
 	rownames(population$offspring$genotypes$simulated) <- markerNames
 	invisible(population)

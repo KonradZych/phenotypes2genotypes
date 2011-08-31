@@ -50,8 +50,8 @@
 genotypesToCross.internal <- function(population, genotype=c("simulated","real"), orderUsing=c("none","map_genetic","map_physical"), outputFile="mycross.csv", verbose=FALSE, debugMode=0){
 	###CHECKS
 	is.population(population)
-	genotype <- defaultCheck.internal(genotype,"genotype",2)
-	orderUsing <- defaultCheck.internal(orderUsing,"orderUsing",3)	
+	genotype <- defaultCheck.internal(genotype,"genotype",2,"simulated")
+	orderUsing <- defaultCheck.internal(orderUsing,"orderUsing",3,"none")	
 	if(verbose && debugMode==1) cat("genotypesToCross starting.\n")
 	s <- proc.time()
 	if(orderUsing=="map_physical"&&is.null(population$maps$physical)) stop("orderUsing=map_physical chosen, but there is no map in population$maps$physical\n")
