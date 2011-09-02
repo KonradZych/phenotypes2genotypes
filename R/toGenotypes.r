@@ -337,7 +337,7 @@ filterRowSub.internal <- function(genotypeRow, overlapInd, proportion, margin, g
 ############################################################################################################
 splitPhenoRowEM.internal <- function(x, offspring, founders, overlapInd, proportion, margin, groupLabels, up=1){
 	### initialization
-	print(x)
+	#print(x)
 	downLimit <- mean(offspring[x,]) - 2*sd(offspring[x,])
 	upLimit <- mean(offspring[x,]) + 2*sd(offspring[x,])
 	if(any(offspring[x,]<downLimit)||any(offspring[x,]>upLimit)){
@@ -345,7 +345,11 @@ splitPhenoRowEM.internal <- function(x, offspring, founders, overlapInd, proport
 	}else{
 		nrDistributions <- length(proportion)
 		result <- rep(0,length(offspring[x,]))
+    aa <- tempfile()
+    sink(aa)
 		EM <- normalmixEM(sort(offspring[x,]), k=nrDistributions, maxrestarts=0, maxit = 100,fast=TRUE)
+    sink()
+    file.remove(aa)
 		if(up==1){
 			genotypes <- c(0:(nrDistributions-1))
 		}else if(up==0){
