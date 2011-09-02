@@ -234,6 +234,8 @@ selectMarkersUsingMap.internal <- function(phenotypeMatrix,population,orderUsing
 #	list containg genotype matrix and names of selected markers
 #
 ############################################################################################################
+#DANNY: TODO MERGE splitPhenoRowEM.internal into this function
+#WHY 2 functions ? you're not calling : splitPhenoRowEM.internal anywhere else !!!! so it shouldn't be a function
 splitPheno.internal <- function(offspring, founders, overlapInd, proportion, margin, groupLabels, up){
 	output <- NULL
 	markerNames <- NULL

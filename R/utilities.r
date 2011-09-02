@@ -58,7 +58,7 @@ print.population <- function(x,...){
 		if(!(is.null(x$maps$genetic))){
 			cat("\tGenetic map:",nrow(x$maps$genetic),"markers, ",length(table(x$maps$genetic[,1]))," chromosomes\n",...)
 		}else{
-			cat("\ttGenetic map: None\n")
+			cat("\tGenetic map: None\n")
 		}
 		if(!(is.null(x$maps$physical))){
 			cat("\tPhysical map:",nrow(x$maps$physical),"markers, ",length(table(x$maps$physical[,1]))," chromosomes\n",...)
