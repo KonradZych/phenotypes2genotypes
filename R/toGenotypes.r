@@ -247,6 +247,7 @@ splitPheno.internal <- function(offspring, founders, overlapInd, proportion, mar
 		if(!(is.null(cur))){
 			output <- rbind(output,cur)
 			markerNames <- c(markerNames,x)
+      cat("!\n")
 		}
 	}
 	invisible(list(output,markerNames))
@@ -341,35 +342,41 @@ filterRowSub.internal <- function(genotypeRow, overlapInd, proportion, margin, g
 splitPhenoRowEM.internal <- function(x, offspring, founders, overlapInd, proportion, margin, groupLabels, up=1){
 	### initialization
 	#print(x)
-	downLimit <- mean(offspring[x,]) - 2*sd(offspring[x,])
-	upLimit <- mean(offspring[x,]) + 2*sd(offspring[x,])
-	if(any(offspring[x,]<downLimit)||any(offspring[x,]>upLimit)){
-		result <- NULL
-	}else{
-		nrDistributions <- length(proportion)
-		result <- rep(0,length(offspring[x,]))
+	#downLimit <- mean(offspring[x,]) - 2*sd(offspring[x,])
+	#upLimit <- mean(offspring[x,]) + 2*sd(offspring[x,])
+	#if(any(offspring[x,]<downLimit)||any(offspring[x,]>upLimit)){
+	#	result <- NULL
+  #  cat("Removed by some vague limit which is not settable by the user")
+	#}else{
     aa <- tempfile()
     sink(aa)
-		EM <- normalmixEM(sort(offspring[x,]), k=nrDistributions, maxrestarts=0, maxit = 100,fast=TRUE)
-    sink()
-    file.remove(aa)
-		if(up==1){
-			genotypes <- c(0:(nrDistributions-1))
-		}else if(up==0){
-			genotypes <- c((nrDistributions-1):0)
-		}
-		len <- vector(mode="numeric",length=nrDistributions)
-		for(i in 1:nrDistributions){
-			len[i]<-length(offspring[x,])*EM$lambda[which(EM$mu==sort(EM$mu)[i])]
-			startVal <- sum(len[1:i-1])
-			result[which(offspring[x,] %in% sort(offspring[x,])[startVal:(startVal+len[i])])] <- genotypes[i]
-		}
-		if(checkMu.internal(offspring,EM,overlapInd)){
-			result <- filterRow.internal(result, overlapInd, proportion, margin, genotypes)
-		}else{
-			result<- NULL
-		}
-	}
+  	nrDistributions <- length(proportion)
+		result <- rep(0,length(offspring[x,]))
+    EM <- NULL
+		try(EM <- normalmixEM(sort(offspring[x,]), k=nrDistributions, maxrestarts=0, maxit = 100,fast=TRUE))
+    if(is.null(EM)){
+      result <- NULL
+    }else{
+      if(up==1){
+        genotypes <- c(0:(nrDistributions-1))
+      }else if(up==0){
+        genotypes <- c((nrDistributions-1):0)
+      }
+      len <- vector(mode="numeric",length=nrDistributions)
+      for(i in 1:nrDistributions){
+        len[i]<-length(offspring[x,])*EM$lambda[which(EM$mu==sort(EM$mu)[i])]
+        startVal <- sum(len[1:i-1])
+        result[which(offspring[x,] %in% sort(offspring[x,])[startVal:(startVal+len[i])])] <- genotypes[i]
+      }
+      if(checkMu.internal(offspring,EM,overlapInd)){
+        result <- filterRow.internal(result, overlapInd, proportion, margin, genotypes)
+      }else{
+        result<- NULL
+      }
+    }
+	#}
+  sink()
+  file.remove(aa)
 	invisible(result)
 }
 
