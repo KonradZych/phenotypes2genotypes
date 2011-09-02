@@ -55,6 +55,7 @@ createPopulation <- function(offspring_phenotypes, founders, founders_groups, of
 	if(missing(founders_groups)){
 		stop("No information about founders groups provided!\n")
 	}else{
+    #DANNY: CHECK if the length of the founders group equals the number of columns in the founder then add
 		population <- intoPopulationSub.internal(population, founders_groups, "founders$groups", verbose, debugMode)
 	}
 	if(missing(offspring_genotypes)){
@@ -176,6 +177,7 @@ intoPopulationSubPheno.internal <- function(population, dataObject, dataType=c("
 		rows <- NULL
 		
 		### checking whether columns are numeric/convertable to numeric
+    #DANNY: MOVE THIS TO AN APPLY This is really slow, At least indicate progress
 		for(column in 1:ncol(dataObject)){
 			if(!(numericCheck.internal(dataObject[,column],allow.na=TRUE))){
 				columns <- c(columns,column)
@@ -190,20 +192,22 @@ intoPopulationSubPheno.internal <- function(population, dataObject, dataType=c("
 		
 		if(is.null(dim(dataObject))) stop("Not enough data to continue.\n")
 		
-		### checking whether rows are numeric/convertable to numeric
-		for(row_ in 1:nrow(dataObject)){
-			if(!(numericCheck.internal(dataObject[row_,],allow.na=TRUE))){
-				rows <- c(rows,row_)
-			}
-		}
+		### DANNY: WTHELL ? if all the columns are numeric the rows are ALSO !!!
+    #
+    #checking whether rows are numeric/convertable to numeric
+		#for(row_ in 1:nrow(dataObject)){
+		#	if(!(numericCheck.internal(dataObject[row_,],allow.na=TRUE))){
+		#		rows <- c(rows,row_)
+		#	}
+		#}
 		
 		### removing faulty rows
-		if(!(is.null(rows))){
-			if(verbose)cat("Following  rows are not numeric and cannot be converted into numeric:",rows," so will be removed.\n")
-			dataObject <- dataObject[-rows,]
-		}
+		#if(!(is.null(rows))){
+		#	if(verbose)cat("Following  rows are not numeric and cannot be converted into numeric:",rows," so will be removed.\n")
+		#	dataObject <- dataObject[-rows,]
+		#}
 		
-		if(is.null(dim(dataObject))) stop("Not enough data to continue.\n")
+		#if(is.null(dim(dataObject))) stop("Not enough data to continue.\n")
 		
 		cur<- matrix(as.numeric(as.matrix(dataObject)),nrow(dataObject),ncol(dataObject))
 		
@@ -252,6 +256,7 @@ intoPopulationSubPheno.internal <- function(population, dataObject, dataType=c("
 # 	-  maps$physical - physical map
 #
 ############################################################################################################
+#THIS FUNCTION IS CALLED ONLY ONCE in your code, SO move it to there, IT isn't a function
 intoPopulationSubGeno.internal <- function(population, dataObject, verbose=FALSE,debugMode=0){
 	if(verbose && debugMode==1) cat("intoPopulationSubGeno.internal starting.\n")
 	s <- proc.time()
@@ -275,20 +280,21 @@ intoPopulationSubGeno.internal <- function(population, dataObject, verbose=FALSE
 		
 		if(is.null(dim(dataObject))) stop("Not enough data to continue.\n")
 		
+    ### DANNY: WTHELL ? if all the columns are numeric the rows are ALSO !!!
 		### checking whether rows are numeric/convertable to numeric
-		for(row_ in 1:nrow(dataObject)){
-			if(!(genotypeCheck.internal(dataObject[row_,],allow.na=TRUE))){
-				rows <- c(rows,row_)
-			}
-		}
+		#for(row_ in 1:nrow(dataObject)){
+		#	if(!(genotypeCheck.internal(dataObject[row_,],allow.na=TRUE))){
+		#		rows <- c(rows,row_)
+		#	}
+		#}
 		
 		### removing faulty rows
-		if(!(is.null(rows))){
-			if(verbose)cat("Following  rows are not numeric and cannot be converted into numeric:",rows," so will be removed.\n")
-			dataObject <- dataObject[-rows,]
-		}
+		#if(!(is.null(rows))){
+		#	if(verbose)cat("Following  rows are not numeric and cannot be converted into numeric:",rows," so will be removed.\n")
+		#	dataObject <- dataObject[-rows,]
+		#}
 		
-		if(is.null(dim(dataObject))) stop("Not enough data to continue.\n")
+		#if(is.null(dim(dataObject))) stop("Not enough data to continue.\n")
 		
 		cur<- matrix(as.numeric(as.matrix(dataObject)),nrow(dataObject),ncol(dataObject))
 		

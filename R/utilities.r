@@ -44,10 +44,9 @@
 print.population <- function(x,...){
 	cat("This is object of class \"population\"\n  It is too complex to print, so we provide just this summary.\n")
 	if(!(is.null(x$offspring))){
-    cat("Offspring:\n",...)
+    cat("Offspring (",ncol(x$offspring$phenotypes),"):\n",sep="",...)
 		if(!(is.null(x$offspring$phenotypes))){
-			cat("\tPhenotypes:",ncol(x$offspring$phenotypes),"\n",...)
-      cat("\tMarkers:",nrow(x$offspring$phenotypes),"\n",...)
+      cat("\tPhenotypes:",nrow(x$offspring$phenotypes),"\n",...)
 		}else{
 			stop("No phenotype data for offspring, this is not a valid population object\n")
 		}
@@ -59,7 +58,7 @@ print.population <- function(x,...){
 		if(!(is.null(x$maps$genetic))){
 			cat("\tGenetic map:",nrow(x$maps$genetic),"markers, ",length(table(x$maps$genetic[,1]))," chromosomes\n",...)
 		}else{
-			cat("\ttGenetic map: None\n")
+			cat("\tGenetic map: None\n")
 		}
 		if(!(is.null(x$maps$physical))){
 			cat("\tPhysical map:",nrow(x$maps$physical),"markers, ",length(table(x$maps$physical[,1]))," chromosomes\n",...)
@@ -71,10 +70,9 @@ print.population <- function(x,...){
 	}
 
 	if(!(is.null(x$founders))){
-    cat("Founders:\n",...)
+    cat("Founders (",ncol(x$founders$phenotypes),"):\n",sep="",...)
 		if(!(is.null(x$founders$phenotypes))){
-			cat("\tPhenotypes:",ncol(x$founders$phenotypes),"\n",...)
-      cat("\tMarkers:",nrow(x$founders$phenotypes),"\n",...)
+      cat("\tPhenotypes:",nrow(x$founders$phenotypes),"\n",...)
 		}else{
 			stop("No phenotype data for founders, this is not a valid population object\n")
 		}
