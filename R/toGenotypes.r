@@ -89,7 +89,7 @@ toGenotypes <- function(population, genotype=c("simulated","real"), orderUsing=c
 	if(verbose && debugMode==2)cat("Creating cross object done in:",(e1-s1)[3],"seconds.\n")
 	
 	#**********ORDERING MARKERS*************
-	if(orderUsing=="none"){ cross <- orderMarkers(cross,use.ripple=F,verbose=F)}
+	#if(orderUsing=="none"){ cross <- orderMarkers(cross,use.ripple=F,verbose=F)}
 	
 		
 	#*******ADDING MAPS TO THE CROSS*******
