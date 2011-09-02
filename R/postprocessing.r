@@ -281,7 +281,7 @@ orderChromosomes <- function(cross,map=c("genetic","physical"),verbose=FALSE){
 			output <- majorityRule.internal(cross,cur_map)
 		}
 	}
-	if(verbose) cat(output,"\n")
+	#if(verbose) cat(output,"\n")
 	order1 <- matrix(0,ncol(output),nrow(output))
 	order2 <- matrix(1,ncol(output),nrow(output))
 	### until next iteration doesn't change the result

@@ -154,7 +154,10 @@ convertToGenotypes.internal <- function(population, orderUsing, treshold, overla
 	if(!(is.null(dim(upRils)))){
 		if(!(is.null(dim(downRils)))){
 			# best situation
-			if(verbose) cat("Selected ",nrow(upRils),"upregulated markers and ",nrow(downRils),"downregulated markers.\n")
+			if(verbose) cat("Selected",nrow(upRils),"markers (UP), ",nrow(downRils),"markers (DOWN).\n")
+      inupndown <- which(rownames(upRils) %in% rownames(downRils))
+			if(verbose) cat("WARNING: Overlap between UP n DOWN:",length(inupndown),", removing from UP\n")
+      upRils <- upRils[-inupndown,]
 			cur <- splitPheno.internal(downRils, downParental, overlapInd, proportion, margin, population$founders$groups, 0)
 			output <- rbind(output,cur[[1]])
 			markerNames <- c(markerNames,cur[[2]])
@@ -238,6 +241,8 @@ selectMarkersUsingMap.internal <- function(phenotypeMatrix,population,orderUsing
 #	list containg genotype matrix and names of selected markers
 #
 ############################################################################################################
+#DANNY: TODO MERGE splitPhenoRowEM.internal into this function
+#WHY 2 functions ? you're not calling : splitPhenoRowEM.internal anywhere else !!!! so it shouldn't be a function
 splitPheno.internal <- function(offspring, founders, overlapInd, proportion, margin, groupLabels, up){
 	output <- NULL
 	markerNames <- NULL
@@ -336,6 +341,10 @@ filterRowSub.internal <- function(genotypeRow, overlapInd, proportion, margin, g
 ############################################################################################################
 splitPhenoRowEM.internal <- function(x, offspring, founders, overlapInd, proportion, margin, groupLabels, up=1){
 	### initialization
+<<<<<<< HEAD
+=======
+	#print(x)
+>>>>>>> 78b139e8bf64e4e185b840efb2dabd78e2816682
 	downLimit <- mean(offspring[x,]) - 2*sd(offspring[x,])
 	upLimit <- mean(offspring[x,]) + 2*sd(offspring[x,])
 	if(any(offspring[x,]<downLimit)||any(offspring[x,]>upLimit)){
@@ -343,7 +352,11 @@ splitPhenoRowEM.internal <- function(x, offspring, founders, overlapInd, proport
 	}else{
 		nrDistributions <- length(proportion)
 		result <- rep(0,length(offspring[x,]))
+    aa <- tempfile()
+    sink(aa)
 		EM <- normalmixEM(sort(offspring[x,]), k=nrDistributions, maxrestarts=0, maxit = 100,fast=TRUE)
+    sink()
+    file.remove(aa)
 		if(up==1){
 			genotypes <- c(0:(nrDistributions-1))
 		}else if(up==0){
