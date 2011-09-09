@@ -8,7 +8,7 @@
 # 
 # first written March 2011
 # last modified July 2011
-# last modified in version: 0.8.6
+# last modified in version: 0.8.7
 # in current version: active, not in main workflow
 #
 #     This program is free software; you can redistribute it and/or
@@ -46,11 +46,37 @@
 #	object of class population
 #
 ############################################################################################################
-fakePopulation <- function(n.founders = 4, n.offspring = 250, n.markers=1000,n.chromosomes=10, type = c("riself", "f2", "bc", "risib"), ...){
+fakePopulation <- function(n.founders = 4, n.offspring = 250, n.markers=1000,n.chromosomes=10, type = c("riself", "f2", "bc", "risib"), verbose=FALSE,...){
+	### checks
+	n.founders <- defaultCheck.internal(n.founders,"n.founders",1,4)
+	n.offspring <- defaultCheck.internal(n.offspring,"n.offspring",1,250)
+	n.markers <- defaultCheck.internal(n.markers,"n.markers",1,1000)
+	n.chromosomes <- defaultCheck.internal(n.chromosomes,"n.chromosomes",1,10)
+	if(!(is.numeric(n.founders))) stop("n.founders should be numeric\n")
+	if(!(is.numeric(n.offspring))) stop("n.offspring should be numeric\n")
+	if(!(is.numeric(n.markers))) stop("n.markers should be numeric\n")
+	if(!(is.numeric(n.chromosomes))) stop("n.chromosomes should be numeric\n")
 	type <- match.arg(type)
-	if(n.founders<4) n.founders <- 4
+	if(n.founders<4){
+		warning("too small n.founders, changing to 4\n")
+		n.founders <- 4
+	}
 	if(!(n.founders%%2==0)) n.founders <- n.founders+1
 	if(length(type)>1) type <- type[1]
+	if(n.offspring<10){
+		warning("too small n.offspring, changing to 10\n")
+		n.offspring <- 10
+	}
+	if(n.markers<10){
+		warning("too small n.markers, changing to 10\n")
+		n.markers <- 10
+	}
+	if(n.markers<n.chromosomes){
+		warning("n.markers cannot be smaller than n.chromosomes, changing n.markers to 10*n.chromosomes\n")
+		n.markers <- 10*n.chromosomes
+	}
+
+	### fuction itself
 	map <- sim.map(rep(100,n.chromosomes),n.mar=(n.markers/n.chromosomes), include.x=FALSE,)
 	fake <- sim.cross(map,type=type, n.ind=n.offspring, ...)
 	geno <- t(pull.geno(fake))
@@ -58,6 +84,7 @@ fakePopulation <- function(n.founders = 4, n.offspring = 250, n.markers=1000,n.c
 		geno <- t(apply(geno,1,simBC.internal))
 	}
 	map <- convertMap.internal(map)
+	physicalMap <- fakePhysicalMap.internal(map)
 	colnames(geno) <- paste("RIL",1:ncol(geno),sep="_")
 	pheno <- t(apply(geno,1,fakePheno.internal))
 	rownames(pheno) <- rownames(geno)
@@ -69,7 +96,7 @@ fakePopulation <- function(n.founders = 4, n.offspring = 250, n.markers=1000,n.c
 	colnames(founders)[(n.founders/2+1):n.founders] <- paste("Founder",2,(n.founders/2+1):n.founders,sep="_")
 	geno[which(geno==2)] <- 0
 	foundersGroups <- c(rep(0,(n.founders/2)),rep(1,(n.founders/2)))
-	population <- createPopulation(pheno, founders, foundersGroups, geno, map, map)
+	population <- createPopulation(pheno, founders, foundersGroups, geno, map, physicalMap,verbose=verbose)
 	is.population(population)
 	invisible(population)
 }
@@ -113,6 +140,30 @@ fakeFounders.internal <- function(phenoRow,n.founders){
 	cur_mean <- mean(phenoRow)
 	foundersRow <- c(rep((cur_mean-diffExprRate*cur_mean),(n.founders/2)),rep((cur_mean+diffExprRate*cur_mean),(n.founders/2))) + errorF
 	invisible(foundersRow)
+}
+
+############################################################################################################
+#									*** fakePhysicalMap.internal ***
+#
+# DESCRIPTION:
+#	simulating physical map using genetic one
+# 
+# PARAMETERS:
+#	map - map as used in population object (matrix with two cols 1-chr nr, 2- position)
+#
+# OUTPUT:
+#	map of the same type
+#
+############################################################################################################
+fakePhysicalMap.internal <- function(map){
+	for(i in 1:nrow(map)){
+		errorF <- runif(1,0,100)
+		if(errorF>90){
+			newChrom <- runif(1,1,(max(map[,1])))
+			map[i,1] <- newChrom
+		}
+	}
+	invisible(map)
 }
 
 ############################################################################################################

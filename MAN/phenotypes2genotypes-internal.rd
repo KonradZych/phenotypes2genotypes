@@ -37,6 +37,7 @@
 \alias{selectMarkersUsingMap.internal}
 \alias{chromosomesCorelationMatrix}
 \alias{is.population}
+\alias{fakePhysicalMap.internal}
 
 
 \alias{inRangeCheck.internal}

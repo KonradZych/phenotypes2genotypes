@@ -9,19 +9,12 @@
 }
 
 \usage{
-	orderChromosomes(cross,method=c("majority","corelation"),map=c("genetic","physical"),corTreshold=0.6,verbose=FALSE)
+	orderChromosomes(cross,map=c("genetic","physical"),corTreshold,addMarkers=FALSE,verbose=FALSE)
 }
 
 \arguments{
  \item{cross}{ object of class cross}
- \item{method}{ 
-  Which method should be used to compare (see details)
-  \itemize{
-    \item{majority}{ - majority}
-    \item{corelation}{ - best corelation}
-  }
-  }
-  \item{map}{ 
+ \item{map}{ 
   Which map should be used for comparison:
   \itemize{
     \item{genetic}{ - genetic map from cross$maps$genetic}
@@ -49,11 +42,11 @@
 	### simulating data
 	population <- fakePopulation(type="riself",n.markers=1000)
 	population <- findDiffExpressed(population)
-	cross <- toGenotypes(population,genotype="simulated",proportion=c(50,50),orderUsing="none",treshold=0.01)
+	cross <- toGenotypes(population,genotype="simulated",proportion=c(50,50),orderUsing="map_genetic",treshold=0.01)
 	plot.rf(cross)
-	cross <- orderChromosomes(cross,method="corelation",map="physical",corTreshold=0,verbose=TRUE)
-	plot.rf(cross)
-	### not much happens, cause the are already ordered nicely
+	#cross <- orderChromosomes(cross,map="physical",verbose=TRUE) ### - sth weird!
+	#plot.rf(cross)
+
 }
 
 \seealso{
@@ -63,3 +56,4 @@
 }
 
 \keyword{manip}
+

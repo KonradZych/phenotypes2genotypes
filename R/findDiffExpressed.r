@@ -8,7 +8,7 @@
 # 
 # first written March 2011
 # last modified July 2011
-# last modified in version: 0.8.5
+# last modified in version: 0.8.7
 # in current version: active, in main workflow
 #
 #     This program is free software; you can redistribute it and/or
@@ -45,14 +45,40 @@
 #
 ############################################################################################################
 findDiffExpressed <- function(population,verbose=FALSE,debugMode=0,...){
+	if(missing(population)) stop("provide population object\n")
 	is.population(population)
 	s<-proc.time()
-	if(is.null(population$founders$phenotypes)) stop("No founders phenotype data provided\n")
-	if(is.null(population$founders$groups)) stop("No information about founders groups data provided\n")
-	rankProdRes <- invisible(RP(population$founders$phenotypes,population$founders$groups,...))
+	rankProdRes <- RP(population$founders$phenotypes,population$founders$groups,...)
 	population$founders$RP <- rankProdRes
 	class(population) <- "population"
 	e<-proc.time()
 	if(verbose && debugMode==2)cat("Data preprocessing done in:",(e-s)[3],"seconds.\n")
 	invisible(population)
+}
+
+############################################################################################################
+#									*** showRPpval ***
+#
+# DESCRIPTION:
+#	showing pvals of RP for selected markers
+# 
+# PARAMETERS:
+# 	population - Object of class population , must contain founders phenotypic data.
+# 	markers - markers (specified by number) to be shown
+# 
+# OUTPUT:
+#	none
+#
+############################################################################################################
+showRPpval <- function(population,markers=1:10){
+	if(missing(population)) stop("provide population object\n")
+	if(min(markers<1)||max(markers)>nrow(population$founders$phenotypes)) stop("wrong range of markers selected\n")
+	is.population(population)
+	if(is.null(population$founders$RP$pval)) stop("population object does not contain results of RP analysis\n")
+	toPrint <- matrix(0,length(markers),2)
+	toPrint[,1] <- population$founders$RP$pval[markers,1]
+	toPrint[,2] <- population$founders$RP$pval[markers,2]
+	rownames(toPrint) <- rownames(population$founders$phenotypes)[markers]
+	colnames(toPrint) <- c("up","down")
+	print(toPrint)
 }

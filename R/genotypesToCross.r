@@ -8,7 +8,7 @@
 # 
 # first written March 2011
 # last modified July 2011
-# last modified in version: 0.8.6
+# last modified in version: 0.8.7
 # in current version: active, internal in main workflow
 #
 #     This program is free software; you can redistribute it and/or
@@ -50,6 +50,8 @@
 genotypesToCross.internal <- function(population, genotype=c("simulated","real"), orderUsing=c("none","map_genetic","map_physical"), outputFile="mycross.csv", verbose=FALSE, debugMode=0){
 	###CHECKS
 	is.population(population)
+	genotype <- defaultCheck.internal(genotype,"genotype",2,"simulated")
+	orderUsing <- defaultCheck.internal(orderUsing,"orderUsing",3,"none")	
 	if(verbose && debugMode==1) cat("genotypesToCross starting.\n")
 	s <- proc.time()
 	if(orderUsing=="map_physical"&&is.null(population$maps$physical)) stop("orderUsing=map_physical chosen, but there is no map in population$maps$physical\n")
@@ -110,12 +112,9 @@ genotypesToCross.internal <- function(population, genotype=c("simulated","real")
 		}
 	}	
 
-	
-
-	
 #**********READING CROSS FILE TO R*************
 	cross <- invisible(read.cross("csvr",file=outputFile, genotypes=genotypes))
-	class(cross)[1] <- "riself"
+	
 	e <- proc.time()
 	if(verbose) cat("genotypesToCross done in",(e-s)[3],"seconds.\n")
 	invisible(cross)
@@ -156,9 +155,9 @@ writePhenotypes.internal <- function(population, genotype, outputFile, verbose=F
 			population$offspring$genotypes$simulated <- mapMarkers.internal(population$offspring$genotypes$simulated,population$offspring$phenotypes,mapMode=2)
 		}
 	}
-	if(nrow(population$offspring$phenotypes)>1000){
-		population$offspring$phenotypes <- population$offspring$phenotypes[1:1000,]
-	}
+	#if(nrow(population$offspring$phenotypes)>1000){
+	#	population$offspring$phenotypes <- population$offspring$phenotypes[1:1000,]
+	#}
 	population$offspring$phenotypes<- cleanNames.internal(population$offspring$phenotypes)
 	write.table(cbind("","",population$offspring$phenotypes),file=outputFile,sep=",",quote=FALSE,col.names=FALSE)
 	el <- proc.time()

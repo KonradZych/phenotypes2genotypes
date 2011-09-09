@@ -8,7 +8,7 @@
 # 
 # first written March 2011
 # last modified July 2011
-# last modified in version: 0.8.6
+# last modified in version: 0.8.7
 # in current version: active, not in main workflow
 #
 #     This program is free software; you can redistribute it and/or
@@ -77,7 +77,13 @@ createPopulation <- function(offspring_phenotypes, founders, founders_groups, of
 	class(population) <- "population"
 	e <- proc.time()
 	is.population(population)
-	cat("createPopulation done in:",(e-s)[3],"seconds.\n")
+	if(verbose){
+		if(debugMode==2){
+			cat("createPopulation done in:",(e-s)[3],"seconds.\n")
+		}else{
+			cat("createPopulation finished\n")
+		}
+	}
 	invisible(population)
 }
 
@@ -130,6 +136,13 @@ intoPopulation <- function(population, dataObject, dataType=c("founders","offspr
 #
 ############################################################################################################
 intoPopulationSub.internal <- function(population, dataObject, dataType=c("founders","offspring$phenotypes","founders$groups","offspring$genotypes","maps$genetic","maps$physical"),verbose=FALSE,debugMode=0){
+	if(dataType!="founders$groups"){
+		if(class(dataObject)=="data.frame"){
+			dataObject <- as.matrix(dataObject)
+		}else if(class(dataObject)!="matrix"){
+			stop("dataObject should be either matrix or data frame")
+		}
+	}
 	if(dataType=="founders" || dataType=="offspring$phenotypes"){
 		population <- intoPopulationSubPheno.internal(population,dataObject,dataType, verbose, debugMode)
 	}else if(dataType=="offspring$genotypes"){
