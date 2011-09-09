@@ -133,23 +133,28 @@ plotChildrenExpression <- function(population, markers=1:100){
 #	plot
 #
 ############################################################################################################
-plotMapComparison <- function(cross, coloringMode=1,map=c("genetic","physical")){ 
+plotMapComparison <- function(cross,map=c("genetic","physical"), coloringMode=1){
 	
 	crossContainsMap.internal(cross, map)
 	#*******objects containing all information needen for function execution*******
 	ys <- getYLocs.internal(cross)
-	if(map=="genetic"){
-			xs <- cross$maps$genetic[rownames(ys[[1]]),]
+	map <- defaultCheck.internal(map,"map",2,"genetic")
+	print(map)
+	cat("---   1   ---\n")
+	if(map[1]=="genetic"){
+			ys[[1]] <- mapMarkers.internal(ys[[1]],cross$maps$genetic,1)
+			xs <- mapMarkers.internal(cross$maps$genetic,ys[[1]],1)
 			#*******chromosomes lengths*******
 			referenceChrom <- chromosomesLengths.internal(cross$maps$genetic)
 			xs[,2] <- xs[,2] + referenceChrom[xs[,1]]
 	}else if(map=="physical"){
-			xs <- cross$maps$physical[rownames(ys[[1]]),]
+			ys[[1]] <- mapMarkers.internal(ys[[1]],cross$maps$physical,1)
+			xs<- mapMarkers.internal(cross$maps$physical,ys[[1]],1)
 			#*******chromosomes lengths*******
 			referenceChrom <- chromosomesLengths.internal(cross$maps$physical)
 			xs[,2] <- xs[,2] + referenceChrom[xs[,1]]
 	}
-	
+	cat("---   2   ---\n")
 	#*******positions of markers*******
 	predictedLocs <- ys[[1]][,-1]
 	referenceLocs <- xs[,2]
@@ -172,6 +177,7 @@ plotMapComparison <- function(cross, coloringMode=1,map=c("genetic","physical"))
 	for(i in 1:length(referenceChrom)-1){
 		referenceChromPos[i] <- (referenceChrom[i] + referenceChrom[i+1])/2
 	}
+	cat("---   3   ---\n")
 	#referenceChromPos[length(referenceChrom)] <- (referenceChrom[length(referenceChrom)] + max(referenceLocs))/2
 	#*******color palette*******
 	if(coloringMode==1){ 
@@ -179,7 +185,7 @@ plotMapComparison <- function(cross, coloringMode=1,map=c("genetic","physical"))
 	}else if(coloringMode==2){
 		color <- makeTransPal.internal(ys[[1]],xs)
 	}
-	
+	cat("---   4   ---\n")
 	#*******results of lin regr for each chromosome*******
 	l <- vector(mode="list",length(table(ys[[1]][,1])))
 	for(i in 1:length(table(ys[[1]][,1]))){
@@ -192,7 +198,7 @@ plotMapComparison <- function(cross, coloringMode=1,map=c("genetic","physical"))
 	#*******plotting points*******
 	plot(x=referenceLocs, y=predictedLocs, xlim=c(min(referenceLocs),max(referenceLocs)), ylim=c(min(predictedLocs),max(predictedLocs)),
 		xaxt="n", yaxt="n", col=color[[1]], pch=color[[2]], xlab="Reference map", ylab="Predicted map", main="Comparison of genetic maps")
-	
+	cat("---   5   ---\n")
 	#*******adding chromosome labels and tics*******
 	axis(1, at = referenceChrom[-1],labels = FALSE)
 	axis(1, at = referenceChromPos,labels = referenceChromLabels, lwd = 0, tick = FALSE)
@@ -203,7 +209,7 @@ plotMapComparison <- function(cross, coloringMode=1,map=c("genetic","physical"))
 	axis(1, at = referenceLocs,labels = FALSE)
 	#if(!is.null(cross$removed)) axis(1, at = cross$removed[,2],labels = FALSE, col.ticks = "red")
 	axis(2, at = predictedLocs,labels = FALSE)
-	
+	cat("---  6   ---\n")
 	#*******adding lines marking chromosomes ends*******
 	for(x in 2:length(referenceChrom)){
 		abline(v=sum(referenceChrom[x]),lty=2)
@@ -248,8 +254,10 @@ getYLocs.internal <- function(cross){
 	chrlength <- as.vector(unlist(lapply(locs,max)),mode="numeric")
 	locs <- as.numeric(unlist(locs))
 	summaryLengths <- rep(0,length(chrlength))
-	for(x in 2:length(chrlength)){
-		summaryLengths[x] <- max(chrlength[x-1]) + summaryLengths[x-1] + 0.15 * max((chrlength))
+	if(length(chrlength)>1){
+		for(x in 2:length(chrlength)){
+			summaryLengths[x] <- max(chrlength[x-1]) + summaryLengths[x-1] + 0.15 * max((chrlength))
+		}
 	}
 	chrids <- getChromosome.internal(cross)
 	result <- matrix(0,length(locs),2)
@@ -455,3 +463,22 @@ chromosomesCorelationMatrix.internal <- function(cross, cur_map){
 	invisible(result)
 }
 
+projectOldMarkers <- function(cross,map=c("genetic","physical"),label=c("positions","names")){
+	curMap <- checkBeforeOrdering(cross,map)
+	label <- defaultCheck.internal(label, "label", 2,"positions")
+	qc <- curMap[,1]
+	qp_ <- NULL
+	inListCheck.internal(label,"label",c("positions","names"))
+	for(i in 1:14){
+		qp_ <- c(qp_,cross$geno[[i]]$map)
+	}
+	qp <- qp_[rownames(cross$maps$genetic)]
+	if(label=="positions"){
+		qn <- curMap[,2]
+	}else{
+		qn <- rownames(curMap)
+	}
+	cross <- sim.geno(cross)
+	qtl <- makeqtl(cross,qc,qp,qn)
+	plot(qtl)
+}

@@ -206,10 +206,11 @@ crossContainsMap.internal <- function(cross,map=c("genetic","physical")){
 #	default parameter from list of possible
 #
 ############################################################################################################
-defaultCheck.internal <- function(parameterToBeChecked,nameOfParameter,maxLength){
+defaultCheck.internal <- function(parameterToBeChecked,nameOfParameter,maxLength,defVal){
 	if(length(parameterToBeChecked)==maxLength){
-		parameterToBeChecked <- parameterToBeChecked[1]
+		invisible(defVal)
 	}else if(length(parameterToBeChecked)!=1){
 		stop("wrong parameter ",nameOfParameter," length, choose one out of possible\n")
 	}
+	invisible(parameterToBeChecked)
 }
