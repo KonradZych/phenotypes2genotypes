@@ -463,6 +463,20 @@ chromosomesCorelationMatrix.internal <- function(cross, cur_map){
 	invisible(result)
 }
 
+############################################################################################################
+#									*** projectOldMarkers ***
+#
+# DESCRIPTION:
+#	function calculating matrix of corelations between chromosomes
+# 
+# PARAMETERS:
+# 	cross - object of R/qtl cross type
+# 	cur_map - map to be used in comparison
+# 
+# OUTPUT:
+#	matrix of corelations
+#
+############################################################################################################
 projectOldMarkers <- function(cross,map=c("genetic","physical"),label=c("positions","names")){
 	curMap <- checkBeforeOrdering(cross,map)
 	label <- defaultCheck.internal(label, "label", 2,"positions")
