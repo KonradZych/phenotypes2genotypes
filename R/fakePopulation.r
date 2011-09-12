@@ -7,8 +7,8 @@
 # Modified by Danny Arends
 # 
 # first written March 2011
-# last modified July 2011
-# last modified in version: 0.8.7
+# last modified September 2011
+# last modified in version: 0.9.0
 # in current version: active, not in main workflow
 #
 #     This program is free software; you can redistribute it and/or
@@ -32,15 +32,19 @@
 #									*** fakePopulation ***
 #
 # DESCRIPTION:
-#	simulating population object 
+#	simulating object of class population 
 # 
 # PARAMETERS:
-#	n.founders - number of founders to be simulated:
-#	n.offspring - number of offspring individuals
-#	n.markers - number of markers individuals to be simulated
-#	n.chromosomes - number of chromosomes individuals to be simulated
-#	type - type of the cross - "riself" for two-way RIL
-#	... - parameters send to sim.cross, most important
+#	n.founders - number of founders to be simulated
+#	n.offspring - number of offspring individuals to be simulated
+#	n.markers - number of markers to be simulated
+#	n.chromosomes - number of chromosomes to be simulated
+#	type - type of the cross 
+#		- "riself" - RIL by selfing
+#		- "f2" - f2 cross
+#		- "bc" - back cross
+#		- "risib" - RIL by sibling mating
+#	... - parameters send to sim.cross function
 #
 # OUTPUT:
 #	object of class population
@@ -105,7 +109,7 @@ fakePopulation <- function(n.founders = 4, n.offspring = 250, n.markers=1000,n.c
 #									*** fakePheno.internal ***
 #
 # DESCRIPTION:
-#	simulating phenotype data using genotype data simulatyed by sim.cross
+#	subfunction of fakePopulation - simulating phenotype data using genotype data simulated by sim.cross
 # 
 # PARAMETERS:
 #	genoRow - row of offspring genotype matrix
@@ -125,7 +129,7 @@ fakePheno.internal <- function(genoRow,maxScale=10,maxError=3){
 #									*** fakeFounders.internal ***
 #
 # DESCRIPTION:
-#	simulating founders phenotype data using offspring phenotype data
+#	subfunction of fakePopulation - simulating founders phenotype data using offspring phenotype data
 # 
 # PARAMETERS:
 #	phenoRow - row of offspring phenotype matrix
@@ -135,10 +139,10 @@ fakePheno.internal <- function(genoRow,maxScale=10,maxError=3){
 #
 ############################################################################################################
 fakeFounders.internal <- function(phenoRow,n.founders){
-	errorF <- runif(n.founders,0,3)
-	diffExprRate <- runif(1,-0.5,0.5)
+	errorF <- runif(n.founders,0,2)
+	diffExprRate <- runif(1,0.1,1)
 	cur_mean <- mean(phenoRow)
-	foundersRow <- c(rep((cur_mean-diffExprRate*cur_mean),(n.founders/2)),rep((cur_mean+diffExprRate*cur_mean),(n.founders/2))) + errorF
+	foundersRow <- c(rep((cur_mean-diffExprRate*cur_mean),(n.founders/2)),rep(cur_mean+diffExprRate*cur_mean,(n.founders/2))) + errorF
 	invisible(foundersRow)
 }
 

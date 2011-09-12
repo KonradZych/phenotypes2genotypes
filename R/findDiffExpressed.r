@@ -48,11 +48,11 @@ findDiffExpressed <- function(population,verbose=FALSE,debugMode=0,...){
 	if(missing(population)) stop("provide population object\n")
 	is.population(population)
 	s<-proc.time()
-	rankProdRes <- RP(population$founders$phenotypes,population$founders$groups,...)
+	rankProdRes <- RP(population$founders$phenotypes,population$founders$groups,gene.names=rownames(population$founders$phenotypes),...)
 	population$founders$RP <- rankProdRes
 	class(population) <- "population"
 	e<-proc.time()
-	if(verbose && debugMode==2)cat("Data preprocessing done in:",(e-s)[3],"seconds.\n")
+	if(verbose && debugMode==2)cat("Differentially expressed genes found in:",(e-s)[3],"seconds.\n")
 	invisible(population)
 }
 
@@ -81,4 +81,30 @@ showRPpval <- function(population,markers=1:10){
 	rownames(toPrint) <- rownames(population$founders$phenotypes)[markers]
 	colnames(toPrint) <- c("up","down")
 	print(toPrint)
+}
+
+
+############################################################################################################
+#									*** plotRPpval ***
+#
+# DESCRIPTION:
+#	ploting pvals of RP for selected markers
+# 
+# PARAMETERS:
+# 	population - Object of class population , must contain founders phenotypic data.
+# 	markers - markers (specified by number) to be shown
+#	treshold - treshold value, on which line is plotted (by default - 0.01)
+# 
+# OUTPUT:
+#	none
+#
+############################################################################################################
+plotRPpval <- function(population,markers=1:10,treshold=0.01){
+	if(missing(population)) stop("provide population object\n")
+	if(min(markers<1)||max(markers)>nrow(population$founders$phenotypes)) stop("wrong range of markers selected\n")
+	is.population(population)
+	if(is.null(population$founders$RP$pval)) stop("population object does not contain results of RP analysis\n")
+	plot(population$founders$RP$pval[markers,1],main="RP analysis p-values",xlab="markers",ylab="p-value",ylim=c(0,1))
+	points(population$founders$RP$pval[markers,2],col="red")
+	abline(h=treshold)
 }

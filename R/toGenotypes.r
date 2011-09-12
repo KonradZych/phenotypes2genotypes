@@ -56,7 +56,7 @@
 #	object of class cross
 #
 ############################################################################################################
-toGenotypes <- function(population, genotype=c("simulated","real"), orderUsing=c("none","map_genetic","map_physical"),treshold=0.01, overlapInd = 0, proportion = c(50,50), margin = 15, verbose=FALSE, debugMode=0){
+toGenotypes <- function(population, genotype=c("simulated","real"), orderUsing=c("none","map_genetic","map_physical"),treshold=0.05, overlapInd = 0, proportion = c(50,50), margin = 15, verbose=FALSE, debugMode=0){
 	#*******CHECKS*******
 	is.population(population)
 	s<-proc.time()
@@ -136,15 +136,15 @@ convertToGenotypes.internal <- function(population, orderUsing, treshold, overla
 	
 	### selection step
 	### up-regulated
-	upNotNull <- which(population$founders$RP$pfp[1] > 0)
-	upBelowTreshold <- which(population$founders$RP$pfp[1] < treshold)
+	upNotNull <- which(population$founders$RP$pval[1] > 0)
+	upBelowTreshold <- which(population$founders$RP$pval[1] < treshold)
 	upSelected <- upBelowTreshold[which(upBelowTreshold%in%upNotNull)]
 	upParental <- population$founders$phenotypes[upSelected,]
 	#upParental <- selectMarkersUsingMap.internal(upParental,population,orderUsing,verbose,debugMode)
 	upRils <- population$offspring$phenotypes[rownames(upParental),]
 	### down-regulated
-	downNotNull <- which(population$founders$RP$pfp[2] > 0)
-	downBelowTreshold <- which(population$founders$RP$pfp[2] < treshold)
+	downNotNull <- which(population$founders$RP$pval[2] > 0)
+	downBelowTreshold <- which(population$founders$RP$pval[2] < treshold)
 	downSelected <- downBelowTreshold[which(downBelowTreshold%in%downNotNull)]
 	downParental <- population$founders$phenotypes[downSelected,]
 	#downParental <- selectMarkersUsingMap.internal(downParental,population,orderUsing,verbose,debugMode)
@@ -155,9 +155,9 @@ convertToGenotypes.internal <- function(population, orderUsing, treshold, overla
 		if(!(is.null(dim(downRils)))){
 			# best situation
 			if(verbose) cat("Selected",nrow(upRils),"markers (UP), ",nrow(downRils),"markers (DOWN).\n")
-      inupndown <- which(rownames(upRils) %in% rownames(downRils))
-			if(verbose) cat("WARNING: Overlap between UP n DOWN:",length(inupndown),", removing from UP\n")
-      upRils <- upRils[-inupndown,]
+			inupndown <- which(rownames(upRils) %in% rownames(downRils))
+			if(verbose&&length(inupndown)>0) cat("WARNING: Overlap between UP n DOWN:",length(inupndown),", removing from UP.\n")
+			upRils <- upRils[-inupndown,]
 			cur <- splitPheno.internal(downRils, downParental, overlapInd, proportion, margin, population$founders$groups, 0)
 			output <- rbind(output,cur[[1]])
 			markerNames <- c(markerNames,cur[[2]])
