@@ -7,8 +7,8 @@
 # Modified by Danny Arends
 # 
 # first written March 2011
-# last modified July 2011
-# last modified in version: 0.8.6
+# last modified September 2011
+# last modified in version: 0.9.0
 # in current version: active, in main workflow
 #
 #     This program is free software; you can redistribute it and/or
@@ -53,7 +53,7 @@
 # 	debugMode - 1: Print our checks, 2: print additional time information
 # 
 # OUTPUT:
-#	object of class cross
+#	an object of class cross
 #
 ############################################################################################################
 toGenotypes <- function(population, genotype=c("simulated","real"), orderUsing=c("none","map_genetic","map_physical"),treshold=0.05, overlapInd = 0, proportion = c(50,50), margin = 15, verbose=FALSE, debugMode=0){
@@ -86,11 +86,7 @@ toGenotypes <- function(population, genotype=c("simulated","real"), orderUsing=c
 	s1 <- proc.time()
 	cross <- genotypesToCross.internal(population,genotype=genotype,orderUsing=orderUsing,verbose=verbose,debugMode=debugMode)
 	e1 <- proc.time()
-	if(verbose && debugMode==2)cat("Creating cross object done in:",(e1-s1)[3],"seconds.\n")
-	
-	#**********ORDERING MARKERS*************
-	#if(orderUsing=="none"){ cross <- orderMarkers(cross,use.ripple=F,verbose=F)}
-	
+	if(verbose && debugMode==2)cat("Creating cross object done in:",(e1-s1)[3],"seconds.\n")	
 		
 	#*******ADDING MAPS TO THE CROSS*******
 	if(!(is.null(population$maps$physical))) cross$maps$physical <- population$maps$physical
@@ -140,14 +136,14 @@ convertToGenotypes.internal <- function(population, orderUsing, treshold, overla
 	upBelowTreshold <- which(population$founders$RP$pval[1] < treshold)
 	upSelected <- upBelowTreshold[which(upBelowTreshold%in%upNotNull)]
 	upParental <- population$founders$phenotypes[upSelected,]
-	#upParental <- selectMarkersUsingMap.internal(upParental,population,orderUsing,verbose,debugMode)
+	if(orderUsing!="none") upParental <- selectMarkersUsingMap.internal(upParental,population,orderUsing,verbose,debugMode)
 	upRils <- population$offspring$phenotypes[rownames(upParental),]
 	### down-regulated
 	downNotNull <- which(population$founders$RP$pval[2] > 0)
 	downBelowTreshold <- which(population$founders$RP$pval[2] < treshold)
 	downSelected <- downBelowTreshold[which(downBelowTreshold%in%downNotNull)]
 	downParental <- population$founders$phenotypes[downSelected,]
-	#downParental <- selectMarkersUsingMap.internal(downParental,population,orderUsing,verbose,debugMode)
+	if(orderUsing!="none") downParental <- selectMarkersUsingMap.internal(downParental,population,orderUsing,verbose,debugMode)
 	downRils <- population$offspring$phenotypes[rownames(downParental),]
 	
 	### checking if anything is selected and if yes - processing
@@ -190,7 +186,7 @@ convertToGenotypes.internal <- function(population, orderUsing, treshold, overla
 #									*** selectMarkersUsingMap.internal ***
 #
 # DESCRIPTION:
-#	selecting from phenpotypeMatrix only markers present on map selected for ordering
+#	selecting from the phenotypeMatrix only markers present on the map selected for ordering
 # 
 # PARAMETERS:
 # 	phenotypeMatrix - matrix - rows - markers, cols - individuals
@@ -241,8 +237,8 @@ selectMarkersUsingMap.internal <- function(phenotypeMatrix,population,orderUsing
 #	list containg genotype matrix and names of selected markers
 #
 ############################################################################################################
-#DANNY: TODO MERGE splitPhenoRowEM.internal into this function
-#WHY 2 functions ? you're not calling : splitPhenoRowEM.internal anywhere else !!!! so it shouldn't be a function
+#DANNY: TODO MERGE splitPhenoRowEM.internal into this function 
+##K: left, I\'ll try to use apply here instead of for
 splitPheno.internal <- function(offspring, founders, overlapInd, proportion, margin, groupLabels, up){
 	output <- NULL
 	markerNames <- NULL
@@ -254,8 +250,63 @@ splitPheno.internal <- function(offspring, founders, overlapInd, proportion, mar
       #cat("!\n")
 		}
 	}
-	cat(dim(output),"\n",length(markerNames),"\n")
 	invisible(list(output,markerNames))
+}
+
+############################################################################################################
+#									*** splitPhenoRowEM.internal ***
+#
+# DESCRIPTION:
+#	subfunction of splitRow.internal, splitting one row using EM algorithm
+# 
+# PARAMETERS:
+# 	x - name of currently processed row
+# 	offspring - matrix of up/down regulated genes in offspring
+# 	founders - matrix of up/down regulated genes in parents
+# 	overlapInd - Number of individuals that are allowed in the overlap
+# 	proportion - Proportion of individuals expected to carrying a certain genotype 
+# 	margin - Proportion is allowed to varry between this margin (2 sided)
+# 	groupLabels - Specify which column of founders data belongs to group 0 and which to group 1.
+# 	up - 1 - genes up 0 - down regulated
+# 
+# OUTPUT:
+#	genotype row
+#
+############################################################################################################
+splitPhenoRowEM.internal <- function(x, offspring, founders, overlapInd, proportion, margin, groupLabels, up=1){
+	aa <- tempfile()
+	sink(aa)
+	nrDistributions <- length(proportion)
+	result <- rep(0,length(offspring[x,]))
+	
+	EM <- NULL
+	try(EM <- normalmixEM(sort(offspring[x,]), k=nrDistributions, maxrestarts=0, maxit = 100,fast=TRUE))
+	if(is.null(EM)){
+	 result <- NULL
+	}else{
+		if(up==1){
+			genotypes <- c(0:(nrDistributions-1))
+		}else if(up==0){
+			genotypes <- c((nrDistributions-1):0)
+		}
+		
+		len <- vector(mode="numeric",length=nrDistributions)
+		 for(i in 1:nrDistributions){
+			len[i]<-length(offspring[x,])*EM$lambda[which(EM$mu==sort(EM$mu)[i])]
+			startVal <- sum(len[1:i-1])
+			result[which(offspring[x,] %in% sort(offspring[x,])[startVal:(startVal+len[i])])] <- genotypes[i]
+		 }
+		 
+		 if(checkMu.internal(offspring,EM,overlapInd)){
+			#result <- middleDistribution(offspring,result,EM) - not yet tested enough
+			result <- filterRow.internal(result, overlapInd, proportion, margin, genotypes)
+		 }else{
+			result<- NULL
+		 }
+	}
+	sink()
+	file.remove(aa)
+	invisible(result)
 }
 
 ############################################################################################################
@@ -321,68 +372,6 @@ filterRowSub.internal <- function(genotypeRow, overlapInd, proportion, margin, g
 }
 
 ############################################################################################################
-#									*** splitPhenoRowEM.internal ***
-#
-# DESCRIPTION:
-#	subfunction of splitRow.internal, splitting one row using EM algorithm
-# 
-# PARAMETERS:
-# 	x - name of currently processed row
-# 	offspring - matrix of up/down regulated genes in offspring
-# 	founders - matrix of up/down regulated genes in parents
-# 	overlapInd - Number of individuals that are allowed in the overlap
-# 	proportion - Proportion of individuals expected to carrying a certain genotype 
-# 	margin - Proportion is allowed to varry between this margin (2 sided)
-# 	groupLabels - Specify which column of founders data belongs to group 0 and which to group 1.
-# 	up - 1 - genes up 0 - down regulated
-# 
-# OUTPUT:
-#	genotype row
-#
-############################################################################################################
-splitPhenoRowEM.internal <- function(x, offspring, founders, overlapInd, proportion, margin, groupLabels, up=1){
-	### initialization
-	#print(x)
-	#downLimit <- mean(offspring[x,]) - 2*sd(offspring[x,])
-	#upLimit <- mean(offspring[x,]) + 2*sd(offspring[x,])
-	#if(any(offspring[x,]<downLimit)||any(offspring[x,]>upLimit)){
-	#	result <- NULL
-  #  cat("Removed by some vague limit which is not settable by the user")
-	#}else{
-    aa <- tempfile()
-    sink(aa)
-  	nrDistributions <- length(proportion)
-		result <- rep(0,length(offspring[x,]))
-    EM <- NULL
-		try(EM <- normalmixEM(sort(offspring[x,]), k=nrDistributions, maxrestarts=0, maxit = 100,fast=TRUE))
-    if(is.null(EM)){
-      result <- NULL
-    }else{
-      if(up==1){
-        genotypes <- c(0:(nrDistributions-1))
-      }else if(up==0){
-        genotypes <- c((nrDistributions-1):0)
-      }
-      len <- vector(mode="numeric",length=nrDistributions)
-      for(i in 1:nrDistributions){
-        len[i]<-length(offspring[x,])*EM$lambda[which(EM$mu==sort(EM$mu)[i])]
-        startVal <- sum(len[1:i-1])
-        result[which(offspring[x,] %in% sort(offspring[x,])[startVal:(startVal+len[i])])] <- genotypes[i]
-      }
-      if(checkMu.internal(offspring,EM,overlapInd)){
-		result <- middleDistribution(offspring,result,EM)
-        result <- filterRow.internal(result, overlapInd, proportion, margin, genotypes)
-      }else{
-        result<- NULL
-      }
-    }
-	#}
-  sink()
-  file.remove(aa)
-	invisible(result)
-}
-
-############################################################################################################
 #									*** checkMu.internal ***
 #
 # DESCRIPTION:
@@ -403,7 +392,7 @@ checkMu.internal <- function(offspring,EM,overlapInd){
 		down <- EM$mu[i-1]+2*EM$sigma[i-1]
 		if((up)<(down)){
 			if(sum(offspring<down && offspring>up)>overlapInd){
-				cat(sum(offspring<down && offspring>up),"oversum\n")
+				#cat(sum(offspring<down && offspring>up),"oversum\n")
 				return(FALSE)
 			}
 		}		
@@ -412,7 +401,7 @@ checkMu.internal <- function(offspring,EM,overlapInd){
 }
 
 ############################################################################################################
-#									*** checkMu.internal ***
+#									*** middleDistribution.internal ***
 #
 # DESCRIPTION:
 #	checking if fitted normal distributions do not overlap
@@ -426,7 +415,7 @@ checkMu.internal <- function(offspring,EM,overlapInd){
 #	boolean
 #
 ############################################################################################################
-middleDistribution <- function(offspring,result,EM){
+middleDistribution.internal <- function(offspring,result,EM){
 	for(i in 2:length(EM$mu)){
 		up <- EM$mu[i]-2*EM$sigma[i]
 		down <- EM$mu[i-1]+2*EM$sigma[i-1]
