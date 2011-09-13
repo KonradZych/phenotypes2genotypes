@@ -2,7 +2,7 @@
 \alias{findDiffExpressed}
 \alias{groupLabels}
 
-\title{RankProduct analysis.}
+\title{Finding differentially expressed genes.}
 
 \description{
   Using Rank Product analysis to select differentially expressed genes.
@@ -44,6 +44,8 @@
     \item \code{\link[RankProd]{RP}} - Add description
     \item \code{\link{readFiles}} - Add description
     \item \code{\link{toGenotypes}} - Creating genotypes from children phenotypes
+    \item \code{\link{showRPpval}} - Printing out p-values calculated by the findDiffExpressed function
+    \item \code{\link{plotRPpval}} - Plotting p-values calculated by the findDiffExpressed function
   }
 }
 

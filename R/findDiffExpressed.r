@@ -7,8 +7,8 @@
 # Modified by Danny Arends
 # 
 # first written March 2011
-# last modified July 2011
-# last modified in version: 0.8.7
+# last modified September 2011
+# last modified in version: 0.9.0
 # in current version: active, in main workflow
 #
 #     This program is free software; you can redistribute it and/or
@@ -23,7 +23,8 @@
 #     A copy of the GNU General Public License, version 3, is available
 #     at http://www.r-project.org/Licenses/GPL-3
 #
-# Contains: findDiffExpressed 
+# Contains: findDiffExpressed
+#				showRPpval, plotRPpval
 #
 #################################################################################
 
