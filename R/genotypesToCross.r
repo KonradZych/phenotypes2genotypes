@@ -155,9 +155,6 @@ writePhenotypes.internal <- function(population, genotype, outputFile, verbose=F
 			population$offspring$genotypes$simulated <- mapMarkers.internal(population$offspring$genotypes$simulated,population$offspring$phenotypes,mapMode=2)
 		}
 	}
-	#if(nrow(population$offspring$phenotypes)>1000){
-	#	population$offspring$phenotypes <- population$offspring$phenotypes[1:1000,]
-	#}
 	population$offspring$phenotypes<- cleanNames.internal(population$offspring$phenotypes)
 	write.table(cbind("","",population$offspring$phenotypes),file=outputFile,sep=",",quote=FALSE,col.names=FALSE)
 	el <- proc.time()
