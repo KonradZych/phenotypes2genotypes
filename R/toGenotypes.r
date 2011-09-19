@@ -132,15 +132,15 @@ convertToGenotypes.internal <- function(population, orderUsing, treshold, overla
 	
 	### selection step
 	### up-regulated
-	upNotNull <- which(population$founders$RP$pval[1] > 0)
-	upBelowTreshold <- which(population$founders$RP$pval[1] < treshold)
+	upNotNull <- which(population$founders$RP$pval[,1] > 0)
+	upBelowTreshold <- which(population$founders$RP$pval[,1] < treshold)
 	upSelected <- upBelowTreshold[which(upBelowTreshold%in%upNotNull)]
 	upParental <- population$founders$phenotypes[upSelected,]
 	if(orderUsing!="none") upParental <- selectMarkersUsingMap.internal(upParental,population,orderUsing,verbose,debugMode)
 	upRils <- population$offspring$phenotypes[rownames(upParental),]
 	### down-regulated
-	downNotNull <- which(population$founders$RP$pval[2] > 0)
-	downBelowTreshold <- which(population$founders$RP$pval[2] < treshold)
+	downNotNull <- which(population$founders$RP$pval[,2] > 0)
+	downBelowTreshold <- which(population$founders$RP$pval[,2] < treshold)
 	downSelected <- downBelowTreshold[which(downBelowTreshold%in%downNotNull)]
 	downParental <- population$founders$phenotypes[downSelected,]
 	if(orderUsing!="none") downParental <- selectMarkersUsingMap.internal(downParental,population,orderUsing,verbose,debugMode)

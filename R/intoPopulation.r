@@ -62,7 +62,7 @@ createPopulation <- function(offspring_phenotypes, founders, founders_groups, of
 	if(missing(founders_groups)){
 		stop("No information about founders groups provided!\n")
 	}else{
-		if(length(founders_groups)!=ncol(population$founders$phenotypes)){
+		if(length(founders_groups)==ncol(population$founders$phenotypes)){
 			population <- intoPopulationSub.internal(population, founders_groups, "founders$groups", verbose, debugMode)
 		}else{
 			stop("founders_group parameter should have length equall to number of columns in founders phenotype data!\n")
