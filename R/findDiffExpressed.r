@@ -49,12 +49,27 @@ findDiffExpressed <- function(population,verbose=FALSE,debugMode=0,...){
 	if(missing(population)) stop("provide population object\n")
 	is.population(population)
 	s<-proc.time()
-	rankProdRes <- RP(population$founders$phenotypes,population$founders$groups,gene.names=rownames(population$founders$phenotypes),...)
-	population$founders$RP <- rankProdRes
+	#rankProdRes <- RP(population$founders$phenotypes,population$founders$groups,gene.names=rownames(population$founders$phenotypes),...)
+	#population$founders$RP <- rankProdRes
+	population$founders$RP$pval <- rbind(apply(population$founders$phenotypes,1,findUsingTTest,population$founders$groups))
 	class(population) <- "population"
 	e<-proc.time()
 	if(verbose && debugMode==2)cat("Differentially expressed genes found in:",(e-s)[3],"seconds.\n")
 	invisible(population)
+}
+
+findUsingTTest <- function(phenoRow,groups){
+a <- which(groups==0)
+b <- which(groups==1)
+ttest_res <- t.test(phenoRow[a],phenoRow[b])
+ttest_res <- unlist(ttest_res)
+mean_x <- as.numeric(ttest_res[6])
+mean_y <- as.numeric(ttest_res[7])
+if(mean_x<mean_y){
+	return(c(as.numeric(ttest_res[3]),1-(as.numeric(ttest_res[3]))))
+}else{
+	return(c(1-as.numeric(ttest_res[3]),(as.numeric(ttest_res[3]))))
+}
 }
 
 ############################################################################################################
