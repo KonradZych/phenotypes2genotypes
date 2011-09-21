@@ -280,7 +280,7 @@ splitPhenoRowEM.internal <- function(x, offspring, founders, overlapInd, proport
 	result <- rep(0,length(offspring[x,]))
 	
 	EM <- NULL
-	try(EM <- normalmixEM(sort(offspring[x,]), k=nrDistributions, maxrestarts=0, maxit = 100,fast=TRUE))
+	try(EM <- normalmixEM(sort(offspring[x,]), k=nrDistributions, maxrestarts=1, maxit = 100,fast=FALSE))
 	if(is.null(EM)){
 	 result <- NULL
 	}else{
