@@ -51,7 +51,7 @@ findDiffExpressed <- function(population,use=c("ttest","rankprod"),verbose=FALSE
 	if(use=="rankprod"){
 		rankProdRes <- RP(population$founders$phenotypes,population$founders$groups,gene.names=rownames(population$founders$phenotypes),...)
 		population$founders$RP <- rankProdRes
-	else{
+	}else{
 		cur_<- t(rbind(apply(population$founders$phenotypes,1,findUsingTTest,population$founders$groups)))
 		population$founders$RP$pval <- list(cur_[,1],cur_[,2])
 	}
