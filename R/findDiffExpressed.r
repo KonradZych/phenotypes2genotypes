@@ -46,14 +46,14 @@
 ############################################################################################################
 findDiffExpressed <- function(population,use=c("ttest","rankprod"),verbose=FALSE,debugMode=0,...){
 	if(missing(population)) stop("provide population object\n")
+	use <- defaultCheck.internal(use,"use",2,"ttest")
 	is.population(population)
 	s<-proc.time()
 	if(use=="rankprod"){
 		rankProdRes <- RP(population$founders$phenotypes,population$founders$groups,gene.names=rownames(population$founders$phenotypes),...)
 		population$founders$RP <- rankProdRes
 	}else{
-		cur_<- t(rbind(apply(population$founders$phenotypes,1,findUsingTTest,population$founders$groups)))
-		population$founders$RP$pval <- list(cur_[,1],cur_[,2])
+		population$founders$RP$pval<- t(rbind(apply(population$founders$phenotypes,1,findUsingTTest.internal,population$founders$groups)))
 	}
 	class(population) <- "population"
 	e<-proc.time()

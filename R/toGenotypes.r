@@ -132,23 +132,23 @@ convertToGenotypes.internal <- function(population, orderUsing, treshold, overla
 	
 	### selection step
 	### up-regulated
-	upNotNull <- which(population$founders$RP$pval[[1]] > 0)
-	upBelowTreshold <- which(population$founders$RP$pval[[1]] < treshold)
+	upNotNull <- which(population$founders$RP$pval[,1] > 0)
+	upBelowTreshold <- which(population$founders$RP$pval[,1] < treshold)
 	upSelected <- upBelowTreshold[which(upBelowTreshold%in%upNotNull)]
 	upParental <- population$founders$phenotypes[upSelected,]
 	if(orderUsing!="none") upParental <- selectMarkersUsingMap.internal(upParental,population,orderUsing,verbose,debugMode)
 	upRils <- population$offspring$phenotypes[rownames(upParental),]
 	### down-regulated
-	downNotNull <- which(population$founders$RP$pval[[2]] > 0)
-	downBelowTreshold <- which(population$founders$RP$pval[[2]] < treshold)
+	downNotNull <- which(population$founders$RP$pval[,2] > 0)
+	downBelowTreshold <- which(population$founders$RP$pval[,2] < treshold)
 	downSelected <- downBelowTreshold[which(downBelowTreshold%in%downNotNull)]
 	downParental <- population$founders$phenotypes[downSelected,]
 	if(orderUsing!="none") downParental <- selectMarkersUsingMap.internal(downParental,population,orderUsing,verbose,debugMode)
 	downRils <- population$offspring$phenotypes[rownames(downParental),]
 	
 	### checking if anything is selected and if yes - processing
-	if(!(is.null(dim(upRils)))){
-		if(!(is.null(dim(downRils)))){
+	if(!(is.null(dim(upRils)))&&(nrow(upRils)!=0)){
+		if(!(is.null(dim(downRils)))&&(nrow(downRils)!=0)){
 			# best situation
 			if(verbose) cat("Selected",nrow(upRils),"markers (UP), ",nrow(downRils),"markers (DOWN).\n")
 			inupndown <- which(rownames(upRils) %in% rownames(downRils))
@@ -164,7 +164,7 @@ convertToGenotypes.internal <- function(population, orderUsing, treshold, overla
 		output <- rbind(output,cur[[1]])
 		markerNames <- c(markerNames,cur[[2]])
 	}else{
-		if(!(is.null(dim(downRils)))){
+		if(!(is.null(dim(downRils)))&&(nrow(downRils)!=0)){
 			if(verbose) cat("Selected ",nrow(downRils),"downregulated markers.\n")
 			cur <- splitPheno.internal(downRils, downParental, overlapInd, proportion, margin, population$founders$groups, 0)
 			output <- rbind(output,cur[[1]])
