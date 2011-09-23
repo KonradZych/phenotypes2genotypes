@@ -32,11 +32,10 @@
 #									*** findDiffExpressed ***
 #
 # DESCRIPTION:
-#	Using Rank Product analysis to select differentially expressed genes.
+#	Using Rank Product or student t-test analysis to select differentially expressed genes.
 # 
 # PARAMETERS:
 # 	population - Object of class population , must contain founders phenotypic data.
-# 	groupLabels - Specify which column of founders data belongs to group 0 and which to group 1.
 # 	verbose - Be verbose
 # 	debugMode - 1: Print our checks, 2: print additional time information
 # 	... - parameters send to RP function
@@ -45,22 +44,40 @@
 #	object of class population containing object of class RP in $founders$RP
 #
 ############################################################################################################
-findDiffExpressed <- function(population,verbose=FALSE,debugMode=0,...){
+findDiffExpressed <- function(population,use=c("ttest","rankprod"),verbose=FALSE,debugMode=0,...){
 	if(missing(population)) stop("provide population object\n")
 	is.population(population)
 	s<-proc.time()
-	#rankProdRes <- RP(population$founders$phenotypes,population$founders$groups,gene.names=rownames(population$founders$phenotypes),...)
-	#population$founders$RP <- rankProdRes
-	population$founders$RP$pval <- t(rbind(apply(population$founders$phenotypes,1,findUsingTTest,population$founders$groups)))
+	if(use=="rankprod"){
+		rankProdRes <- RP(population$founders$phenotypes,population$founders$groups,gene.names=rownames(population$founders$phenotypes),...)
+		population$founders$RP <- rankProdRes
+	else{
+		cur_<- t(rbind(apply(population$founders$phenotypes,1,findUsingTTest,population$founders$groups)))
+		population$founders$RP$pval <- list(cur_[,1],cur_[,2])
+	}
 	class(population) <- "population"
 	e<-proc.time()
 	if(verbose && debugMode==2)cat("Differentially expressed genes found in:",(e-s)[3],"seconds.\n")
 	invisible(population)
 }
 
-findUsingTTest <- function(phenoRow,groups){
-a <- which(groups==0)
-b <- which(groups==1)
+############################################################################################################
+#									*** findUsingTTest.internal ***
+#
+# DESCRIPTION:
+#	subfunction of findDiffExpressed using t-test to assess whether gene is differentially expressed
+# 
+# PARAMETERS:
+# 	phenoRow - single row of founders phenotype data
+# 	groupLabels - Specify which column of founders data belongs to group 0 and which to group 1.
+#
+# OUTPUT:
+#	two p-values - for gene being up- and downregulated
+#
+############################################################################################################
+findUsingTTest.internal <- function(phenoRow,groupLabels){
+a <- which(groupLabels==0)
+b <- which(groupLabels==1)
 ttest_res <- t.test(phenoRow[a],phenoRow[b])
 ttest_res <- unlist(ttest_res)
 mean_x <- as.numeric(ttest_res[6])
