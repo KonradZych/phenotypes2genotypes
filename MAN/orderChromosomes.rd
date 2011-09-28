@@ -9,7 +9,7 @@
 }
 
 \usage{
-	orderChromosomes(cross,map=c("genetic","physical"),corTreshold,addMarkers=FALSE,verbose=FALSE)
+	orderChromosomes(cross,map=c("genetic","physical"),verbose=FALSE)
 }
 
 \arguments{
@@ -21,12 +21,11 @@
     \item{physical}{ - physical map from cross$maps$physical}
   }
   }
- \item{corTreshold}{ used if method=corelation (otherwise ignored) - markers not having corelation above this number with any of chromosomes are removed}
  \item{verbose}{ Be verbose}
 }
 
 \value{
-  object of class cross
+  an object of R/qtl class cross
 }
 
 \details{

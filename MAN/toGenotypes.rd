@@ -15,7 +15,7 @@
 }
 
 \usage{
-  toGenotypes(population, genotype=c("simulated","real"), orderUsing=c("none","map_genetic","map_physical"),treshold=0.01, overlapInd = 0, proportion = c(50,50), margin = 15, verbose=FALSE, debugMode=0)
+  toGenotypes(population, genotype=c("simulated","real"), orderUsing=c("none","map_genetic","map_physical"),treshold=0.05, overlapInd = 0, proportion = c(50,50), margin = 15, verbose=FALSE, debugMode=0)
 }
 
 \arguments{

@@ -9,11 +9,17 @@
 }
 
 \usage{
-	findDiffExpressed(population,verbose=FALSE,debugMode=0,...)
+	findDiffExpressed(population,use=c("ttest","rankprod"),verbose=FALSE,debugMode=0,...)
 }
 
 \arguments{
  \item{population}{ An object of class \code{population}. See \code{\link{createPopulation}} for details.}
+ \item{use}{ which method should be used for selecting differentially expressed probes:
+  \itemize{
+    \item{ttest}{ - t-test}
+    \item{rankprod}{ - Rank Product using \code{\link{RP}} function}
+  } 
+  }
  \item{verbose}{ Be verbose}
  \item{debugMode}{ 1: Print out checks, 2: print additional time information }
  \item{...}{ Additional arguments passed to RP function. }
