@@ -246,7 +246,7 @@ rearrangeMarkers <- function(cross,map=c("genetic","physical"),corTreshold=0.6,a
 		class(cross_$geno[[i]]) <- "A"
 	}
 	#cross_ <- orderMarkers(cross_,verbose=verbose,use.ripple=F)
-	cross <- putAdditionsOfCross.internal(cross, additions)
+	cross_ <- putAdditionsOfCross.internal(cross_, additions)
 	invisible(cross_)
 }
 

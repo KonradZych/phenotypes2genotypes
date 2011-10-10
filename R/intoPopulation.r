@@ -325,7 +325,7 @@ intoPopulationSubPhenoSub.internal <- function(curRow,dataObject,verbose){
 ############################################################################################################
 intoPopulationSubGenoSub.internal <- function(curRow,dataObject,verbose){
 	if(verbose&&curRow%%1000==0) cat("Processing row:",curRow,"\n")
-	if(!(genotypeCheck.internal(dataObject[curRow,],allow.na=TRUE))){
+	if(!(numericCheck.internal(dataObject[curRow,],allow.na=TRUE))){
 		return(curRow)
 	}else{
 		return(NULL)
