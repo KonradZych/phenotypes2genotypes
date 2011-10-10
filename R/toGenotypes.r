@@ -298,7 +298,7 @@ splitPhenoRowEM.internal <- function(x, offspring, founders, overlapInd, proport
 		 }
 		 
 		 if(checkMu.internal(offspring,EM,overlapInd)){
-			#result <- middleDistribution(offspring,result,EM) - not yet tested enough
+			result <- middleDistribution.internal(offspring,result,EM)
 			result <- filterRow.internal(result, overlapInd, proportion, margin, genotypes)
 		 }else{
 			result<- NULL
