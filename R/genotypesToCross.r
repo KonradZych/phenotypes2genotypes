@@ -144,20 +144,23 @@ writePhenotypes.internal <- function(population, genotype, outputFile, verbose=F
 		if(is.null(population$offspring$genotypes$real)){
 			stop("genotype = real chosen, but there is no real genotypic data in population$offspring$genotypes$read\n")
 		}else{
+			nr_b <- ncol(population$offspring$phenotypes)
 			population$offspring$phenotypes <- mapMarkers.internal(population$offspring$phenotypes,population$offspring$genotypes$real,mapMode=2)
 			population$offspring$genotypes$real <- mapMarkers.internal(population$offspring$genotypes$real,population$offspring$phenotypes,mapMode=2)
+			nr_a <- ncol(population$offspring$phenotypes)
+			if(verbose)cat(nr_b-nr_a,"individuals out of",nr_b,"were removed due to mismatch\n")
 		}
 	}else if(genotype=="simulated"){
 		if(is.null(population$offspring$genotypes$simulated)){
 			stop("genotype = simulated or map chosen, but there is no simulated genotypic data in population$offspring$genotypes$simulated\n")
 		}else{
+			nr_b <- ncol(population$offspring$phenotypes)
 			population$offspring$phenotypes <- mapMarkers.internal(population$offspring$phenotypes,population$offspring$genotypes$simulated,mapMode=2)
 			population$offspring$genotypes$simulated <- mapMarkers.internal(population$offspring$genotypes$simulated,population$offspring$phenotypes,mapMode=2)
+			nr_a <- ncol(population$offspring$phenotypes)
+			if(verbose)cat(nr_b-nr_a,"individuals out of",nr_b,"were removed due to mismatch\n")
 		}
 	}
-	#if(nrow(population$offspring$phenotypes)>1000){
-	#	population$offspring$phenotypes <- population$offspring$phenotypes[1:1000,]
-	#}
 	population$offspring$phenotypes<- cleanNames.internal(population$offspring$phenotypes)
 	write.table(cbind("","",population$offspring$phenotypes),file=outputFile,sep=",",quote=FALSE,col.names=FALSE)
 	el <- proc.time()

@@ -61,6 +61,17 @@
 \alias{postProc}
 \alias{chromosomesCorelationPlot}
 
+\alias{checkBeforeOrdering}
+\alias{findUsingTTest.internal}
+\alias{intoPopulationSubGenoSub.internal}
+\alias{intoPopulationSubPhenoSub.internal}
+\alias{middleDistribution.internal}
+\alias{projectOldMarkers.internal}
+\alias{recalculateMap.internal}
+\alias{smoothGenoRow.internal}
+\alias{smoothGenoSub.internal}
+\alias{smoothGeno}
+\alias{projectOldMarkers}
 
 \title{Internal pheno2geno functions}
 

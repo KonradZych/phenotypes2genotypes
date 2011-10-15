@@ -9,7 +9,7 @@
 }
 
 \usage{
-	rearrangeMarkers(cross,map=c("genetic","physical"),verbose=FALSE)
+	rearrangeMarkers(cross,map=c("genetic","physical"),corTreshold=0.6,addMarkers=FALSE,verbose=FALSE)
 }
 
 \arguments{
@@ -21,11 +21,13 @@
     \item{physical}{ - physical map from cross$maps$physical}
   }
   }
+ \item{corTreshold}{ markers not having corelation above this number with any of chromosomes are removed}
+ \item{addMarkers}{ should markers from map used for ordering be added to resulting map}
  \item{verbose}{ Be verbose}
 }
 
 \value{
-  object of class cross
+  an object of R/qtl class cross
 }
 
 \details{
@@ -43,8 +45,8 @@
 	population <- findDiffExpressed(population)
 	cross <- toGenotypes(population,genotype="simulated",proportion=c(50,50),orderUsing="map_genetic",treshold=0.01)
 	plot.rf(cross)
-	cross <- rearrangeMarkers(cross,map="physical",verbose=TRUE)
-	plot.rf(cross)
+	#cross <- rearrangeMarkers(cross,map="physical",verbose=TRUE)
+	#plot.rf(cross)
 }
 
 \seealso{
