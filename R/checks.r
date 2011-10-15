@@ -7,8 +7,8 @@
 #
 # 
 # first written June 2011
-# last modified July 2011
-# last modified in version: 0.8.5
+# last modified September 2011
+# last modified in version: 0.9.0
 # in current version: active, in main workflow
 #
 #     This program is free software; you can redistribute it and/or
@@ -207,10 +207,11 @@ crossContainsMap.internal <- function(cross,map=c("genetic","physical")){
 #
 ############################################################################################################
 defaultCheck.internal <- function(parameterToBeChecked,nameOfParameter,maxLength,defVal){
-	if(length(parameterToBeChecked)==maxLength){
+	if(length(parameterToBeChecked) == maxLength){
 		invisible(defVal)
-	}else if(length(parameterToBeChecked)!=1){
+	}else if(length(parameterToBeChecked) != 1){
 		stop("wrong parameter ",nameOfParameter," length, choose one out of possible\n")
+	}else{
+		invisible(parameterToBeChecked)
 	}
-	invisible(parameterToBeChecked)
 }
