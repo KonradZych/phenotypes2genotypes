@@ -60,7 +60,8 @@ toGenotypes <- function(population, genotype=c("simulated","real"), orderUsing=c
 	#*******CHECKS*******
 	is.population(population)
 	s<-proc.time()
-	if(proportion < 1 || proportion > 99) stop("Proportion is a percentage (1,99)")
+	###WE NEED CHANGE HERE
+	if(any(proportion < 1) || sum(proportion != 100)) stop("Wrong proportion paramete\n")
 	if(any(!(is.numeric(population$founders$phenotypes)))){
 		population <- intoPopulation(population, population$founders$phenotypes, "founders")
 	}
@@ -68,7 +69,8 @@ toGenotypes <- function(population, genotype=c("simulated","real"), orderUsing=c
 		population <- intoPopulation(population, population$offspring$phenotypes, "offspring$phenotypes")
 	}
 	if(overlapInd < 0 || overlapInd > ncol(population$offspring$phenotypes)) stop("overlapInd is a number (0,lenght of the row).")
-	if(margin < 0 || margin > proportion) stop("Margin is a percentage (0,proportion)")
+	###WE NEED CHANGE HERE
+	#if(margin < 0) stop("Used margin is too big. Should be no more then 2*min(proportion)")
 	if(verbose && debugMode==1) cat("toGenotypes starting withour errors in checkpoint.\n")
 	inListCheck.internal(genotype,"genotype",c("simulated","real"))
 	inListCheck.internal(orderUsing,"orderUsing",c("none","map_genetic","map_physical"))
