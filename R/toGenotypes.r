@@ -341,10 +341,6 @@ filterRowSub.internal <- function(genotypeRow, overlapInd, proportion, margin, g
 ############################################################################################################
 splitPhenoRowEM.internal <- function(x, offspring, founders, overlapInd, proportion, margin, groupLabels, up=1){
 	### initialization
-<<<<<<< HEAD
-=======
-	#print(x)
->>>>>>> 78b139e8bf64e4e185b840efb2dabd78e2816682
 	downLimit <- mean(offspring[x,]) - 2*sd(offspring[x,])
 	upLimit <- mean(offspring[x,]) + 2*sd(offspring[x,])
 	if(any(offspring[x,]<downLimit)||any(offspring[x,]>upLimit)){
