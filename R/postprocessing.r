@@ -320,13 +320,39 @@ bestCorelated.internal <- function(cross,cur_map,corTreshold,verbose=FALSE){
 	if(verbose) cat("Calculating corelations for markers \n")
 	for(y in 1:ncol(pull.geno(cross))){
 		if(verbose) if(y%%100==0) cat(y,"/",ncol(pull.geno(cross)),"\n")
-		findout <- apply(cross$genotypes$real,1,function(x){cor(x,pull.geno(cross)[,y],use="pairwise.complete.obs")})
-		if(max(findout)>=corTreshold){
-			maxcor <- which.max(findout)
-			output <- c(output,cross$maps$genetic[names(maxcor),1])
+		findout <-apply(cross$genotypes$real,1,function(x){cor(x,pull.geno(cross)[,y],use="pairwise.complete.obs")})
+		cat(max(abs(findout)),"\n")
+		if(!is.na(max(abs(findout)))){
+			if(max(abs(findout))>=corTreshold){
+				maxcor <- which.max(abs(findout))
+				output <- c(output,cur_map[names(maxcor),1])
+				}
 		}else{
 			output <- c(output,0)
-		}		
+		}
+		
+	}
+	invisible(output)
+}
+
+bestCorelated.internal <- function(cross1,cross2,corTreshold,verbose=FALSE){
+	output <- NULL
+	geno1 <- pull.geno(cross1)
+	geno2 <- pull.geno(cross2)
+	ref_map<-getYLocs.internal(bremcross)[[1]]
+	correlations <- apply(geno1,2,function(x){apply(geno2,2,function(y){cor(x,y,use="pair")})})
+	if(verbose) cat("Calculating corelations for markers \n")
+	for(y in 1:ncol(geno1)){
+		cat(max(abs(correlations[y,])),"\n")
+		if(!is.na(max(abs(correlations[y,])))){
+			if(max(max(abs(correlations[y,])))>=corTreshold){
+				maxcor <- which.max(abs(correlations[y,]))
+				output <- c(output,ref_map[names(maxcor),1])
+				}
+		}else{
+			output <- c(output,0)
+		}
+		
 	}
 	invisible(output)
 }
