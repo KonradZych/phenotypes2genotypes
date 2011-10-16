@@ -61,7 +61,7 @@ toGenotypes <- function(population, genotype=c("simulated","real"), orderUsing=c
 	is.population(population)
 	s<-proc.time()
 	###WE NEED CHANGE HERE
-	if(any(proportion < 1) || sum(proportion != 100)) stop("Wrong proportion paramete\n")
+	if(any(proportion < 1) || sum(proportion) != 100) stop("Wrong proportion paramete\n")
 	if(any(!(is.numeric(population$founders$phenotypes)))){
 		population <- intoPopulation(population, population$founders$phenotypes, "founders")
 	}
@@ -137,7 +137,9 @@ convertToGenotypes.internal <- function(population, orderUsing, treshold, overla
 	upNotNull <- which(population$founders$RP$pval[,1] > 0)
 	upBelowTreshold <- which(population$founders$RP$pval[,1] < treshold)
 	upSelected <- upBelowTreshold[which(upBelowTreshold%in%upNotNull)]
-	upParental <- population$founders$phenotypes[upSelected,]
+	upParental_ <- population$founders$phenotypes[upSelected,]
+	upParental <- upParental_[match(rownames(upParental_),rownames(population$offspring$phenotypes))]
+	if(verbose) cat(nrow(upParental)-nrow(upParental),"")
 	if(orderUsing!="none") upParental <- selectMarkersUsingMap.internal(upParental,population,orderUsing,verbose,debugMode)
 	upRils <- population$offspring$phenotypes[rownames(upParental),]
 	### down-regulated
@@ -299,12 +301,12 @@ splitPhenoRowEM.internal <- function(x, offspring, founders, overlapInd, proport
 			result[which(offspring[x,] %in% sort(offspring[x,])[startVal:(startVal+len[i])])] <- genotypes[i]
 		 }
 		 
-		 if(checkMu.internal(offspring,EM,overlapInd)){
+		 #if(checkMu.internal(offspring,EM,overlapInd)){
 			result <- middleDistribution.internal(offspring,result,EM)
 			result <- filterRow.internal(result, overlapInd, proportion, margin, genotypes)
-		 }else{
-			result<- NULL
-		 }
+		# }else{
+		#	result<- NULL
+		# }
 	}
 	sink()
 	file.remove(aa)
