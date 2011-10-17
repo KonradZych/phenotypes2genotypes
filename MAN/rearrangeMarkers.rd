@@ -5,7 +5,7 @@
 \title{Rearrangeing markers.}
 
 \description{
-  Rearrangeing markers of object of class cross using corelation.
+  Rearrangeing markers inside an object of class cross using correlation.
 }
 
 \usage{

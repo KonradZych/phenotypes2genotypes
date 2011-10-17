@@ -5,7 +5,7 @@
 \title{Order chromosomes.}
 
 \description{
-  Order chromosomes of object of class cross using majority rule.
+  Order chromosomes of an object of class cross using majority rule.
 }
 
 \usage{
