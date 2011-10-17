@@ -27,7 +27,8 @@
 
 \details{
 postProc function is makign use of most basic piece of inromation possible which is number of linkage groups
-(normally equall to number of chromosome) expected. It checks number of different 
+(normally equall to number of chromosome) expected. It is using \code{\link{formLinkageGroups}} functions from
+R/qtl package with number of different parameter values and afterwards assesses which combination was the best one.
 
 \author{
 	Konrad Zych \email{konrad.zych@uj.edu.pl}, Danny Arends \email{Danny.Arends@gmail.com}
@@ -35,8 +36,10 @@ postProc function is makign use of most basic piece of inromation possible which
 }
 
 \examples{
-	set.seed(102)
-	#
+	#population <- fakePopulation()
+	#population <- findDiffExpressed(population)
+	#cross <- toGenotypes(population)
+	#cross <- postProc(cross,10)
 }
 
 \seealso{
