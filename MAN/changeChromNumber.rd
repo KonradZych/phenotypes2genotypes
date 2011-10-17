@@ -4,10 +4,10 @@
 \alias{removeTooSmallChromosomes}
 
 
-\title{Methods to modify chromosomes number.}
+\title{Change number of the chromosomes.}
 
 \description{
-  Methods to modify chromosomes number of cross class object.
+  Methods to manually modify chromosomes number inside an object of class cross.
 }
 
 \usage{
@@ -34,7 +34,22 @@
 }
 
 \details{
-  TODO
+There are three functions in pheno2geno enabling user to manually reduce number of resulting chromosomes. 
+Those function are dangerous and one should rather use \code{\link{postProc}} function, which is modifing cross object in automated and optimized way, instead. 
+
+reduceChromosomesNumber
+first of three functions is removing all but certain number of chromosomes. It depends only on ordering 
+of chromosomes, not on naming. 
+
+
+removeChromosomes
+In opposite to previous one, this function operates only on names of chromosomes to be removed, not 
+depending at all on the ordering.
+
+removeTooSmallChromosomes
+After using formLinkageGroups cross object often contains artifacts - linkage groups containing few 
+markers. Those are probably really bad markers and should be removed. To do so, one could use 
+removeTooSmallChromosomes function.
 }
 
 \author{
@@ -59,9 +74,9 @@
 }
 
 \seealso{
-  \code{\link{readFiles}}
-  \code{\link{findDiffExpressed}}
-  \code{\link{toGenotypes}}
+  \code{\link{orderChromosomes}} - ordering chromosomes of an object of class cross using majority rule
+  \code{\link{rearrangeMarkers}} - rearrangeing markers inside an object of class cross using correlation
+  \code{\link{postProc}} - postprocessing of an object of class cross in sem-automated fashion
 }
 
 \keyword{manip}
