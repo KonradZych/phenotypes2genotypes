@@ -42,6 +42,8 @@
 #	verbose - be verbose
 #
 # OUTPUT:
+#	an object of class cross
+#
 #	matrix conatining 8 cols:
 #		#1 max.rf used in analysis
 #		#2 min.lod used in analysis
@@ -217,25 +219,30 @@ checkBeforeOrdering <- function(cross,map){
 #	object of class cross
 #
 ############################################################################################################
-rearrangeMarkers <- function(cross,map=c("genetic","physical"),corTreshold=0.6,addMarkers=FALSE,verbose=FALSE){
-	cur_map <- checkBeforeOrdering(cross,map)
-	additions <- getAdditionsOfCross.internal(cross)
-	output <- bestCorelated.internal(cross,cur_map,corTreshold,verbose)
-	mnames <- markernames(cross)
+rearrangeMarkers <- function(cross,population,map=c("genetic","physical"),corTreshold=0.6,addMarkers=FALSE,verbose=FALSE){
+	output <- bestCorelated.internal(cross,population,corTreshold,verbose)
+  if(verbose) cat("selected",nrow(output),"markers for further analysis\n")
+  map <- defaultCheck.internal(map,"map",2,"genetic")
+	if(map=="genetic"){
+    cur_map <- population$maps$genetic
+  }else{
+    cur_map <- population$maps$physical
+  }
+  if(verbose) cat("old map contains",max(cur_map[,1]),"chromosomes\n")
 	cross_ <- cross
 	cross_$geno <- vector(max(cur_map[,1]), mode="list")
-	cross_$pheno <- pull.pheno(cross)[,]
-	if(verbose) cat("Reordering markers \n")
+	cross_$pheno <- pull.pheno(cross)
+	if(verbose) cat("Reordering markers \n")  
 	for(x in 1:max(cur_map[,1])){
-		if(verbose) cat("- chr ",x," -\n")
+		if(verbose) cat("- chr ",x," -\n")    
 		oldnames <- rownames(cur_map)[which(cur_map[,1]==x)]
-		toputtogether <- mnames[output==x]
+    newnames <- output[which(output[,2]%in%oldnames),1]
 		if(addMarkers){
-			cross_$geno[[x]]$data <- cbind(pull.geno(cross)[,toputtogether],t(cross$genotypes$real[oldnames,]))
-			newmap <- 1:(length(toputtogether)+length(oldnames))
-			names(newmap) <- c(toputtogether,oldnames)
+			cross_$geno[[x]]$data <- cbind(pull.geno(cross)[,newnames],t(cross$genotypes$real[oldnames,]))
+			newmap <- 1:(length(newnames)+length(oldnames))
+			names(newmap) <- c(newnames,oldnames)
 		}else{
-			cross_$geno[[x]]$data <- pull.geno(cross)[,toputtogether]
+			cross_$geno[[x]]$data <- pull.geno(cross)[,newnames]
 			newmap <- 1:length(toputtogether)
 			names(newmap) <- toputtogether
 		}
@@ -245,8 +252,6 @@ rearrangeMarkers <- function(cross,map=c("genetic","physical"),corTreshold=0.6,a
 	for(i in 1:length(cross_$geno)){
 		class(cross_$geno[[i]]) <- "A"
 	}
-	#cross_ <- orderMarkers(cross_,verbose=verbose,use.ripple=F)
-	cross_ <- putAdditionsOfCross.internal(cross_, additions)
 	invisible(cross_)
 }
 
@@ -315,46 +320,29 @@ orderChromosomes <- function(cross,map=c("genetic","physical"),verbose=FALSE){
 #	vector with new ordering of chromosomes inside cross object
 #
 ############################################################################################################
-bestCorelated.internal <- function(cross,cur_map,corTreshold,verbose=FALSE){
-	output <- NULL
-	if(verbose) cat("Calculating corelations for markers \n")
-	for(y in 1:ncol(pull.geno(cross))){
-		if(verbose) if(y%%100==0) cat(y,"/",ncol(pull.geno(cross)),"\n")
-		findout <-apply(cross$genotypes$real,1,function(x){cor(x,pull.geno(cross)[,y],use="pairwise.complete.obs")})
-		cat(max(abs(findout)),"\n")
-		if(!is.na(max(abs(findout)))){
-			if(max(abs(findout))>=corTreshold){
-				maxcor <- which.max(abs(findout))
-				output <- c(output,cur_map[names(maxcor),1])
-				}
-		}else{
-			output <- c(output,0)
-		}
-		
-	}
-	invisible(output)
+bestCorelated.internal <- function(cross,population,corTreshold,verbose=FALSE){
+  gcm <- map2mapCorrelationMatrix(cross,population,verbose)
+  #select markers that are correlated highly with more than one of the old markers
+  selected <- which(apply(abs(gcm),2,function(r){length(which(r > corTreshold))})!=0)
+  gcm_ <- gcm[,selected]
+  max_ <- apply(abs(gcm_),2,function(r){rownames(gcm_)[which.max(r)]})
+  output <- matrix(0,length(selected),1)
+  output[,1] <- selected
+  output[,2] <- max_
+  invisible(output)
 }
 
-bestCorelated.internal <- function(cross1,cross2,corTreshold,verbose=FALSE){
-	output <- NULL
-	geno1 <- pull.geno(cross1)
-	geno2 <- pull.geno(cross2)
-	ref_map<-getYLocs.internal(bremcross)[[1]]
-	correlations <- apply(geno1,2,function(x){apply(geno2,2,function(y){cor(x,y,use="pair")})})
-	if(verbose) cat("Calculating corelations for markers \n")
-	for(y in 1:ncol(geno1)){
-		cat(max(abs(correlations[y,])),"\n")
-		if(!is.na(max(abs(correlations[y,])))){
-			if(max(max(abs(correlations[y,])))>=corTreshold){
-				maxcor <- which.max(abs(correlations[y,]))
-				output <- c(output,ref_map[names(maxcor),1])
-				}
-		}else{
-			output <- c(output,0)
-		}
-		
-	}
-	invisible(output)
+
+map2mapCorrelationMatrix<- function(cross,population,verbose=FALSE){
+  if(!is.null(population$offspring$genotypes$real)){
+    apply(pull.geno(cross),2,function(cgc){apply(population$offspring$genotypes$real,1,function(pgc){cor(cgc,pgc,use="pair")})})
+  }else{
+    stop("Load known genotypes into the population using intoPopulation(p,genotypes,\"offspring$genotypes\")")
+  }
+}
+
+map2mapImage <- function(map2mapCorMatrix,corThreshold=0.5){
+  heatmap(gcm,breaks = c(-1,-corThreshold,corThreshold,1),col=c("blue","white","red"),Rowv=NA)
 }
 
 
