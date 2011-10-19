@@ -248,7 +248,7 @@ splitPheno.internal <- function(offspring, founders, overlapInd, proportion, mar
 		cur <- splitPhenoRowEM.internal(x, offspring, founders, overlapInd, proportion, margin, groupLabels, up, verbose)
 		if(!(is.null(cur))){
 			output <- rbind(output,cur)
-			markerNames <- c(markerNames,x)
+			markerNames <- c(markerNames,rownames(offspring)[x])
       #cat("!\n")
 		}
 	}
