@@ -499,7 +499,7 @@ smoothGeno <- function(cross,windowSize=1,verbose=FALSE){
 #
 ############################################################################################################
 smoothGenoSub.internal <- function(geno,windowSize,verbose){
-	old_genotype <- geno$data
+  old_genotype <- geno$data
 	genotype <- old_genotype
 	genotype <- t(apply(genotype,1,smoothGenoRow.internal,windowSize))
 	if(verbose) cat("changed",sum(genotype!=old_genotype)/length(genotype)*100,"% values because of genotyping error\n")
@@ -523,18 +523,20 @@ smoothGenoSub.internal <- function(geno,windowSize,verbose){
 #
 ############################################################################################################
 smoothGenoRow.internal <- function(genoRow,windowSize){
-	if(any(genoRow[1:windowSize]!=genoRow[windowSize+1])&&any(genoRow[1:windowSize]!=genoRow[windowSize+2])&&(genoRow[windowSize+1]==genoRow[windowSize+2])){
-		genoRow[1:windowSize] <- genoRow[windowSize+1]
-	}
-	for(i in 2:(length(genoRow)-windowSize-1)){
-		if(any(genoRow[i:(i+windowSize)]!=genoRow[i-1])&&any(genoRow[i:(i+windowSize)]!=genoRow[i+windowSize+1])&&(genoRow[i-1]==genoRow[i+windowSize+1])){
-			genoRow[i:(i+windowSize)] <- genoRow[i-1]
-		}
-	}
-	if(any(genoRow[(length(genoRow)-windowSize):(length(genoRow))]!=genoRow[(length(genoRow)-windowSize-1)])&&any(genoRow[(length(genoRow)-windowSize):(length(genoRow))]!=genoRow[(length(genoRow)-windowSize-2)])&&(genoRow[(length(genoRow)-windowSize-1)]==genoRow[(length(genoRow)-windowSize-2)])){
-		genoRow[(length(genoRow)-windowSize):(length(genoRow))] <- genoRow[(length(genoRow)-windowSize-1)]
-	}
-	invisible(genoRow)
+  if(length(genoRow)>windowSize+2){
+    if(any(genoRow[1:windowSize]!=genoRow[windowSize+1])&&any(genoRow[1:windowSize]!=genoRow[windowSize+2])&&(genoRow[windowSize+1]==genoRow[windowSize+2])){
+      genoRow[1:windowSize] <- genoRow[windowSize+1]
+    }
+    for(i in 2:(length(genoRow)-windowSize-1)){
+      if(any(genoRow[i:(i+windowSize)]!=genoRow[i-1])&&any(genoRow[i:(i+windowSize)]!=genoRow[i+windowSize+1])&&(genoRow[i-1]==genoRow[i+windowSize+1])){
+        genoRow[i:(i+windowSize)] <- genoRow[i-1]
+      }
+    }
+    if(any(genoRow[(length(genoRow)-windowSize):(length(genoRow))]!=genoRow[(length(genoRow)-windowSize-1)])&&any(genoRow[(length(genoRow)-windowSize):(length(genoRow))]!=genoRow[(length(genoRow)-windowSize-2)])&&(genoRow[(length(genoRow)-windowSize-1)]==genoRow[(length(genoRow)-windowSize-2)])){
+      genoRow[(length(genoRow)-windowSize):(length(genoRow))] <- genoRow[(length(genoRow)-windowSize-1)]
+    }
+  }
+  invisible(genoRow)
 }
 
 recalculateMap.internal <- function(cross,...){
