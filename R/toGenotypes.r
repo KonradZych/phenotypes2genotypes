@@ -83,25 +83,11 @@ toGenotypes <- function(population, genotype=c("simulated","real"), orderUsing=c
 		e1 <- proc.time()
 		if(verbose && debugMode==2)cat("Converting phenotypes to genotypes done in:",(e1-s1)[3],"seconds.\n")
 	}
-	if(verbose&&debugMode==2) cat("first 10 markers seleted:",rownames(population$offspring$genotypes$simulated)[1:10],"\n")
-	#*******SAVING CROSS OBJECT*******
-	s1 <- proc.time()
-	cross <- genotypesToCross.internal(population,genotype=genotype,orderUsing=orderUsing,verbose=verbose,debugMode=debugMode)
-	e1 <- proc.time()
-	if(verbose && debugMode==2)cat("Creating cross object done in:",(e1-s1)[3],"seconds.\n")	
-		
-	#*******ADDING MAPS TO THE CROSS*******
-	if(!(is.null(population$maps$physical))) cross$maps$physical <- population$maps$physical
-	if(!(is.null(population$maps$genetic))) cross$maps$genetic <- population$maps$genetic
-	
-	#*******ADDING REAL GENOTYPE TO THE CROSS*******
-	if(!(is.null(population$offspring$genotypes$real))&&genotype=="simulated") cross$genotypes$real <- population$offspring$genotypes$real
-	
 	
 	#*******RETURNING CROSS OBJECT*******
 	e<-proc.time()
 	if(verbose) cat("toGenotypes done in",(e-s)[3],"seconds\n")
-	invisible(cross)
+	invisible(population)
 }
 
 ############################################################################################################
