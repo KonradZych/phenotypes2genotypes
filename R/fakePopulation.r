@@ -25,7 +25,7 @@
 #
 # Contains: fakePopulation,
 #             fakePheno.internal, fakeFounders.internal, fakePhysicalMap.internal, convertMap.internal, 
-#             simBC.internal
+#             simBC.internal, fakeMixUps
 #
 ############################################################################################################
 
@@ -41,18 +41,20 @@
 #	n.offspring - number of offspring individuals to be simulated
 #	n.markers - number of markers to be simulated
 #	n.chromosomes - number of chromosomes to be simulated
+
 #	type - type of the cross 
 #		- "riself" - RIL by selfing
 #		- "f2" - f2 cross
 #		- "bc" - back cross
 #		- "risib" - RIL by sibling mating
+#	n.mixups - number of mixups to be simulated in data
 #	... - parameters send to sim.cross function
 #
 # OUTPUT:
 #	object of class population
 #
 ############################################################################################################
-fakePopulation <- function(n.founders = 4, n.offspring = 250, n.markers=1000,n.chromosomes=10, type = c("riself", "f2", "bc", "risib"), verbose=FALSE,...){
+fakePopulation <- function(n.founders = 4, n.offspring = 250, n.markers=1000,n.chromosomes=10, type = c("riself", "f2", "bc", "risib"), n.mixups=0, verbose=FALSE,...){
   ### checks
   n.founders <- defaultCheck.internal(n.founders,"n.founders",1,4)
   n.offspring <- defaultCheck.internal(n.offspring,"n.offspring",1,250)
@@ -99,6 +101,9 @@ fakePopulation <- function(n.founders = 4, n.offspring = 250, n.markers=1000,n.c
 	pheno <- t(apply(geno,1,fakePheno.internal))
 	rownames(pheno) <- rownames(geno)
 	colnames(pheno) <- colnames(geno)
+  if(n.mixups>0){
+    pheno <- fakeMixUps.internal(pheno,n.mixups)
+  }
 	founders <- t(apply(pheno,1,fakeFounders.internal,n.founders))
 	rownames(founders) <- rownames(geno)
 	colnames(founders) <- 1:n.founders
@@ -239,5 +244,30 @@ simBC.internal <- function(genoRow){
 	other <- sum(genoRow==toChange)
 	cat(numberOfToCount,other ,"\n")
 	invisible(genoRow)
+}
+
+############################################################################################################
+#                                  *** mixUpPheno.internal ***
+#
+# DESCRIPTION:
+#	convert rqtl type map into population type one
+# 
+# PARAMETERS:
+#	map - map of cross type (list with names - names of chromosomes, elements o the list - markers and their
+#		  positions)
+#
+# OUTPUT:
+#	map of population class type - rownames - names of the markers, first column - numbers of chromosomes,
+#		second - position of the marker on chromosome
+#
+############################################################################################################
+fakeMixUps.internal<- function(pheno, n.mixups){
+  for(i in 1:n.mixups){
+    toMix <- sample(1:nrow(pheno),2)
+    temp_ <- pheno[toMix[1],]
+    pheno[toMix[1],] <- pheno[toMix[2],]
+    pheno[toMix[2],]<- pheno[toMix[1],]
+  }
+  invisible(pheno)
 }
 
