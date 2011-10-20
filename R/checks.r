@@ -7,8 +7,8 @@
 #
 # 
 # first written June 2011
-# last modified September 2011
-# last modified in version: 0.9.0
+# last modified October 2011
+# last modified in version: 0.9.1
 # in current version: active, in main workflow
 #
 #     This program is free software; you can redistribute it and/or
@@ -24,7 +24,8 @@
 #     at http://www.r-project.org/Licenses/GPL-3
 #
 # CONTAINS:
-#	numericCheck.internal, genotypeCheck.internal, inRangeCheck.internal, inListCheck.internal, is.population
+#	numericCheck.internal, genotypeCheck.internal, inRangeCheck.internal, inListCheck.internal, check.population
+# crossContainsMap.internal, defaultCheck.internal
 #
 ############################################################################################################
 
