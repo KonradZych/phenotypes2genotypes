@@ -52,7 +52,7 @@ rearrangeMarkers <- function(cross,population,map=c("genetic","physical"),corTre
   if(missing(cross)) stop("Please provide a cross object\n")
   if(missing(population)) stop("Please provide a population object\n")
   check.population(population)
-  is.cross(cross)  
+  #is.cross(cross)  
   output <- bestCorelated.internal(cross,population,corTreshold,verbose)
   if(verbose) cat("selected",nrow(output),"markers for further analysis\n")
   map <- defaultCheck.internal(map,"map",2,"genetic")
@@ -69,15 +69,17 @@ rearrangeMarkers <- function(cross,population,map=c("genetic","physical"),corTre
 	for(x in 1:max(cur_map[,1])){
 		if(verbose) cat("- chr ",x," -\n")    
 		oldnames <- rownames(cur_map)[which(cur_map[,1]==x)]
+    oldpos <- cur_map[oldnames,2]
     newmarkers <- which(output[,2]%in%oldnames)
+    newpos <- cur_map[output[newmarkers,2],2]
     if(verbose) cat("Selected:",length(newmarkers),"new and",length(oldnames),"original markers \n") 
 		if(addMarkers){
 			cross_$geno[[x]]$data <- cbind(pull.geno(cross)[,output[newmarkers,1]],t(population$offspring$genotypes$real[oldnames,]))
-			newmap <- 1:(length(newmarkers)+length(oldnames))
+			newmap <- c(newpos,oldpos)
 			names(newmap) <- c(output[newmarkers,1],oldnames)
 		}else{
 			cross_$geno[[x]]$data <- pull.geno(cross)[,output[newmarkers,1]]
-			newmap <- 1:length(newmarkers)
+			newmap <- newpos
 			names(newmap) <- output[newmarkers,1]
 		}
 		cross_$geno[[x]]$map <- c(newmap)
@@ -136,11 +138,11 @@ map2mapCorrelationMatrix.internal<- function(cross,population,verbose=FALSE){
   if(missing(cross)) stop("Please provide a cross object\n")
   if(missing(population)) stop("Please provide a population object\n")
   check.population(population)
-  is.cross(cross)
+  #is.cross(cross)
   g <- pull.geno(cross)
   if(verbose) cat("Calculating correlation matrix\n")
   if(!is.null(population$offspring$genotypes$real)){
-    apply(g,2,function(cgc){apply(population$offspring$genotypes$real,1,function(pgc){cor(cgc,pgc,use="pair")})})
+    gcm <- apply(g,2,function(cgc){apply(population$offspring$genotypes$real,1,function(pgc){cor(cgc,pgc,use="pair")})})
     colnames(gcm) <- colnames(g)
     invisible(gcm)
   }else{

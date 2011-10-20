@@ -47,7 +47,7 @@
 findDiffExpressed <- function(population,use=c("ttest","rankprod"),verbose=FALSE,debugMode=0,...){
 	if(missing(population)) stop("provide population object\n")
 	use <- defaultCheck.internal(use,"use",2,"ttest")
-	is.population(population)
+	check.population(population)
 	s<-proc.time()
 	if(use=="rankprod"){
 		rankProdRes <- RP(population$founders$phenotypes,population$founders$groups,gene.names=rownames(population$founders$phenotypes),...)
@@ -76,18 +76,29 @@ findDiffExpressed <- function(population,use=c("ttest","rankprod"),verbose=FALSE
 #
 ############################################################################################################
 findUsingTTest.internal <- function(phenoRow,groupLabels){
-a <- which(groupLabels==0)
-b <- which(groupLabels==1)
-ttest_res <- t.test(phenoRow[a],phenoRow[b])
-ttest_res <- unlist(ttest_res)
-mean_x <- as.numeric(ttest_res[6])
-mean_y <- as.numeric(ttest_res[7])
-if(mean_x<mean_y){
-	return(c(as.numeric(ttest_res[3]),1-(as.numeric(ttest_res[3]))))
-}else{
-	return(c(1-as.numeric(ttest_res[3]),(as.numeric(ttest_res[3]))))
+  a <- which(groupLabels==0)
+  b <- which(groupLabels==1)
+  if(mean(phenoRow[a]) < mean(phenoRow[b])){
+    what <- "less"
+    return(c(0,t.test(phenoRow[a],phenoRow[b],alt=what)$p.value))
+  }else{
+    what <- "gre"
+    return(c(t.test(phenoRow[a],phenoRow[b],alt=what)$p.value,0))
+
+  } 
+  
 }
-}
+
+#ttest_res <- t.test(phenoRow[a],phenoRow[b])
+#ttest_res <- unlist(ttest_res)
+#mean_x <- as.numeric(ttest_res[6])
+#mean_y <- as.numeric(ttest_res[7])
+#if(mean_x<mean_y){
+#	return(c(as.numeric(ttest_res[3]),1-(as.numeric(ttest_res[3]))))
+#}else{
+#	return(c(1-as.numeric(ttest_res[3]),(as.numeric(ttest_res[3]))))
+#}
+
 
 ############################################################################################################
 #									*** showRPpval ***
@@ -106,7 +117,7 @@ if(mean_x<mean_y){
 showRPpval <- function(population,markers=1:10){
 	if(missing(population)) stop("provide population object\n")
 	if(min(markers<1)||max(markers)>nrow(population$founders$phenotypes)) stop("wrong range of markers selected\n")
-	is.population(population)
+	check.population(population)
 	if(is.null(population$founders$RP$pval)) stop("population object does not contain results of RP analysis\n")
 	toPrint <- matrix(0,length(markers),2)
 	toPrint[,1] <- population$founders$RP$pval[markers,1]
@@ -135,7 +146,7 @@ showRPpval <- function(population,markers=1:10){
 plotRPpval <- function(population,markers=1:10,treshold=0.01){
 	if(missing(population)) stop("provide population object\n")
 	if(min(markers<1)||max(markers)>nrow(population$founders$phenotypes)) stop("wrong range of markers selected\n")
-	is.population(population)
+	check.population(population)
 	if(is.null(population$founders$RP$pval)) stop("population object does not contain results of RP analysis\n")
 	plot(population$founders$RP$pval[markers,1],main="RP analysis p-values",xlab="markers",ylab="p-value",ylim=c(0,1))
 	points(population$founders$RP$pval[markers,2],col="red")

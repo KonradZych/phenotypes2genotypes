@@ -58,10 +58,10 @@
 ############################################################################################################
 toGenotypes <- function(population, genotype=c("simulated","real"), orderUsing=c("none","map_genetic","map_physical"),treshold=0.05, overlapInd = 0, proportion = c(50,50), margin = 15, verbose=FALSE, debugMode=0){
 	#*******CHECKS*******
-	is.population(population)
+	check.population(population)
 	s<-proc.time()
 	###WE NEED CHANGE HERE
-	if(any(proportion < 1) || sum(proportion != 100)) stop("Wrong proportion paramete\n")
+	#if(any(proportion < 1) || sum(proportion != 100)) stop("Wrong proportion paramete\n")
 	if(any(!(is.numeric(population$founders$phenotypes)))){
 		population <- intoPopulation(population, population$founders$phenotypes, "founders")
 	}
@@ -83,7 +83,7 @@ toGenotypes <- function(population, genotype=c("simulated","real"), orderUsing=c
 		e1 <- proc.time()
 		if(verbose && debugMode==2)cat("Converting phenotypes to genotypes done in:",(e1-s1)[3],"seconds.\n")
 	}
-	
+	if(verbose&&debugMode==2) cat("first 10 markers seleted:",rownames(population$offspring$genotypes$simulated)[1:10],"\n")
 	#*******SAVING CROSS OBJECT*******
 	s1 <- proc.time()
 	cross <- genotypesToCross.internal(population,genotype=genotype,orderUsing=orderUsing,verbose=verbose,debugMode=debugMode)
@@ -159,6 +159,7 @@ convertToGenotypes.internal <- function(population, orderUsing, treshold, overla
 			cur <- splitPheno.internal(downRils, downParental, overlapInd, proportion, margin, population$founders$groups, 0,verbose)
 			output <- rbind(output,cur[[1]])
 			markerNames <- c(markerNames,cur[[2]])
+      print(markerNames[1:10])
 		}else{
 			if(verbose) cat("Selected ",nrow(upRils),"upregulated markers.\n")
 		}
@@ -244,13 +245,18 @@ selectMarkersUsingMap.internal <- function(phenotypeMatrix,population,orderUsing
 splitPheno.internal <- function(offspring, founders, overlapInd, proportion, margin, groupLabels, up, verbose=FALSE){
 	output <- NULL
 	markerNames <- NULL
+  s <-proc.time()
 	for(x in 1:nrow(offspring)){
 		cur <- splitPhenoRowEM.internal(x, offspring, founders, overlapInd, proportion, margin, groupLabels, up, verbose)
 		if(!(is.null(cur))){
 			output <- rbind(output,cur)
 			markerNames <- c(markerNames,rownames(offspring)[x])
-      #cat("!\n")
 		}
+    if(x%%100==0){
+       e <- proc.time()
+       te <- ((e-s)[3]/x)*(nrow(offspring)-x)
+      cat("done processing marker",x,"/",nrow(offspring),":",rownames(offspring)[x],", estimated time remaining:",te,"s\n")
+     }
 	}
 	invisible(list(output,markerNames))
 }
@@ -278,7 +284,6 @@ splitPheno.internal <- function(offspring, founders, overlapInd, proportion, mar
 splitPhenoRowEM.internal <- function(x, offspring, founders, overlapInd, proportion, margin, groupLabels, up=1,verbose=FALSE){
 	y<-x
 	x<-rownames(offspring)[x]
-	s<-proc.time()
 	aa <- tempfile()
 	sink(aa)
 	nrDistributions <- length(proportion)
@@ -304,16 +309,13 @@ splitPhenoRowEM.internal <- function(x, offspring, founders, overlapInd, proport
 			startVal <- sum(len[1:i-1])
 			result[which(offspring[x,] %in% sort(offspring[x,])[startVal:(startVal+len[i])])] <- genotypes[i]
 		 }
-		if(!checkMu.internal(offspring,EM,overlapInd)){
-			result <- middleDistribution.internal(offspring,result,EM)
-		}
-		 result <- filterRow.internal(result, overlapInd, proportion, margin, genotypes)
+		#if(!checkMu.internal(offspring,EM,overlapInd)){
+		#result <- middleDistribution.internal(offspring,result,EM)
+		#}
+		result <- filterRow.internal(result, overlapInd, proportion, margin, genotypes)
 	}
 	sink()
 	file.remove(aa)
-	if(verbose&&(e1-s1)[3]>0.2) cat("processing marker:",y,":",x,"EM:",(e1-s1)[3],"s \n")
-	e<-proc.time()
-	if(verbose) if(y%%100==0) cat("done processing marker:",y,"/",nrow(offspring),"estimated time remaining:",(e-s)[3]*(nrow(offspring)-y),"s\n")
 	invisible(result)
 }
 

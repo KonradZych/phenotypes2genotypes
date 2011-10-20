@@ -48,7 +48,7 @@
 ############################################################################################################
 plotParentalExpression <- function(population, markers=1:100, groupLabels=c(0,0,1,1)){
 	#*******checks*******
-	is.population(population)
+	check.population(population)
 	
 	#*******remove too short chromosomes*******
 	if(nrow(population$founders$phenotypes)<length(markers)){
@@ -90,7 +90,7 @@ plotParentalExpression <- function(population, markers=1:100, groupLabels=c(0,0,
 ############################################################################################################
 plotChildrenExpression <- function(population, markers=1:100){
 	### checks
-	is.population(population)
+	check.population(population)
 	
 	### function itself
 	if(nrow(population$offspring$phenotypes)<length(markers)){
@@ -370,7 +370,7 @@ plotMarkerDistribution <- function(population,marker,nrDistributions,logarithmic
 	if(missing(marker)) stop("marker not specified.\n")
 	if(missing(nrDistributions)) stop("nrDistributions not specified.\n")
 	if(length(marker)!=1) stop("plotMarkerDistribution can plot only one marker art once.\n")
-	is.population(population)
+	check.population(population)
 	phenotypeRow <- population$offspring$phenotypes[marker,]
 	if(logarithmic) phenotypeRow <- log(phenotypeRow)
 	EM<-normalmixEM(phenotypeRow, k=nrDistributions)

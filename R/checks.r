@@ -142,10 +142,10 @@ inListCheck.internal <- function(objectToBeChecked,objectName,listOfPossibleElem
 }
 
 ############################################################################################################
-#									*** is.population ***
+#									*** check.population ***
 #
 # DESCRIPTION:
-#	checking if given object is of class population
+#	checking if given object is a correct population object
 # 
 # PARAMETERS:
 # objectToBeChecked - object to be checked
@@ -154,7 +154,7 @@ inListCheck.internal <- function(objectToBeChecked,objectName,listOfPossibleElem
 #	none
 #
 ############################################################################################################
-is.population <- function(objectToBeChecked){
+check.population <- function(objectToBeChecked){
 	if(is.null(objectToBeChecked)) stop("Supported object is empty!\n")
 	if(is.null(class(objectToBeChecked)!="population")) stop("Supported object is not of a class population.\n")
 	if(is.null(objectToBeChecked$offspring$phenotypes)) stop("No offspring phenotype data found, this is not a valid object of class population.\n")

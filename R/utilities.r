@@ -106,7 +106,7 @@ print.population <- function(x,...){
 #
 ############################################################################################################
 removeIndividuals <- function(population,individuals,verbose=FALSE){
-	is.population(population)
+	check.population(population)
 	for(ind in individuals){
 		if(ind%in%colnames(population$offspring$genotypes$real)){
 			population$offspring$genotypes$real <- population$offspring$genotypes$real[,-which(colnames(population$offspring$genotypes$real)==ind)]
@@ -165,7 +165,7 @@ doCleanUp.internal <- function(verbose=FALSE){
 #
 ############################################################################################################
 write.population <- function(population,outputFile="population.txt",verbose=FALSE){
-	is.population(population)
+	check.population(population)
 	firstLine <- vector(mode="numeric",length=6)
 	firstLine[1] <- nrow(population$offspring$phenotypes)
 	firstLine[2] <- nrow(population$founders$phenotypes)
@@ -316,6 +316,6 @@ read.population <- function (filename = "population.txt", verbose = FALSE){
         if (verbose) 
             cat("Physical map not found in", filename, "\n")
     }
-    is.population(population)
+    check.population(population)
     invisible(population)
 }
