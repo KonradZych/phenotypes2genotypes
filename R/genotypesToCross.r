@@ -49,7 +49,7 @@
 ############################################################################################################
 genotypesToCross.internal <- function(population, genotype=c("simulated","real"), orderUsing=c("none","map_genetic","map_physical"), outputFile="mycross.csv", verbose=FALSE, debugMode=0){
 	###CHECKS
-	is.population(population)
+	check.population(population)
 	genotype <- defaultCheck.internal(genotype,"genotype",2,"simulated")
 	orderUsing <- defaultCheck.internal(orderUsing,"orderUsing",3,"none")	
 	if(verbose && debugMode==1) cat("genotypesToCross starting.\n")

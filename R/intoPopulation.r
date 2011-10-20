@@ -86,7 +86,7 @@ createPopulation <- function(offspring_phenotypes, founders, founders_groups, of
 	if(is.null(population)) stop("No data provided!\n")
 	class(population) <- "population"
 	e <- proc.time()
-	is.population(population)
+	check.population(population)
 	if(verbose){
 		if(debugMode==2){
 			cat("createPopulation done in:",(e-s)[3],"seconds.\n")
@@ -121,7 +121,7 @@ createPopulation <- function(offspring_phenotypes, founders, founders_groups, of
 ############################################################################################################
 intoPopulation <- function(population, dataObject, dataType=c("founders","offspring$phenotypes","founders$group","offspring$genotypes","maps$genetic","maps$physical"),verbose=FALSE,debugMode=0){
 	### checks
-	is.population(population)
+	check.population(population)
 	inListCheck.internal(dataType,"dataType",c("founders","offspring$phenotypes","offspring$genotypes","maps$genetic","maps$physical"))
 	if(verbose && debugMode==1) cat("intoPopulation starting without errors in checkpoints.\n")
 	if(length(dataType)>1) {

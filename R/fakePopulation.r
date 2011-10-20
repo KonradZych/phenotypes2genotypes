@@ -1,6 +1,6 @@
 ############################################################################################################
 #
-# utilities.R
+# fakePopulation.R
 #
 # Copyright (c) 2011, Konrad Zych
 #
@@ -23,13 +23,15 @@
 #     A copy of the GNU General Public License, version 3, is available
 #     at http://www.r-project.org/Licenses/GPL-3
 #
-# Contains: fakePopulation, fakePheno.internal, fakeFounders.internal, convertMap.internal
+# Contains: fakePopulation,
+#             fakePheno.internal, fakeFounders.internal, fakePhysicalMap.internal, convertMap.internal, 
+#             simBC.internal
 #
 ############################################################################################################
 
 
 ############################################################################################################
-#									*** fakePopulation ***
+#                                          *** fakePopulation ***
 #
 # DESCRIPTION:
 #	simulating object of class population 
@@ -51,21 +53,25 @@
 #
 ############################################################################################################
 fakePopulation <- function(n.founders = 4, n.offspring = 250, n.markers=1000,n.chromosomes=10, type = c("riself", "f2", "bc", "risib"), verbose=FALSE,...){
-	### checks
-	n.founders <- defaultCheck.internal(n.founders,"n.founders",1,4)
-	n.offspring <- defaultCheck.internal(n.offspring,"n.offspring",1,250)
-	n.markers <- defaultCheck.internal(n.markers,"n.markers",1,1000)
-	n.chromosomes <- defaultCheck.internal(n.chromosomes,"n.chromosomes",1,10)
-	if(!(is.numeric(n.founders))) stop("n.founders should be numeric\n")
-	if(!(is.numeric(n.offspring))) stop("n.offspring should be numeric\n")
-	if(!(is.numeric(n.markers))) stop("n.markers should be numeric\n")
-	if(!(is.numeric(n.chromosomes))) stop("n.chromosomes should be numeric\n")
-	type <- match.arg(type)
-	if(n.founders<4){
-		warning("too small n.founders, changing to 4\n")
-		n.founders <- 4
-	}
-	if(!(n.founders%%2==0)) n.founders <- n.founders+1
+  ### checks
+  n.founders <- defaultCheck.internal(n.founders,"n.founders",1,4)
+  n.offspring <- defaultCheck.internal(n.offspring,"n.offspring",1,250)
+  n.markers <- defaultCheck.internal(n.markers,"n.markers",1,1000)
+  n.chromosomes <- defaultCheck.internal(n.chromosomes,"n.chromosomes",1,10)
+  type <- match.arg(type)
+  if(!(is.numeric(n.founders))) stop("n.founders should be numeric\n")
+  if(!(is.numeric(n.offspring))) stop("n.offspring should be numeric\n")
+  if(!(is.numeric(n.markers))) stop("n.markers should be numeric\n")
+  if(!(is.numeric(n.chromosomes))) stop("n.chromosomes should be numeric\n")
+  if(n.founders<4){
+    warning("too small n.founders, changing to 4\n")
+    n.founders <- 4
+  }
+  
+	if(!(n.founders%%2==0)){
+    warning("n.founders should be even, changing to",n.founders+1,"\n")
+    n.founders <- n.founders+1
+   }
 	if(length(type)>1) type <- type[1]
 	if(n.offspring<10){
 		warning("too small n.offspring, changing to 10\n")
@@ -101,12 +107,12 @@ fakePopulation <- function(n.founders = 4, n.offspring = 250, n.markers=1000,n.c
 	geno[which(geno==2)] <- 0
 	foundersGroups <- c(rep(0,(n.founders/2)),rep(1,(n.founders/2)))
 	population <- createPopulation(pheno, founders, foundersGroups, geno, map, physicalMap,verbose=verbose)
-	is.population(population)
+	check.population(population)
 	invisible(population)
 }
 
 ############################################################################################################
-#									*** fakePheno.internal ***
+#                                  *** fakePheno.internal ***
 #
 # DESCRIPTION:
 #	subfunction of fakePopulation - simulating phenotype data using genotype data simulated by sim.cross
@@ -126,7 +132,7 @@ fakePheno.internal <- function(genoRow,maxScale=10,maxError=3){
 }
 
 ############################################################################################################
-#									*** fakeFounders.internal ***
+#                                  *** fakeFounders.internal ***
 #
 # DESCRIPTION:
 #	subfunction of fakePopulation - simulating founders phenotype data using offspring phenotype data
@@ -152,7 +158,7 @@ fakeFounders.internal <- function(phenoRow,n.founders){
 }
 
 ############################################################################################################
-#									*** fakePhysicalMap.internal ***
+#                                  *** fakePhysicalMap.internal ***
 #
 # DESCRIPTION:
 #	simulating physical map using genetic one
@@ -176,7 +182,7 @@ fakePhysicalMap.internal <- function(map){
 }
 
 ############################################################################################################
-#									*** convertMap.internal ***
+#                                  *** convertMap.internal ***
 #
 # DESCRIPTION:
 #	convert rqtl type map into population type one
@@ -200,7 +206,7 @@ convertMap.internal <- function(map){
 }
 
 ############################################################################################################
-#									*** simBC.internal ***
+#                                  *** simBC.internal ***
 #
 # DESCRIPTION:
 #	convert rqtl type map into population type one
