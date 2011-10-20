@@ -9,7 +9,7 @@
 }
 
 \usage{
-	fakePopulation(n.founders = 4, n.offspring = 250, n.markers=1000,n.chromosomes=10, type = c("riself", "f2", "bc", "risib"), verbose=FALSE,...)
+	fakePopulation(n.founders = 4, n.offspring = 250, n.markers=1000,n.chromosomes=10, type = c("riself", "f2", "bc", "risib"), n.mixups=0 verbose=FALSE,...)
 }
 
 \arguments{
@@ -17,7 +17,15 @@
  \item{n.offspring}{ number of offspring individuals to be simulated}
  \item{n.markers}{ number of markers individuals to be simulated}
  \item{n.chromosomes}{ number of chromosomes individuals to be simulated}
- \item{type}{ type of the cross - "riself" for two-way RIL}
+ \item{type}{ type of the cross to be faked:
+   \itemize{
+    \item{riself}{ - RILs by selfing}
+    \item{f2}{ - f2 cross}
+    \item{bc}{ - back cross}
+    \item{risib}{ - RILs by siblinmg mating}
+  } 
+ }
+ \item{n.mixups}{ number of mixups to be faked}
  \item{verbose}{ be verbose}
  \item{...}{ to be passed to sim.cross
  }
