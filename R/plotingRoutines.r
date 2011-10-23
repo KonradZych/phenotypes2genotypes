@@ -116,6 +116,96 @@ plotChildrenExpression <- function(population, markers=1:100){
 	points(apply(founders,1,min),col="blue", pch=25, cex=1)
 }
 
+####
+####
+####
+compareMapPlot <- function(cross,population,map=c("genetic","physical")){
+  map <- defaultCheck.internal(map,"map",2,"genetic")
+  if(map=="genetic"){
+    cur_map <- population$maps$genetic
+  }else{
+    cur_map <- population$maps$physical
+  }
+  ys <- getYLocs.internal(cross)
+  if(max(cur_map[,2])>max(ys[[1]][,2])){
+      lim <- max(cur_map[,2])
+  }else{
+      lim <- max(ys[[1]][,2])
+  }
+  referenceLocs <- cur_map[,2]
+  predictedLocs <- ys[[1]][,2]
+  referenceChrom <- chromosomesLengths.internal(cur_map)
+  predictedChrom <- ys[[2]]
+  predictedChromLabels <- names(table(ys[[1]][,1]))
+	referenceChromLabels <- names(table(cur_map[,1]))
+	
+	#*******chromosome labels positions*******
+	predictedChromPos <- vector(mode="numeric",length(predictedChrom)-1)
+	for(i in 1:length(predictedChrom)-1){
+		predictedChromPos[i] <- (predictedChrom[i] + predictedChrom[i+1])/2
+	}
+	predictedChromPos[length(predictedChrom)] <- (predictedChrom[length(predictedChrom)] + max(predictedLocs))/2
+	
+	referenceChromPos <- vector(mode="numeric",length(referenceChrom)-1)
+	for(i in 1:length(referenceChrom)-1){
+		referenceChromPos[i] <- (referenceChrom[i] + referenceChrom[i+1])/2
+	}
+  plot(x=referenceLocs, y=referenceLocs, xlim=c(0,lim), ylim=c(0,lim),
+	xaxt="n", yaxt="n", col="red", xlab="Reference map", ylab="Predicted map", main="Comparison of genetic maps")
+  points(x=predictedLocs,y=predictedLocs,col="green")
+  axis(1, at = referenceChrom[-1],labels = FALSE)
+	axis(1, at = referenceChromPos,labels = referenceChromLabels, lwd = 0, tick = FALSE)
+	axis(2, at = predictedChrom[-1],labels = FALSE)
+	axis(2, at = predictedChromPos,labels = predictedChromLabels, lwd = 0, tick = FALSE)
+  axis(1, at = referenceLocs,labels = FALSE)
+	axis(2, at = predictedLocs,labels = FALSE)
+	cat("---  6   ---\n")
+	#*******adding lines marking chromosomes ends*******
+	for(x in 2:length(referenceChrom)){
+		abline(v=sum(referenceChrom[x]),lty=2)
+	}
+	for(y in 2:length(predictedChrom)){
+		abline(h=predictedChrom[y],lty=2)
+	}
+}
+
+
+getChrOffsets <- function(cross, cmBetween=25){
+  offsets <- unlist(lapply(pull.map(cross),max))
+  offsets <- offsets+cmBetween
+  offsets <-c(0,offsets)
+  offsets
+}
+
+#From IQTL by Danny Arends, SHOULD NOT MODIFY
+getMarkerOffsets <- function(cross, offsets, cmBetween=25){
+  if(missing(offsets))offsets <- getChrOffsets(cross,cmBetween)
+
+  cnt <- 1
+  myoffsets <- NULL
+  for(x in nmar(cross)){
+    myoffsets <- c(myoffsets,rep(sum(offsets[1:cnt]),x))
+    cnt <- cnt+1
+  }
+
+  mlocations <- myoffsets + as.numeric(unlist(pull.map(cross)))
+  mlocations
+}
+
+#From IQTL by Danny Arends, SHOULD NOT MODIFY
+getMarkerOffsetsFromMap <- function(map, offsets, cmBetween=25){
+  cnt <- 1
+  myoffsets <- NULL
+  for(x in table(map[,1])){
+    myoffsets <- c(myoffsets,rep(sum(offsets[1:cnt]),x))
+    cnt <- cnt+1
+  }
+
+  mlocations <- myoffsets + as.numeric(map[,2])
+  mlocations
+}
+
+
 ############################################################################################################
 #									*** plotMapComparison ***
 #
@@ -133,15 +223,12 @@ plotChildrenExpression <- function(population, markers=1:100){
 #	plot
 #
 ############################################################################################################
-plotMapComparison <- function(cross,map=c("genetic","physical"), coloringMode=1){
-	
-	crossContainsMap.internal(cross, map)
+plotMapComparison <- function(cross,population,map=c("genetic","physical"), coloringMode=1){
 	#*******objects containing all information needen for function execution*******
 	ys <- getYLocs.internal(cross)
 	map <- defaultCheck.internal(map,"map",2,"genetic")
 	print(map)
-	cat("---   1   ---\n")
-	if(map[1]=="genetic"){
+	if(map=="genetic"){
 			ys[[1]] <- mapMarkers.internal(ys[[1]],cross$maps$genetic,1)
 			xs <- mapMarkers.internal(cross$maps$genetic,ys[[1]],1)
 			#*******chromosomes lengths*******
