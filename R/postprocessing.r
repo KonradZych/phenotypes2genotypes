@@ -57,46 +57,66 @@
 #		#8 score obtained by scoreResults.internal (the higher, the better match we have)
 #
 ############################################################################################################
-postProc <- function(cross,n.linkGroups,max.rf.range=c(0.15,0.30),min.lod.range=c(0,3),verbose=FALSE){
-	filename <- "postProctemp.tmp"
+
+toGenotypes(population){
+  cross <- toGenotypes.old(population)
+  if()
+  create_new_map(cross)
+  else
+  enricht_old_map(population)
+}
+
+create_new_map <- function(cross, n.linkGroups, max.rf.range=c(0.10,0.50), min.lod.range=c(1,5),verbose=FALSE){
+	#filename <- "postProctemp.tmp"
 	if(missing(n.linkGroups)) stop("n.linkGroups in an obligatory parameter")
 	cross <- est.rf(cross)
 	crossLength <- sum(nmar(cross))
-	minDist <- round(crossLength*0.05)
-	if(minDist<3) minDist <- 3
-	cat("",file=filename)
-	if(length(max.rf.range)==2) max.rf.range[3] <- 0.01
-	if(length(min.lod.range)==2) min.lod.range[3] <- 1
+	#minDist <- round(crossLength*0.05)
+	#if(minDist<3) minDist <- 3
+	#cat("",file=filename)
+	if(length(max.rf.range)==2) max.rf.range[3] <- 0.02
+	if(length(min.lod.range)==2) min.lod.range[3] <- 0.2
 	if(length(max.rf.range)!=3) stop("max.rf.range should be provided with 2 or 3 arguments, see ?postProc\n")
 	if(length(min.lod.range)!=3) stop("min.lod.range should be provided with 2 or 3 arguments ?postProc\n")
 	if(any(!(is.numeric(max.rf.range)))) stop("max.rf.range should contain only numerics\n")
 	if(any(!(is.numeric(min.lod.range)))) stop("max.rf.range should contain only numerics\n")
 	cur.rf <- max.rf.range[1]
+  best_untill_now <- 1000000
 	while(cur.rf<=max.rf.range[2]){
 		cur.lod <- min.lod.range[1]
 		while(cur.lod<=min.lod.range[2]){
 			cross_ <- formLinkageGroups(cross, max.rf=cur.rf, min.lod=cur.lod, reorgMarkers=TRUE, verbose=verbose)
-			cat(cur.rf,cur.lod,length(cross_$geno),file=filename,sep="\t",append=TRUE)
-			cat("\t",file=filename,append=TRUE)
-			cross__ <- removeTooSmallChromosomes(cross_,minNrOfMarkers=minDist,verbose=verbose)
-			cat(length(cross__$geno),(sum(nmar(cross__))/crossLength),file=filename,sep="\t",append=TRUE)
-			cat("\t",file=filename,append=TRUE)
-			cross__ <- reduceChromosomesNumber(cross_,numberOfChromosomes=n.linkGroups,verbose=verbose)
-			cat(length(cross__$geno),(sum(nmar(cross__))/crossLength),file=filename,sep="\t",append=TRUE)
-			cat("\n",file=filename,append=TRUE)
-			cross_ <- NULL
-			cross__ <- NULL
-			doCleanUp.internal()
+      if(length(cross_$geno)-n.linkGroups < best_untill_now){
+         cat("New best score:",length(cross_$geno),"\n")
+         best_untill_now <- (length(cross_$geno)-n.linkGroups)
+         best_rf <- cur.rf
+         best_lod <- cur.lod
+      }
+			#cat(cur.rf,cur.lod,length(cross_$geno),file=filename,sep="\t",append=TRUE)
+			#cat("\t",file=filename,append=TRUE)
+			#cross__ <- removeTooSmallChromosomes(cross_,minNrOfMarkers=minDist,verbose=verbose)
+			#cat(length(cross__$geno),(sum(nmar(cross__))/crossLength),file=filename,sep="\t",append=TRUE)
+			#cat("\t",file=filename,append=TRUE)
+			#cross__ <- reduceChromosomesNumber(cross_,nucrossmberOfChromosomes=n.linkGroups,verbose=verbose)
+			#cat(length(cross__$geno),(sum(nmar(cross__))/crossLength),file=filename,sep="\t",append=TRUE)
+			#cat("\n",file=filename,append=TRUE)
+			#cross_ <- NULL
+			#cross__ <- NULL
+			#doCleanUp.internal()
 			cur.lod <- cur.lod + min.lod.range[3]
 		}
 		cur.rf <- cur.rf + max.rf.range[3]
+    cat("max.rf:",cur.rf ,"\n")
 	}
-	results <- as.matrix(read.table(filename,sep="\t"))
-	results <- cbind(results,apply(results,1,scoreResults.internal,n.linkGroups))
-	additions <- getAdditionsOfCross.internal(cross)
-	best<-which.max(results[,8])
-	cross <- formLinkageGroups(cross,max.rf=results[best,1],min.lod=results[best,2],reorgMarkers=T)
-	cross <- putAdditionsOfCross.internal(cross, additions)
+	#results <- as.matrix(read.table(filename,sep="\t"))
+	#results <- cbind(results,apply(results,1,scoreResults.internal,n.linkGroups))
+	#additions <- getAdditionsOfCross.internal(cross)
+	#best<-which.max(results[,8])
+	cross <- formLinkageGroups(cross,max.rf=best_rf,min.lod=best_lod,reorgMarkers=T)
+  pre <- sum(nmar(cross))
+  cross <- reduceChromosomesNumber(cross,numberOfChromosomes=n.linkGroups,verbose=verbose)
+	cat("Reduced the number of markers from:",pre,"to",sum(nmar(cross)),"\n")
+  #cross <- putAdditionsOfCross.internal(cross, additions)
 	invisible(cross)
 }
 
@@ -216,36 +236,62 @@ checkBeforeOrdering <- function(cross,map){
 #	object of class cross
 #
 ############################################################################################################
-orderChromosomes <- function(cross,map=c("genetic","physical"),verbose=FALSE){
+orderChromosomes <- function(cross,population,map=c("genetic","physical"),use=c("correlation","majority"),max.iter=10,verbose=FALSE){
 	if(length(cross$geno)<=1) stop("selected cross object contains too little chromosomes to proceed")
-	cur_map <- checkBeforeOrdering(cross,map)
-	additions <- getAdditionsOfCross.internal(cross)
-	output <- majorityRule.internal(cross,cur_map)
-	### until every chr on phys map is match exactly once
+  	map <- defaultCheck.internal(map,"map",2,"genetic")
+	if(map=="genetic"){
+    cur_map <- population$maps$genetic
+  }else{
+    cur_map <- population$maps$physical
+  }
+  inListCheck.internal(use,"use",c("correlation","majority"))
+  if(use=="correlation"){
+    used_f <- correlationRule.internal
+    gcm <- map2mapCorrelationMatrix.internal(cross,population,verbose)
+  }else{
+    used_f <- majorityRule.internal
+  }
+	output <- used_f(cross,cur_map,gcm)
+	### until every chr on phys map is matched exactly once
 	while(max(apply(output,2,sum))>1){
 		toMerge <- which(apply(output,2,sum)>1)
 		for(curToMerge in toMerge){
 			curMerge <- which(output[,curToMerge]==max(output[,curToMerge]))
 			cross <- mergeChromosomes.internal(cross,curMerge,curMerge[1])
-			output <- majorityRule.internal(cross,cur_map)
+			output <- used_f(cross,cur_map,gcm)
 		}
 	}
 	#if(verbose) cat(output,"\n")
 	order1 <- matrix(0,ncol(output),nrow(output))
 	order2 <- matrix(1,ncol(output),nrow(output))
 	### until next iteration doesn't change the result
-	while(any(order1!=order2)){
+  iter <- 1
+	while(any(order1!=order2)||(iter>max.iter)){
 		order1 <- output
 		for(l in 1:ncol(output)){
 			cur <- which(output[,l]==max(output[,l]))
 			if(cur!=l)cross <- switchChromosomes.internal(cross,cur,l)
-			output <- majorityRule.internal(cross,cur_map)
+			output <- used_f(cross,cur_map,gcm)
 		}
 		order2 <- output
+    if(verbose)cat("done iteration:",iter,"\n")
+    iter <- iter+1;
 	}
 	names(cross$geno) <- 1:length(cross$geno)
-	cross <- putAdditionsOfCross.internal(cross, additions)
 	invisible(cross)
+}
+
+correlationRule.internal <- function(cross,cur_map,gcm,verbose=FALSE){
+  ys <- getYLocs.internal(cross)[[1]]
+  max_ <- apply(abs(gcm),2,function(r){cur_map[rownames(gcm)[which.max(r)],1]})
+  output <- matrix(0,max(cur_map[,1]),max(ys[,1]))
+  for(i in 1:max(ys[,1])){
+    markersFromCurChrom <-which(colnames(gcm)%in%rownames(ys)[which(ys[,1]==i)])
+    corChrom <- table(max_[markersFromCurChrom])
+    bestCorChrom <- as.numeric(names(corChrom)[which.max(corChrom)])
+    output[bestCorChrom,i] <- 1
+  }
+  invisible(output)
 }
 
 
