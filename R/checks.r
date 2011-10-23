@@ -2,7 +2,6 @@
 #
 # checks.R
 #
-#
 # Copyright (c) 2011, Konrad Zych
 #
 # 
