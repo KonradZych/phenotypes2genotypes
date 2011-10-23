@@ -7,7 +7,7 @@
 # 
 # first written Oct 2011
 # last modified Oct 2011
-# last modified in version: 0.9.0-0
+# last modified in version: 0.9.1-0
 # in current version: active, in main workflow
 #
 #     This program is free software; you can redistribute it and/or
@@ -26,8 +26,24 @@
 #
 ############################################################################################################
 
-#Assign linkage groups based on a user supplied known number of chromosomes
-#We can use the genetic map of a cross, or the rf matrix
+############################################################################################################
+#									*** assignLinkageGroups ***
+#
+# DESCRIPTION:
+#	assigns linkage groups based on a user supplied known number of chromosomes, we can use the genetic map 
+#	of a cross, or the rf matrix
+# 
+# PARAMETERS:
+#	cross - an object of class cross
+#	n.chr - number of chromosomes expected
+#	use - what kind of data should be used:
+#		geno - genotypes of cross (cross$geno)
+#		rf - recombination fractions (cross$rf)
+#
+# OUTPUT:
+#	 an object of class cross
+#
+############################################################################################################
 assignLinkageGroups <- function(cross, n.chr, use=c("geno","rf"), ...){
 	inListCheck.internal(use,"use",c("rf","geno"))
   if(use=="geno") cl <- kmeans(t(pull.geno(cross)), n.chr, ...)
@@ -35,8 +51,20 @@ assignLinkageGroups <- function(cross, n.chr, use=c("geno","rf"), ...){
   regorganizeMarkersWithin(cross, cl$cluster)
 }
 
-#function that is missing from R/qtl to quickly rearange all the markers 
-#in a cross based on any ordering
+############################################################################################################
+#									*** regorganizeMarkersWithin ***
+#
+# DESCRIPTION:
+#	function that is missing from R/qtl to quickly rearange all the markers in a cross based on any ordering
+# 
+# PARAMETERS:
+#	cross - an object of class cross
+#	ordering - vector specifying new ordering of the markers
+#
+# OUTPUT:
+#	 an object of class cross
+#
+############################################################################################################
 regorganizeMarkersWithin <- function(cross, ordering){
   ingrp <- ordering
   tab <- sort(table(ingrp), decreasing = TRUE)
