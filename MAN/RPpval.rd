@@ -10,11 +10,17 @@
 
 \usage{
 	showRPpval(population,markers=1:10)
-	plotRPpval(population,markers=1:10,treshold=0.01)
+	plotRPpval(population,plotType=c("points","histogram"),markers=1:10,treshold=0.01)
 }
 
 \arguments{
  \item{population}{ an object of class \code{population}. See \code{\link{createPopulation}} for details.}
+ \item{plotType}{ type of output plot
+  \itemize{
+    \item{points}{ - points plot - black points for probe bing up- and black for downregulated}
+    \item{histogram}{ - two histogrames - one for p-values for probes being up- and downregulated}
+  } 
+ }
  \item{markers}{ numbers of markers to be printed }
  \item{treshold}{ value on which horizontal line will be plotted}
 }

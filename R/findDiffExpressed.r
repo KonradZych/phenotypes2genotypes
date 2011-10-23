@@ -84,20 +84,8 @@ findUsingTTest.internal <- function(phenoRow,groupLabels){
   }else{
     what <- "gre"
     return(c(t.test(phenoRow[a],phenoRow[b],alt=what)$p.value,0))
-
-  } 
-  
+  }
 }
-
-#ttest_res <- t.test(phenoRow[a],phenoRow[b])
-#ttest_res <- unlist(ttest_res)
-#mean_x <- as.numeric(ttest_res[6])
-#mean_y <- as.numeric(ttest_res[7])
-#if(mean_x<mean_y){
-#	return(c(as.numeric(ttest_res[3]),1-(as.numeric(ttest_res[3]))))
-#}else{
-#	return(c(1-as.numeric(ttest_res[3]),(as.numeric(ttest_res[3]))))
-#}
 
 
 ############################################################################################################
@@ -111,14 +99,14 @@ findUsingTTest.internal <- function(phenoRow,groupLabels){
 # 	markers - markers (specified by number) to be shown
 # 
 # OUTPUT:
-#	none
+#	print to screen
 #
 ############################################################################################################
 showRPpval <- function(population,markers=1:10){
 	if(missing(population)) stop("provide population object\n")
-	if(min(markers<1)||max(markers)>nrow(population$founders$phenotypes)) stop("wrong range of markers selected\n")
 	check.population(population)
-	if(is.null(population$founders$RP$pval)) stop("population object does not contain results of RP analysis\n")
+	if(min(markers<1)||max(markers)>nrow(population$founders$phenotypes)) stop("wrong range of markers selected\n")
+	if(is.null(population$founders$RP$pval)) stop("population object does not contain results of RP analysis, run findDiffExpressed\n")
 	toPrint <- matrix(0,length(markers),2)
 	toPrint[,1] <- population$founders$RP$pval[markers,1]
 	toPrint[,2] <- population$founders$RP$pval[markers,2]
@@ -140,15 +128,23 @@ showRPpval <- function(population,markers=1:10){
 #	treshold - treshold value, on which line is plotted (by default - 0.01)
 # 
 # OUTPUT:
-#	none
+#	plot
 #
 ############################################################################################################
-plotRPpval <- function(population,markers=1:10,treshold=0.01){
+plotRPpval <- function(population,plotType=c("points","histogram"),markers=1:10,treshold=0.01){
 	if(missing(population)) stop("provide population object\n")
-	if(min(markers<1)||max(markers)>nrow(population$founders$phenotypes)) stop("wrong range of markers selected\n")
+	plotType <- defaultCheck.internal(plotType,"plotType",2,"points")
 	check.population(population)
-	if(is.null(population$founders$RP$pval)) stop("population object does not contain results of RP analysis\n")
-	plot(population$founders$RP$pval[markers,1],main="RP analysis p-values",xlab="markers",ylab="p-value",ylim=c(0,1))
-	points(population$founders$RP$pval[markers,2],col="red")
-	abline(h=treshold)
+	if(min(markers<1)||max(markers)>nrow(population$founders$phenotypes)) stop("wrong range of markers selected\n")
+	if(is.null(population$founders$RP$pval)) stop("population object does not contain results of RP analysis, run findDiffExpressed\n")
+	if(plotType=="points"){
+		plot(population$founders$RP$pval[markers,1],main="RP analysis p-values",xlab="markers",ylab="p-value",ylim=c(0,1))
+		points(population$founders$RP$pval[markers,2],col="red")
+		abline(h=treshold)
+	}else{
+		par(mfrow=c(2,1))
+		hist(population$founders$RP$pval[markers,1],main="upregulated",xlab="p-value",ylab="nr of counts",ylim=c(0,1))
+		hist(population$founders$RP$pval[markers,2],main="downregulated",xlab="p-value",ylab="nr of counts",ylim=c(0,1))
+		par(mfrow=c(1,1))
+	}
 }
