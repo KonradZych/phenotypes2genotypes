@@ -329,11 +329,9 @@ removeTooSmallChromosomes <- function(cross, minNrOfMarkers, verbose=FALSE){
 #
 ############################################################################################################
 removeChromosomesSub.internal <- function(cross, chr,verbose=FALSE){
-	additions <- getAdditionsOfCross.internal(cross)
 	if(verbose)cat("removing chromosome:",chr," markers:",names(cross$geno[[chr]]$map),"\n")
 	cross$rmv <- cbind(cross$rmv,cross$geno[[chr]]$data)
 	cross <- drop.markers(cross, names(cross$geno[[chr]]$map))
-	cross <- putAdditionsOfCross.internal(cross, additions)
 	invisible(cross)
 }
 
@@ -360,7 +358,6 @@ smoothGeno <- function(cross,windowSize=1,verbose=FALSE){
 	for(i in 1:length(cross_geno)){
 		cross$geno[[i]]$data <- cross_geno[[i]]$data
 	}
-	additions <- getAdditionsOfCross.internal(cross)
 	cross <- est.rf(cross)
 	cross <- recalculateMap.internal(cross)
 	invisible(cross)
