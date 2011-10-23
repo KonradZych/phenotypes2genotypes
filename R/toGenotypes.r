@@ -37,9 +37,6 @@
 # 
 # PARAMETERS:
 # 	population - Ril type object, must contain founders phenotypic data.
-# 	genotype - Which genotypic matrix should be saved to file, 
-#		- simulated - made by toGenotypes
-# 		- real - supported by user and read from file, 
 # 	orderUsing- which map should be used to order markers (default - none)
 # 		- map_genetic - genetic map
 #		- map_physical - physical map
@@ -56,12 +53,11 @@
 #	an object of class cross
 #
 ############################################################################################################
-toGenotypes <- function(population, genotype=c("simulated","real"), orderUsing=c("none","map_genetic","map_physical"),treshold=0.05, overlapInd = 0, proportion = c(50,50), margin = 15, verbose=FALSE, debugMode=0){
+toGenotypes <- function(population, treshold=0.05, overlapInd = 0, proportion = c(50,50), margin = 15, verbose=FALSE, debugMode=0){
 	#*******CHECKS*******
 	check.population(population)
 	s<-proc.time()
-	###WE NEED CHANGE HERE
-	#if(any(proportion < 1) || sum(proportion != 100)) stop("Wrong proportion paramete\n")
+	if(any(proportion < 1) || sum(proportion) != 100) stop("Wrong proportion paramete\n")
 	if(any(!(is.numeric(population$founders$phenotypes)))){
 		population <- intoPopulation(population, population$founders$phenotypes, "founders")
 	}
@@ -69,20 +65,13 @@ toGenotypes <- function(population, genotype=c("simulated","real"), orderUsing=c
 		population <- intoPopulation(population, population$offspring$phenotypes, "offspring$phenotypes")
 	}
 	if(overlapInd < 0 || overlapInd > ncol(population$offspring$phenotypes)) stop("overlapInd is a number (0,lenght of the row).")
-	###WE NEED CHANGE HERE
-	#if(margin < 0) stop("Used margin is too big. Should be no more then 2*min(proportion)")
 	if(verbose && debugMode==1) cat("toGenotypes starting withour errors in checkpoint.\n")
-	inListCheck.internal(genotype,"genotype",c("simulated","real"))
-	inListCheck.internal(orderUsing,"orderUsing",c("none","map_genetic","map_physical"))
 	
-	
-	if(genotype=="simulated"){
-		#*******CONVERTING CHILDREN PHENOTYPIC DATA TO GENOTYPES*******
-		s1 <- proc.time()
-		population <- convertToGenotypes.internal(population, orderUsing, treshold, overlapInd, proportion, margin, verbose, debugMode)
-		e1 <- proc.time()
-		if(verbose && debugMode==2)cat("Converting phenotypes to genotypes done in:",(e1-s1)[3],"seconds.\n")
-	}
+	#*******CONVERTING CHILDREN PHENOTYPIC DATA TO GENOTYPES*******
+	s1 <- proc.time()
+	population <- convertToGenotypes.internal(population, treshold, overlapInd, proportion, margin, verbose, debugMode)
+	e1 <- proc.time()
+	if(verbose && debugMode==2)cat("Converting phenotypes to genotypes done in:",(e1-s1)[3],"seconds.\n")
 	
 	#*******RETURNING CROSS OBJECT*******
 	e<-proc.time()
@@ -112,7 +101,7 @@ toGenotypes <- function(population, genotype=c("simulated","real"), orderUsing=c
 #	object of class population
 #
 ############################################################################################################
-convertToGenotypes.internal <- function(population, orderUsing, treshold, overlapInd, proportion, margin, verbose=FALSE, debugMode=0){
+convertToGenotypes.internal <- function(population, treshold, overlapInd, proportion, margin, verbose=FALSE, debugMode=0){
 	### initialization
 	if(verbose && debugMode==1) cat("convertToGenotypes starting.\n")
 	output <- NULL
@@ -124,14 +113,14 @@ convertToGenotypes.internal <- function(population, orderUsing, treshold, overla
 	upBelowTreshold <- which(population$founders$RP$pval[,1] < treshold)
 	upSelected <- upBelowTreshold[which(upBelowTreshold%in%upNotNull)]
 	upParental <- population$founders$phenotypes[upSelected,]
-	if(orderUsing!="none") upParental <- selectMarkersUsingMap.internal(upParental,population,orderUsing,verbose,debugMode)
+	#if(orderUsing!="none") upParental <- selectMarkersUsingMap.internal(upParental,population,orderUsing,verbose,debugMode)
 	upRils <- population$offspring$phenotypes[rownames(upParental),]
 	### down-regulated
 	downNotNull <- which(population$founders$RP$pval[,2] > 0)
 	downBelowTreshold <- which(population$founders$RP$pval[,2] < treshold)
 	downSelected <- downBelowTreshold[which(downBelowTreshold%in%downNotNull)]
 	downParental <- population$founders$phenotypes[downSelected,]
-	if(orderUsing!="none") downParental <- selectMarkersUsingMap.internal(downParental,population,orderUsing,verbose,debugMode)
+	#if(orderUsing!="none") downParental <- selectMarkersUsingMap.internal(downParental,population,orderUsing,verbose,debugMode)
 	downRils <- population$offspring$phenotypes[rownames(downParental),]
 	
 	### checking if anything is selected and if yes - processing
@@ -169,42 +158,6 @@ convertToGenotypes.internal <- function(population, orderUsing, treshold, overla
 	colnames(population$offspring$genotypes$simulated) <- colnames(upRils)
 	rownames(population$offspring$genotypes$simulated) <- markerNames
 	invisible(population)
-}
-
-############################################################################################################
-#									*** selectMarkersUsingMap.internal ***
-#
-# DESCRIPTION:
-#	selecting from the phenotypeMatrix only markers present on the map selected for ordering
-# 
-# PARAMETERS:
-# 	phenotypeMatrix - matrix - rows - markers, cols - individuals
-# 	population - object of class population, must contain founders phenotypic data.
-# 	orderUsing- which map should be used to order markers (default - none)
-# 		- map_genetic - genetic map
-#		- map_physical - physical map
-# 	verbose - be verbose
-# 	debugMode - 1: Print our checks, 2: print additional time information 
-# 
-# OUTPUT:
-#	object of class population
-#
-############################################################################################################
-selectMarkersUsingMap.internal <- function(phenotypeMatrix,population,orderUsing,verbose,debugMode){
-	if(orderUsing!="none"){
-		if(orderUsing=="map_genetic"){
-			if(any(!(rownames(phenotypeMatrix)%in%rownames(population$maps$genetic)))){
-				cat("Not all markers selected for genotype reconstruction are present on genetic map.\n")
-				phenotypeMatrix <- mapMarkers.internal(phenotypeMatrix,population$maps$genetic,1,verbose,debugMode)
-			}
-		}else if(orderUsing=="map_physical"){
-			if(any(!(rownames(phenotypeMatrix)%in%rownames(population$maps$physical)))){
-				cat("Not all markers selected for genotype reconstruction are present on physical map.\n")
-				phenotypeMatrix <- mapMarkers.internal(phenotypeMatrix,population$maps$physical,1,verbose,debugMode)
-			}
-		}
-	}
-	invisible(phenotypeMatrix)
 }
 
 ############################################################################################################

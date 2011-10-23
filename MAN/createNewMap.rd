@@ -1,24 +1,36 @@
-\name{postProcessing}
-\alias{postProc}
+\name{Create new map}
+\alias{createNewMap}
 
 
-\title{Postprocessing of cross object.}
+\title{Creating de novo genetic map.}
 
 \description{
-  Postprocessing of an object of class cross in sem-automated fashion
+  Creating de novo genetic map.
 }
 
 \usage{
-	postProc(cross,n.linkGroups,max.rf.range=c(0.15,0.30),min.lod.range=c(0,3),verbose=FALSE)
+	createNewMap(population, orderUsing=c("none","map_genetic","map_physical"), n.chr, use=c("geno","rf"),verbose=FALSE, debugMode=0)
 	
 }
 
 \arguments{
- \item{cross}{ an object of class cross, containing physical or genetic map}
- \item{n.linkGroups}{ expected number of linkage groups}
- \item{max.rf.range}{ range, within which max.rf parameter of formLinkageGroup will be checked}
- \item{min.lod.range}{ range, within which min.lod parameter of formLinkageGroup will be checked}
-  \item{verbose}{ be verbose}
+ \item{population}{ Population type object, must contain parental phenotypic data.}
+  \item{orderUsing}{ 
+  which map should be used to order markers (Default - none, so markers are all put in 1 chromosome, with distance 1 cM between)
+  \itemize{
+    \item{map_genetic}{ - supplied genetic map}
+    \item{map_physical}{ - supplied physical map}
+  }
+  }
+ \item{n.chr}{ range, within which max.rf parameter of formLinkageGroup will be checked}
+ \item{use}{ what kind of data should be used for splitting genotypes into chromosomes
+   \itemize{
+    \item{geno}{ - genotypes}
+    \item{rf}{ - recombination fractions}
+  }
+ }
+ \item{verbose}{ be verbose}
+ \item{debugMode}{ 1: Print our checks, 2: print additional time information }
 }
 
 \value{
