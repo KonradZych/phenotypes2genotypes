@@ -15,25 +15,11 @@
 }
 
 \usage{
-  toGenotypes(population, genotype=c("simulated","real"), orderUsing=c("none","map_genetic","map_physical"),treshold=0.05, overlapInd = 0, proportion = c(50,50), margin = 15, verbose=FALSE, debugMode=0)
+  toGenotypes(population, treshold=0.05, overlapInd = 0, proportion = c(50,50), margin = 15, verbose=FALSE, debugMode=0)
 }
 
 \arguments{
  \item{population}{ Population type object, must contain parental phenotypic data.}
- \item{genotype}{ 
-  Which genotypic matrix should be saved to file:
-  \itemize{
-    \item{simulated}{ - Genotype matrix from: \code{\link{toGenotypes}}}
-    \item{real}{ - Original genotype matrix supplied by the user and read from file}
-  }
-  }
-  \item{orderUsing}{ 
-  which map should be used to order markers (Default - none, so markers are all put in 1 chromosome, with distance 1 cM between)
-  \itemize{
-    \item{map_genetic}{ - supplied genetic map}
-    \item{map_physical}{ - supplied physical map}
-  }
-  }
  \item{treshold}{ If Rank Product pval for gene is lower that this value, we assume it is being diff. expressed.}
  \item{overlapInd}{ Number of individuals that are allowed in the overlap }
  \item{proportion}{ Proportion of individuals expected to carrying a certain genotype }

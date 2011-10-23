@@ -223,3 +223,39 @@ cleanNames.internal <- function(matrixToBeCleaned){
 	}
 	invisible(matrixToBeCleaned)
 }
+
+############################################################################################################
+#									*** selectMarkersUsingMap.internal ***
+#
+# DESCRIPTION:
+#	selecting from the phenotypeMatrix only markers present on the map selected for ordering
+# 
+# PARAMETERS:
+# 	phenotypeMatrix - matrix - rows - markers, cols - individuals
+# 	population - object of class population, must contain founders phenotypic data.
+# 	orderUsing- which map should be used to order markers (default - none)
+# 		- map_genetic - genetic map
+#		- map_physical - physical map
+# 	verbose - be verbose
+# 	debugMode - 1: Print our checks, 2: print additional time information 
+# 
+# OUTPUT:
+#	object of class population
+#
+############################################################################################################
+selectMarkersUsingMap.internal <- function(phenotypeMatrix,population,orderUsing,verbose,debugMode){
+	if(orderUsing!="none"){
+		if(orderUsing=="map_genetic"){
+			if(any(!(rownames(phenotypeMatrix)%in%rownames(population$maps$genetic)))){
+				cat("Not all markers selected for genotype reconstruction are present on genetic map.\n")
+				phenotypeMatrix <- mapMarkers.internal(phenotypeMatrix,population$maps$genetic,1,verbose,debugMode)
+			}
+		}else if(orderUsing=="map_physical"){
+			if(any(!(rownames(phenotypeMatrix)%in%rownames(population$maps$physical)))){
+				cat("Not all markers selected for genotype reconstruction are present on physical map.\n")
+				phenotypeMatrix <- mapMarkers.internal(phenotypeMatrix,population$maps$physical,1,verbose,debugMode)
+			}
+		}
+	}
+	invisible(phenotypeMatrix)
+}
