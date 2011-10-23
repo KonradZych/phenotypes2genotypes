@@ -48,10 +48,11 @@
 #	object of class cross
 #
 ############################################################################################################
-rearrangeMarkers <- function(cross,population,map=c("genetic","physical"),corTreshold=0.6,addMarkers=FALSE,verbose=FALSE){
+enricht_existing_map <- function(cross,population,map=c("genetic","physical"),corTreshold=0.6,addMarkers=FALSE,verbose=FALSE){
   if(missing(cross)) stop("Please provide a cross object\n")
   if(missing(population)) stop("Please provide a population object\n")
   check.population(population)
+  map <- defaultCheck.internal(map,"map",2,"genetic")
   #is.cross(cross)  
   output <- bestCorelated.internal(cross,population,corTreshold,verbose)
   if(verbose) cat("selected",nrow(output),"markers for further analysis\n")
@@ -61,6 +62,7 @@ rearrangeMarkers <- function(cross,population,map=c("genetic","physical"),corTre
   }else{
     cur_map <- population$maps$physical
   }
+  
   if(verbose) cat("old map contains",max(cur_map[,1]),"chromosomes\n")
 	cross_ <- cross
 	cross_$geno <- vector(max(cur_map[,1]), mode="list")
@@ -166,8 +168,8 @@ map2mapCorrelationMatrix.internal<- function(cross,population,verbose=FALSE){
 #	vector with new ordering of chromosomes inside cross object
 #
 ############################################################################################################
-map2mapImage <- function(cross,population,corThreshold=0.5,verbose=FALSE){
-  if(missing(cross)) stop("Please provide a cross object\n")
+map2mapImage <- function(population,corThreshold=0.5,cross,verbose=FALSE){
+  if(missing(cross)) cross <- create_new_map(population)
   if(missing(population)) stop("Please provide a population object\n")
   check.population(population)
   is.cross(cross)
