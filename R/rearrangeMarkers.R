@@ -155,7 +155,7 @@ rearrangeMarkers <- function(cross,population,map=c("genetic","physical"),corTre
 #
 ############################################################################################################
 bestCorelated.internal <- function(cross,population,corTreshold,verbose=FALSE){
-  gcm <- map2mapCorrelationMatrix.internal(cross,population,verbose)
+  gcm <- map2mapCorrelationMatrix(cross,population,verbose)
   #select markers that are correlated highly with more than one of the old markers
   selected <- which(apply(abs(gcm),2,function(r){length(which(r > corTreshold))})!=0)
   gcm_ <- gcm[,selected]

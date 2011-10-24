@@ -170,42 +170,6 @@ compareMapPlot <- function(cross,population,map=c("genetic","physical")){
 }
 
 
-getChrOffsets <- function(cross, cmBetween=25){
-  offsets <- unlist(lapply(pull.map(cross),max))
-  offsets <- offsets+cmBetween
-  offsets <-c(0,offsets)
-  offsets
-}
-
-#From IQTL by Danny Arends, SHOULD NOT MODIFY
-getMarkerOffsets <- function(cross, offsets, cmBetween=25){
-  if(missing(offsets))offsets <- getChrOffsets(cross,cmBetween)
-
-  cnt <- 1
-  myoffsets <- NULL
-  for(x in nmar(cross)){
-    myoffsets <- c(myoffsets,rep(sum(offsets[1:cnt]),x))
-    cnt <- cnt+1
-  }
-
-  mlocations <- myoffsets + as.numeric(unlist(pull.map(cross)))
-  mlocations
-}
-
-#From IQTL by Danny Arends, SHOULD NOT MODIFY
-getMarkerOffsetsFromMap <- function(map, offsets, cmBetween=25){
-  cnt <- 1
-  myoffsets <- NULL
-  for(x in table(map[,1])){
-    myoffsets <- c(myoffsets,rep(sum(offsets[1:cnt]),x))
-    cnt <- cnt+1
-  }
-
-  mlocations <- myoffsets + as.numeric(map[,2])
-  mlocations
-}
-
-
 ############################################################################################################
 #									*** plotMapComparison ***
 #
@@ -226,22 +190,18 @@ getMarkerOffsetsFromMap <- function(map, offsets, cmBetween=25){
 plotMapComparison <- function(cross,population,map=c("genetic","physical"), coloringMode=1){
 	#*******objects containing all information needen for function execution*******
 	ys <- getYLocs.internal(cross)
-	map <- defaultCheck.internal(map,"map",2,"genetic")
-	print(map)
+    map <- defaultCheck.internal(map,"map",2,"genetic")
 	if(map=="genetic"){
-			ys[[1]] <- mapMarkers.internal(ys[[1]],cross$maps$genetic,1)
-			xs <- mapMarkers.internal(cross$maps$genetic,ys[[1]],1)
-			#*******chromosomes lengths*******
-			referenceChrom <- chromosomesLengths.internal(cross$maps$genetic)
-			xs[,2] <- xs[,2] + referenceChrom[xs[,1]]
-	}else if(map=="physical"){
-			ys[[1]] <- mapMarkers.internal(ys[[1]],cross$maps$physical,1)
-			xs<- mapMarkers.internal(cross$maps$physical,ys[[1]],1)
-			#*******chromosomes lengths*******
-			referenceChrom <- chromosomesLengths.internal(cross$maps$physical)
-			xs[,2] <- xs[,2] + referenceChrom[xs[,1]]
-	}
-	cat("---   2   ---\n")
+    cur_map <- population$maps$genetic
+  }else{
+    cur_map <- population$maps$physical
+  }
+  if(is.null(cur_map)) stop("no ",map," map provided!")
+	ys[[1]] <- mapMarkers.internal(ys[[1]],cur_map,1)
+	xs <- mapMarkers.internal(cur_map,ys[[1]],1)
+	#*******chromosomes lengths*******
+	referenceChrom <- chromosomesLengths.internal(cur_map)
+	xs[,2] <- xs[,2] + referenceChrom[xs[,1]]
 	#*******positions of markers*******
 	predictedLocs <- ys[[1]][,-1]
 	referenceLocs <- xs[,2]
@@ -264,7 +224,6 @@ plotMapComparison <- function(cross,population,map=c("genetic","physical"), colo
 	for(i in 1:length(referenceChrom)-1){
 		referenceChromPos[i] <- (referenceChrom[i] + referenceChrom[i+1])/2
 	}
-	cat("---   3   ---\n")
 	#referenceChromPos[length(referenceChrom)] <- (referenceChrom[length(referenceChrom)] + max(referenceLocs))/2
 	#*******color palette*******
 	if(coloringMode==1){ 
@@ -272,7 +231,6 @@ plotMapComparison <- function(cross,population,map=c("genetic","physical"), colo
 	}else if(coloringMode==2){
 		color <- makeTransPal.internal(ys[[1]],xs)
 	}
-	cat("---   4   ---\n")
 	#*******results of lin regr for each chromosome*******
 	l <- vector(mode="list",length(table(ys[[1]][,1])))
 	for(i in 1:length(table(ys[[1]][,1]))){
@@ -285,7 +243,6 @@ plotMapComparison <- function(cross,population,map=c("genetic","physical"), colo
 	#*******plotting points*******
 	plot(x=referenceLocs, y=predictedLocs, xlim=c(min(referenceLocs),max(referenceLocs)), ylim=c(min(predictedLocs),max(predictedLocs)),
 		xaxt="n", yaxt="n", col=color[[1]], pch=color[[2]], xlab="Reference map", ylab="Predicted map", main="Comparison of genetic maps")
-	cat("---   5   ---\n")
 	#*******adding chromosome labels and tics*******
 	axis(1, at = referenceChrom[-1],labels = FALSE)
 	axis(1, at = referenceChromPos,labels = referenceChromLabels, lwd = 0, tick = FALSE)
@@ -296,7 +253,6 @@ plotMapComparison <- function(cross,population,map=c("genetic","physical"), colo
 	axis(1, at = referenceLocs,labels = FALSE)
 	#if(!is.null(cross$removed)) axis(1, at = cross$removed[,2],labels = FALSE, col.ticks = "red")
 	axis(2, at = predictedLocs,labels = FALSE)
-	cat("---  6   ---\n")
 	#*******adding lines marking chromosomes ends*******
 	for(x in 2:length(referenceChrom)){
 		abline(v=sum(referenceChrom[x]),lty=2)
@@ -491,32 +447,6 @@ plotMarkerDistribution <- function(population,marker,nrDistributions,logarithmic
 	}
 }
 
-############################################################################################################
-#									*** chromosomesCorelationPlot ***
-#
-# DESCRIPTION:
-#	plot image show correlation between chromosomes of maps inside cross object
-# 
-# PARAMETERS:
-# 	cross - object of R/qtl cross type
-# 	map - which map should be used for comparison:
-#			- genetic - genetic map from cross$maps$genetic
-#			- physical - physical map from cross$maps$physical
-# 
-# OUTPUT:
-#	plot
-#
-############################################################################################################
-chromosomesCorelationPlot <- function(cross, map=c("genetic","physical")){ 
-	inListCheck.internal(map,"map",c("genetic","physical"))
-	crossContainsMap.internal(cross,map)
-	if(map=="genetic"){
-		cur_map <- cross$maps$genetic
-	}else if(map=="physical"){
-		cur_map <- cross$maps$physical
-	}
-	image(chromosomesCorelationMatrix.internal(cross,cur_map))
-}
 
 ############################################################################################################
 #									*** chromosomesCorelationMatrix.internal ***
@@ -532,7 +462,14 @@ chromosomesCorelationPlot <- function(cross, map=c("genetic","physical")){
 #	matrix of corelations
 #
 ############################################################################################################
-chromosomesCorelationMatrix.internal <- function(cross, cur_map){
+chromosomesCorelationMatrix.internal <- function(cross, population, map=c("genetic","physical")){
+  map <- defaultCheck.internal(map,"map",2,"genetic")
+	if(map=="genetic"){
+    cur_map <- population$maps$genetic
+  }else{
+    cur_map <- population$maps$physical
+  }
+  if(is.null(cur_map)) stop("no ",map," map provided!")  
 	### add mapMarkers here and in bestCorelated
 	knchrom <- length(table(cur_map[,1]))
 	result <- matrix(0, sum(nmar(cross)), nrow(cur_map))
@@ -541,13 +478,12 @@ chromosomesCorelationMatrix.internal <- function(cross, cur_map){
 	for(i in 1:length(cross$geno)){
 		cur_ys <- cross$geno[[i]]$data[,]
 		for(j in 1:knchrom){
-			cur_xs <- t(cross$genotypes$real[rownames(cur_map)[which(cur_map[,1]==j)],])
+			cur_xs <- t(population$offspring$genotypes$real[rownames(cur_map)[which(cur_map[,1]==j)],])
 			corM <- cor(cur_ys,cur_xs,use="pairwise.complete.obs")
-			#cat(dim(cur_xs),"\n",dim(cur_ys),"\n",dim(result),"\n",dim(corM),"\n",dim(result[colnames(cur_ys),colnames(cur_xs)]),"\n")
 			result[colnames(cur_ys),colnames(cur_xs)] <- corM
 		}
 	}
-	invisible(result)
+	image(result)
 }
 
 ############################################################################################################
@@ -564,20 +500,26 @@ chromosomesCorelationMatrix.internal <- function(cross, cur_map){
 #	matrix of corelations
 #
 ############################################################################################################
-projectOldMarkers <- function(cross,map=c("genetic","physical"),label=c("positions","names")){
-	curMap <- checkBeforeOrdering(cross,map)
+projectOldMarkers <- function(cross,population,map=c("genetic","physical"),label=c("positions","names")){
+	  map <- defaultCheck.internal(map,"map",2,"genetic")
+	if(map=="genetic"){
+    cur_map <- population$maps$genetic
+  }else{
+    cur_map <- population$maps$physical
+  }
+  if(is.null(cur_map)) stop("no ",map," map provided!")  
 	label <- defaultCheck.internal(label, "label", 2,"positions")
-	qc <- curMap[,1]
+	qc <- cur_map[,1]
 	qp_ <- NULL
 	inListCheck.internal(label,"label",c("positions","names"))
-	for(i in 1:14){
+	for(i in 1:nchr(cross)){
 		qp_ <- c(qp_,cross$geno[[i]]$map)
 	}
-	qp <- qp_[rownames(cross$maps$genetic)]
+	qp <- qp_[rownames(cur_map)]
 	if(label=="positions"){
-		qn <- curMap[,2]
+		qn <- cur_map[,2]
 	}else{
-		qn <- rownames(curMap)
+		qn <- rownames(cur_map)
 	}
 	cross <- sim.geno(cross)
 	qtl <- makeqtl(cross,qc,qp,qn)

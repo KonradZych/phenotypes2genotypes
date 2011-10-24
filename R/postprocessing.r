@@ -118,6 +118,23 @@ orderChromosomes <- function(cross,population,map=c("genetic","physical"),use=c(
 	invisible(cross)
 }
 
+############################################################################################################
+#									*** majorityRule.internal ***
+#
+# DESCRIPTION:
+# 	subfunction of segragateChromosomes.internal, returns matrix showing for every reco map chromosome from 
+#	which physicall map chromosome majority of markers comes
+# 
+# PARAMETERS:
+# 	cross - object of class cross, containing physical or genetic map
+#	map - which map should be used for comparison:
+#			- genetic - genetic map from cross$maps$genetic
+#			- physical - physical map from cross$maps$physical
+# 
+# OUTPUT:
+#	vector with new ordering of chromosomes inside cross object
+#
+############################################################################################################
 correlationRule.internal <- function(cross,cur_map,gcm,verbose=FALSE){
   ys <- getYLocs.internal(cross)[[1]]
   max_ <- apply(abs(gcm),2,function(r){cur_map[rownames(gcm)[which.max(r)],1]})
