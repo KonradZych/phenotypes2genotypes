@@ -9,19 +9,12 @@
 }
 
 \usage{
-	createNewMap(population, orderUsing=c("none","map_genetic","map_physical"), n.chr, use=c("geno","rf"),verbose=FALSE, debugMode=0)
+	createNewMap(population,  n.chr,  use=c("geno","rf"), verbose=FALSE, debugMode=0)
 	
 }
 
 \arguments{
  \item{population}{ Population type object, must contain parental phenotypic data.}
-  \item{orderUsing}{ 
-  which map should be used to order markers (Default - none, so markers are all put in 1 chromosome, with distance 1 cM between)
-  \itemize{
-    \item{map_genetic}{ - supplied genetic map}
-    \item{map_physical}{ - supplied physical map}
-  }
-  }
  \item{n.chr}{ range, within which max.rf parameter of formLinkageGroup will be checked}
  \item{use}{ what kind of data should be used for splitting genotypes into chromosomes
    \itemize{
@@ -48,10 +41,10 @@ R/qtl package with number of different parameter values and afterwards assesses 
 }
 
 \examples{
-	#population <- fakePopulation()
-	#population <- findDiffExpressed(population)
-	#cross <- toGenotypes(population)
-	#cross <- postProc(cross,10)
+	population <- fakePopulation()
+	population <- findDiffExpressed(population)
+	population <- toGenotypes(population)
+	cross <- createNewMap(population,10)
 }
 
 \seealso{
