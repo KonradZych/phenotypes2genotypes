@@ -60,6 +60,11 @@ createNewMap <- function(population,  n.chr,  use=c("geno","rf"), verbose=FALSE,
 	e1 <- proc.time()
 	if(verbose && debugMode==2)cat("saving data into cross object done in:",(e1-s1)[3],"seconds.\n")
 	
+	#####
+	######
+	########## VERY DIRTY HACK
+	cross <- convert2riself(cross)
+	
 	#*******CREATING NEW MAP*******
 	s1 <- proc.time()
 	cross <- assignLinkageGroups(cross,n.chr)
