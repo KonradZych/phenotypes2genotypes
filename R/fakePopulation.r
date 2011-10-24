@@ -54,12 +54,12 @@
 #	object of class population
 #
 ############################################################################################################
-fakePopulation <- function(n.founders = 4, n.offspring = 250, n.markers=1000,n.chromosomes=10, type = c("riself", "f2", "bc", "risib"), n.mixups=0, verbose=FALSE,...){
+fakePopulation <- function(n.founders = 4, n.offspring = 100, n.markers=100,n.chromosomes=10, type = c("riself", "f2", "bc", "risib"), n.mixups=0, verbose=FALSE,...){
   ### checks
-  n.founders <- defaultCheck.internal(n.founders,"n.founders",1,4)
-  n.offspring <- defaultCheck.internal(n.offspring,"n.offspring",1,250)
-  n.markers <- defaultCheck.internal(n.markers,"n.markers",1,1000)
-  n.chromosomes <- defaultCheck.internal(n.chromosomes,"n.chromosomes",1,10)
+ # n.founders <- defaultCheck.internal(n.founders,"n.founders",1,4)
+  #n.offspring <- defaultCheck.internal(n.offspring,"n.offspring",1,100)
+  #n.markers <- defaultCheck.internal(n.markers,"n.markers",1,100)
+  #n.chromosomes <- defaultCheck.internal(n.chromosomes,"n.chromosomes",1,10)
   type <- match.arg(type)
   if(!(is.numeric(n.founders))) stop("n.founders should be numeric\n")
   if(!(is.numeric(n.offspring))) stop("n.offspring should be numeric\n")
@@ -179,7 +179,7 @@ fakePhysicalMap.internal <- function(map){
 	for(i in 1:nrow(map)){
 		errorF <- runif(1,0,100)
 		if(errorF>90){
-			newChrom <- runif(1,1,(max(map[,1])))
+			newChrom <- round(runif(1,1,(max(map[,1]))))
 			map[i,1] <- newChrom
 		}
 	}

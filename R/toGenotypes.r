@@ -128,13 +128,14 @@ convertToGenotypes.internal <- function(population, treshold, overlapInd, propor
 		if(!(is.null(dim(downRils)))&&(nrow(downRils)!=0)){
 			# best situation
 			if(verbose) cat("Selected",nrow(upRils),"markers (UP), ",nrow(downRils),"markers (DOWN).\n")
-			#inupndown <- which(rownames(upRils) %in% rownames(downRils))
-			#if(verbose&&length(inupndown)>0) cat("WARNING: Overlap between UP n DOWN:",length(inupndown),", removing from UP.\n")
-			#upRils <- upRils[-inupndown,]
+			inupndown <- which(rownames(upRils) %in% rownames(downRils))
+			if(verbose&&length(inupndown)>0){
+        cat("WARNING: Overlap between UP n DOWN:",length(inupndown),", removing from UP.\n")
+        upRils <- upRils[-inupndown,]
+      }
 			cur <- splitPheno.internal(downRils, downParental, overlapInd, proportion, margin, population$founders$groups, 0,verbose)
 			output <- rbind(output,cur[[1]])
 			markerNames <- c(markerNames,cur[[2]])
-      print(markerNames[1:10])
 		}else{
 			if(verbose) cat("Selected ",nrow(upRils),"upregulated markers.\n")
 		}
@@ -249,9 +250,9 @@ splitPhenoRowEM.internal <- function(x, offspring, founders, overlapInd, proport
 			result[which(offspring[x,] %in% sort(offspring[x,])[startVal:(startVal+len[i])])] <- genotypes[i]
 		 }
 		#if(!checkMu.internal(offspring,EM,overlapInd)){
-		#result <- middleDistribution.internal(offspring,result,EM)
+    #  result <- middleDistribution.internal(offspring,result,EM)
 		#}
-		result <- filterRow.internal(result, overlapInd, proportion, margin, genotypes)
+      result <- filterRow.internal(result, overlapInd, proportion, margin, genotypes)
 	}
 	sink()
 	file.remove(aa)
