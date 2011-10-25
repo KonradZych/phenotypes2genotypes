@@ -75,7 +75,7 @@ markersCorPlot <- function(cross, population, map=c("genetic","physical"), cmBet
   m_min <- min(mloc_o,mloc_original)
 
   back <- chromCorMatrix(cross,population,map,show,verbose)
-  plot(c(m_min,m_max),c(m_min,m_max),type='n')
+  plot(c(m_min,m_max),c(m_min,m_max),type='n',xlab="Old map (cM)",ylab="New map (cM)",main="Plot comparison")
   for(i in 1:(length(sum_gl_off)-1)){
     for(j in 1:(length(sum_gl_off)-1)){
         cur_col <- 1-(back[i,j])
@@ -86,8 +86,7 @@ markersCorPlot <- function(cross, population, map=c("genetic","physical"), cmBet
   points(cbind(mloc_original,mloc_original),pch=20,col="green",lwd=2)
   abline(v=sum_gl_off[-length(sum_gl_off)],lty=2)
   abline(h=sum_gl_off[-length(sum_gl_off)],lty=2)
-
-} 
+}
 
 ############################################################################################################
 #									*** markersCorPlot ***
@@ -247,19 +246,20 @@ getPopulationOffsets.internal <- function(population, cur_map, cmBetween){
 chromCorMatrix <- function(cross,population,map=c("genetic","physical"),show=c(max,mean),verbose=FALSE){
   map <- defaultCheck.internal(map,"map",2,"genetic")
 	if(map=="genetic"){
-    cur_map <- population$maps$genetic
+    old_map <- population$maps$genetic
   }else{
-    cur_map <- population$maps$physical
+    old_map <- population$maps$physical
   }
-  if(is.null(cur_map)) stop("no ",map," map provided!")  
-  result <- matrix(0,nchr(cross),length(unique(cur_map[,1])))
+  if(is.null(old_map)) stop("no ",map," map provided!")  
+  result <- matrix(0,nchr(cross),length(unique(old_map[,1])))
   gcm <- map2mapCorrelationMatrix(cross,population,verbose)
   s <- proc.time()
   for(i in 1:nchr(cross)){
-      cur_new <- colnames(cross$geno[[i]]$data)
-      for(j in unique(cur_map[,1])){
-         cur_ori <- rownames(population$offspring$genotypes$real[rownames(cur_map)[which(cur_map[,1]==j)],])
-         result[i,j]<- show(abs(gcm[cur_ori,cur_new]))
+      markersfromnewmap <- colnames(cross$geno[[i]]$data)
+      for(j in unique(old_map[,1])){
+         rownamesOfSomthing <- rownames(old_map)[which(old_map[,1]==j)]
+         markersfromoldmap <- rownames(population$offspring$genotypes$real[rownamesOfSomthing,])
+         result[i,j]<- show(abs(gcm[markersfromoldmap,markersfromnewmap]))
       }
       e <- proc.time()
       cat("Counting correlation matrix:",round(i/nchr(cross)*100),"% done estimated time remaining:",((e-s)[3]/i)*(nchr(cross)-i),"s\n")
