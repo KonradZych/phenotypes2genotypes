@@ -186,11 +186,12 @@ map2mapCorrelationMatrix<- function(cross,population,verbose=FALSE){
   if(missing(population)) stop("Please provide a population object\n")
   check.population(population)
   #is.cross(cross)
-  g <- pull.geno(cross)
+  genotypes <- pull.geno(cross)
   if(verbose) cat("Calculating correlation matrix\n")
   if(!is.null(population$offspring$genotypes$real)){
-    gcm <- apply(g,2,function(cgc){cor(cgc,t(population$offspring$genotypes$real),use="pair")})
-    colnames(gcm) <- colnames(g)
+    gcm <- apply(genotypes,2,function(cgc){cor(cgc,t(population$offspring$genotypes$real),use="pair")})
+    colnames(gcm) <- colnames(genotypes)
+    rownames(gcm) <- rownames(population$offspring$genotypes$real)    
     invisible(gcm)
   }else{
     stop("Load known genotypes into the population using intoPopulation(p,genotypes,\"offspring$genotypes\")")
@@ -216,7 +217,7 @@ map2mapCorrelationMatrix<- function(cross,population,verbose=FALSE){
 map2mapImage <- function(gcm,population,cross,corThreshold=0.5,verbose=FALSE){
   if(missing(gcm)){
     cat("Correlation matrix not provided, calulating one")
-    gcm <- map2mapCorrelationMatrix.internal(cross,population,verbose)
+    gcm <- map2mapCorrelationMatrix(cross,population,verbose)
     if(missing(cross)) stop("No object of class cross, please run either createNewMap or enrichExistingMap\n")
     if(missing(population)) stop("Please provide a population object\n")
     check.population(population)
