@@ -1,4 +1,53 @@
-markersCorPlot <- function(cross, population, map=c("genetic","physical"), cmBetween=25, verbose=TRUE){
+############################################################################################################
+#
+# markersCorPlot.R
+#
+# Copyright (c) 2011, Konrad Zych
+#
+# Modified by Danny Arends
+# 
+# first written March 2011
+# last modified October 2011
+# last modified in version: 0.9.1
+# in current version: active, in main workflow
+#
+#     This program is free software; you can redistribute it and/or
+#     modify it under the terms of the GNU General Public License,
+#     version 3, as published by the Free Software Foundation.
+#
+#     This program is distributed in the hope that it will be useful
+#     but without any warranty; without even the implied warranty of
+#     merchantability or fitness for a particular purpose.  See the GNU
+#     General Public License, version 3, for more details.
+#
+#     A copy of the GNU General Public License, version 3, is available
+#     at http://www.r-project.org/Licenses/GPL-3
+#
+# Contains: markersCorPlot, ascendingMaptoJigSawMap
+#               getChrOffsets.internal, getMarkerOffsets, getMarkerOffsetsFromMap, 
+#               getPopulationOffsets.internal, chromCorMatrix
+#
+############################################################################################################
+
+############################################################################################################
+#									*** markersCorPlot ***
+#
+# DESCRIPTION:
+# 	function to create new map and save it in cross object
+# 
+# PARAMETERS:
+# 	population - object of class population
+# 	orde - object of class population
+# 	n.chr - expected number of linkage groups
+# 	use - expected number of linkage groups
+#	verbose - be verbose
+#
+# OUTPUT:
+#	an object of class cross
+#
+#
+############################################################################################################
+markersCorPlot <- function(cross, population, map=c("genetic","physical"), cmBetween=25, show=c(max,mean),verbose=TRUE){
   map <- defaultCheck.internal(map,"map",2,"genetic")
 	if(map=="genetic"){
     cur_map <- population$maps$genetic
@@ -13,13 +62,11 @@ markersCorPlot <- function(cross, population, map=c("genetic","physical"), cmBet
   for(x in 1:length(offsets1)){
     global_offset <- c(global_offset,max(offsets1[x],offsets2[x]))
   }
-  global_offset<-c(0,global_offset)
   
   sum_gl_off <- NULL
   for(x in 1:length(global_offset)){
     sum_gl_off <- c(sum_gl_off,sum(global_offset[1:x]))
   }
-
 
   mloc_original <- getMarkerOffsets(cross,global_offset,cmBetween)
   mloc_o <- getMarkerOffsetsFromMap(cur_map,global_offset,cmBetween)
@@ -27,11 +74,11 @@ markersCorPlot <- function(cross, population, map=c("genetic","physical"), cmBet
   m_max <- max(mloc_o,mloc_original)
   m_min <- min(mloc_o,mloc_original)
 
-  back <- abs(chromCorMatrix(cross,population,map))
+  back <- chromCorMatrix(cross,population,map,show,verbose)
   plot(c(m_min,m_max),c(m_min,m_max),type='n')
   for(i in 1:(length(sum_gl_off)-1)){
     for(j in 1:(length(sum_gl_off)-1)){
-        cur_col <- 1-back[i,j]/max(back)
+        cur_col <- 1-(back[i,j])
         rect(sum_gl_off[i],sum_gl_off[j],sum_gl_off[i+1],sum_gl_off[j+1],lty=0,col=rgb(cur_col,cur_col,cur_col))
     }
   }
@@ -39,9 +86,27 @@ markersCorPlot <- function(cross, population, map=c("genetic","physical"), cmBet
   points(cbind(mloc_original,mloc_original),pch=20,col="green",lwd=2)
   abline(v=sum_gl_off[-length(sum_gl_off)],lty=2)
   abline(h=sum_gl_off[-length(sum_gl_off)],lty=2)
-  invisible(global_offset)
+
 } 
 
+############################################################################################################
+#									*** markersCorPlot ***
+#
+# DESCRIPTION:
+# 	function to create new map and save it in cross object
+# 
+# PARAMETERS:
+# 	population - object of class population
+# 	orde - object of class population
+# 	n.chr - expected number of linkage groups
+# 	use - expected number of linkage groups
+#	verbose - be verbose
+#
+# OUTPUT:
+#	an object of class cross
+#
+#
+############################################################################################################
 getChrOffsets.internal <- function(cross, cmBetween){
   offsets <- unlist(lapply(pull.map(cross),max))
   offsets <- offsets+cmBetween
@@ -64,6 +129,24 @@ getMarkerOffsets <- function(cross, offsets, cmBetween=25){
   mlocations
 }
 
+############################################################################################################
+#									*** markersCorPlot ***
+#
+# DESCRIPTION:
+# 	function to create new map and save it in cross object
+# 
+# PARAMETERS:
+# 	population - object of class population
+# 	orde - object of class population
+# 	n.chr - expected number of linkage groups
+# 	use - expected number of linkage groups
+#	verbose - be verbose
+#
+# OUTPUT:
+#	an object of class cross
+#
+#
+############################################################################################################
 getMarkerOffsetsFromMap <- function(map, offsets, cmBetween=25){
   cnt <- 1
   myoffsets <- NULL
@@ -77,9 +160,26 @@ getMarkerOffsetsFromMap <- function(map, offsets, cmBetween=25){
 }
 
 
-
-ascendingMaptoJigSawMap <- function(population,cur_map,verbose=FALSE){
-  map <- defaultCheck.internal(map,"map",2,"genetic")
+############################################################################################################
+#									*** markersCorPlot ***
+#
+# DESCRIPTION:
+# 	function to create new map and save it in cross object
+# 
+# PARAMETERS:
+# 	population - object of class population
+# 	orde - object of class population
+# 	n.chr - expected number of linkage groups
+# 	use - expected number of linkage groups
+#	verbose - be verbose
+#
+# OUTPUT:
+#	an object of class cross
+#
+#
+############################################################################################################
+ascendingMaptoJigSawMap <- function(population,map,verbose=FALSE){
+    map <- defaultCheck.internal(map,"map",2,"genetic")
 	if(map=="genetic"){
     cur_map <- population$maps$genetic
   }else{
@@ -99,31 +199,67 @@ ascendingMaptoJigSawMap <- function(population,cur_map,verbose=FALSE){
   invisible(population)
 }
 
+############################################################################################################
+#									*** markersCorPlot ***
+#
+# DESCRIPTION:
+# 	function to create new map and save it in cross object
+# 
+# PARAMETERS:
+# 	population - object of class population
+# 	orde - object of class population
+# 	n.chr - expected number of linkage groups
+# 	use - expected number of linkage groups
+#	verbose - be verbose
+#
+# OUTPUT:
+#	an object of class cross
+#
+#
+############################################################################################################
 getPopulationOffsets.internal <- function(population, cur_map, cmBetween){
   minima <- NULL
   for(x in unique(cur_map[,1])){
     minima <- c(minima,max(cur_map[which(cur_map[,1]==x),2]))
   }
   minima <- minima + cmBetween
-  c(0,minima)
   invisible(minima)
 }
 
-chromCorMatrix <- function(cross,population,map=c("genetic","physical")){
-    map <- defaultCheck.internal(map,"map",2,"genetic")
+############################################################################################################
+#									*** markersCorPlot ***
+#
+# DESCRIPTION:
+# 	function to create new map and save it in cross object
+# 
+# PARAMETERS:
+# 	population - object of class population
+# 	orde - object of class population
+# 	n.chr - expected number of linkage groups
+# 	use - expected number of linkage groups
+#	verbose - be verbose
+#
+# OUTPUT:
+#	an object of class cross
+#
+#
+############################################################################################################
+chromCorMatrix <- function(cross,population,map=c("genetic","physical"),show=c(max,mean),verbose=FALSE){
+  map <- defaultCheck.internal(map,"map",2,"genetic")
 	if(map=="genetic"){
     cur_map <- population$maps$genetic
   }else{
     cur_map <- population$maps$physical
   }
-  s <- proc.time()
   if(is.null(cur_map)) stop("no ",map," map provided!")  
   result <- matrix(0,nchr(cross),length(unique(cur_map[,1])))
+  gcm <- map2mapCorrelationMatrix(cross,population,verbose)
+  s <- proc.time()
   for(i in 1:nchr(cross)){
-      cur_new <- cross$geno[[i]]$data
+      cur_new <- colnames(cross$geno[[i]]$data)
       for(j in unique(cur_map[,1])){
-         cur_ori <- population$offspring$genotypes$real[rownames(cur_map)[which(cur_map[,1]==j)],]
-         result[i,j]<- mean(apply(cur_ori,1,function(x){apply(cur_new,2,function(y){cor(x,y,use="pair")})}))
+         cur_ori <- rownames(population$offspring$genotypes$real[rownames(cur_map)[which(cur_map[,1]==j)],])
+         result[i,j]<- show(abs(gcm[cur_ori,cur_new]))
       }
       e <- proc.time()
       cat("Counting correlation matrix:",round(i/nchr(cross)*100),"% done estimated time remaining:",((e-s)[3]/i)*(nchr(cross)-i),"s\n")
