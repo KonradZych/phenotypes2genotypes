@@ -26,6 +26,7 @@
  \item{corTreshold}{ markers not having corelation above this number with any of chromosomes are removed}
  \item{addMarkers}{ should markers from map used for ordering be added to resulting map}
  \item{verbose}{ Be verbose}
+}
 
 \value{
   an object of class cross
