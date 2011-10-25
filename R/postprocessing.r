@@ -73,7 +73,7 @@ checkBeforeOrdering <- function(cross,map){
 #	object of class cross
 #
 ############################################################################################################
-orderChromosomes <- function(cross,population,map=c("genetic","physical"),use=c("correlation","majority"),max.iter=10,verbose=FALSE){
+orderChromosomes <- function(cross,population,map=c("genetic","physical"),use=c("majority","correlation"),max.iter=10,verbose=FALSE){
 	if(length(cross$geno)<=1) stop("selected cross object contains too little chromosomes to proceed")
   	map <- defaultCheck.internal(map,"map",2,"genetic")
 	if(map=="genetic"){
@@ -81,21 +81,16 @@ orderChromosomes <- function(cross,population,map=c("genetic","physical"),use=c(
   }else{
     cur_map <- population$maps$physical
   }
-  inListCheck.internal(use,"use",c("correlation","majority"))
-  if(use=="correlation"){
-    used_f <- correlationRule.internal
-    gcm <- map2mapCorrelationMatrix.internal(cross,population,verbose)
-  }else{
-    used_f <- majorityRule.internal
-  }
-	output <- used_f(cross,cur_map,gcm)
+  if(is.null(cur_map)) stop("no ",map," map provided!")  
+  gcm <- map2mapCorrelationMatrix(cross,population,verbose)
+	output <- correlationRule.internal(cross,cur_map,gcm)
 	### until every chr on phys map is matched exactly once
 	while(max(apply(output,2,sum))>1){
 		toMerge <- which(apply(output,2,sum)>1)
 		for(curToMerge in toMerge){
 			curMerge <- which(output[,curToMerge]==max(output[,curToMerge]))
 			cross <- mergeChromosomes.internal(cross,curMerge,curMerge[1])
-			output <- used_f(cross,cur_map,gcm)
+			output <- correlationRule.internal(cross,cur_map,gcm)
 		}
 	}
 	#if(verbose) cat(output,"\n")
@@ -108,7 +103,7 @@ orderChromosomes <- function(cross,population,map=c("genetic","physical"),use=c(
 		for(l in 1:ncol(output)){
 			cur <- which(output[,l]==max(output[,l]))
 			if(cur!=l)cross <- switchChromosomes.internal(cross,cur,l)
-			output <- used_f(cross,cur_map,gcm)
+			output <- correlationRule.internal(cross,cur_map,gcm)
 		}
 		order2 <- output
     if(verbose)cat("done iteration:",iter,"\n")
@@ -135,7 +130,7 @@ orderChromosomes <- function(cross,population,map=c("genetic","physical"),use=c(
 #	vector with new ordering of chromosomes inside cross object
 #
 ############################################################################################################
-correlationRule.internal <- function(cross,cur_map,gcm,verbose=FALSE){
+majorityRule.internal <- function(cross,cur_map,gcm,verbose=FALSE){
   ys <- getYLocs.internal(cross)[[1]]
   max_ <- apply(abs(gcm),2,function(r){cur_map[rownames(gcm)[which.max(r)],1]})
   output <- matrix(0,max(cur_map[,1]),max(ys[,1]))
@@ -166,28 +161,21 @@ correlationRule.internal <- function(cross,cur_map,gcm,verbose=FALSE){
 #	vector with new ordering of chromosomes inside cross object
 #
 ############################################################################################################
-majorityRule.internal <- function(cross,cur_map){
-	knchrom <- length(table(cur_map[,1]))
-	result <- matrix(0, length(cross$geno), knchrom)
-	output <- matrix(0, length(cross$geno), knchrom)
-	for(i in 1:length(cross$geno)){
-		cur_ys <- colnames(cross$geno[[i]]$data)[colnames(cross$geno[[i]]$data)%in%rownames(cur_map)]
-		cur_xs <- cur_map[cur_ys,]
-		for(j in 1:knchrom){
-			result[i,j] <- sum(cur_xs[,1]==j)/nrow(cur_xs)
-		}
-		output[i,which.max(result[i,])] <- 1
-	}	
-	rownames(output) <- 1:nrow(output)
-	colnames(output) <- 1:ncol(output)
-	if(min(apply(output,2,max))!=1){
-		toCheck <- which(apply(output,2,sum)!=1)
-		for(x in toCheck){
-			output[,x] <- 0
-			output[which.max(result[,x]),x] <- 1
-		}
-	}	
-	invisible(output)
+correlationRule.internal <- function(cross,cur_map,gcm,verbose=FALSE){
+  result <- matrix(0,nchr(cross),length(unique(cur_map[,1])))
+  for(i in 1:nchr(cross)){
+      cur_new <- colnames(cross$geno[[i]]$data)
+      for(j in unique(cur_map[,1])){
+         cur_ori <- rownames(population$offspring$genotypes$real[rownames(cur_map)[which(cur_map[,1]==j)],])
+         result[i,j]<- mean(abs(gcm[cur_ori,cur_new]))
+      }
+  }
+  output <- matrix(0,nchr(cross),length(unique(cur_map[,1])))
+  maxima <- apply(result,2,which.max)
+  for(i in 1:ncol(output)){
+    output[maxima[i],i]<-1
+  }
+  invisible(output)
 }
 
 ############################################################################################################
@@ -367,15 +355,22 @@ removeChromosomesSub.internal <- function(cross, chr,verbose=FALSE){
 #	boolean
 #
 ############################################################################################################
-smoothGeno <- function(cross,windowSize=1,verbose=FALSE){
+smoothGeno <- function(cross,windowSize=1,chr,verbose=FALSE){
 	if(!any(class(cross) == "cross")) stop("Input should have class \"cross\".")
 	cross <- fill.geno(cross)
 	n.ind <- nind(cross)
-	cross_geno <- lapply(cross$geno,smoothGenoSub.internal,windowSize,verbose)
-	for(i in 1:length(cross_geno)){
-		cross$geno[[i]]$data <- cross_geno[[i]]$data
+  if(missing(chr)) chr <- 1:nchr(cross)
+  cross_geno  <- vector(length(chr),mode="list")
+  for(i in 1:length(chr)){
+    cat("--- chr 1 ---\n")
+    cross_geno[[i]]  <- smoothGenoSub.internal(cross$geno[[chr[i]]],windowSize,verbose)
+  }
+	for(i in 1:length(chr)){
+		cross$geno[[chr[i]]]$data <- cross_geno[[i]]$data
 	}
+  cat("running est.rf\n")
 	cross <- est.rf(cross)
+   cat("running est.map\n")
 	cross <- recalculateMap.internal(cross)
 	invisible(cross)
 }
@@ -439,5 +434,5 @@ smoothGenoRow.internal <- function(genoRow,windowSize){
 recalculateMap.internal <- function(cross,...){
 	newmap <- est.map(cross,offset=0,...)
 	cross2 <- replace.map(cross, newmap)
-	invisible(cross)
+	invisible(cross2)
 }
