@@ -189,7 +189,7 @@ map2mapCorrelationMatrix<- function(cross,population,verbose=FALSE){
   g <- pull.geno(cross)
   if(verbose) cat("Calculating correlation matrix\n")
   if(!is.null(population$offspring$genotypes$real)){
-    gcm <- apply(g,2,function(cgc){apply(population$offspring$genotypes$real,1,function(pgc){cor(cgc,pgc,use="pair")})})
+    gcm <- apply(g,2,function(cgc){cor(cgc,t(population$offspring$genotypes$real),use="pair")})
     colnames(gcm) <- colnames(g)
     invisible(gcm)
   }else{
