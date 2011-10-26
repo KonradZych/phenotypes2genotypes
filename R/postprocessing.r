@@ -45,13 +45,18 @@
 #	object of class cross
 #
 ############################################################################################################
-assignChromosomes <- function(cross, population, map=c("genetic","physical"), how = c(correlationRule,majorityRule,sumMajorityRule), reOrder=FALSE,verbose=FALSE){
+assignChromosomes <- function(population, n.chr, map=c("none","genetic","physical"), how = c(correlationRule,majorityRule,sumMajorityRule), reOrder=FALSE,verbose=FALSE){
+  cross <- createNewMap(population,n.chr,verbose=TRUE,debugMode=2)
   if(length(cross$geno)<=1) stop("selected cross object contains too little chromosomes to proceed")
-  map <- defaultCheck.internal(map,"map",2,"genetic")
+  map <- defaultCheck.internal(map,"map",3,"none")
   how <- defaultCheck.internal(how,"how",3,correlationRule)
-	if(map=="genetic"){
+	if(map=="none"){
+    return(cross)
+  }
+  if(map=="genetic"){
     originalMap <- population$maps$genetic
-  }else{
+  }
+  if(map=="physical"){
     originalMap <- population$maps$physical
   }
   
@@ -67,7 +72,8 @@ assignChromosomes <- function(cross, population, map=c("genetic","physical"), ho
     invisible(ordering)
   }else{
     if(verbose)cat("Applying new ordering to the cross object.\n")
-    return(reorganizeMarkersWithin(cross,ordering))
+    cross2 <- reorganizeMarkersWithin(cross,ordering)
+    return(orderMarkers(cross2,use.ripple=F,verb=T))
   }
 }
 

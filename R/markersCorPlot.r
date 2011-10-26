@@ -116,7 +116,7 @@ getChrOffsets.internal <- function(cross, cmBetween){
 
 #From IQTL by Danny Arends, SHOULD NOT MODIFY
 getMarkerOffsets <- function(cross, offsets, cmBetween=25){
-  if(missing(offsets))offsets <- getChrOffsets(cross,cmBetween)
+  if(missing(offsets))offsets <- getChrOffsets.internal(cross,cmBetween)
   cnt <- 1
   myoffsets <- NULL
   for(x in nmar(cross)){
@@ -178,7 +178,7 @@ getMarkerOffsetsFromMap <- function(map, offsets, cmBetween=25){
 #
 ############################################################################################################
 ascendingMaptoJigSawMap <- function(mapToProcess,verbose=FALSE){
-  if(is.null(mapToProcess)) stop("no ",map," map provided!")
+  if(is.null(mapToProcess)) stop("No map provided!")
   for(x in unique(mapToProcess[,1])){
     if(verbose) cat("Processing chromosome:",x,"\n")
     offsetOfCurrentChromosome <- min(mapToProcess[which(mapToProcess[,1]==x),2])
