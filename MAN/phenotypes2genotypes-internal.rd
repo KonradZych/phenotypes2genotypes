@@ -1,6 +1,7 @@
 \name{phenotypes2genotypes-internal}
 
 \alias{mapMarkers.internal}
+\alias{ascendingMaptoJigSawMap}
 
 \alias{genotypesToCross.internal}
 \alias{writePhenotypes.internal}
@@ -35,8 +36,13 @@
 \alias{intoPopulationSubGeno.internal}
 \alias{intoPopulationSubMap.internal}
 \alias{selectMarkersUsingMap.internal}
-\alias{chromosomesCorelationMatrix}
-\alias{is.population}
+\alias{chromCorMatrix}
+\alias{fakeMixUps.internal}
+\alias{getChrOffsets.internal}
+\alias{getMarkerOffsetsFromMap}
+\alias{getMarkerOffsets}
+\alias{getPopulationOffsets.internal}
+\alias{check.population}
 \alias{fakePhysicalMap.internal}
 
 

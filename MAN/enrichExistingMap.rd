@@ -1,5 +1,5 @@
-\name{Create new map}
-\alias{createNewMap}
+\name{Enrich existing map}
+\alias{enrichExistingMap}
 
 
 \title{Creating de novo genetic map.}
