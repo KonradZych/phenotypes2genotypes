@@ -56,7 +56,11 @@ createNewMap <- function(population,  n.chr,  use=c("geno","rf"), verbose=FALSE,
 	}
 	#*******SAVING CROSS OBJECT*******
 	s1 <- proc.time()
+  aa <- tempfile()
+	sink(aa)
 	cross <- genotypesToCross.internal(population,"simulated",verbose=verbose,debugMode=debugMode)
+  sink()
+	file.remove(aa)
 	e1 <- proc.time()
 	if(verbose && debugMode==2)cat("saving data into cross object done in:",(e1-s1)[3],"seconds.\n")
 	
