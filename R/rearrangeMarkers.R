@@ -64,7 +64,7 @@ enrichExistingMap <- function(population,cross,map=c("genetic","physical"),corTr
       s1 <- proc.time()
       cross <- genotypesToCross.internal(population,"simulated",verbose=verbose,debugMode=debugMode)
       e1 <- proc.time()
-      if(verbose && debugMode==2)cat("saving data into cross object done in:",(e1-s1)[3],"seconds.\n")
+      if(verbose && debugMode==2)cat("Saving data into cross object done in:",(e1-s1)[3],"seconds.\n")
     }
   }
  
@@ -72,8 +72,8 @@ enrichExistingMap <- function(population,cross,map=c("genetic","physical"),corTr
 	s1 <- proc.time()
 	cross <- rearrangeMarkers(cross,population,map,corTreshold,TRUE,verbose=verbose)
 	e1 <- proc.time()
-	if(verbose && debugMode==2)cat("enrichment of original map done in:",(e1-s1)[3],"seconds.\n")
-  
+	if(verbose && debugMode==2)cat("Enrichment of original map done in:",(e1-s1)[3],"seconds.\n")
+  cross <- orderMarkers(cross,use.ripple=F,verb=T)
 	invisible(cross)
 }
 
@@ -154,13 +154,12 @@ rearrangeMarkers <- function(cross,population,map=c("genetic","physical"),corTre
 bestCorelated.internal <- function(cross,population,corTreshold,verbose=FALSE){
   genotypesCorelationMatrix <- map2mapCorrelationMatrix(cross,population,verbose)
   #select markers that are correlated highly with more than one of the old markers
-  selected <- which(apply(abs(gcm),2,function(r){length(which(r > corTreshold))})!=0)
-  gcm_ <- gcm[,selected]
-  max_ <- apply(abs(gcm_),2,function(r){rownames(gcm_)[which.max(r)]})
+  selected <- which(apply(abs(genotypesCorelationMatrix),2,function(r){length(which(r > corTreshold))})!=0)
+  genotypesCorelationMatrix <- genotypesCorelationMatrix[,selected]
   output <- matrix(0,length(selected),2)
-  output[,1] <- colnames(gcm)[selected]
-  output[,2] <- max_
-  rownames(output) <- colnames(gcm_)
+  output[,1] <- colnames(genotypesCorelationMatrix)
+  output[,2] <- apply(abs(genotypesCorelationMatrix),2,function(r){rownames(genotypesCorelationMatrix)[which.max(r)]})
+  rownames(output) <- colnames(genotypesCorelationMatrix)
   invisible(output)
 }
 
