@@ -98,45 +98,43 @@ enrichExistingMap <- function(population,cross,map=c("genetic","physical"),corTr
 #	object of class cross
 #
 ############################################################################################################
-rearrangeMarkers <- function(cross,population,map=c("genetic","physical"),corTreshold=0.6,addMarkers=FALSE,verbose=FALSE){
+rearrangeMarkers <- function(cross,population,map=c("genetic","physical"),corTreshold=0.6,reOrder=FALSE,addOriginalMarkers=FALSE,verbose=FALSE){
   if(missing(cross)) stop("Please provide a cross object\n")
   if(missing(population)) stop("Please provide a population object\n")
   check.population(population)
-  output <- bestCorelated.internal(cross,population,corTreshold,verbose)
-  if(verbose) cat("selected",nrow(output),"markers for further analysis\n")
+  bestCorelatedMarkers <- bestCorelated.internal(cross, population, corTreshold)
+  if(verbose) cat("selected",nrow(bestCorelatedMarkers),"markers for further analysis\n")
   map <- defaultCheck.internal(map,"map",2,"genetic")
 	if(map=="genetic"){
     cur_map <- population$maps$genetic
   }else{
     cur_map <- population$maps$physical
   }
-  if(verbose) cat("old map contains",max(cur_map[,1]),"chromosomes\n")
-	cross_ <- cross
-	cross_$geno <- vector(max(cur_map[,1]), mode="list")
-	cross_$pheno <- pull.pheno(cross)
-	if(verbose) cat("Reordering markers \n")  
-	for(x in 1:max(cur_map[,1])){
-		if(verbose) cat("- chr ",x," -\n")    
+  ordering <- NULL
+	for(x in unique(cur_map[,1])){  
 		oldnames <- rownames(cur_map)[which(cur_map[,1]==x)]
-    newmarkers <- which(output[,2]%in%oldnames)
+    newmarkers <- rownames(bestCorelatedMarkers)[which(bestCorelatedMarkers[,2]%in%oldnames)]
     if(verbose) cat("Selected:",length(newmarkers),"new and",length(oldnames),"original markers \n") 
-		if(addMarkers){
-			cross_$geno[[x]]$data <- cbind(pull.geno(cross)[,output[newmarkers,1]],t(population$offspring$genotypes$real[oldnames,]))
-			newmap <- 1:(length(newmarkers)+length(oldnames))
-			names(newmap) <- c(output[newmarkers,1],oldnames)
+		if(addOriginalMarkers){
+			    oldNames <- names(ordering)
+          ordering <- c(ordering,rep(x,(length(newmarkers)+length(oldnames))))
+          names(ordering) <- c(oldNames,newmarkers,oldnames)
 		}else{
-			cross_$geno[[x]]$data <- pull.geno(cross)[,output[newmarkers,1]]
-			newmap <- 1:length(newmarkers)
-			names(newmap) <- output[newmarkers,1]
+			    oldNames <- names(ordering)
+          ordering <- c(ordering,rep(x,length(newmarkers)))
+          names(ordering) <- c(oldNames,newmarkers)
 		}
-		cross_$geno[[x]]$map <- c(newmap)
 	}
-	names(cross_$geno) <- 1:length(cross_$geno)
-	for(i in 1:length(cross_$geno)){
-		class(cross_$geno[[i]]) <- "A"
-	}
-	invisible(cross_)
+  if(!reOrder){
+    if(verbose)cat("Returning new ordering vector.\n")
+    invisible(ordering)
+  }else{
+    if(verbose)cat("Applying new ordering to the cross object.\n")
+    invisible(reorganizeMarkersWithin(cross,ordering))
+  }
 }
+cross_test <- rearrangeMarkers(cross_new,population_a,"physical",reOrder=F,addOriginalMarkers=TRUE)
+
 
 ###########################################################################################################
 #                                    *** bestCorelated.internal ***
@@ -155,7 +153,7 @@ rearrangeMarkers <- function(cross,population,map=c("genetic","physical"),corTre
 #
 ############################################################################################################
 bestCorelated.internal <- function(cross,population,corTreshold,verbose=FALSE){
-  gcm <- map2mapCorrelationMatrix(cross,population,verbose)
+  genotypesCorelationMatrix <- map2mapCorrelationMatrix(cross,population,verbose)
   #select markers that are correlated highly with more than one of the old markers
   selected <- which(apply(abs(gcm),2,function(r){length(which(r > corTreshold))})!=0)
   gcm_ <- gcm[,selected]
@@ -163,6 +161,7 @@ bestCorelated.internal <- function(cross,population,corTreshold,verbose=FALSE){
   output <- matrix(0,length(selected),2)
   output[,1] <- colnames(gcm)[selected]
   output[,2] <- max_
+  rownames(output) <- colnames(gcm_)
   invisible(output)
 }
 
@@ -189,10 +188,10 @@ map2mapCorrelationMatrix<- function(cross,population,verbose=FALSE){
   genotypes <- pull.geno(cross)
   if(verbose) cat("Calculating correlation matrix\n")
   if(!is.null(population$offspring$genotypes$real)){
-    gcm <- apply(genotypes,2,function(cgc){cor(cgc,t(population$offspring$genotypes$real),use="pair")})
-    colnames(gcm) <- colnames(genotypes)
-    rownames(gcm) <- rownames(population$offspring$genotypes$real)    
-    invisible(gcm)
+    genotypesCorelationMatrix <- apply(genotypes,2,function(cgc){cor(cgc,t(population$offspring$genotypes$real),use="pair")})
+    colnames(genotypesCorelationMatrix) <- colnames(genotypes)
+    rownames(genotypesCorelationMatrix) <- rownames(population$offspring$genotypes$real)    
+    invisible(genotypesCorelationMatrix)
   }else{
     stop("Load known genotypes into the population using intoPopulation(p,genotypes,\"offspring$genotypes\")")
   }
@@ -214,13 +213,13 @@ map2mapCorrelationMatrix<- function(cross,population,verbose=FALSE){
 #	vector with new ordering of chromosomes inside cross object
 #
 ############################################################################################################
-map2mapImage <- function(gcm,population,cross,corThreshold=0.5,verbose=FALSE){
-  if(missing(gcm)){
+map2mapImage <- function(genotypesCorelationMatrix,population,cross,corThreshold=0.5,verbose=FALSE){
+  if(missing(genotypesCorelationMatrix)){
     cat("Correlation matrix not provided, calulating one")
-    gcm <- map2mapCorrelationMatrix(cross,population,verbose)
+    genotypesCorelationMatrix <- map2mapCorrelationMatrix(cross,population,verbose)
     if(missing(cross)) stop("No object of class cross, please run either createNewMap or enrichExistingMap\n")
     if(missing(population)) stop("Please provide a population object\n")
     check.population(population)
   }
-  heatmap(gcm,breaks = c(-1,-corThreshold,corThreshold,1),col=c("blue","white","red"),Rowv=NA)
+  heatmap(genotypesCorelationMatrix,breaks = c(-1,-corThreshold,corThreshold,1),col=c("blue","white","red"),Rowv=NA)
 }
