@@ -56,11 +56,11 @@ assignChromosomes <- function(cross, population, map=c("genetic","physical"), ho
   }
   
   s1 <- proc.time()
-	gcm <- map2mapCorrelationMatrix(cross, population, FALSE)
+	genotypesCorelationMatrix <- map2mapCorrelationMatrix(cross, population, FALSE)
 	e1 <- proc.time()
 	if(verbose)cat("Calculating correlation matrix done in:",(e1-s1)[3],"seconds.\n")
   
-  ordering <- how(cross, originalMap, gcm)  
+  ordering <- how(cross, originalMap, genotypesCorelationMatrix)  
   
   if(!reOrder){
     if(verbose)cat("Returning new ordering vector.\n")
@@ -83,16 +83,16 @@ cross_test <- assignChromosomes(cross_new_f,population_a,"physical",how=correlat
 # PARAMETERS:
 #  cross - object of class cross
 #  originalMap - map from population object
-#  gcm - gene correlation matrix (from map2mapCorrelationMatrix function)
+#  genotypesCorelationMatrix - gene correlation matrix (from map2mapCorrelationMatrix function)
 #  verbose - be verbose
 # 
 # OUTPUT:
 #  vector with new ordering of chromosomes inside cross object
 #
 ############################################################################################################
-majorityRule <- function(cross, originalMap, gcm, verbose=FALSE){
+majorityRule <- function(cross, originalMap, genotypesCorelationMatrix, verbose=FALSE){
   nrOfChromosomesInCross <- nchr(cross)
-  chrMaxCorMarkers <- t(apply(abs(gcm),2,function(r){c(originalMap[rownames(gcm)[which.max(r)],1],max(r))}))
+  chrMaxCorMarkers <- t(apply(abs(genotypesCorelationMatrix),2,function(r){c(originalMap[rownames(genotypesCorelationMatrix)[which.max(r)],1],max(r))}))
   output <- NULL
   for(i in 1:nrOfChromosomesInCross){
     markersFromCurChrom <-colnames(cross$geno[[i]]$data)
@@ -123,16 +123,16 @@ majorityRule <- function(cross, originalMap, gcm, verbose=FALSE){
 # PARAMETERS:
 #  cross - object of class cross
 #  originalMap - map from population object
-#  gcm - gene correlation matrix (from map2mapCorrelationMatrix function)
+#  genotypesCorelationMatrix - gene correlation matrix (from map2mapCorrelationMatrix function)
 #  verbose - be verbose
 # 
 # OUTPUT:
 #  vector with new ordering of chromosomes inside cross object
 #
 ############################################################################################################
-sumMajorityRule <- function(cross, originalMap, gcm, verbose=FALSE){
+sumMajorityRule <- function(cross, originalMap, genotypesCorelationMatrix, verbose=FALSE){
   nrOfChromosomesInCross <- nchr(cross)
-  chrMaxCorMarkers <- t(apply(abs(gcm),2,function(r){c(originalMap[rownames(gcm)[which.max(r)],1],max(r))}))
+  chrMaxCorMarkers <- t(apply(abs(genotypesCorelationMatrix),2,function(r){c(originalMap[rownames(genotypesCorelationMatrix)[which.max(r)],1],max(r))}))
   output <- NULL
   for(i in 1:nrOfChromosomesInCross){
     markersFromCurChrom <-colnames(cross$geno[[i]]$data)
@@ -165,14 +165,14 @@ sumMajorityRule <- function(cross, originalMap, gcm, verbose=FALSE){
 # PARAMETERS:
 #  cross - object of class cross
 #  originalMap - map from population object
-#  gcm - gene correlation matrix (from map2mapCorrelationMatrix function)
+#  genotypesCorelationMatrix - gene correlation matrix (from map2mapCorrelationMatrix function)
 #  verbose - be verbose
 # 
 # OUTPUT:
 #  vector with new ordering of chromosomes inside cross object
 #
 ############################################################################################################
-correlationRule <- function(cross,originalMap,gcm,verbose=FALSE){
+correlationRule <- function(cross,originalMap,genotypesCorelationMatrix,verbose=FALSE){
   nrOfChromosomesInCross <- nchr(cross)
   output <- NULL
   for(i in 1:nrOfChromosomesInCross){
@@ -181,7 +181,7 @@ correlationRule <- function(cross,originalMap,gcm,verbose=FALSE){
     bestCorMean <- 0
     for(j in unique(originalMap[,1])){
          markersFromCurOldChrom <- rownames(originalMap)[which(originalMap[,1]==j)]
-         currentCorMean <- mean(abs(gcm[markersFromCurOldChrom,markersFromCurNewChrom]))
+         currentCorMean <- mean(abs(genotypesCorelationMatrix[markersFromCurOldChrom,markersFromCurNewChrom]))
          if(currentCorMean>bestCorMean){
             bestCorMean <- currentCorMean
             best <- j

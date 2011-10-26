@@ -241,14 +241,14 @@ chromCorMatrix <- function(cross,population,map=c("genetic","physical"),show=c(m
   }
   if(is.null(old_map)) stop("no ",map," map provided!")  
   result <- matrix(0,nchr(cross),length(unique(old_map[,1])))
-  gcm <- map2mapCorrelationMatrix(cross,population,verbose)
+  genotypesCorelationMatrix <- map2mapCorrelationMatrix(cross,population,verbose)
   s <- proc.time()
   for(i in 1:nchr(cross)){
       markersfromnewmap <- colnames(cross$geno[[i]]$data)
       for(j in unique(old_map[,1])){
          rownamesOfSomthing <- rownames(old_map)[which(old_map[,1]==j)]
          markersfromoldmap <- rownames(population$offspring$genotypes$real[rownamesOfSomthing,])
-         result[i,j]<- show(abs(gcm[markersfromoldmap,markersfromnewmap]))
+         result[i,j]<- show(abs(genotypesCorelationMatrix[markersfromoldmap,markersfromnewmap]))
       }
       e <- proc.time()
       cat("Counting correlation matrix:",round(i/nchr(cross)*100),"% done estimated time remaining:",((e-s)[3]/i)*(nchr(cross)-i),"s\n")
