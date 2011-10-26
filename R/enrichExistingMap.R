@@ -40,7 +40,6 @@
 #			- genetic - genetic map from cross$maps$genetic
 #			- physical - physical map from cross$maps$physical
 #	corTreshold - markers not having corelation above this number with any of chromosomes are removed
-#	addMarkers - should markers used for comparison be added to output cross object
 #	verbose - be verbose
 #
 #
@@ -77,7 +76,9 @@ enrichExistingMap <- function(population,cross,map=c("genetic","physical"),corTr
 	cross <- rearrangeMarkers(cross,population,map,corTreshold,TRUE,verbose=verbose)
 	e1 <- proc.time()
 	if(verbose && debugMode==2)cat("Enrichment of original map done in:",(e1-s1)[3],"seconds.\n")
-  if(verbose)cat("No cross object provided, creating one using population object\n")
+  
+  #*******ORDERING NEW MAP*******
+  if(verbose)cat("Ordering markers inside the cross object\n")
   s1 <- proc.time()
   aa <- tempfile()
   sink(aa)

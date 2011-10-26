@@ -29,7 +29,7 @@
 ############################################################################################################
 
 ############################################################################################################
-#									*** orderChromosomes ***
+#									*** assignChromosomes ***
 #
 # DESCRIPTION:
 #	ordering chromosomes using genetic/physical map and majority rule
@@ -45,7 +45,7 @@
 #	object of class cross
 #
 ############################################################################################################
-assignChromosomes <- function(population, n.chr, map=c("none","genetic","physical"), how = c(correlationRule,majorityRule,sumMajorityRule), reOrder=FALSE,verbose=FALSE){
+assignChromosomes <- function(population, n.chr, map=c("none","genetic","physical"), how = c(correlationRule,majorityRule,sumMajorityRule), reOrder=FALSE,verbose=FALSE,debugMode=0){
   cross <- createNewMap(population,n.chr,verbose=TRUE,debugMode=2)
   if(length(cross$geno)<=1) stop("selected cross object contains too little chromosomes to proceed")
   map <- defaultCheck.internal(map,"map",3,"none")
@@ -73,7 +73,16 @@ assignChromosomes <- function(population, n.chr, map=c("none","genetic","physica
   }else{
     if(verbose)cat("Applying new ordering to the cross object.\n")
     cross2 <- reorganizeMarkersWithin(cross,ordering)
-    return(orderMarkers(cross2,use.ripple=F,verb=T))
+    if(verbose)cat("Ordering markers inside the cross object\n")
+    s1 <- proc.time()
+    aa <- tempfile()
+    sink(aa)
+    cross <- orderMarkers(cross2,use.ripple=F,verb=T)
+    sink()
+    file.remove(aa)
+    e1 <- proc.time()
+    if(verbose && debugMode==2)cat("Saving data into cross object done in:",(e1-s1)[3],"seconds.\n")
+    invisible(cross2)
   }
 }
 
