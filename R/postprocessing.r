@@ -67,10 +67,9 @@ assignChromosomes <- function(cross, population, map=c("genetic","physical"), ho
     invisible(ordering)
   }else{
     if(verbose)cat("Applying new ordering to the cross object.\n")
-    return(regorganizeMarkersWithin(cross,ordering))
+    return(reorganizeMarkersWithin(cross,ordering))
   }
 }
-cross_test <- assignChromosomes(cross_new_f,population_a,"physical",how=correlationRule,verbose=TRUE,reOrder=T)
 
 ############################################################################################################
 #                                           *** majorityRule ***
@@ -93,7 +92,7 @@ cross_test <- assignChromosomes(cross_new_f,population_a,"physical",how=correlat
 majorityRule <- function(cross, originalMap, genotypesCorelationMatrix, verbose=FALSE){
   nrOfChromosomesInCross <- nchr(cross)
   chrMaxCorMarkers <- t(apply(abs(genotypesCorelationMatrix),2,function(r){c(originalMap[rownames(genotypesCorelationMatrix)[which.max(r)],1],max(r))}))
-  output <- NULL
+  ordering <- NULL
   for(i in 1:nrOfChromosomesInCross){
     markersFromCurChrom <-colnames(cross$geno[[i]]$data)
     #### USING ONLY MARKERS WITH COR HIGHER THAN 0.5
@@ -102,11 +101,11 @@ majorityRule <- function(cross, originalMap, genotypesCorelationMatrix, verbose=
     markersHighlyCorWithCurChrom <- markersCorWithCurChrom[which(abs(markersCorWithCurChrom[,2])>0),]
     chromosomesCorWithCurrent <- table(markersHighlyCorWithCurChrom[,1])
     bestCorChrom <- as.numeric(names(chromosomesCorWithCurrent)[which.max(chromosomesCorWithCurrent)])
-    oldNames <- names(output)
-    output <- c(output,rep(bestCorChrom,length(markersFromCurChrom)))
-    names(output) <- c(oldNames,markersFromCurChrom)
+    oldNames <- names(ordering)
+    ordering <- c(ordering,rep(bestCorChrom,length(markersFromCurChrom)))
+    names(ordering) <- c(oldNames,markersFromCurChrom)
   }
-  invisible(output)
+  invisible(ordering)
 }
 
 
@@ -133,7 +132,7 @@ majorityRule <- function(cross, originalMap, genotypesCorelationMatrix, verbose=
 sumMajorityRule <- function(cross, originalMap, genotypesCorelationMatrix, verbose=FALSE){
   nrOfChromosomesInCross <- nchr(cross)
   chrMaxCorMarkers <- t(apply(abs(genotypesCorelationMatrix),2,function(r){c(originalMap[rownames(genotypesCorelationMatrix)[which.max(r)],1],max(r))}))
-  output <- NULL
+  ordering <- NULL
   for(i in 1:nrOfChromosomesInCross){
     markersFromCurChrom <-colnames(cross$geno[[i]]$data)
     markersHighlyCorWithCurChrom <- chrMaxCorMarkers[markersFromCurChrom,]
@@ -147,11 +146,11 @@ sumMajorityRule <- function(cross, originalMap, genotypesCorelationMatrix, verbo
          bestSum <- currentSum
       } 
     }
-    oldNames <- names(output)
-    output <- c(output,rep(best,length(markersFromCurChrom)))
-    names(output) <- c(oldNames,markersFromCurChrom)
+    oldNames <- names(ordering)
+    ordering <- c(ordering,rep(best,length(markersFromCurChrom)))
+    names(ordering) <- c(oldNames,markersFromCurChrom)
   }
-  invisible(output)
+  invisible(ordering)
 }
 
 
@@ -174,7 +173,7 @@ sumMajorityRule <- function(cross, originalMap, genotypesCorelationMatrix, verbo
 ############################################################################################################
 correlationRule <- function(cross,originalMap,genotypesCorelationMatrix,verbose=FALSE){
   nrOfChromosomesInCross <- nchr(cross)
-  output <- NULL
+  ordering <- NULL
   for(i in 1:nrOfChromosomesInCross){
     markersFromCurNewChrom <-colnames(cross$geno[[i]]$data)
     best <- 0
@@ -187,11 +186,11 @@ correlationRule <- function(cross,originalMap,genotypesCorelationMatrix,verbose=
             best <- j
          }
     }
-    oldNames <- names(output)
-    output <- c(output,rep(best,length(markersFromCurNewChrom)))
-    names(output) <- c(oldNames,markersFromCurNewChrom)
+    oldNames <- names(ordering)
+    ordering <- c(ordering,rep(best,length(markersFromCurNewChrom)))
+    names(ordering) <- c(oldNames,markersFromCurNewChrom)
   }
-  return(output)
+  return(ordering)
 }
 
 ############################################################################################################

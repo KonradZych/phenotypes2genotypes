@@ -48,7 +48,7 @@ assignLinkageGroups <- function(cross, n.chr, use=c("geno","rf"), ...){
   inListCheck.internal(use,"use",c("rf","geno"))
   if(use=="geno") cl <- kmeans(t(pull.geno(cross)), n.chr, ...)
   if(use=="rf")cl <- kmeans(est.rf(cross)$rf, n.chr, ...)
-  regorganizeMarkersWithin(cross, cl$cluster)
+  reorganizeMarkersWithin(cross, cl$cluster)
 }
 
 ############################################################################################################
@@ -65,7 +65,7 @@ assignLinkageGroups <- function(cross, n.chr, use=c("geno","rf"), ...){
 #	 an object of class cross
 #
 ############################################################################################################
-regorganizeMarkersWithin <- function(cross, ordering){
+reorganizeMarkersWithin <- function(cross, ordering){
   ingrp <- ordering
   tab <- sort(table(ingrp), decreasing = TRUE)
   u <- names(tab)
