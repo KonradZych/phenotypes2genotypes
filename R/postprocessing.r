@@ -29,34 +29,6 @@
 ############################################################################################################
 
 ############################################################################################################
-#									*** putAdditionsOfCross.internal ***
-#
-# DESCRIPTION:
-# 	putting additions to cross object
-# 
-# PARAMETERS:
-# 	cross - object of class cross, containing physical or genetic map
-# 	map - which map should be used for comparison:
-#			- genetic - genetic map from cross$maps$genetic
-#			- physical - physical map from cross$maps$physical
-#
-# OUTPUT:
-#	object of class cross with additions
-#
-############################################################################################################
-checkBeforeOrdering <- function(cross,map){
-	map <- defaultCheck.internal(map, "map", 2, "genetic")
-	inListCheck.internal(map,"map",c("genetic","physical"))
-	crossContainsMap.internal(cross,map)
-	if(map=="genetic"){
-		originalMap <- cross$maps$genetic
-	}else if(map=="physical"){
-		originalMap <- cross$maps$physical
-	}
-	invisible(originalMap)
-}
-
-############################################################################################################
 #									*** orderChromosomes ***
 #
 # DESCRIPTION:
@@ -73,7 +45,7 @@ checkBeforeOrdering <- function(cross,map){
 #	object of class cross
 #
 ############################################################################################################
-assignChromosomes <- function(cross, population, map=c("genetic","physical"), solveDubbleAssigments = c(none,random,mergeChromosomes), how = c(correlationRule,majorityRule,sumMajorityRule), reOrder=FALSE,verbose=FALSE){
+assignChromosomes <- function(cross, population, map=c("genetic","physical"), how = c(correlationRule,majorityRule,sumMajorityRule), reOrder=FALSE,verbose=FALSE){
   if(length(cross$geno)<=1) stop("selected cross object contains too little chromosomes to proceed")
   map <- defaultCheck.internal(map,"map",2,"genetic")
   how <- defaultCheck.internal(how,"how",3,correlationRule)
@@ -82,65 +54,23 @@ assignChromosomes <- function(cross, population, map=c("genetic","physical"), so
   }else{
     originalMap <- population$maps$physical
   }
-  gcm <- map2mapCorrelationMatrix(cross, population, verbose)
-  ordering <- how(cross, originalMap, gcm)  
-  #if(!reOrder){
-  #  invisible(ordering)
-  #}else{
-  #  return(reorganiseChromosomes(ordering))
-  #}
-  return(ordering)
-}
-
-assignChromosomes(cross_new_f,population_a,"physical",how=correlationRule)
-
-
-####Deprecated!!!!!!!!!! - will be removed in next commit
-orderChromosomes <- function(cross,population,map=c("genetic","physical"),use=c("majority","correlation"),max.iter=10,verbose=FALSE){
-	if(length(cross$geno)<=1) stop("selected cross object contains too little chromosomes to proceed")
-  map <- defaultCheck.internal(map,"map",2,"genetic")
-	if(map=="genetic"){
-    originalMap <- population$maps$genetic
-  }else{
-    originalMap <- population$maps$physical
-  }
-  use <- defaultCheck.internal(use,"use",2,"majority")
-	if(use=="majority"){
-    use_f  <- majorityRule.internal 
-  }else{
-    use_f <- correlationRule.internal 
-  }
-  if(is.null(originalMap)) stop("no ",map," map provided!")  
   
-	output <- correlationRule.internal(cross,originalMap,gcm)
-	### until every chr on phys map is matched exactly once
-	while(max(apply(output,2,sum))>1){
-		toMerge <- which(apply(output,2,sum)>1)
-		for(curToMerge in toMerge){
-			curMerge <- which(output[,curToMerge]==max(output[,curToMerge]))
-			cross <- mergeChromosomes.internal(cross,curMerge,curMerge[1])
-			output <- use_f(cross,originalMap,gcm)
-		}
-	}
-	#if(verbose) cat(output,"\n")
-	order1 <- matrix(0,ncol(output),nrow(output))
-	order2 <- matrix(1,ncol(output),nrow(output))
-	### until next iteration doesn't change the result
-  iter <- 1
-	while(any(order1!=order2)||(iter > max.iter)){
-		order1 <- output
-		for(l in 1:ncol(output)){
-			cur <- which(output[,l]==max(output[,l]))
-			if(cur!=l)cross <- switchChromosomes.internal(cross,cur,l)
-			output <- correlationRule.internal(cross,originalMap,gcm)
-		}
-		order2 <- output
-    if(verbose)cat("done iteration:",iter,"\n")
-    iter <- iter+1;
-	}
-	names(cross$geno) <- 1:length(cross$geno)
-	invisible(cross)
+  s1 <- proc.time()
+	gcm <- map2mapCorrelationMatrix(cross, population, FALSE)
+	e1 <- proc.time()
+	if(verbose)cat("Calculating correlation matrix done in:",(e1-s1)[3],"seconds.\n")
+  
+  ordering <- how(cross, originalMap, gcm)  
+  
+  if(!reOrder){
+    if(verbose)cat("Returning new ordering vector.\n")
+    invisible(ordering)
+  }else{
+    if(verbose)cat("Applying new ordering to the cross object.\n")
+    return(regorganizeMarkersWithin(cross,ordering))
+  }
 }
+cross_test <- assignChromosomes(cross_new_f,population_a,"physical",how=correlationRule,verbose=TRUE,reOrder=T)
 
 ############################################################################################################
 #                                           *** majorityRule ***
@@ -162,17 +92,24 @@ orderChromosomes <- function(cross,population,map=c("genetic","physical"),use=c(
 ############################################################################################################
 majorityRule <- function(cross, originalMap, gcm, verbose=FALSE){
   nrOfChromosomesInCross <- nchr(cross)
-  chrMaxCorMarkers <- apply(abs(gcm),2,function(r){originalMap[rownames(gcm)[which.max(r)],1]})
-  output <- vector(mode = "numeric", length = nrOfChromosomesInCross)
-  names(output) <-chrnames(cross)
+  chrMaxCorMarkers <- t(apply(abs(gcm),2,function(r){c(originalMap[rownames(gcm)[which.max(r)],1],max(r))}))
+  output <- NULL
   for(i in 1:nrOfChromosomesInCross){
     markersFromCurChrom <-colnames(cross$geno[[i]]$data)
-    markersHighlyCorWithCurChrom <- table(chrMaxCorMarkers[markersFromCurChrom])
-    bestCorChrom <- as.numeric(names(markersHighlyCorWithCurChrom)[which.max(markersHighlyCorWithCurChrom)])
-    output[i] <- bestCorChrom
+    #### USING ONLY MARKERS WITH COR HIGHER THAN 0.5
+    markersCorWithCurChrom <- chrMaxCorMarkers[markersFromCurChrom,]
+    #### ASK DANNY ABOUT THIS
+    markersHighlyCorWithCurChrom <- markersCorWithCurChrom[which(abs(markersCorWithCurChrom[,2])>0),]
+    chromosomesCorWithCurrent <- table(markersHighlyCorWithCurChrom[,1])
+    bestCorChrom <- as.numeric(names(chromosomesCorWithCurrent)[which.max(chromosomesCorWithCurrent)])
+    oldNames <- names(output)
+    output <- c(output,rep(bestCorChrom,length(markersFromCurChrom)))
+    names(output) <- c(oldNames,markersFromCurChrom)
   }
   invisible(output)
 }
+
+
 
 ############################################################################################################
 #                                          ** sumMajorityRule***
@@ -196,8 +133,7 @@ majorityRule <- function(cross, originalMap, gcm, verbose=FALSE){
 sumMajorityRule <- function(cross, originalMap, gcm, verbose=FALSE){
   nrOfChromosomesInCross <- nchr(cross)
   chrMaxCorMarkers <- t(apply(abs(gcm),2,function(r){c(originalMap[rownames(gcm)[which.max(r)],1],max(r))}))
-  output <- vector(mode = "numeric", length = nrOfChromosomesInCross)
-  names(output) <-chrnames(cross)
+  output <- NULL
   for(i in 1:nrOfChromosomesInCross){
     markersFromCurChrom <-colnames(cross$geno[[i]]$data)
     markersHighlyCorWithCurChrom <- chrMaxCorMarkers[markersFromCurChrom,]
@@ -211,11 +147,12 @@ sumMajorityRule <- function(cross, originalMap, gcm, verbose=FALSE){
          bestSum <- currentSum
       } 
     }
-    output[i] <- best
+    oldNames <- names(output)
+    output <- c(output,rep(best,length(markersFromCurChrom)))
+    names(output) <- c(oldNames,markersFromCurChrom)
   }
   invisible(output)
 }
-
 
 
 ############################################################################################################
@@ -237,8 +174,7 @@ sumMajorityRule <- function(cross, originalMap, gcm, verbose=FALSE){
 ############################################################################################################
 correlationRule <- function(cross,originalMap,gcm,verbose=FALSE){
   nrOfChromosomesInCross <- nchr(cross)
-  output <- vector(mode = "numeric", length = nrOfChromosomesInCross)
-  names(output) <-chrnames(cross)
+  output <- NULL
   for(i in 1:nrOfChromosomesInCross){
     markersFromCurNewChrom <-colnames(cross$geno[[i]]$data)
     best <- 0
@@ -251,7 +187,9 @@ correlationRule <- function(cross,originalMap,gcm,verbose=FALSE){
             best <- j
          }
     }
-    output[i] <- best
+    oldNames <- names(output)
+    output <- c(output,rep(best,length(markersFromCurNewChrom)))
+    names(output) <- c(oldNames,markersFromCurNewChrom)
   }
   return(output)
 }
