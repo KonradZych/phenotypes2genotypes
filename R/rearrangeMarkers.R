@@ -133,7 +133,6 @@ rearrangeMarkers <- function(cross,population,map=c("genetic","physical"),corTre
     invisible(reorganizeMarkersWithin(cross,ordering))
   }
 }
-cross_test <- rearrangeMarkers(cross_new,population_a,"physical",reOrder=F,addOriginalMarkers=TRUE)
 
 
 ###########################################################################################################
