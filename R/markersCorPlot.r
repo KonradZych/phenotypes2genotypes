@@ -177,25 +177,14 @@ getMarkerOffsetsFromMap <- function(map, offsets, cmBetween=25){
 #
 #
 ############################################################################################################
-ascendingMaptoJigSawMap <- function(population,map,verbose=FALSE){
-    map <- defaultCheck.internal(map,"map",2,"genetic")
-	if(map=="genetic"){
-    cur_map <- population$maps$genetic
-  }else{
-    cur_map <- population$maps$physical
-  }
-  if(is.null(cur_map)) stop("no ",map," map provided!")
-  for(x in unique(cur_map[,1])){
+ascendingMaptoJigSawMap <- function(mapToProcess,verbose=FALSE){
+  if(is.null(mapToProcess)) stop("no ",map," map provided!")
+  for(x in unique(mapToProcess[,1])){
     if(verbose) cat("Processing chromosome:",x,"\n")
-    cur_beg <- min(cur_map[which(cur_map[,1]==x),2])
-    cur_map[which(cur_map[,1]==x),2] <- cur_map[which(cur_map[,1]==x),2]-cur_beg
+    offsetOfCurrentChromosome <- min(mapToProcess[which(mapToProcess[,1]==x),2])
+    mapToProcess[which(mapToProcess[,1]==x),2] <- mapToProcess[which(mapToProcess[,1]==x),2]-offsetOfCurrentChromosome
   }
-  if(map=="genetic"){
-     population$maps$genetic <- cur_map
-  }else{
-    population$maps$physical <- cur_map
-  }
-  invisible(population)
+  invisible(mapToProcess)
 }
 
 ############################################################################################################
