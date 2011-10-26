@@ -62,7 +62,11 @@ enrichExistingMap <- function(population,cross,map=c("genetic","physical"),corTr
       cat("No cross object provided, creating one using population object\n")
       	#*******SAVING CROSS OBJECT*******
       s1 <- proc.time()
+      aa <- tempfile()
+      sink(aa)
       cross <- genotypesToCross.internal(population,"simulated",verbose=verbose,debugMode=debugMode)
+      sink()
+      file.remove(aa)
       e1 <- proc.time()
       if(verbose && debugMode==2)cat("Saving data into cross object done in:",(e1-s1)[3],"seconds.\n")
     }
@@ -73,7 +77,15 @@ enrichExistingMap <- function(population,cross,map=c("genetic","physical"),corTr
 	cross <- rearrangeMarkers(cross,population,map,corTreshold,TRUE,verbose=verbose)
 	e1 <- proc.time()
 	if(verbose && debugMode==2)cat("Enrichment of original map done in:",(e1-s1)[3],"seconds.\n")
+  if(verbose)cat("No cross object provided, creating one using population object\n")
+  s1 <- proc.time()
+  aa <- tempfile()
+  sink(aa)
   cross <- orderMarkers(cross,use.ripple=F,verb=T)
+  sink()
+  file.remove(aa)
+  e1 <- proc.time()
+  if(verbose && debugMode==2)cat("Saving data into cross object done in:",(e1-s1)[3],"seconds.\n")
 	invisible(cross)
 }
 
