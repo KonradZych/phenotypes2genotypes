@@ -112,10 +112,16 @@ majorityRule <- function(cross, originalMap, genotypesCorelationMatrix, verbose=
     markersFromCurChrom <-colnames(cross$geno[[i]]$data)
     #### USING ONLY MARKERS WITH COR HIGHER THAN 0.5
     markersCorWithCurChrom <- chrMaxCorMarkers[markersFromCurChrom,]
-    #### ASK DANNY ABOUT THIS
-    markersHighlyCorWithCurChrom <- markersCorWithCurChrom[which(abs(markersCorWithCurChrom[,2])>0),]
-    chromosomesCorWithCurrent <- table(markersHighlyCorWithCurChrom[,1])
-    bestCorChrom <- as.numeric(names(chromosomesCorWithCurrent)[which.max(chromosomesCorWithCurrent)])
+    if(length(markersFromCurChrom)>1){
+        #markersHighlyCorWithCurChrom <- markersCorWithCurChrom[which(abs(markersCorWithCurChrom[,2])>0.5),]
+        chromosomesCorWithCurrent <- table(markersCorWithCurChrom[,1])
+        bestCorChrom <- as.numeric(names(chromosomesCorWithCurrent)[which.max(chromosomesCorWithCurrent)])
+    }else if(length(markersFromCurChrom)==1){
+        #markersHighlyCorWithCurChrom <- markersCorWithCurChrom[which(abs(markersCorWithCurChrom[,2])>0.5),]
+        bestCorChrom <- markersCorWithCurChrom[1]
+    }else{
+         bestCorChrom <- NA
+    }
     oldNames <- names(ordering)
     ordering <- c(ordering,rep(bestCorChrom,length(markersFromCurChrom)))
     names(ordering) <- c(oldNames,markersFromCurChrom)
@@ -151,15 +157,19 @@ sumMajorityRule <- function(cross, originalMap, genotypesCorelationMatrix, verbo
   for(i in 1:nrOfChromosomesInCross){
     markersFromCurChrom <-colnames(cross$geno[[i]]$data)
     markersHighlyCorWithCurChrom <- chrMaxCorMarkers[markersFromCurChrom,]
-    correlatedChrom <- as.numeric(names(table(markersHighlyCorWithCurChrom[,1])))
-    best <- 0
-    bestSum <- 0
-    for(j in correlatedChrom){
-      currentSum <- sum(markersHighlyCorWithCurChrom[which(markersHighlyCorWithCurChrom[,1]==j),2])
-      if(currentSum>bestSum){
-         best <- j
-         bestSum <- currentSum
-      } 
+    if(length(markersFromCurChrom)>1){
+        correlatedChrom <- as.numeric(names(table(markersHighlyCorWithCurChrom[,1])))
+        best <- 0
+        bestSum <- 0
+        for(j in correlatedChrom){
+              currentSum <- sum(markersHighlyCorWithCurChrom[which(markersHighlyCorWithCurChrom[,1]==j),2])
+              if(currentSum>bestSum){
+                  best <- j
+                  bestSum <- currentSum
+              } 
+        }
+    }else{
+        best <- markersHighlyCorWithCurChrom[1]
     }
     oldNames <- names(ordering)
     ordering <- c(ordering,rep(best,length(markersFromCurChrom)))
@@ -167,7 +177,6 @@ sumMajorityRule <- function(cross, originalMap, genotypesCorelationMatrix, verbo
   }
   invisible(ordering)
 }
-
 
 ############################################################################################################
 #                                         *** correlationRule ***
@@ -392,7 +401,6 @@ smoothGeno <- function(cross,windowSize=1,chr,verbose=FALSE){
   if(missing(chr)) chr <- 1:nchr(cross)
   cross_geno  <- vector(length(chr),mode="list")
   for(i in 1:length(chr)){
-    cat("--- chr 1 ---\n")
     cross_geno[[i]]  <- smoothGenoSub.internal(cross$geno[[chr[i]]],windowSize,verbose)
   }
 	for(i in 1:length(chr)){
