@@ -70,7 +70,7 @@ reorganizeMarkersWithin <- function(cross, ordering){
   tab <- sort(table(ingrp), decreasing = TRUE)
   u <- names(tab)
   revgrp <- ingrp
-  for (i in seq(along = u)) revgrp[ingrp == u[i]] <- i
+  #for (i in seq(along = u)) revgrp[ingrp == u[i]] <- i
   cross <- clean(cross)
   n.mar <- nmar(cross)
   tot.mar <- totmar(cross)
@@ -80,8 +80,10 @@ reorganizeMarkersWithin <- function(cross, ordering){
   cross$geno <- vector("list", max(revgrp))
   names(cross$geno) <- 1:max(revgrp)
   for (i in 1:max(revgrp)) {
-      cross$geno[[i]]$data <- g[, revgrp == i, drop = FALSE]
-      cross$geno[[i]]$map <- seq(0, by = 10, length = tab[i])
+      selectedMarkers <- which(revgrp == i)
+      cross$geno[[i]]$data <- g[, selectedMarkers, drop = FALSE]
+      cross$geno[[i]]$map <- seq(0, by = 10, length = length(selectedMarkers))
+      
       if (crosstype == "4way") {
           cross$geno[[i]]$map <- rbind(cross$geno[[i]]$map, cross$geno[[i]]$map)
           colnames(cross$geno[[i]]$map) <- colnames(cross$geno[[i]]$data)

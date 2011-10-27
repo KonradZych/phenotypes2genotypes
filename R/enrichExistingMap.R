@@ -137,10 +137,12 @@ rearrangeMarkers <- function(cross,population,map=c("genetic","physical"),corTre
 			cross_$geno[[x]]$data <- cbind(pull.geno(cross)[,output[newmarkers,1]],t(population$offspring$genotypes$real[oldnames,]))
 			newmap <- 1:(length(newmarkers)+length(oldnames))
 			names(newmap) <- c(output[newmarkers,1],oldnames)
+      colnames(cross_$geno[[x]]$data) <- c(output[newmarkers,1],oldnames)
 		}else{
 			cross_$geno[[x]]$data <- pull.geno(cross)[,output[newmarkers,1]]
 			newmap <- 1:length(newmarkers)
 			names(newmap) <- output[newmarkers,1]
+      olnames(cross_$geno[[x]]$data) <- output[newmarkers,1]
 		}
 		cross_$geno[[x]]$map <- c(newmap)
 	}
