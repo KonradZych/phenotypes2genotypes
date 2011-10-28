@@ -47,15 +47,16 @@
 #
 #
 ############################################################################################################
-markersCorPlot <- function(cross, population, map=c("genetic","physical"), cmBetween=25, show=c(max,mean),verbose=TRUE){
+markersCorPlot <- function(cross, population, map=c("genetic","physical"), cmBetween=25, comparisonMethod = c(sumMajorityCorrelation,majorityCorrelation,meanCorrelation),verbose=TRUE){
   map <- defaultCheck.internal(map,"map",2,"genetic")
 	if(map=="genetic"){
-    cur_map <- population$maps$genetic
+    originalMap <- population$maps$genetic
   }else{
-    cur_map <- population$maps$physical
+    originalMap <- population$maps$physical
   }
-  if(is.null(cur_map)) stop("no ",map," map provided!")  
-  offsets1 <- getPopulationOffsets.internal(population,cur_map,cmBetween)
+  comparisonMethod <- defaultCheck.internal(comparisonMethod,"comparisonMethod",3,sumMajorityCorrelation)
+  if(is.null(originalMap)) stop("no ",map," map provided!")  
+  offsets1 <- getPopulationOffsets.internal(population,originalMap,cmBetween)
   offsets2 <- getChrOffsets.internal(cross,cmBetween)
   
   global_offset <- NULL
@@ -64,7 +65,7 @@ markersCorPlot <- function(cross, population, map=c("genetic","physical"), cmBet
   }
   
   mloc_original <- getMarkerOffsets(cross,global_offset,cmBetween)
-  mloc_o <- getMarkerOffsetsFromMap(cur_map,global_offset,cmBetween)
+  mloc_o <- getMarkerOffsetsFromMap(originalMap,global_offset,cmBetween)
 
   m_max <- max(mloc_o,mloc_original)
   m_min <- min(mloc_o,mloc_original)
@@ -76,11 +77,14 @@ markersCorPlot <- function(cross, population, map=c("genetic","physical"), cmBet
   }
   sum_gl_off <- c(sum_gl_off,m_max)
 
-  back <- chromCorMatrix(cross,population,map,show,verbose)
-  plot(c(m_min,m_max),c(m_min,m_max),type='n',xlab="Old map (cM)",ylab="New map (cM)",main="Plot comparison")
+  genotypesCorelationMatrix <- map2mapCorrelationMatrix(cross, population, FALSE)
+  chromToChromMatrix <- comparisonMethod(cross,originalMap,genotypesCorelationMatrix)
+  maximum <- max(chromToChromMatrix)
+  
+  plot(c(m_min,m_max),c(m_min,m_max),type='n',xlab="Old map (cM)",ylab="New map (cM)",main="Comparison of genetic maps")
   for(i in 1:(length(sum_gl_off)-1)){
     for(j in 1:(length(sum_gl_off)-1)){
-        cur_col <- 1-(back[i,j])
+        cur_col <- (maximum-(chromToChromMatrix[i,j]))/maximum
         rect(sum_gl_off[i],sum_gl_off[j],sum_gl_off[i+1],sum_gl_off[j+1],lty=0,col=rgb(cur_col,cur_col,cur_col))
     }
   }
@@ -88,6 +92,7 @@ markersCorPlot <- function(cross, population, map=c("genetic","physical"), cmBet
   points(cbind(mloc_original,mloc_original),pch=20,col="green",lwd=2)
   abline(v=sum_gl_off[-length(sum_gl_off)],lty=2)
   abline(h=sum_gl_off[-length(sum_gl_off)],lty=2)
+  invisible(chromToChromMatrix)
 }
 
 ############################################################################################################
@@ -207,10 +212,10 @@ ascendingMaptoJigSawMap <- function(mapToProcess,verbose=FALSE){
 #
 #
 ############################################################################################################
-getPopulationOffsets.internal <- function(population, cur_map, cmBetween){
+getPopulationOffsets.internal <- function(population, originalMap, cmBetween){
   minima <- NULL
-  for(x in unique(cur_map[,1])){
-    minima <- c(minima,max(cur_map[which(cur_map[,1]==x),2]))
+  for(x in unique(originalMap[,1])){
+    minima <- c(minima,max(originalMap[which(originalMap[,1]==x),2]))
   }
   minima <- minima + cmBetween
   invisible(minima)
