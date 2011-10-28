@@ -57,22 +57,24 @@ markersCorPlot <- function(cross, population, map=c("genetic","physical"), cmBet
   if(is.null(cur_map)) stop("no ",map," map provided!")  
   offsets1 <- getPopulationOffsets.internal(population,cur_map,cmBetween)
   offsets2 <- getChrOffsets.internal(cross,cmBetween)
-
+  
   global_offset <- NULL
   for(x in 1:length(offsets1)){
     global_offset <- c(global_offset,max(offsets1[x],offsets2[x]))
   }
   
-  sum_gl_off <- NULL
-  for(x in 1:length(global_offset)){
-    sum_gl_off <- c(sum_gl_off,sum(global_offset[1:x]))
-  }
-
   mloc_original <- getMarkerOffsets(cross,global_offset,cmBetween)
   mloc_o <- getMarkerOffsetsFromMap(cur_map,global_offset,cmBetween)
 
   m_max <- max(mloc_o,mloc_original)
   m_min <- min(mloc_o,mloc_original)
+  
+  
+  sum_gl_off <- NULL
+  for(x in 1:length(global_offset)){
+    sum_gl_off <- c(sum_gl_off,sum(global_offset[1:x]))
+  }
+  sum_gl_off <- c(sum_gl_off,m_max)
 
   back <- chromCorMatrix(cross,population,map,show,verbose)
   plot(c(m_min,m_max),c(m_min,m_max),type='n',xlab="Old map (cM)",ylab="New map (cM)",main="Plot comparison")
