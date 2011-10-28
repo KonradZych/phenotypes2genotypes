@@ -199,8 +199,7 @@ bestCorelated.internal <- function(cross,population,corTreshold,verbose=FALSE){
 ############################################################################################################
 map2mapCorrelationMatrix<- function(cross,population,verbose=FALSE){
   if(missing(cross)) stop("Please provide a cross object\n")
-  if(missing(population)) stop("Please provide a population object\n")
-  check.population(population)
+  if(missing(population)) stop("Please provide original genotypes\n")
   #is.cross(cross)
   genotypes <- pull.geno(cross)
   if(verbose) cat("Calculating correlation matrix\n")
