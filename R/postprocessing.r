@@ -45,30 +45,7 @@
 #	object of class cross
 #
 ############################################################################################################
-
-assignMaximum <- function(x, use=1){
-  apply(x,use,which.max)
-}
-
-assignMaximumNoConflicts <- function(x, use=1){
-  assignment <- assignMaximum(x,use)
-  notYetAssigned <- as.numeric(names(assignment)[which(!(names(assignment)%in%assignment))])
-  while(any(duplicated(assignment))){
-    duplicated_ones <- assignment[(duplicated(assignment))]
-    for(duplication in duplicated_ones){
-      need_to_decide <- which(assignment == duplication)
-      best_fitting <- names(which.max(apply(x,1,max)[need_to_decide]))
-      need_to_decide <- need_to_decide[-which(names(need_to_decide)==best_fitting)]
-      #### we need to work on the next line, probably some while loop here, because if you call function
-      #### few times(I mean all the functyions on the way not aonly this one, it's getting better and better!:P
-      assignment[as.numeric(names(need_to_decide))] <- notYetAssigned[1:length(need_to_decide)]
-      notYetAssigned <- as.numeric(names(assignment)[which(!(names(assignment)%in%assignment))])
-      }
-    }
-  invisible(assignment)
-}
-
-assignChromosomes <- function(population, cross, n.chr, map=c("none","genetic","physical"), comparisonMethod = c(sumMajorityCorrelation,majorityCorrelation,meanCorrelation), assignFunction=c(assignMaximum,assignMaximumNoConflicts),reOrder=FALSE, verbose=FALSE, orderMarkersOnChrom=FALSE, debugMode=0){
+assignChromosomes <- function(population, cross, n.chr, map=c("none","genetic","physical"), comparisonMethod = c(sumMajorityCorrelation,majorityCorrelation,meanCorrelation), assignFunction=c(assignMaximumNoConflicts,assignMaximum),reOrder=FALSE, verbose=FALSE, orderMarkersOnChrom=FALSE, debugMode=0){
   if(missing(cross)){
     cat("Cross object not found, will be created form population object\n")
     cross <- createNewMap(population,n.chr,verbose=TRUE,debugMode=2)
@@ -76,8 +53,8 @@ assignChromosomes <- function(population, cross, n.chr, map=c("none","genetic","
   if(length(cross$geno)<=1) stop("selected cross object contains too little chromosomes to proceed")
   map <- defaultCheck.internal(map,"map",3,"none")
   comparisonMethod <- defaultCheck.internal(comparisonMethod,"comparisonMethod",3,sumMajorityCorrelation)
-  assignFunction <- defaultCheck.internal(assignFunction,"assignFunction",2,assignMaximum)
-	if(map=="none"){
+  assignFunction <- defaultCheck.internal(assignFunction,"assignFunction",2,assignMaximumNoConflicts)
+  if(map=="none"){
     if(reOrder){
       return(cross)
     }else{
@@ -92,12 +69,11 @@ assignChromosomes <- function(population, cross, n.chr, map=c("none","genetic","
 
   if(map=="genetic"){
     originalMap <- population$maps$genetic
-    chromToChromArray <- comparisonMethod(cross, originalMap, genotypesCorelationMatrix, solveConflicts)
   }
   if(map=="physical"){
     originalMap <- population$maps$physical
-    chromToChromArray <- comparisonMethod(cross, originalMap, genotypesCorelationMatrix, solveConflicts)
   }
+  chromToChromArray <- comparisonMethod(cross, originalMap, genotypesCorelationMatrix)
   e1 <- proc.time()
   if(verbose)cat("Calculating correlation matrix done in:",(e1-s1)[3],"seconds.\n")
   
@@ -121,6 +97,30 @@ assignChromosomes <- function(population, cross, n.chr, map=c("none","genetic","
     if(verbose && debugMode==2)cat("Saving data into cross object done in:",(e1-s1)[3],"seconds.\n")
     invisible(cross2)
   }
+}
+
+
+
+assignMaximum <- function(x, use=1){
+  apply(x,use,which.max)
+}
+
+assignMaximumNoConflicts <- function(x, use=1){
+  assignment <- assignMaximum(x,use)
+  notYetAssigned <- as.numeric(names(assignment)[which(!(names(assignment)%in%assignment))])
+  while(any(duplicated(assignment))){
+    duplicated_ones <- assignment[(duplicated(assignment))]
+    for(duplication in duplicated_ones){
+      need_to_decide <- which(assignment == duplication)
+      best_fitting <- names(which.max(apply(x,1,max)[need_to_decide]))
+      need_to_decide <- need_to_decide[-which(names(need_to_decide)==best_fitting)]
+      #### we need to work on the next line, probably some while loop here, because if you call function
+      #### few times(I mean all the functyions on the way not aonly this one, it's getting better and better!:P
+      assignment[as.numeric(names(need_to_decide))] <- notYetAssigned[1:length(need_to_decide)]
+      notYetAssigned <- as.numeric(names(assignment)[which(!(names(assignment)%in%assignment))])
+      }
+    }
+  invisible(assignment)
 }
 
 ############################################################################################################
@@ -243,7 +243,7 @@ assignedChrToMarkers <- function(assignment,cross){
 #  vector with new ordering of chromosomes inside cross object
 #
 ############################################################################################################
-meanCorrelation <- function(cross,originalMap,genotypesCorelationMatrix,solveConflicts,verbose=FALSE){
+meanCorrelation <- function(cross,originalMap,genotypesCorelationMatrix,verbose=FALSE){
   nrOfChromosomesInCross <- nchr(cross)
   chromToChromArray <- matrix(0,length(unique(originalMap[,1])),nrOfChromosomesInCross)
   rownames(chromToChromArray) <- unique(originalMap[,1])

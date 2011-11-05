@@ -4,6 +4,7 @@
 #
 # Copyright (c) 2011, Danny Arends
 #
+# Modified by Konrad Zych
 # 
 # first written Oct 2011
 # last modified Oct 2011
