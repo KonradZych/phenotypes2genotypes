@@ -66,30 +66,25 @@ assignLinkageGroups <- function(cross, n.chr, use=c("geno","rf"), ...){
 #
 ############################################################################################################
 reorganizeMarkersWithin <- function(cross, ordering){
-  ingrp <- ordering
-  tab <- sort(table(ingrp), decreasing = TRUE)
-  u <- names(tab)
-  revgrp <- ingrp
-  #for (i in seq(along = u)) revgrp[ingrp == u[i]] <- i
   cross <- clean(cross)
-  n.mar <- nmar(cross)
-  tot.mar <- totmar(cross)
-  chrtype <- rep(sapply(cross$geno, class), n.mar)
+  n.markers <- nmar(cross)
+  chrtype <- rep(sapply(cross$geno, class), n.markers)
   crosstype <- class(cross)[1]
   g <- pull.geno(cross)
-  cross$geno <- vector("list", max(revgrp))
-  names(cross$geno) <- 1:max(revgrp)
-  for (i in 1:max(revgrp)) {
-      selectedMarkers <- which(revgrp == i)
+  newChromosomes <- sort(unique(ordering))
+  n.newChromosomes <- length(newChromosomes)
+  cross$geno <- vector("list", n.newChromosomes)
+  names(cross$geno) <- newChromosomes
+  for (i in 1:n.newChromosomes) {
+      selectedMarkers <- which(ordering == newChromosomes[i])
       cross$geno[[i]]$data <- g[, selectedMarkers, drop = FALSE]
       cross$geno[[i]]$map <- seq(0, by = 10, length = length(selectedMarkers))
-      
       if (crosstype == "4way") {
           cross$geno[[i]]$map <- rbind(cross$geno[[i]]$map, cross$geno[[i]]$map)
           colnames(cross$geno[[i]]$map) <- colnames(cross$geno[[i]]$data)
       }
       else names(cross$geno[[i]]$map) <- colnames(cross$geno[[i]]$data)
-      thechrtype <- unique(chrtype[revgrp == i])
+      thechrtype <- unique(chrtype[which(ordering == newChromosomes[i])])
       if (length(thechrtype) > 1) 
           warning("Problem with linkage group ", i, ": A or X?\n", 
             paste(thechrtype, collapse = " "))
