@@ -48,6 +48,7 @@
 #
 ############################################################################################################
 markersCorPlot <- function(cross, population, map=c("genetic","physical"), cmBetween=25, comparisonMethod = c(sumMajorityCorrelation,majorityCorrelation,meanCorrelation),verbose=TRUE){
+  ### checks
   map <- defaultCheck.internal(map,"map",2,"genetic")
 	if(map=="genetic"){
     originalMap <- population$maps$genetic
@@ -56,42 +57,61 @@ markersCorPlot <- function(cross, population, map=c("genetic","physical"), cmBet
   }
   comparisonMethod <- defaultCheck.internal(comparisonMethod,"comparisonMethod",3,sumMajorityCorrelation)
   if(is.null(originalMap)) stop("no ",map," map provided!")  
+  
+  ### getting offsets for each chromosome on both maps
   offsets1 <- getPopulationOffsets.internal(population,originalMap,cmBetween)
   offsets2 <- getChrOffsets.internal(cross,cmBetween)
   
+  ### global offsets
   global_offset <- NULL
   for(x in 1:length(offsets1)){
     global_offset <- c(global_offset,max(offsets1[x],offsets2[x]))
   }
   
+  ### positions of markers (absolute - with offsets)
   mloc_original <- getMarkerOffsets(cross,global_offset,cmBetween)
   mloc_o <- getMarkerOffsetsFromMap(originalMap,global_offset,cmBetween)
 
+  ### limits of plot
   m_max <- max(mloc_o,mloc_original)
   m_min <- min(mloc_o,mloc_original)
   
-  
+  ### summary offsets
   sum_gl_off <- NULL
   for(x in 1:length(global_offset)){
     sum_gl_off <- c(sum_gl_off,sum(global_offset[1:x]))
   }
-  sum_gl_off <- c(sum_gl_off,m_max)
 
+  ### preparing chrom to chrom cor matrix for use in the background
   genotypesCorelationMatrix <- map2mapCorrelationMatrix(cross, population, FALSE)
   chromToChromMatrix <- comparisonMethod(cross,originalMap,genotypesCorelationMatrix)
   maximum <- max(chromToChromMatrix)
   
-  plot(c(m_min,m_max),c(m_min,m_max),type='n',xlab="Old map (cM)",ylab="New map (cM)",main="Comparison of genetic maps")
+  ### setting plot canvas
+  plot(c(m_min,m_max),c(m_min,m_max),type='n',xlab="Original map",ylab="New map",main="Comparison of genetic maps", xaxt="n", yaxt="n")
+  ### background
   for(i in 1:(length(sum_gl_off)-1)){
     for(j in 1:(length(sum_gl_off)-1)){
         cur_col <- (maximum-(chromToChromMatrix[i,j]))/maximum
         rect(sum_gl_off[i],sum_gl_off[j],sum_gl_off[i+1],sum_gl_off[j+1],lty=0,col=rgb(cur_col,cur_col,cur_col))
     }
   }
+  ### markers on new map
   points(cbind(mloc_o,mloc_o),pch=21,col="red",lwd=4)
+  ### markers on original map
   points(cbind(mloc_original,mloc_original),pch=20,col="green",lwd=2)
+  ### gris
   abline(v=sum_gl_off[-length(sum_gl_off)],lty=2)
   abline(h=sum_gl_off[-length(sum_gl_off)],lty=2)
+  ### chromosome labels and tics
+  labelsPos <- vector(mode="numeric",length(sum_gl_off)-1)
+	for(i in 1:length(sum_gl_off)-1){
+		labelsPos[i] <- (sum_gl_off[i] + sum_gl_off[i+1])/2
+	}
+	axis(1, at = sum_gl_off[-length(sum_gl_off)],labels = FALSE)
+	axis(1, at = labelsPos,labels = chrnames(cross), lwd = 0, tick = FALSE)
+	axis(2, at = sum_gl_off[-length(sum_gl_off)],labels = FALSE)
+	axis(2, at = labelsPos,labels = names(table(originalMap[,1])), lwd = 0, tick = FALSE)
   invisible(chromToChromMatrix)
 }
 
@@ -218,6 +238,7 @@ getPopulationOffsets.internal <- function(population, originalMap, cmBetween){
     minima <- c(minima,max(originalMap[which(originalMap[,1]==x),2]))
   }
   minima <- minima + cmBetween
+  minima <- c(0,minima)
   invisible(minima)
 }
 
