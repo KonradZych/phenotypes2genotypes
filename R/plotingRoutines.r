@@ -232,14 +232,14 @@ plotMapComparison <- function(cross,population,map=c("genetic","physical"), colo
 		color <- makeTransPal.internal(ys[[1]],xs)
 	}
 	#*******results of lin regr for each chromosome*******
-	l <- vector(mode="list",length(table(ys[[1]][,1])))
-	for(i in 1:length(table(ys[[1]][,1]))){
-		a <- ys[[1]][which(ys[[1]][,1]==i),-1]
-		b <- xs[which(rownames(xs) %in% names(a)),2]
-		l[[i]] <- lm(a~b)$coefficients 
-		p <- anova(lm(a~b))[[5]][1]
-		cat("Chromosome",i,"lr coefficients",l[[i]],"corected by length diff",l[[i]][2]*((max(b)-min(b))/(max(a)-min(a))),"p-val",p,"\n")
-	}
+	#l <- vector(mode="list",length(table(ys[[1]][,1])))
+	#for(i in 1:length(table(ys[[1]][,1]))){
+	#	a <- ys[[1]][which(ys[[1]][,1]==i),-1]
+	#	b <- xs[which(rownames(xs) %in% names(a)),2]
+	#	l[[i]] <- lm(a~b)$coefficients 
+	#	p <- anova(lm(a~b))[[5]][1]
+	#	cat("Chromosome",i,"lr coefficients",l[[i]],"corected by length diff",l[[i]][2]*((max(b)-min(b))/(max(a)-min(a))),"p-val",p,"\n")
+	#}
 	#*******plotting points*******
 	plot(x=referenceLocs, y=predictedLocs, xlim=c(min(referenceLocs),max(referenceLocs)), ylim=c(min(predictedLocs),max(predictedLocs)),
 		xaxt="n", yaxt="n", col=color[[1]], pch=color[[2]], xlab="Reference map", ylab="Predicted map", main="Comparison of genetic maps")
