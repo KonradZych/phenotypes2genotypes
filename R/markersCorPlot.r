@@ -60,8 +60,16 @@ markersCorPlot <- function(cross, population, map=c("genetic","physical"), cmBet
   
   ### getting offsets for each chromosome on both maps
   offsets1 <- getPopulationOffsets.internal(population,originalMap,cmBetween)
+  n.originalChrom <- length(offsets1)-1
   offsets2 <- getChrOffsets.internal(cross,cmBetween)
+  n.newChrom <- length(offsets2)-1
   
+  if(n.originalChrom<n.newChrom){
+	offsets1 <- c(offsets1,rep(0,(n.newChrom- n.originalChrom)))
+  }else if( n.originalChrom>n.newChrom){
+	offsets2 <- c(offsets2,rep(0,( n.originalChrom-n.newChrom)))
+  }
+    
   ### global offsets
   global_offset <- NULL
   for(x in 1:length(offsets1)){
@@ -69,8 +77,8 @@ markersCorPlot <- function(cross, population, map=c("genetic","physical"), cmBet
   }
   
   ### positions of markers (absolute - with offsets)
-  mloc_original <- getMarkerOffsets(cross,global_offset,cmBetween)
-  mloc_o <- getMarkerOffsetsFromMap(originalMap,global_offset,cmBetween)
+  mloc_original <- getMarkerOffsets(cross,global_offset[1:n.newChrom],cmBetween)
+  mloc_o <- getMarkerOffsetsFromMap(originalMap,global_offset[1:n.originalChrom],cmBetween)
 
   ### limits of plot
   m_max <- max(mloc_o,mloc_original)
@@ -90,8 +98,8 @@ markersCorPlot <- function(cross, population, map=c("genetic","physical"), cmBet
   ### setting plot canvas
   plot(c(m_min,m_max),c(m_min,m_max),type='n',xlab="Original map",ylab="New map",main="Comparison of genetic maps", xaxt="n", yaxt="n")
   ### background
-  for(i in 1:(length(sum_gl_off)-1)){
-    for(j in 1:(length(sum_gl_off)-1)){
+  for(i in 1:(n.originalChrom-1)){
+    for(j in 1:(n.newChrom-1)){
         cur_col <- (maximum-(chromToChromMatrix[i,j]))/maximum
         rect(sum_gl_off[i],sum_gl_off[j],sum_gl_off[i+1],sum_gl_off[j+1],lty=0,col=rgb(cur_col,cur_col,cur_col))
     }
@@ -109,9 +117,9 @@ markersCorPlot <- function(cross, population, map=c("genetic","physical"), cmBet
 		labelsPos[i] <- (sum_gl_off[i] + sum_gl_off[i+1])/2
 	}
 	axis(1, at = sum_gl_off[-length(sum_gl_off)],labels = FALSE)
-	axis(1, at = labelsPos,labels = chrnames(cross), lwd = 0, tick = FALSE)
+	axis(1, at = labelsPos[1:n.originalChrom],labels = names(table(originalMap[,1])), lwd = 0, tick = FALSE)
 	axis(2, at = sum_gl_off[-length(sum_gl_off)],labels = FALSE)
-	axis(2, at = labelsPos,labels = names(table(originalMap[,1])), lwd = 0, tick = FALSE)
+	axis(2, at = labelsPos[1:n.newChrom],labels = chrnames(cross), lwd = 0, tick = FALSE)
   invisible(chromToChromMatrix)
 }
 
