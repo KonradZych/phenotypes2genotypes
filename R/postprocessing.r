@@ -47,7 +47,7 @@
 ############################################################################################################
 assignChromosomes <- function(population, cross, n.chr, map=c("none","genetic","physical"), comparisonMethod = c(sumMajorityCorrelation,majorityCorrelation,meanCorrelation), assignFunction=c(assignMaximumNoConflicts,assignMaximum),reOrder=FALSE, verbose=FALSE, orderMarkersOnChrom=FALSE, debugMode=0){
   if(missing(cross)){
-    cat("Cross object not found, will be created form population object\n")
+    cat("Cross object not found, will be created from population object\n")
     cross <- createNewMap(population,n.chr,verbose=TRUE,debugMode=2)
   }
   if(length(cross$geno)<=1) stop("selected cross object contains too little chromosomes to proceed")
@@ -100,26 +100,56 @@ assignChromosomes <- function(population, cross, n.chr, map=c("none","genetic","
 }
 
 
-
-assignMaximum <- function(x, use=1){
+############################################################################################################
+#									*** assignMaximum ***
+#
+# DESCRIPTION:
+#	function returning for rows or cols - which element is having max value
+# 
+# PARAMETERS:
+# 	x - array or data frame function will be applied to
+#	use - 1 - apply to the rows, 2 - cols
+#
+# OUTPUT:
+#	vector of numerics
+#
+############################################################################################################
+assignMaximum <- function(x, use=2){
   apply(x,use,which.max)
 }
 
-assignMaximumNoConflicts <- function(x, use=1){
+############################################################################################################
+#									*** assignMaximumNoConflicts ***
+#
+# DESCRIPTION:
+#	function return
+# 
+# PARAMETERS:
+# 	x - array or data frame function will be applied to
+#	use - 1 - apply to the rows, 2 - cols
+#
+# OUTPUT:
+#	vector of numerics
+#
+############################################################################################################
+assignMaximumNoConflicts <- function(x, use=2){
+  print(x)
   assignment <- assignMaximum(x,use)
+  print(assignment)
   notYetAssigned <- as.numeric(names(assignment)[which(!(names(assignment)%in%assignment))])
   while(any(duplicated(assignment))){
-    duplicated_ones <- assignment[(duplicated(assignment))]
-    for(duplication in duplicated_ones){
-      need_to_decide <- which(assignment == duplication)
-      best_fitting <- names(which.max(apply(x,1,max)[need_to_decide]))
-      need_to_decide <- need_to_decide[-which(names(need_to_decide)==best_fitting)]
-      #### we need to work on the next line, probably some while loop here, because if you call function
-      #### few times(I mean all the functyions on the way not aonly this one, it's getting better and better!:P
-      assignment[as.numeric(names(need_to_decide))] <- notYetAssigned[1:length(need_to_decide)]
-      notYetAssigned <- as.numeric(names(assignment)[which(!(names(assignment)%in%assignment))])
-      }
-    }
+		duplicated_ones <- assignment[(duplicated(assignment))]
+		for(duplication in duplicated_ones){
+		  need_to_decide <- which(assignment == duplication)
+		  best_fitting <- names(which.max(apply(x,use,max)[need_to_decide]))
+		  need_to_decide <- need_to_decide[-which(names(need_to_decide)==best_fitting)]
+		  #### we need to work on the next line, probably some while loop here, because if you call function
+		  #### few times(I mean all the functyions on the way not aonly this one, it's getting better and better!:P
+		  assignment[as.numeric(names(need_to_decide))] <- notYetAssigned[1]
+		  notYetAssigned <- as.numeric(names(assignment)[which(!(names(assignment)%in%assignment))])
+		  print(assignment)
+		  }
+		}
   invisible(assignment)
 }
 
