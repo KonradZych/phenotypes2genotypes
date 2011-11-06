@@ -45,7 +45,7 @@
 #	object of class cross
 #
 ############################################################################################################
-assignChromosomes <- function(population, cross, n.chr, map=c("none","genetic","physical"), comparisonMethod = c(sumMajorityCorrelation,majorityCorrelation,meanCorrelation), assignFunction=c(assignMaximumNoConflicts,assignMaximum),reOrder=FALSE, verbose=FALSE, orderMarkersOnChrom=FALSE, debugMode=0){
+assignChromosomes <- function(population, cross, n.chr, map=c("none","genetic","physical"), comparisonMethod = c(sumMajorityCorrelation,majorityCorrelation,meanCorrelation), assignFunction=c(assignMaximumNoConflicts,assignMaximum),reOrder=FALSE, verbose=FALSE, debugMode=0){
   if(missing(cross)){
     cat("Cross object not found, will be created from population object\n")
     cross <- createNewMap(population,n.chr,verbose=TRUE,debugMode=2)
@@ -90,12 +90,12 @@ assignChromosomes <- function(population, cross, n.chr, map=c("none","genetic","
     s1 <- proc.time()
     aa <- tempfile()
     sink(aa)
-    if(orderMarkersOnChrom) cross <- orderMarkers(cross2,use.ripple=F,verb=T)
+	cross <- orderMarkers(cross2,use.ripple=F,verb=T)
     sink()
     file.remove(aa)
     e1 <- proc.time()
     if(verbose && debugMode==2)cat("Saving data into cross object done in:",(e1-s1)[3],"seconds.\n")
-    invisible(cross2)
+    invisible(cross)
   }
 }
 
