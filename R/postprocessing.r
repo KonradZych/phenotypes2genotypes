@@ -94,7 +94,7 @@ assignChromosomes <- function(population, cross, n.chr, map=c("none","genetic","
     sink()
     file.remove(aa)
     e1 <- proc.time()
-    if(verbose && debugMode==2)cat("Saving data into cross object done in:",(e1-s1)[3],"seconds.\n")
+    if(verbose && debugMode==2)cat("Ordering markers inside the cross object done in:",(e1-s1)[3],"seconds.\n")
     invisible(cross)
   }
 }
@@ -133,9 +133,7 @@ assignMaximum <- function(x, use=2){
 #
 ############################################################################################################
 assignMaximumNoConflicts <- function(x, use=2){
-  print(x)
   assignment <- assignMaximum(x,use)
-  print(assignment)
   notYetAssigned <- as.numeric(names(assignment)[which(!(names(assignment)%in%assignment))])
   while(any(duplicated(assignment))){
 		duplicated_ones <- assignment[(duplicated(assignment))]
@@ -147,7 +145,6 @@ assignMaximumNoConflicts <- function(x, use=2){
 		  #### few times(I mean all the functyions on the way not aonly this one, it's getting better and better!:P
 		  assignment[as.numeric(names(need_to_decide))] <- notYetAssigned[1]
 		  notYetAssigned <- as.numeric(names(assignment)[which(!(names(assignment)%in%assignment))])
-		  print(assignment)
 		  }
 		}
   invisible(assignment)
