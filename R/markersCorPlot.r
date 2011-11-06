@@ -98,8 +98,8 @@ markersCorPlot <- function(cross, population, map=c("genetic","physical"), cmBet
   ### setting plot canvas
   plot(c(m_min,m_max),c(m_min,m_max),type='n',xlab="Original map",ylab="New map",main="Comparison of genetic maps", xaxt="n", yaxt="n")
   ### background
-  for(i in 1:(n.originalChrom-1)){
-    for(j in 1:(n.newChrom-1)){
+  for(i in 1:(n.originalChrom)){
+    for(j in 1:(n.newChrom)){
         cur_col <- (maximum-(chromToChromMatrix[i,j]))/maximum
         rect(sum_gl_off[i],sum_gl_off[j],sum_gl_off[i+1],sum_gl_off[j+1],lty=0,col=rgb(cur_col,cur_col,cur_col))
     }
