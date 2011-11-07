@@ -47,7 +47,7 @@
 #	object of class cross
 #
 ############################################################################################################
-enrichExistingMap <- function(population,cross,map=c("genetic","physical"),corTreshold=0.6,verbose=FALSE,debugMode=0){
+enrichExistingMap <- function(population,cross,map=c("genetic","physical"),corTreshold=0.6,reorderMap=FALSE,verbose=FALSE,debugMode=0){
   if(missing(population)) stop("Please provide a population object\n")
   if(is.null(population$offspring$genotypes$real)){
     stop("No original genotypes in population$offspring$genotypes$real, load them in using intoPopulation\n")
@@ -78,15 +78,17 @@ enrichExistingMap <- function(population,cross,map=c("genetic","physical"),corTr
 	if(verbose && debugMode==2)cat("Enrichment of original map done in:",(e1-s1)[3],"seconds.\n")
   
   #*******ORDERING NEW MAP*******
-  if(verbose)cat("Ordering markers inside the cross object\n")
-  s1 <- proc.time()
-  aa <- tempfile()
-  sink(aa)
-  cross <- orderMarkers(cross,use.ripple=F,verb=T)
-  sink()
-  file.remove(aa)
-  e1 <- proc.time()
-  if(verbose && debugMode==2)cat("Saving data into cross object done in:",(e1-s1)[3],"seconds.\n")
+  if(reorderMap){
+    if(verbose)cat("Ordering markers inside the cross object\n")
+    s1 <- proc.time()
+    aa <- tempfile()
+    sink(aa)
+    cross <- orderMarkers(cross,use.ripple=F,verb=T)
+    sink()
+    file.remove(aa)
+    e1 <- proc.time()
+    if(verbose && debugMode==2)cat("Saving data into cross object done in:",(e1-s1)[3],"seconds.\n")
+   }
 	invisible(cross)
 }
 
@@ -123,6 +125,7 @@ rearrangeMarkers <- function(cross,population,map=c("genetic","physical"),corTre
   }else{
     cur_map <- population$maps$physical
   }
+  output[,4] <- apply(output,1,function(e){mean(abs(cur_map[e[3],2]),abs(cur_map[e[2],2]))})
   if(verbose) cat("old map contains",max(cur_map[,1]),"chromosomes\n")
 	cross_ <- cross
 	cross_$geno <- vector(max(cur_map[,1]), mode="list")
@@ -131,18 +134,24 @@ rearrangeMarkers <- function(cross,population,map=c("genetic","physical"),corTre
 	for(x in 1:max(cur_map[,1])){
 		if(verbose) cat("- chr ",x," -\n")    
 		oldnames <- rownames(cur_map)[which(cur_map[,1]==x)]
+    oldpositions <- cur_map[oldnames,2]
     newmarkers <- which(output[,2]%in%oldnames)
+    newpositions <- output[newmarkers,4]
     if(verbose) cat("Selected:",length(newmarkers),"new and",length(oldnames),"original markers \n") 
 		if(addMarkers){
 			cross_$geno[[x]]$data <- cbind(pull.geno(cross)[,output[newmarkers,1]],t(population$offspring$genotypes$real[oldnames,]))
-			newmap <- 1:(length(newmarkers)+length(oldnames))
+			newmap <- c(oldpositions,as.numeric(newpositions))
 			names(newmap) <- c(output[newmarkers,1],oldnames)
+      newmap <- sort(newmap)
       colnames(cross_$geno[[x]]$data) <- c(output[newmarkers,1],oldnames)
+      cross_$geno[[x]]$data <- cross_$geno[[x]]$data[,names(newmap)]
 		}else{
 			cross_$geno[[x]]$data <- pull.geno(cross)[,output[newmarkers,1]]
-			newmap <- 1:length(newmarkers)
+			newmap <- as.numeric(nnewpositions)
 			names(newmap) <- output[newmarkers,1]
-      olnames(cross_$geno[[x]]$data) <- output[newmarkers,1]
+      newmap <- sort(newmap)
+      colnames(cross_$geno[[x]]$data) <- output[newmarkers,1]
+      cross_$geno[[x]]$data <- cross_$geno[[x]]$data[,names(newmap)]
 		}
 		cross_$geno[[x]]$map <- c(newmap)
 	}
@@ -175,9 +184,10 @@ bestCorelated.internal <- function(cross,population,corTreshold,verbose=FALSE){
   #select markers that are correlated highly with more than one of the old markers
   selected <- which(apply(abs(genotypesCorelationMatrix),2,function(r){length(which(r > corTreshold))})!=0)
   genotypesCorelationMatrix <- genotypesCorelationMatrix[,selected]
-  output <- matrix(0,length(selected),2)
+  output <- matrix(0,length(selected),4)
   output[,1] <- colnames(genotypesCorelationMatrix)
   output[,2] <- apply(abs(genotypesCorelationMatrix),2,function(r){rownames(genotypesCorelationMatrix)[which.max(r)]})
+  output[,3] <- apply(abs(genotypesCorelationMatrix),2,function(r){rownames(genotypesCorelationMatrix)[which.max(r[-which.max(r)])]})
   rownames(output) <- colnames(genotypesCorelationMatrix)
   invisible(output)
 }
