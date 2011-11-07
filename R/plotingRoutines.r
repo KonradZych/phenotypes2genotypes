@@ -231,18 +231,9 @@ plotMapComparison <- function(cross,population,map=c("genetic","physical"), colo
 	}else if(coloringMode==2){
 		color <- makeTransPal.internal(ys[[1]],xs)
 	}
-	#*******results of lin regr for each chromosome*******
-	#l <- vector(mode="list",length(table(ys[[1]][,1])))
-	#for(i in 1:length(table(ys[[1]][,1]))){
-	#	a <- ys[[1]][which(ys[[1]][,1]==i),-1]
-	#	b <- xs[which(rownames(xs) %in% names(a)),2]
-	#	l[[i]] <- lm(a~b)$coefficients 
-	#	p <- anova(lm(a~b))[[5]][1]
-	#	cat("Chromosome",i,"lr coefficients",l[[i]],"corected by length diff",l[[i]][2]*((max(b)-min(b))/(max(a)-min(a))),"p-val",p,"\n")
-	#}
 	#*******plotting points*******
 	plot(x=referenceLocs, y=predictedLocs, xlim=c(min(referenceLocs),max(referenceLocs)), ylim=c(min(predictedLocs),max(predictedLocs)),
-		xaxt="n", yaxt="n", col=color[[1]], pch=color[[2]], xlab="Reference map", ylab="Predicted map", main="Comparison of genetic maps")
+		xaxt="n", yaxt="n", col=color[[1]], pch=color[[2]], cex=1.5, xlab="Reference map", ylab="Predicted map", main="Comparison of genetic maps")
 	#*******adding chromosome labels and tics*******
 	axis(1, at = referenceChrom[-1],labels = FALSE)
 	axis(1, at = referenceChromPos,labels = referenceChromLabels, lwd = 0, tick = FALSE)
@@ -329,10 +320,11 @@ makeChromPal.internal <- function(ys1,xs){
 	names(color) <- rownames(ys1)
 	symbol <- vector(mode="numeric",nrow(xs))
 	names(symbol) <- rownames(xs)
-	cl <- rainbow(length(table(ys1[,1])))
+	#cl <- topo.colors(length(table(ys1[,1])))
+  cl <- c("red","green","blue")
 	for(i in rownames(ys1)){
-		color[i] <- cl[ys1[i,1]]
-		symbol[i] <- xs[i,1]
+		color[i] <- cl[ys1[i,1]%%3+1]
+		symbol[i] <- 19
 	}
 	invisible(list(color, symbol))
 }

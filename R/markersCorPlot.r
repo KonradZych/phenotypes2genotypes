@@ -105,9 +105,9 @@ markersCorPlot <- function(cross, population, map=c("genetic","physical"), cmBet
     }
   }
   ### markers on new map
-  points(cbind(mloc_o,mloc_o),pch=21,col="red",lwd=4)
+  points(cbind(mloc_o,mloc_o),pch=21,col="red",cex=1.5,lwd=4)
   ### markers on original map
-  points(cbind(mloc_original,mloc_original),pch=20,col="green",lwd=2)
+  points(cbind(mloc_original,mloc_original),pch=20,col="green",cex=1.5,lwd=2)
   ### gris
   abline(v=sum_gl_off[-length(sum_gl_off)],lty=2)
   abline(h=sum_gl_off[-length(sum_gl_off)],lty=2)
