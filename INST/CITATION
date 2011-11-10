@@ -1,0 +1,17 @@
+citHeader("To cite pheno2geno in publications use:")
+
+citEntry(entry="article",
+         title = "Pheno2geno -  An R package for genetic maps construction using gene expression data",
+         author = personList(person("Danny", "Arends"),
+                             person("Konrad", "Zych"),
+			     person("Ritsert", "Jansen", "C.")),
+         journal = "Bioinformatics",			     
+         year = 2011,
+         volume = (in press),
+         pages = "",
+         
+         textVersion = 
+         paste("Arends D., Zych K., and Jansen R. C. (2011) Pheno2geno -  An R package for",
+               "genetic maps construction using gene expression data. Bioinformatics (in press)")
+         )
+
