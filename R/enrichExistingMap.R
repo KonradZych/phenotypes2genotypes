@@ -47,7 +47,7 @@
 #	object of class cross
 #
 ############################################################################################################
-enrichExistingMap <- function(population,cross,map=c("genetic","physical"),corTreshold=0.6,reorderMap=FALSE,verbose=FALSE,debugMode=0){
+enrichExistingMap <- function(population, cross, map=c("genetic","physical"), corTreshold=0.6, reorderMap=FALSE, verbose=FALSE, debugMode=0){
   if(missing(population)) stop("Please provide a population object\n")
   if(is.null(population$offspring$genotypes$real)){
     stop("No original genotypes in population$offspring$genotypes$real, load them in using intoPopulation\n")
@@ -63,6 +63,7 @@ enrichExistingMap <- function(population,cross,map=c("genetic","physical"),corTr
       s1 <- proc.time()
       aa <- tempfile()
       sink(aa)
+      #DANNY: Why use the simulated map ??? and not the real one ???
       cross <- genotypesToCross.internal(population,"simulated",verbose=verbose,debugMode=debugMode)
       sink()
       file.remove(aa)
@@ -72,6 +73,8 @@ enrichExistingMap <- function(population,cross,map=c("genetic","physical"),corTr
   }
  
   #*******ENRICHING ORIGINAL MAP*******
+  #DANNY HUH ???? Where does the original map come from ??? (See above the comment about "simulated")
+  #DANNY HUH ???? and in which variable is it stored ???
 	s1 <- proc.time()
 	cross <- rearrangeMarkers(cross,population,map,corTreshold,TRUE,verbose=verbose)
 	e1 <- proc.time()
@@ -119,6 +122,7 @@ rearrangeMarkers <- function(cross,population,map=c("genetic","physical"),corTre
   check.population(population)
   output <- bestCorelated.internal(cross,population,corTreshold,verbose)
   if(verbose) cat("selected",nrow(output),"markers for further analysis\n")
+  #Need to check and handle NROW == 0
   map <- defaultCheck.internal(map,"map",2,"genetic")
 	if(map=="genetic"){
     cur_map <- population$maps$genetic
