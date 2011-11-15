@@ -123,6 +123,12 @@ rearrangeMarkers <- function(cross,population,map=c("genetic","physical"),corTre
   if(missing(cross)) stop("Please provide a cross object\n")
   if(missing(population)) stop("Please provide a population object\n")
   check.population(population)
+  if(!is.numeric(corTreshold)||is.na(corTreshold)) stop("Please provide correct corThreshold")
+  if(corTreshold<0){
+	cat("WARNING: corTreshold too low, all the markers from new map will be selected\n")
+  }else if(corTreshold>1){
+	cat("WARNING: corTreshold too high, no markers from new map will be selected\n")
+  }
   map <- defaultCheck.internal(map,"map",2,"genetic") # THIS LINE IS CLEARLY WRONG, use the map parameter the user provides !!!!
     #KONRAD SAYS: it is OK, if object is having length == 1 then it is returned, if it has default length(so in case of the map para
 	#meter == 2, then "genetic" is returned otherwise, it errors. It is maybe bit weird, but not incorrect;p.
