@@ -64,6 +64,7 @@ enrichExistingMap <- function(population, cross, map=c("genetic","physical"), co
       aa <- tempfile()
       sink(aa)
       #DANNY: Why use the simulated map ??? and not the real one ???
+	  #KONRAD SAYS: Mr Danny, we need simulated genotypes, to enrich original with something;p 
       cross <- genotypesToCross.internal(population,"simulated",verbose=verbose,debugMode=debugMode)
       sink()
       file.remove(aa)
@@ -75,6 +76,8 @@ enrichExistingMap <- function(population, cross, map=c("genetic","physical"), co
   #*******ENRICHING ORIGINAL MAP*******
   #DANNY HUH ???? Where does the original map come from ??? (See above the comment about "simulated")
   #DANNY HUH ???? and in which variable is it stored ???
+  #KONRAD SAYS: Mr Danny, new map is stored inside cross object and old in population, just as we
+  # TOGETHER decided;p
 	s1 <- proc.time()
 	cross <- rearrangeMarkers(cross,population,map,corTreshold,TRUE,verbose=verbose)
 	e1 <- proc.time()
@@ -120,17 +123,22 @@ rearrangeMarkers <- function(cross,population,map=c("genetic","physical"),corTre
   if(missing(cross)) stop("Please provide a cross object\n")
   if(missing(population)) stop("Please provide a population object\n")
   check.population(population)
-  output <- bestCorelated.internal(cross,population,corTreshold,verbose)
-  if(verbose) cat("selected",nrow(output),"markers for further analysis\n")
-  #Need to check and handle NROW == 0
   map <- defaultCheck.internal(map,"map",2,"genetic") # THIS LINE IS CLEARLY WRONG, use the map parameter the user provides !!!!
-	if(map=="genetic"){
+    #KONRAD SAYS: it is OK, if object is having length == 1 then it is returned, if it has default length(so in case of the map para
+	#meter == 2, then "genetic" is returned otherwise, it errors. It is maybe bit weird, but not incorrect;p.
+ if(map=="genetic"){
     cur_map <- population$maps$genetic
   }else{
     cur_map <- population$maps$physical
   }
-  output[,4] <- apply(output,1,function(e){mean(abs(cur_map[e[3],2]),abs(cur_map[e[2],2]))})
   if(verbose) cat("old map contains",max(cur_map[,1]),"chromosomes\n")
+  output <- bestCorelated.internal(cross,population,corTreshold,verbose)
+  if(nrow(output) == 0){
+	cat("selected",nrow(output),"markers with current corThreshold, there will be only markers from old map in the cross object\n")
+  }else if(verbose){
+	cat("selected",nrow(output),"markers for further analysis\n")
+	output[,4] <- apply(output,1,function(e){mean(abs(cur_map[e[3],2]),abs(cur_map[e[2],2]))})
+  }
 	cross_ <- cross
 	cross_$geno <- vector(max(cur_map[,1]), mode="list")
 	cross_$pheno <- pull.pheno(cross)
