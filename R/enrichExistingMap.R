@@ -123,7 +123,7 @@ rearrangeMarkers <- function(cross,population,map=c("genetic","physical"),corTre
   output <- bestCorelated.internal(cross,population,corTreshold,verbose)
   if(verbose) cat("selected",nrow(output),"markers for further analysis\n")
   #Need to check and handle NROW == 0
-  map <- defaultCheck.internal(map,"map",2,"genetic")
+  map <- defaultCheck.internal(map,"map",2,"genetic") # THIS LINE IS CLEARLY WRONG, use the map parameter the user provides !!!!
 	if(map=="genetic"){
     cur_map <- population$maps$genetic
   }else{
