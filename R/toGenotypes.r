@@ -113,39 +113,37 @@ convertToGenotypes.internal <- function(population, treshold, overlapInd, propor
 	upBelowTreshold <- which(population$founders$RP$pval[,1] < treshold)
 	upSelected <- upBelowTreshold[which(upBelowTreshold%in%upNotNull)]
 	upParental <- population$founders$phenotypes[upSelected,]
-	#if(orderUsing!="none") upParental <- selectMarkersUsingMap.internal(upParental,population,orderUsing,verbose,debugMode)
 	upRils <- population$offspring$phenotypes[rownames(upParental),]
 	### down-regulated
 	downNotNull <- which(population$founders$RP$pval[,2] > 0)
 	downBelowTreshold <- which(population$founders$RP$pval[,2] < treshold)
 	downSelected <- downBelowTreshold[which(downBelowTreshold%in%downNotNull)]
 	downParental <- population$founders$phenotypes[downSelected,]
-	#if(orderUsing!="none") downParental <- selectMarkersUsingMap.internal(downParental,population,orderUsing,verbose,debugMode)
 	downRils <- population$offspring$phenotypes[rownames(downParental),]
 	
 	### checking if anything is selected and if yes - processing
 	if(!(is.null(dim(upRils)))&&(nrow(upRils)!=0)){
 		if(!(is.null(dim(downRils)))&&(nrow(downRils)!=0)){
 			# best situation
-			if(verbose) cat("Selected",nrow(upRils),"markers (UP), ",nrow(downRils),"markers (DOWN).\n")
+			if(verbose) cat("Selected",nrow(downRils),"markers (DOWN), ",nrow(upRils),"markers (UP).\n")
 			inupndown <- which(rownames(upRils) %in% rownames(downRils))
 			if(verbose&&length(inupndown)>0){
         cat("WARNING: Overlap between UP n DOWN:",length(inupndown),", removing from UP.\n")
         upRils <- upRils[-inupndown,]
       }
-			cur <- splitPheno.internal(downRils, downParental, overlapInd, proportion, margin, population$founders$groups, 0,verbose)
+			cur <- splitPheno.internal(downRils, downParental, overlapInd, proportion, margin, population$founders$groups, 0, nrow(upRils),verbose)
 			output <- rbind(output,cur[[1]])
 			markerNames <- c(markerNames,cur[[2]])
 		}else{
 			if(verbose) cat("Selected ",nrow(upRils),"upregulated markers.\n")
 		}
-		cur <- splitPheno.internal(upRils, upParental, overlapInd, proportion, margin, population$founders$groups, 1, verbose)
+		cur <- splitPheno.internal(upRils, upParental, overlapInd, proportion, margin, population$founders$groups, 1, 0,verbose)
 		output <- rbind(output,cur[[1]])
 		markerNames <- c(markerNames,cur[[2]])
 	}else{
 		if(!(is.null(dim(downRils)))&&(nrow(downRils)!=0)){
 			if(verbose) cat("Selected ",nrow(downRils),"downregulated markers.\n")
-			cur <- splitPheno.internal(downRils, downParental, overlapInd, proportion, margin, population$founders$groups, 0,verbose)
+			cur <- splitPheno.internal(downRils, downParental, overlapInd, proportion, margin, population$founders$groups, 0,0,verbose)
 			output <- rbind(output,cur[[1]])
 			markerNames <- c(markerNames,cur[[2]])
 		}else{
@@ -182,7 +180,7 @@ convertToGenotypes.internal <- function(population, treshold, overlapInd, propor
 ############################################################################################################
 #DANNY: TODO MERGE splitPhenoRowEM.internal into this function 
 ##K: left, I\'ll try to use apply here instead of for
-splitPheno.internal <- function(offspring, founders, overlapInd, proportion, margin, groupLabels, up, verbose=FALSE){
+splitPheno.internal <- function(offspring, founders, overlapInd, proportion, margin, groupLabels, up, left=0, verbose=FALSE){
 	output <- NULL
 	markerNames <- NULL
   s <-proc.time()
@@ -194,8 +192,8 @@ splitPheno.internal <- function(offspring, founders, overlapInd, proportion, mar
 		}
     if(x%%100==0){
        e <- proc.time()
-       te <- ((e-s)[3]/x)*(nrow(offspring)-x)
-      cat("done processing marker",x,"/",nrow(offspring),":",rownames(offspring)[x],", estimated time remaining:",te,"s\n")
+       te <- ((e-s)[3]/x)*(nrow(offspring)-x+left)
+      cat("done processing marker",x,"/",nrow(offspring)+left,", estimated time remaining:",te,"s\n")
      }
 	}
 	invisible(list(output,markerNames))
