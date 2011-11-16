@@ -10,12 +10,14 @@ map <- read.csv(file="map.csv",header=TRUE,row.names=1)
 population <- createPopulation(children,parents,c(0,0,0,0,0,0,1,1,1,1,1,1),t(genotypes),maps_physical=map)
 population <- findDiffExpressed(population)
 population <- toGenotypes(population, treshold=0.01,verbose=T,debug=2)
-set.seed(101010)
 
 ####THREE WAYS TO ASSIGN CHROMOSOMES
-#cross_newmap <- createNewMap(cross_newmap,population,"physical",how=correlationRule,reOrder=TRUE,verbose=TRUE)
-#cross_newmap <- createNewMap(cross_newmap,population,"physical",how=majorityRule,reOrder=TRUE,verbose=TRUE)
-cross_newmap <- createNewMap(population,80,"physical",how=sumMajorityRule,reOrder=TRUE,verbose=TRUE)
+set.seed(101010)
+cross_newmap <- createNewMap(population,n.chr=16,map="physical",comparisonMethod=sumMajorityCorrelation,reOrder=TRUE,verbose=TRUE,debugMode=2)
+#set.seed(101010)
+#cross_newmap <- createNewMap(population, n.chr=16,map="physical",comparisonMethod=majorityCorrelation,reOrder=TRUE,verbose=TRUE,debugMode=2)
+#set.seed(101010)
+#cross_newmap <- createNewMap(population, n.chr=16,map="physical",comparisonMethod=meanCorrelation,reOrder=TRUE,verbose=TRUE,debugMode=2)
 cross_newmap <- smoothGeno(cross_newmap,3)
 
 cross_enriched <- saturateExistingMap(population,map="physical",verbose=TRUE,debugMode=2)
