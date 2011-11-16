@@ -1,15 +1,15 @@
-\name{Enrich existing map}
-\alias{enrichExistingMap}
+\name{Saturate existing map}
+\alias{saturateExistingMap}
 
 
-\title{Creating de novo genetic map.}
+\title{Saturate existing map.}
 
 \description{
   Creating de novo genetic map.
 }
 
 \usage{
-	enrichExistingMap(population,cross,map=c("genetic","physical"),corTreshold=0.6,verbose=FALSE,debugMode=0)
+	saturateExistingMap(population,cross,map=c("genetic","physical"),corTreshold=0.6,verbose=FALSE,debugMode=0)
 	
 }
 
@@ -33,7 +33,7 @@
 }
 
 \details{
-This function enriches existing map (stored in population object) with markers derived form gene expression data
+This function saturates existing map (stored in the population object) with markers derived form gene expression data
 (provided inside cross or population. Correlation matrix between those two is made and based on it, new markers sre
 being placed on the map.
 }
