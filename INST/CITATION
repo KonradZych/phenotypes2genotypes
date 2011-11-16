@@ -5,9 +5,9 @@ citEntry(entry="article",
          author = personList(person("Danny", "Arends"),
                              person("Konrad", "Zych"),
 			     person("Ritsert", "Jansen", "C.")),
-         journal = "Bioinformatics",			     
+         journal = "Bioinformatics (in press)",			     
          year = 2011,
-         volume = (in press),
+         volume = (),
          pages = "",
          
          textVersion = 

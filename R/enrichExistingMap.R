@@ -165,7 +165,7 @@ rearrangeMarkers <- function(cross,population,map=c("genetic","physical"),corTre
       cross_$geno[[x]]$data <- cross_$geno[[x]]$data[,names(newmap)]
 		}else{
 			cross_$geno[[x]]$data <- pull.geno(cross)[,output[newmarkers,1]]
-			newmap <- as.numeric(nnewpositions)
+			newmap <- as.numeric(newpositions)
 			names(newmap) <- output[newmarkers,1]
       newmap <- sort(newmap)
       colnames(cross_$geno[[x]]$data) <- output[newmarkers,1]
