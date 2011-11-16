@@ -13,12 +13,12 @@ population <- toGenotypes(population, treshold=0.01,verbose=T,debug=2)
 set.seed(101010)
 
 ####THREE WAYS TO ASSIGN CHROMOSOMES
-#cross_newmap <- assignChromosomes(cross_newmap,population,"physical",how=correlationRule,reOrder=TRUE,verbose=TRUE)
-#cross_newmap <- assignChromosomes(cross_newmap,population,"physical",how=majorityRule,reOrder=TRUE,verbose=TRUE)
-cross_newmap <- assignChromosomes(population,80,"physical",how=sumMajorityRule,reOrder=TRUE,verbose=TRUE)
+#cross_newmap <- createNewMap(cross_newmap,population,"physical",how=correlationRule,reOrder=TRUE,verbose=TRUE)
+#cross_newmap <- createNewMap(cross_newmap,population,"physical",how=majorityRule,reOrder=TRUE,verbose=TRUE)
+cross_newmap <- createNewMap(population,80,"physical",how=sumMajorityRule,reOrder=TRUE,verbose=TRUE)
 cross_newmap <- smoothGeno(cross_newmap,3)
 
-cross_enriched <- enrichExistingMap(population,map="physical",verbose=TRUE,debugMode=2)
+cross_enriched <- saturateExistingMap(population,map="physical",verbose=TRUE,debugMode=2)
 cross_enriched <- smoothGeno(cross_enriched,3)
 
 

@@ -1,6 +1,6 @@
 ############################################################################################################
 #
-# rearrangeMarkers.R
+# saturateExistingMap.R
 #
 # Copyright (c) 2011, Konrad Zych
 #
@@ -23,16 +23,16 @@
 #     A copy of the GNU General Public License, version 3, is available
 #     at http://www.r-project.org/Licenses/GPL-3
 #
-# Contains: enrichExistingMap, rearrangeMarkers,
+# Contains: saturateExistingMap, rearrangeMarkers,
 #             bestCorelated.internal, map2mapCorrelationMatrix.internal, map2mapImage
 #
 ############################################################################################################
 
 ###########################################################################################################
-#                                    *** enrichExistingMap ***
+#                                    *** saturateExistingMap ***
 #
 # DESCRIPTION:
-# 	enriching existing genetic map adding markers derived from gene expression
+# 	saturate existing genetic map adding markers derived from gene expression
 # 
 # PARAMETERS:
 # 	cross - object of class cross, containing physical or genetic map
@@ -47,7 +47,7 @@
 #	object of class cross
 #
 ############################################################################################################
-enrichExistingMap <- function(population, cross, map=c("genetic","physical"), corTreshold=0.6, reorderMap=FALSE, verbose=FALSE, debugMode=0){
+saturateExistingMap <- function(population, cross, map=c("genetic","physical"), corTreshold=0.6, reorderMap=FALSE, verbose=FALSE, debugMode=0){
   if(missing(population)) stop("Please provide a population object\n")
   if(is.null(population$offspring$genotypes$real)){
     stop("No original genotypes in population$offspring$genotypes$real, load them in using intoPopulation\n")
