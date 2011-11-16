@@ -47,7 +47,7 @@
 #
 #
 ############################################################################################################
-markersCorPlot <- function(cross, population, map=c("genetic","physical"), cmBetween=25, comparisonMethod = c(sumMajorityCorrelation,majorityCorrelation,meanCorrelation),verbose=TRUE){
+markersCorPlot <- function(cross, population, map=c("genetic","physical"), cmBetween=25, comparisonMethod = c(sumMajorityCorrelation,majorityCorrelation,meanCorrelation), chr,verbose=TRUE){
   ### checks
   map <- defaultCheck.internal(map,"map",2,"genetic")
 	if(map=="genetic"){
@@ -81,19 +81,26 @@ markersCorPlot <- function(cross, population, map=c("genetic","physical"), cmBet
   mloc_o <- getMarkerOffsetsFromMap(originalMap,global_offset[1:n.originalChrom],cmBetween)
 
   ### limits of plot
-  m_max <- max(mloc_o,mloc_original)
-  m_min <- min(mloc_o,mloc_original)
+
   
   ### summary offsets
   sum_gl_off <- NULL
   for(x in 1:length(global_offset)){
     sum_gl_off <- c(sum_gl_off,sum(global_offset[1:x]))
   }
-
+  if(missing(chr)){
+    m_max <- max(mloc_o,mloc_original)
+    m_min <- min(mloc_o,mloc_original)
+  }else{
+    m_max <- sum_gl_off[max(chr)+1]
+    m_min <- sum_gl_off[min(chr)]
+  }
+  cat("-----1-----\n")
   ### preparing chrom to chrom cor matrix for use in the background
   genotypesCorelationMatrix <- map2mapCorrelationMatrix(cross, population, FALSE)
-  chromToChromMatrix <- comparisonMethod(cross,originalMap,genotypesCorelationMatrix)
+  chromToChromMatrix <- comparisonMethod(cross,originalMap,population)
   maximum <- max(chromToChromMatrix)
+  cat("-----2-----\n")
   
   ### setting plot canvas
   plot(c(m_min,m_max),c(m_min,m_max),type='n',xlab="Original map",ylab="New map",main="Comparison of genetic maps", xaxt="n", yaxt="n")
