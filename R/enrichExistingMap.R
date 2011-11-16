@@ -73,7 +73,7 @@ enrichExistingMap <- function(population,cross,map=c("genetic","physical"),corTr
  
   #*******ENRICHING ORIGINAL MAP*******
 	s1 <- proc.time()
-	cross <- rearrangeMarkers(cross,population,map,corTreshold,TRUE,verbose=verbose)
+	cross <- rearrangeMarkers(cross,population,map,corTreshold,addMarkers=TRUE,verbose=verbose)
 	e1 <- proc.time()
 	if(verbose && debugMode==2)cat("Enrichment of original map done in:",(e1-s1)[3],"seconds.\n")
   
@@ -125,7 +125,7 @@ rearrangeMarkers <- function(cross,population,map=c("genetic","physical"),corTre
   }else{
     cur_map <- population$maps$physical
   }
-  output[,4] <- apply(output,1,function(e){mean(abs(cur_map[e[3],2]),abs(cur_map[e[2],2]))})
+  output[,4] <- apply(output,1,function(e){mean((cur_map[e[3],2]),(cur_map[e[2],2]))})
   if(verbose) cat("old map contains",max(cur_map[,1]),"chromosomes\n")
 	cross_ <- cross
 	cross_$geno <- vector(max(cur_map[,1]), mode="list")
@@ -141,13 +141,13 @@ rearrangeMarkers <- function(cross,population,map=c("genetic","physical"),corTre
 		if(addMarkers){
 			cross_$geno[[x]]$data <- cbind(pull.geno(cross)[,output[newmarkers,1]],t(population$offspring$genotypes$real[oldnames,]))
 			newmap <- c(oldpositions,as.numeric(newpositions))
-			names(newmap) <- c(output[newmarkers,1],oldnames)
+			names(newmap) <- c(oldnames,output[newmarkers,1])
       newmap <- sort(newmap)
       colnames(cross_$geno[[x]]$data) <- c(output[newmarkers,1],oldnames)
       cross_$geno[[x]]$data <- cross_$geno[[x]]$data[,names(newmap)]
 		}else{
 			cross_$geno[[x]]$data <- pull.geno(cross)[,output[newmarkers,1]]
-			newmap <- as.numeric(nnewpositions)
+			newmap <- as.numeric(newpositions)
 			names(newmap) <- output[newmarkers,1]
       newmap <- sort(newmap)
       colnames(cross_$geno[[x]]$data) <- output[newmarkers,1]
