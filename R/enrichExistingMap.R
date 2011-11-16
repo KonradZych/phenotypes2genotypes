@@ -47,7 +47,7 @@
 #	object of class cross
 #
 ############################################################################################################
-enrichExistingMap <- function(population,cross,map=c("genetic","physical"),corTreshold=0.6,reorderMap=FALSE,verbose=FALSE,debugMode=0){
+enrichExistingMap <- function(population, cross, map=c("genetic","physical"), corTreshold=0.6, reorderMap=FALSE, verbose=FALSE, debugMode=0){
   if(missing(population)) stop("Please provide a population object\n")
   if(is.null(population$offspring$genotypes$real)){
     stop("No original genotypes in population$offspring$genotypes$real, load them in using intoPopulation\n")
@@ -63,6 +63,8 @@ enrichExistingMap <- function(population,cross,map=c("genetic","physical"),corTr
       s1 <- proc.time()
       aa <- tempfile()
       sink(aa)
+      #DANNY: Why use the simulated map ??? and not the real one ???
+	  #KONRAD SAYS: Mr Danny, we need simulated genotypes, to enrich original with something;p 
       cross <- genotypesToCross.internal(population,"simulated",verbose=verbose,debugMode=debugMode)
       sink()
       file.remove(aa)
@@ -72,6 +74,10 @@ enrichExistingMap <- function(population,cross,map=c("genetic","physical"),corTr
   }
  
   #*******ENRICHING ORIGINAL MAP*******
+  #DANNY HUH ???? Where does the original map come from ??? (See above the comment about "simulated")
+  #DANNY HUH ???? and in which variable is it stored ???
+  #KONRAD SAYS: Mr Danny, new map is stored inside cross object and old in population, just as we
+  # TOGETHER decided;p
 	s1 <- proc.time()
 	cross <- rearrangeMarkers(cross,population,map,corTreshold,addMarkers=TRUE,verbose=verbose)
 	e1 <- proc.time()
@@ -117,16 +123,28 @@ rearrangeMarkers <- function(cross,population,map=c("genetic","physical"),corTre
   if(missing(cross)) stop("Please provide a cross object\n")
   if(missing(population)) stop("Please provide a population object\n")
   check.population(population)
-  output <- bestCorelated.internal(cross,population,corTreshold,verbose)
-  if(verbose) cat("selected",nrow(output),"markers for further analysis\n")
-  map <- defaultCheck.internal(map,"map",2,"genetic")
-	if(map=="genetic"){
+  if(!is.numeric(corTreshold)||is.na(corTreshold)) stop("Please provide correct corThreshold")
+  if(corTreshold<0){
+	cat("WARNING: corTreshold too low, all the markers from new map will be selected\n")
+  }else if(corTreshold>1){
+	cat("WARNING: corTreshold too high, no markers from new map will be selected\n")
+  }
+  map <- defaultCheck.internal(map,"map",2,"genetic") # THIS LINE IS CLEARLY WRONG, use the map parameter the user provides !!!!
+    #KONRAD SAYS: it is OK, if object is having length == 1 then it is returned, if it has default length(so in case of the map para
+	#meter == 2, then "genetic" is returned otherwise, it errors. It is maybe bit weird, but not incorrect;p.
+ if(map=="genetic"){
     cur_map <- population$maps$genetic
   }else{
     cur_map <- population$maps$physical
   }
-  output[,4] <- apply(output,1,function(e){mean((cur_map[e[3],2]),(cur_map[e[2],2]))})
   if(verbose) cat("old map contains",max(cur_map[,1]),"chromosomes\n")
+  output <- bestCorelated.internal(cross,population,corTreshold,verbose)
+  if(nrow(output) == 0){
+	cat("selected",nrow(output),"markers with current corThreshold, there will be only markers from old map in the cross object\n")
+  }else if(verbose){
+	cat("selected",nrow(output),"markers for further analysis\n")
+	output[,4] <- apply(output,1,function(e){mean(abs(cur_map[e[3],2]),abs(cur_map[e[2],2]))})
+  }
 	cross_ <- cross
 	cross_$geno <- vector(max(cur_map[,1]), mode="list")
 	cross_$pheno <- pull.pheno(cross)
@@ -141,13 +159,13 @@ rearrangeMarkers <- function(cross,population,map=c("genetic","physical"),corTre
 		if(addMarkers){
 			cross_$geno[[x]]$data <- cbind(pull.geno(cross)[,output[newmarkers,1]],t(population$offspring$genotypes$real[oldnames,]))
 			newmap <- c(oldpositions,as.numeric(newpositions))
-			names(newmap) <- c(oldnames,output[newmarkers,1])
+			names(newmap) <- c(output[newmarkers,1],oldnames)
       newmap <- sort(newmap)
       colnames(cross_$geno[[x]]$data) <- c(output[newmarkers,1],oldnames)
       cross_$geno[[x]]$data <- cross_$geno[[x]]$data[,names(newmap)]
 		}else{
 			cross_$geno[[x]]$data <- pull.geno(cross)[,output[newmarkers,1]]
-			newmap <- as.numeric(newpositions)
+			newmap <- as.numeric(nnewpositions)
 			names(newmap) <- output[newmarkers,1]
       newmap <- sort(newmap)
       colnames(cross_$geno[[x]]$data) <- output[newmarkers,1]
