@@ -493,7 +493,7 @@ chromosomesCorelationMatrix.internal <- function(cross, population, map=c("genet
 #
 ############################################################################################################
 projectOldMarkers <- function(cross,population,map=c("genetic","physical"),label=c("positions","names")){
-	  map <- defaultCheck.internal(map,"map",2,"genetic")
+	map <- defaultCheck.internal(map,"map",2,"genetic")
 	if(map=="genetic"){
     cur_map <- population$maps$genetic
   }else{
@@ -504,12 +504,13 @@ projectOldMarkers <- function(cross,population,map=c("genetic","physical"),label
 	qc <- cur_map[,1]
 	qp_ <- NULL
 	inListCheck.internal(label,"label",c("positions","names"))
+  cross <- jittermap(cross)
 	for(i in 1:nchr(cross)){
 		qp_ <- c(qp_,cross$geno[[i]]$map)
 	}
 	qp <- qp_[rownames(cur_map)]
 	if(label=="positions"){
-		qn <- cur_map[,2]
+		qn <- round(cur_map[,2])
 	}else{
 		qn <- rownames(cur_map)
 	}
