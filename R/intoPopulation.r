@@ -57,6 +57,13 @@ createPopulation <- function(offspring_phenotypes, founders, founders_groups, of
 	if(missing(founders)){
 		stop("No founders phenotype data provided!\n")
 	}else{
+    n.childrenNotInParental <- sum(!(rownames(founders)%in%rownames(population$offspring$phenotypes)))
+    if(n.childrenNotInParental==nrow(founders)){
+      stop("No match between the row names in the founders and offspring.\n")
+    }else if(n.childrenNotInParental!=0){
+      warning(n.childrenNotInParental,"markers from founders file are not present in offspring data and will be removed.\n")
+      founders <- founders[which((rownames(founders)%in%rownames(population$offspring$phenotypes))),]
+    }
 		population <- intoPopulationSub.internal(population, founders, "founders", verbose, debugMode)
 	}
 	if(missing(founders_groups)){

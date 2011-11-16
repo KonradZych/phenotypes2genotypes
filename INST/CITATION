@@ -7,7 +7,7 @@ citEntry(entry="article",
 			     person("Ritsert", "Jansen", "C.")),
          journal = "Bioinformatics (in press)",			     
          year = 2011,
-         volume = (),
+         volume = ,
          pages = "",
          
          textVersion = 
