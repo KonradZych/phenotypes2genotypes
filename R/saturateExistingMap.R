@@ -132,6 +132,8 @@ rearrangeMarkers <- function(cross,population,map=c("genetic","physical"),corTre
   map <- defaultCheck.internal(map,"map",2,"genetic") # THIS LINE IS CLEARLY WRONG, use the map parameter the user provides !!!!
     #KONRAD SAYS: it is OK, if object is having length == 1 then it is returned, if it has default length(so in case of the map para
 	#meter == 2, then "genetic" is returned otherwise, it errors. It is maybe bit weird, but not incorrect;p.
+  
+  #even with you explaination I don't understand it, so it should go, code needs to be understandable !!!
  if(map=="genetic"){
     cur_map <- population$maps$genetic
   }else{
