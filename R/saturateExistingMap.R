@@ -35,11 +35,11 @@
 # 	saturate existing genetic map adding markers derived from gene expression
 # 
 # PARAMETERS:
-# 	cross - object of class cross, containing physical or genetic map
+# 	cross - object of class cross, containing physical or genetic map to saturate
 # 	map - which map should be used for comparison:
 #			- genetic - genetic map from cross$maps$genetic
 #			- physical - physical map from cross$maps$physical
-#	corTreshold - markers not having corelation above this number with any of chromosomes are removed
+#	corSDTreshold - markers not having a maximum correlation above ( mean + (corSDTreshold * sd) ) correlation are removed
 #	verbose - be verbose
 #
 #
@@ -47,7 +47,7 @@
 #	object of class cross
 #
 ############################################################################################################
-saturateExistingMap <- function(population, cross, map=c("genetic","physical"), corTreshold=0.6, reorderMap=FALSE, verbose=FALSE, debugMode=0){
+saturateExistingMap <- function(population, cross, map=c("genetic","physical"), corSDTreshold=3, reorderMap=FALSE, verbose=FALSE, debugMode=0){
   if(missing(population)) stop("Please provide a population object\n")
   if(is.null(population$offspring$genotypes$real)){
     stop("No original genotypes in population$offspring$genotypes$real, load them in using intoPopulation\n")
@@ -79,7 +79,7 @@ saturateExistingMap <- function(population, cross, map=c("genetic","physical"), 
   #KONRAD SAYS: Mr Danny, new map is stored inside cross object and old in population, just as we
   # TOGETHER decided;p
 	s1 <- proc.time()
-	cross <- rearrangeMarkers(cross,population,map,corTreshold,addMarkers=TRUE,verbose=verbose)
+	cross <- rearrangeMarkers(cross,population,map,corSDTreshold,addMarkers=TRUE,verbose=verbose)
 	e1 <- proc.time()
 	if(verbose && debugMode==2)cat("Enrichment of original map done in:",(e1-s1)[3],"seconds.\n")
   
@@ -119,28 +119,24 @@ saturateExistingMap <- function(population, cross, map=c("genetic","physical"), 
 #	object of class cross
 #
 ############################################################################################################
-rearrangeMarkers <- function(cross,population,map=c("genetic","physical"),corTreshold=0.6,addMarkers=FALSE,verbose=FALSE){
+rearrangeMarkers <- function(cross,population,map=c("genetic","physical"), corSDTreshold=3, addMarkers=FALSE, verbose=FALSE){
   if(missing(cross)) stop("Please provide a cross object\n")
   if(missing(population)) stop("Please provide a population object\n")
   check.population(population)
-  if(!is.numeric(corTreshold)||is.na(corTreshold)) stop("Please provide correct corThreshold")
-  if(corTreshold<0){
-	cat("WARNING: corTreshold too low, all the markers from new map will be selected\n")
-  }else if(corTreshold>1){
-	cat("WARNING: corTreshold too high, no markers from new map will be selected\n")
+  if(!is.numeric(corSDTreshold)||is.na(corSDTreshold)) stop("Please provide correct corThreshold")
+  if(corSDTreshold<=0){
+	cat("WARNING: corSDTreshold too low, all possible markers will be selected\n")
+  }else if(corSDTreshold>=5){
+	cat("WARNING: corSDTreshold too high, few new markers will be selected\n")
   }
-  map <- defaultCheck.internal(map,"map",2,"genetic") # THIS LINE IS CLEARLY WRONG, use the map parameter the user provides !!!!
-    #KONRAD SAYS: it is OK, if object is having length == 1 then it is returned, if it has default length(so in case of the map para
-	#meter == 2, then "genetic" is returned otherwise, it errors. It is maybe bit weird, but not incorrect;p.
-  
-  #even with you explaination I don't understand it, so it should go, code needs to be understandable !!!
+  map <- defaultCheck.internal(map,"map",2,"genetic")
  if(map=="genetic"){
     cur_map <- population$maps$genetic
   }else{
     cur_map <- population$maps$physical
   }
   if(verbose) cat("old map contains",max(cur_map[,1]),"chromosomes\n")
-  output <- bestCorelated.internal(cross,population,corTreshold,verbose)
+  output <- bestCorelated.internal(cross,population,corSDTreshold,verbose)
   if(nrow(output) == 0){
 	cat("selected",nrow(output),"markers with current corThreshold, there will be only markers from old map in the cross object\n")
   }else if(verbose){
@@ -199,10 +195,26 @@ rearrangeMarkers <- function(cross,population,map=c("genetic","physical"),corTre
 #	vector with new ordering of chromosomes inside cross object
 #
 ############################################################################################################
-bestCorelated.internal <- function(cross,population,corTreshold,verbose=FALSE){
-  genotypesCorelationMatrix <- map2mapCorrelationMatrix(cross,population,verbose)
+#bestCorelated.internal <- function(cross,population,corTreshold,verbose=FALSE){
+#  genotypesCorelationMatrix <- map2mapCorrelationMatrix(cross,population,verbose)
+#  #select markers that are correlated highly with more than one of the old markers
+#  selected <- which(apply(abs(genotypesCorelationMatrix),2,function(r){length(which(r > corTreshold))})!=0)
+#  genotypesCorelationMatrix <- genotypesCorelationMatrix[,selected]
+#  output <- matrix(0,length(selected),4)
+#  output[,1] <- colnames(genotypesCorelationMatrix)
+#  output[,2] <- apply(abs(genotypesCorelationMatrix),2,function(r){rownames(genotypesCorelationMatrix)[which.max(r)]})
+#  output[,3] <- apply(abs(genotypesCorelationMatrix),2,function(r){rownames(genotypesCorelationMatrix)[which.max(r[-which.max(r)])]})
+#  rownames(output) <- colnames(genotypesCorelationMatrix)
+#  invisible(output)
+#}
+
+bestCorelated.internal <- function(cross,population, corSDTreshold,verbose=FALSE){
+  cormatrix <- map2mapCorrelationMatrix(cross,population,verbose)
+  maximums <- apply(abs(cormatrix),2,max)
+  means <- apply(abs(cormatrix),2,mean)
+  sds <- apply(abs(cormatrix),2,sd)
   #select markers that are correlated highly with more than one of the old markers
-  selected <- which(apply(abs(genotypesCorelationMatrix),2,function(r){length(which(r > corTreshold))})!=0)
+  selected <- which(maximums > (means+corSDTreshold*sds))
   genotypesCorelationMatrix <- genotypesCorelationMatrix[,selected]
   output <- matrix(0,length(selected),4)
   output[,1] <- colnames(genotypesCorelationMatrix)
