@@ -25,7 +25,7 @@
 #
 # Contains: toGenotypes
 #           convertToGenotypes.internal, splitPheno.internal, selectMarkersUsingMap.internal,
-#			filterGenotypes.internal, filterRow.internal, splitRowSubEM.internal, checkMu.internal
+#			filterGenotypes.internal, filterRow.internal, splitRowSubEM.internal
 #
 ############################################################################################################
 
@@ -191,10 +191,10 @@ splitPheno.internal <- function(offspring, founders, overlapInd, proportion, mar
 			markerNames <- c(markerNames,rownames(offspring)[x])
 		}
     if(x%%100==0){
-       e <- proc.time()
-       te <- ((e-s)[3]/x)*(nrow(offspring)-x+left)
-      cat("done processing marker",x,"/",nrow(offspring)+left,", estimated time remaining:",te,"s\n")
-     }
+      e <- proc.time()
+      te <- ((e-s)[3]/x)*(nrow(offspring)-x+left)
+      cat("Done with marker",x,"/",nrow(offspring)+left,". Time remaining:",te,"s\n")
+    }
 	}
 	invisible(list(output,markerNames))
 }
@@ -247,9 +247,10 @@ splitPhenoRowEM.internal <- function(x, offspring, founders, overlapInd, proport
 			startVal <- sum(len[1:i-1])
 			result[which(offspring[x,] %in% sort(offspring[x,])[startVal:(startVal+len[i])])] <- genotypes[i]
 		 }
-		#if(!checkMu.internal(offspring,EM,overlapInd)){
-    #  result <- middleDistribution.internal(offspring,result,EM)
-		#}
+     #Danny: WHAT IS THIS ????, I removed the 2 functions
+		 #if(!checkMu.internal(offspring,EM,overlapInd)){
+     #  result <- middleDistribution.internal(offspring,result,EM)
+		 #}
       result <- filterRow.internal(result, overlapInd, proportion, margin, genotypes)
 	}
 	sink()
@@ -318,58 +319,3 @@ filterRowSub.internal <- function(genotypeRow, overlapInd, proportion, margin, g
 	}
 	return(TRUE)
 }
-
-############################################################################################################
-#									*** checkMu.internal ***
-#
-# DESCRIPTION:
-#	checking if fitted normal distributions do not overlap
-# 
-# PARAMETERS:
-# 	offspring - currently processed row
-# 	EM - output of normalmixEM function
-# 	overlapInd - how many individuals are allowed to be overlapping between distributions
-# 
-# OUTPUT:
-#	boolean
-#
-############################################################################################################
-checkMu.internal <- function(offspring,EM,overlapInd){
-	for(i in 2:length(EM$mu)){
-		up <- EM$mu[i]-2*EM$sigma[i]
-		down <- EM$mu[i-1]+2*EM$sigma[i-1]
-		if((up)<(down)){
-			if(sum(offspring<down && offspring>up)>overlapInd){
-				#cat(sum(offspring<down && offspring>up),"oversum\n")
-				return(FALSE)
-			}
-		}		
-	}
-	return(TRUE)
-}
-
-############################################################################################################
-#									*** middleDistribution.internal ***
-#
-# DESCRIPTION:
-#	checking if fitted normal distributions do not overlap
-# 
-# PARAMETERS:
-# 	offspring - currently processed row
-# 	EM - output of normalmixEM function
-# 	overlapInd - how many individuals are allowed to be overlapping between distributions
-# 
-# OUTPUT:
-#	boolean
-#
-############################################################################################################
-middleDistribution.internal <- function(offspring,result,EM){
-	for(i in 2:length(EM$mu)){
-		up <- EM$mu[i]-2*EM$sigma[i]
-		down <- EM$mu[i-1]+2*EM$sigma[i-1]
-		result[which(offspring>down && offspring<up)] <- NA
-		print(sum(offspring>down && offspring<up))
-	}
-	invisible(result)
-}
-

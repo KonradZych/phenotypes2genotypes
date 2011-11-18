@@ -215,12 +215,12 @@ bestCorelated.internal <- function(cross,population, corSDTreshold,verbose=FALSE
   sds <- apply(abs(cormatrix),2,sd)
   #select markers that are correlated highly with more than one of the old markers
   selected <- which(maximums > (means+corSDTreshold*sds))
-  genotypesCorelationMatrix <- genotypesCorelationMatrix[,selected]
+  cormatrix <- cormatrix[,selected]
   output <- matrix(0,length(selected),4)
-  output[,1] <- colnames(genotypesCorelationMatrix)
-  output[,2] <- apply(abs(genotypesCorelationMatrix),2,function(r){rownames(genotypesCorelationMatrix)[which.max(r)]})
-  output[,3] <- apply(abs(genotypesCorelationMatrix),2,function(r){rownames(genotypesCorelationMatrix)[which.max(r[-which.max(r)])]})
-  rownames(output) <- colnames(genotypesCorelationMatrix)
+  output[,1] <- colnames(cormatrix)
+  output[,2] <- apply(abs(cormatrix),2,function(r){rownames(cormatrix)[which.max(r)]})
+  output[,3] <- apply(abs(cormatrix),2,function(r){rownames(cormatrix)[which.max(r[-which.max(r)])]})
+  rownames(output) <- colnames(cormatrix)
   invisible(output)
 }
 
