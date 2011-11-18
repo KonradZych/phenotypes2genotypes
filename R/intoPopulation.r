@@ -131,15 +131,14 @@ intoPopulation <- function(population, dataObject, dataType=c("founders","offspr
 	check.population(population)
 	inListCheck.internal(dataType,"dataType",c("founders","offspring$phenotypes","offspring$genotypes","maps$genetic","maps$physical"))
 	if(verbose && debugMode==1) cat("intoPopulation starting without errors in checkpoints.\n")
-	if(length(dataType)>1) {
+	if(length(dataType)>1){
 		if(class(dataObject)!="list") stop("Multiple dataObjects should be provided as list.\n")
 		if(length(dataObject)!=length(dataType)) stop("Support dataType for every element of dataObject.\n")
 		if(length(dataType)!=length(unique(dataType))) stop("Every element of dataType must be unique!\n")
 		for(i in 1:length(dataObject)){
 			population <- intoPopulationSub.internal(population,dataObject[[i]],dataType[i], verbose, debugMode)
 		}
-	}
-	else if(length(dataType)==1){
+	}else if(length(dataType)==1){
 		population <- intoPopulationSub.internal(population,dataObject,dataType, verbose, debugMode)
 	}
 
@@ -183,9 +182,9 @@ intoPopulationSub.internal <- function(population, dataObject, dataType=c("found
 		population <- intoPopulationSubPheno.internal(population,dataObject,dataType, verbose, debugMode)
 	}else if(dataType=="offspring$genotypes"){
 		if(!(is.null(dataObject))&&!is.null(dim(dataObject))){	
-			#checking whether rows are numeric/convertable to numeric
+			#Checking whether rows are numeric/convertable to numeric
 			rows <- unlist(lapply(c(1:nrow(dataObject)),intoPopulationSubGenoSub.internal,dataObject,verbose))		
-			### removing faulty rows
+			#Removes faulty rows
 			if(!(is.null(rows))){
 				if(verbose)cat("Following  rows are not numeric and cannot be converted into numeric:",rows," so will be removed.\n")
 				dataObject <- dataObject[-rows,]
@@ -195,21 +194,21 @@ intoPopulationSub.internal <- function(population, dataObject, dataType=c("found
 		
 			cur<- matrix(as.numeric(as.matrix(dataObject)),nrow(dataObject),ncol(dataObject))
 		
-			### keeping colnames
+			#Keep colnames
 			if(!is.null(colnames(dataObject))){
 				colnames(cur) <- colnames(dataObject)
 			}else{
 				colnames(cur) <- 1:ncol(cur)
 			}
 		
-			### keeping rownames
+			#Keep rownames
 			if(!is.null(rownames(dataObject))){
 				rownames(cur) <- rownames(dataObject)
 			}else{
 				rownames(cur) <- 1:nrow(cur)
 			}
 		
-			### adding data to population
+			#Adding data to population
 			population$offspring$genotypes$real <- cur
 		
 		}else{
@@ -247,11 +246,9 @@ intoPopulationSubPheno.internal <- function(population, dataObject, dataType=c("
 	if(verbose && debugMode==1) cat("intoPopulationSub.internal starting.\n")
 	s <- proc.time()
 	if(!(is.null(dataObject))&&!is.null(dim(dataObject))){
-
-	### K - checking only rows, it's better to remove even lots of markers than one individual
-    #checking whether rows are numeric/convertable to numeric
+    #Check whether rows are numeric/convertable to numeric
 		rows <- unlist(lapply(c(1:nrow(dataObject)),intoPopulationSubPhenoSub.internal,dataObject,verbose))		
-		### removing faulty rows
+		#Removing faulty rows
 		if(!(is.null(rows))){
 			if(verbose)cat("Following  rows are not numeric and cannot be converted into numeric:",rows," so will be removed.\n")
 			dataObject <- dataObject[-rows,]
@@ -261,21 +258,21 @@ intoPopulationSubPheno.internal <- function(population, dataObject, dataType=c("
 		
 		cur<- matrix(as.numeric(as.matrix(dataObject)),nrow(dataObject),ncol(dataObject))
 		
-		### keeping colnames
+		#Keeping colnames
 		if(!is.null(colnames(dataObject))){
 			colnames(cur) <- colnames(dataObject)
 		}else{
 			colnames(cur) <- 1:ncol(cur)
 		}
 		
-		### keeping rownames
+		#Keeping rownames
 		if(!is.null(rownames(dataObject))){
 			rownames(cur) <- rownames(dataObject)
 		}else{
 			rownames(cur) <- 1:nrow(cur)
 		}
 		
-		### adding data to population
+		#Adding data to population
 		if(dataType=="founders"){
 			population$founders$phenotypes <- cur
 		}else if(dataType=="offspring$phenotypes"){
@@ -370,7 +367,6 @@ intoPopulationSubMap.internal <- function(population, dataObject, dataType=c("ma
 		}else if(dataType=="maps$physical"){
 			population$maps$physical <- dataObject
 		}
-		
 	}else{
 		stop("No data provided for ",dataType,"!\n")
 	}
