@@ -28,8 +28,6 @@
 #
 #############################################################################################
 
-
-
 ############################################################################################################
 #									*** genotypesToCross.internal ***
 #
@@ -48,7 +46,7 @@
 #
 ############################################################################################################
 genotypesToCross.internal <- function(population, genotype=c("simulated","real"), orderUsing=c("none","map_genetic","map_physical"), outputFile="mycross.csv", verbose=FALSE, debugMode=0){
-	###CHECKS
+	#CHECK
 	check.population(population)
 	genotype <- defaultCheck.internal(genotype,"genotype",2,"simulated")
 	orderUsing <- defaultCheck.internal(orderUsing,"orderUsing",3,"none")	
@@ -57,7 +55,7 @@ genotypesToCross.internal <- function(population, genotype=c("simulated","real")
 	if(orderUsing=="map_physical"&&is.null(population$maps$physical)) stop("orderUsing=map_physical chosen, but there is no map in population$maps$physical\n")
 	if(orderUsing=="map_genetic"&&is.null(population$maps$genetic)) stop("orderUsing=map_genetic chosen, but there is no map in population$maps$genetic\n")
 	
-#**********WRITING PHENOTYPIC DATA TO FILE*************
+  #WRITING PHENOTYPIC DATA TO FILE
 	if(!is.null(population$offspring$phenotypes)){
 		#there is phenotypic matrix
 		cat("Writing phenotypic data to cross file\n")
@@ -67,7 +65,7 @@ genotypesToCross.internal <- function(population, genotype=c("simulated","real")
 		stop("genotypesToCross not provided with phenotypic matrix, stopping\n")
 	}
 	
-#**********WRITING GENOTYPIC DATA TO FILE*************
+  #WRITING GENOTYPIC DATA TO FILE
 	if(genotype=="real"){
 		if(is.null(population$offspring$genotypes$real)){
 			stop("Use = real chosen, but there is no real genotypic data in population$offspring$genotypes$real\n")
@@ -89,8 +87,7 @@ genotypesToCross.internal <- function(population, genotype=c("simulated","real")
 			}
 		
 		}
-	}
-	else if(genotype=="simulated"){
+	}else if(genotype=="simulated"){
 		if(is.null(population$offspring$genotypes$simulated)){
 			stop("Use = simulated chosen, but there is no simulated genotypic data in population$offspring$genotypes$simulated\n")
 		}else{
@@ -112,7 +109,7 @@ genotypesToCross.internal <- function(population, genotype=c("simulated","real")
 		}
 	}	
 
-#**********READING CROSS FILE TO R*************
+  #READING CROSS FILE TO R
 	cross <- invisible(read.cross("csvr",file=outputFile, genotypes=genotypes))
 	
 	e <- proc.time()

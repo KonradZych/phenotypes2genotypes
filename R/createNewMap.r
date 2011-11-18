@@ -138,7 +138,7 @@ assignMaximumNoConflicts <- function(x, use=2){
 		  best_fitting <- names(which.max(apply(x,use,max)[need_to_decide]))
 		  need_to_decide <- need_to_decide[-which(names(need_to_decide)==best_fitting)]
 		  #### we need to work on the next line, probably some while loop here, because if you call function
-		  #### few times(I mean all the functyions on the way not aonly this one, it's getting better and better!:P
+		  #### few times(I mean all the functions on the way not only this one, it's getting better and better!:P
 		  assignment[as.numeric(names(need_to_decide))] <- notYetAssigned[1]
 		  notYetAssigned <- as.numeric(names(assignment)[which(!(names(assignment)%in%assignment))])
 		  }

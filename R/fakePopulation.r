@@ -55,11 +55,6 @@
 #
 ############################################################################################################
 fakePopulation <- function(n.founders = 4, n.offspring = 100, n.markers=100,n.chromosomes=10, type = c("riself", "f2", "bc", "risib"), n.mixups=0, verbose=FALSE,...){
-  ### checks
- # n.founders <- defaultCheck.internal(n.founders,"n.founders",1,4)
-  #n.offspring <- defaultCheck.internal(n.offspring,"n.offspring",1,100)
-  #n.markers <- defaultCheck.internal(n.markers,"n.markers",1,100)
-  #n.chromosomes <- defaultCheck.internal(n.chromosomes,"n.chromosomes",1,10)
   type <- match.arg(type)
   if(!(is.numeric(n.founders))) stop("n.founders should be numeric\n")
   if(!(is.numeric(n.offspring))) stop("n.offspring should be numeric\n")
@@ -270,4 +265,3 @@ fakeMixUps.internal<- function(pheno, n.mixups){
   }
   invisible(pheno)
 }
-
