@@ -31,8 +31,8 @@
 #									*** assignLinkageGroups ***
 #
 # DESCRIPTION:
-#	assigns linkage groups based on a user supplied known number of chromosomes, we can use the genetic map 
-#	of a cross, or the rf matrix
+#	Assign linkage groups based on a user supplied known number of chromosomes
+# we can use the genetic map of a cross, or the rf matrix
 # 
 # PARAMETERS:
 #	cross - an object of class cross
@@ -56,7 +56,7 @@ assignLinkageGroups <- function(cross, n.chr, use=c("geno","rf"), ...){
 #									*** regorganizeMarkersWithin ***
 #
 # DESCRIPTION:
-#	function that is missing from R/qtl to quickly rearange all the markers in a cross based on any ordering
+#	Function to quickly rearange all the markers in a cross based on any ordering
 # 
 # PARAMETERS:
 #	cross - an object of class cross
