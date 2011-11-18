@@ -24,13 +24,19 @@
 #
 ############################################################################################################
 
-markerPlacementPlot <- function(population){
-  mycross <- genotypesToCross.internal(population, "simulated")
-  cormatrix <- map2mapCorrelationMatrix(mycross,population)
+markerPlacementPlot <- function(population, cross){
+  if(missing(cross)){
+    cross <- genotypesToCross.internal(population, "simulated")
+  }
+  cormatrix <- map2mapCorrelationMatrix(cross,population)
   s <- NULL
-  p <- seq(0.1,1,0.01)
+  p <- seq(1,5,0.1)
   for(x in p){
-    s <- c(s,length(which(apply(abs(cormatrix),2,max)>x)))
+    maximums <- apply(abs(cormatrix),2,max)
+    means <- apply(abs(cormatrix),2,mean)
+    sds <- apply(abs(cormatrix),2,sd)
+    selected <- which(maximums > (means+x*sds))
+    s <- c(s,length(selected))
   }
   plot(p,s,type='o',main="Number of markers placed",xlab="corThreshold",ylab="# of markers")
 }
