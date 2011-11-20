@@ -30,10 +30,9 @@
 }
 
 \examples{
-
-	population <- fakePopulation()
-	write.population(population,verbose=TRUE)
-
+	\dontrun{
+	read.population("population.txt")
+	}
 }
 
 \seealso{

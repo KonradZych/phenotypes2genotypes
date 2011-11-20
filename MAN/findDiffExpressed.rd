@@ -39,9 +39,8 @@
 }
 
 \examples{
-
-	population <- fakePopulation()
-	population <- findDiffExpressed(population)
+	data(yeastPopulation)
+	yeastPopulation <- findDiffExpressed(yeastPopulation)
 
 }
 

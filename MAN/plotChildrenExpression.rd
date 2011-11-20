@@ -31,9 +31,9 @@
 }
 
 \examples{
-	population <- fakePopulation()
+	data(yeastPopulation)
 	### plotting only 10 markers for clearer image
-	plotChildrenExpression(population,1:10)
+	plotChildrenExpression(yeastPopulation,1:10)
 
 }
 

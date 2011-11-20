@@ -31,10 +31,10 @@
 }
 
 \examples{
-
-	population <- fakePopulation()
-	write.population(population,verbose=TRUE)
-
+	\dontrun{
+		population <- fakePopulation()
+		write.population(population,verbose=TRUE)
+	}
 }
 
 \seealso{

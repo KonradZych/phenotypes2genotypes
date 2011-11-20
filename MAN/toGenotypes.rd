@@ -42,21 +42,24 @@
 }
 
 \examples{
+	#Example for F2 population
 	set.seed(102)
 	population <- fakePopulation(type="f2")
 	population <- findDiffExpressed(population)
-	cross <- toGenotypes(population,genotype="simulated",proportion=c(25,50,25),orderUsing="map_genetic",treshold=0.01)
-	plot.rf(cross, main="f2 toGenotypes example")
-
+	population <- toGenotypes(population,proportion=c(25,50,25),treshold=0.01)
+	\dontrun{
+	#Example for BC population
+	set.seed(102)
 	population <- fakePopulation(type="bc")
 	population <- findDiffExpressed(population)
-	cross <- toGenotypes(population,genotype="simulated",proportion=c(25,75),orderUsing="none",treshold=0.01)
-	plot.rf(cross, main="bc toGenotypes example")
+	population <- toGenotypes(population,proportion=c(25,75),treshold=0.01)
 
+	#Example for BC population
+	set.seed(102)
 	population <- fakePopulation(type="riself")
 	population <- findDiffExpressed(population)
-	cross <- toGenotypes(population,genotype="simulated",proportion=c(50,50),orderUsing="map_genetic",treshold=0.01)
-	plot.rf(cross, main="riself toGenotypes example")
+	population <- toGenotypes(population,proportion=c(50,50),treshold=0.01)
+	}
 }
 
 \seealso{
