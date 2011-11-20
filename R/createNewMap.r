@@ -47,7 +47,7 @@
 #
 ############################################################################################################
 createNewMap <- function(population, n.chr, map=c("none","genetic","physical"), comparisonMethod = c(sumMajorityCorrelation,majorityCorrelation,meanCorrelation,majorityOfMarkers), 
-assignFunction=c(assignMaximumNoConflicts,assignMaximum),reOrder=TRUE, use.orderMarkers=FALSE, verbose=FALSE, debugMode=0){
+assignFunction=c(assignMaximumNoConflicts,assignMaximum), reOrder=TRUE, use.orderMarkers=FALSE, verbose=FALSE, debugMode=0){
 
   map <- defaultCheck.internal(map,"map",3,"none")
   comparisonMethod <- defaultCheck.internal(comparisonMethod,"comparisonMethod",4,sumMajorityCorrelation)
