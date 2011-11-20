@@ -42,7 +42,7 @@
 }
 
 \value{
-  an object of class cross or vector showing how chromosomes should be assigned, to be used with \code{\link{reorganizeMarkersWithin}}
+  an object of class cross or vector showing how chromosomes should be assigned, to be used with \code{\link{assignedChrToMarkers}}
 }
 
 \details{
@@ -61,9 +61,10 @@ R/qtl package with number of different parameter values and afterwards assesses 
 }
 
 \seealso{
-  \code{\link{orderChromosomes}} - ordering chromosomes of an object of class cross using majority rule
-  \code{\link{rearrangeMarkers}} - rearrangeing markers inside an object of class cross using correlation
-  \code{\link{reduceChromosomesNumber}} - removing all but certain number of chromosomes from an object of class cross
+  \code{\link{reorganizeMarkersWithin}} - apply new ordering on the cross object usign ordering vector
+  \code{\link{assignedChrToMarkers}} - create orderign vector from chromosome assignment vector
+  \code{\link{saturateExistingMap}} - saturate existing map
+  \code{\link{reduceChromosomesNumber}} - number of routines to reduce number of chromosomes of cross object
 }
 
 \keyword{manip}
