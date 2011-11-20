@@ -133,7 +133,7 @@ plotChildrenExpression <- function(population, markers=1:100){
 #	plot
 #
 ############################################################################################################
-plotMapComparison <- function(cross, population, map=c("genetic","physical"), chr, coloringMode=1){
+plotMapComparison <- function(cross, population, map=c("genetic","physical"), chr){
 	#*******objects containing all information needen for function execution*******
 	ys <- getYLocs.internal(cross,chr)
     map <- defaultCheck.internal(map,"map",2,"genetic")
@@ -173,11 +173,7 @@ plotMapComparison <- function(cross, population, map=c("genetic","physical"), ch
 	}
 	#referenceChromPos[length(referenceChrom)] <- (referenceChrom[length(referenceChrom)] + max(referenceLocs))/2
 	#*******color palette*******
-	if(coloringMode==1){ 
-		color <- makeChromPal.internal(ys[[1]],xs)
-	}else if(coloringMode==2){
-		color <- makeTransPal.internal(ys[[1]],xs)
-	}
+    color <- makeChromPal.internal(ys[[1]],xs)
 	#*******plotting points*******
 	plot(x=referenceLocs, y=predictedLocs, xlim=c(min(referenceLocs),max(referenceLocs)), ylim=c(min(predictedLocs),max(predictedLocs)),
 		xaxt="n", yaxt="n", col=color[[1]], pch=color[[2]], cex=1.5, xlab="Reference map", ylab="Predicted map", main="Comparison of genetic maps")

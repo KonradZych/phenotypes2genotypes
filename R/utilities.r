@@ -120,6 +120,10 @@ removeIndividuals <- function(population,individuals,verbose=FALSE){
 			population$founders$phenotypes <- population$founders$phenotypes[,-which(colnames(population$founders$phenotypes)==ind)]
 			if(verbose)cat("Removed",ind,"from population$founders$phenotypes\n")
 		}
+		if(ind%in%colnames(population$offspring$genotypes$simulated)){
+			population$offspring$genotypes$simulated <- population$offspring$genotypes$simulated[,-which(colnames(population$offspring$genotypes$simulated)==ind)]
+			if(verbose)cat("Removed",ind,"from population$offspring$genotypes$simulated\n")
+		}
 	}
 	invisible(population)
 }
