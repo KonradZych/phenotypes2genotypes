@@ -1,5 +1,7 @@
 \name{Create new map}
 \alias{createNewMap}
+\alias{assignMaximumNoConflicts}
+\alias{assignMaximum}
 
 
 \title{Creating de novo genetic map.}
@@ -9,25 +11,38 @@
 }
 
 \usage{
-	createNewMap(population,  n.chr,  use=c("geno","rf"), verbose=FALSE, debugMode=0)
+	createNewMap(population, n.chr, map=c("none","genetic","physical"), comparisonMethod = c(sumMajorityCorrelation,majorityCorrelation,meanCorrelation,majorityOfMarkers), 
+	assignFunction=c(assignMaximumNoConflicts,assignMaximum),reOrder=TRUE, use.orderMarkers=TRUE, verbose=FALSE, debugMode=0)
 	
 }
 
 \arguments{
- \item{population}{ Population type object, must contain parental phenotypic data.}
- \item{n.chr}{ range, within which max.rf parameter of formLinkageGroup will be checked}
- \item{use}{ what kind of data should be used for splitting genotypes into chromosomes
+ \item{population}{ an object of class population}
+ \item{n.chr}{number of chromosomes expected on the map}
+ \item{map}{ which map (from ones stored in population$maps) should be used fo assigning chromosomes on the created map
+ \item{comparisonMethod}{method used tocompare chromosomes from the new map to the original ones while assigning
    \itemize{
-    \item{geno}{ - genotypes}
-    \item{rf}{ - recombination fractions}
+    \item{\code{\link{sumMajorityCorrelation}}}{}
+    \item{\code{\link{majorityCorrelation}}}{}
+    \item{\code{\link{meanCorrelation}}}{}
+    \item{\code{\link{majorityOfMarkers}}}{}
   }
  }
+ \item{assignFunction}{function used to assign chromosomes on the created map, in both cases for every chromosome from the new map, original chromosome with maximal score is assigned, but 
+	if one of the original chromosomes is assigned to more then one of new ones:
+	\itemize{
+		\item{assignMaximumNoConflicts}{additional step is performed to make sure each of the original chromosomes is used only once}
+		\item{assignMaximum}{those two are being merged}
+	}
+ }
+ \item{reOrder}{ if TRUE, cross object is returned, FALSE - vector showing how chromosomes should be assigned}
+ \item{use.orderMarker}{should markers on the newly created map be ordered using R/qtl orderMarkers funtion}
  \item{verbose}{ be verbose}
  \item{debugMode}{ 1: Print our checks, 2: print additional time information }
 }
 
 \value{
-  an object of class cross
+  an object of class cross or vector showing how chromosomes should be assigned, to be used with \code{\link{reorganizeMarkersWithin}}
 }
 
 \details{
@@ -42,7 +57,7 @@ R/qtl package with number of different parameter values and afterwards assesses 
 
 \examples{
 	data(yeastPopulation)
-	cross <- createNewMap(yeastPopulation,16,verbose=TRUE,map="physical",comparisonMethod=sumMajorityCorrelation)
+	cross <- createNewMap(yeastPopulation,16,verbose=TRUE,map="physical",comparisonMethod=sumMajorityCorrelation, use.orderMarkers=FALSE)
 }
 
 \seealso{
