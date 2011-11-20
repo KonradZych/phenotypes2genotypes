@@ -47,7 +47,7 @@
 #
 ############################################################################################################
 createNewMap <- function(population, n.chr, map=c("none","genetic","physical"), comparisonMethod = c(sumMajorityCorrelation,majorityCorrelation,meanCorrelation,majorityOfMarkers), 
-assignFunction=c(assignMaximumNoConflicts,assignMaximum),reOrder=TRUE, verbose=FALSE, debugMode=0){
+assignFunction=c(assignMaximumNoConflicts,assignMaximum),reOrder=TRUE, use.orderMarkers=FALSE, verbose=FALSE, debugMode=0){
 
   map <- defaultCheck.internal(map,"map",3,"none")
   comparisonMethod <- defaultCheck.internal(comparisonMethod,"comparisonMethod",4,sumMajorityCorrelation)
@@ -84,19 +84,21 @@ assignFunction=c(assignMaximumNoConflicts,assignMaximum),reOrder=TRUE, verbose=F
     ordering <- assignedChrToMarkers(assignment,cross)
     if(verbose)cat("Applying new ordering to the cross object.\n")
     cross2 <- reorganizeMarkersWithin(cross,ordering)
-    if(verbose)cat("Ordering markers inside the cross object\n")
-	s0 <- proc.time()
-	nmarkersPerChr <- nmar(cross2)
-	nChr <- length(nmarkersPerChr)
-	for(i in 1:nChr){
-		cross <- orderMarkers(cross2,use.ripple=F,chr=i,verb=T)
-		e1 <- proc.time()
-		if(i<nChr) te <- ((e1-s0)[3]/sum(nmarkersPerChr[1:i]))*sum(nmarkersPerChr[(i+1):nChr])
-		else te <- 0
-		if(verbose) cat("Done ordering chromosome",i,"/",nChr,"Time remaining:",te,"seconds.\n")
+	if(use.orderMarkers){
+		if(verbose)cat("Ordering markers inside the cross object\n")
+		s0 <- proc.time()
+		nmarkersPerChr <- nmar(cross2)
+		nChr <- length(nmarkersPerChr)
+		for(i in 1:nChr){
+			cross <- orderMarkers(cross2,use.ripple=F,chr=i,verb=T)
+			e1 <- proc.time()
+			if(i<nChr) te <- ((e1-s0)[3]/sum(nmarkersPerChr[1:i]))*sum(nmarkersPerChr[(i+1):nChr])
+			else te <- 0
+			if(verbose) cat("Done ordering chromosome",i,"/",nChr,"Time remaining:",te,"seconds.\n")
+		}
+		e0 <- proc.time()
+		if(verbose && debugMode==2)cat("Ordering markers inside the cross object done in:",(e0-s0)[3],"seconds.\n")
 	}
-	e0 <- proc.time()
-    if(verbose && debugMode==2)cat("Ordering markers inside the cross object done in:",(e0-s0)[3],"seconds.\n")
     invisible(cross)
   }
 }
