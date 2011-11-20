@@ -30,7 +30,7 @@
 
 
 ############################################################################################################
-#									*** assignChromosomes ***
+#									*** createNewMap ***
 #
 # DESCRIPTION:
 #	ordering chromosomes using genetic/physical map and majority rule
@@ -46,16 +46,14 @@
 #	object of class cross
 #
 ############################################################################################################
-createNewMap <- function(population, cross, n.chr, map=c("none","genetic","physical"), comparisonMethod = c(sumMajorityCorrelation,majorityCorrelation,meanCorrelation,majorityOfMarkers), 
+createNewMap <- function(population, n.chr, map=c("none","genetic","physical"), comparisonMethod = c(sumMajorityCorrelation,majorityCorrelation,meanCorrelation,majorityOfMarkers), 
 assignFunction=c(assignMaximumNoConflicts,assignMaximum),reOrder=TRUE, verbose=FALSE, debugMode=0){
-  if(missing(cross)){
-    cat("Cross object not found, will be created from population object\n")
-    cross <- createNewMap.internal(population,n.chr,verbose=TRUE,debugMode=2)
-  }
-  if(length(cross$geno)<=1) stop("selected cross object contains too little chromosomes to proceed")
+
   map <- defaultCheck.internal(map,"map",3,"none")
   comparisonMethod <- defaultCheck.internal(comparisonMethod,"comparisonMethod",4,sumMajorityCorrelation)
   assignFunction <- defaultCheck.internal(assignFunction,"assignFunction",2,assignMaximumNoConflicts)
+  cross <- createNewMap.internal(population,n.chr,verbose=TRUE,debugMode=2)
+  if(length(cross$geno)<=1) stop("selected cross object contains too little chromosomes to proceed")
   if(map=="none"){
     if(reOrder){
       return(cross)
@@ -87,10 +85,18 @@ assignFunction=c(assignMaximumNoConflicts,assignMaximum),reOrder=TRUE, verbose=F
     if(verbose)cat("Applying new ordering to the cross object.\n")
     cross2 <- reorganizeMarkersWithin(cross,ordering)
     if(verbose)cat("Ordering markers inside the cross object\n")
-    s1 <- proc.time()
-    cross <- orderMarkers(cross2,use.ripple=F,verb=T)
-    e1 <- proc.time()
-    if(verbose && debugMode==2)cat("Ordering markers inside the cross object done in:",(e1-s1)[3],"seconds.\n")
+	s0 <- proc.time()
+	nmarkersPerChr <- nmar(cross2)
+	nChr <- length(nmarkersPerChr)
+	for(i in 1:nChr){
+		cross <- orderMarkers(cross2,use.ripple=F,chr=i,verb=T)
+		e1 <- proc.time()
+		if(i<nChr) te <- ((e1-s0)[3]/sum(nmarkersPerChr[1:i]))*sum(nmarkersPerChr[(i+1):nChr])
+		else te <- 0
+		if(verbose) cat("Done ordering chromosome",i,"/",nChr,"Time remaining:",te,"seconds.\n")
+	}
+	e0 <- proc.time()
+    if(verbose && debugMode==2)cat("Ordering markers inside the cross object done in:",(e0-s0)[3],"seconds.\n")
     invisible(cross)
   }
 }
