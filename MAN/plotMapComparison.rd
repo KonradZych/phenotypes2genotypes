@@ -38,9 +38,9 @@
 }
 
 \examples{
-	population <- fakePopulation()
-	cross <- toGenotypes(population,genotype="real",orderUsing="map_genetic")
-	plotMapComparison(cross,map="genetic")
+	data(yeastPopulation)
+	data(yeastCross)
+	plotMapComparison(yeastCross,yeastPopulation,map="physical")
 }
 
 \seealso{

@@ -36,7 +36,8 @@
 }
 
 \examples{
-	#TODO
+	data(yeastPopulation)
+	plotMarkerDistribution(yeastPopulation,2,2)
 }
 
 \seealso{

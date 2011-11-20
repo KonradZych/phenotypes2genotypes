@@ -34,10 +34,9 @@
 
 \examples{
 
-	population <- fakePopulation()
-	population <- findDiffExpressed(population)
-	showRPpval(population)
-	plotRPpval(population)
+	data(yeastPopulation)
+	showRPpval(yeastPopulation)
+	plotRPpval(yeastPopulation)
 
 }
 

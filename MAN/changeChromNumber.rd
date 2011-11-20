@@ -58,19 +58,14 @@ removeTooSmallChromosomes function.
 }
 
 \examples{
-	set.seed(102)
-	population <- fakePopulation(type="riself",n.markers=1000)
-	population <- findDiffExpressed(population)
-	cross <- toGenotypes(population,genotype="simulated",proportion=c(50,50),orderUsing="map_genetic",treshold=0.01)
-	plot.rf(cross, main="riself toGenotypes example")
-	cross_ <- reduceChromosomesNumber(cross,5,verb=TRUE)
+	data(yeastCross)
+	plot.rf(yeastCross, main="riself toGenotypes example")
+	cross_ <- reduceChromosomesNumber(yeastCross,5,verb=TRUE)
 	plot.rf(cross_, main="Leaving only 5 chromosomes")
-	cross_ <- removeChromosomes(cross,1,verb=TRUE)
+	cross_ <- removeChromosomes(yeastCross,1,verb=TRUE)
 	plot.rf(cross_, main="Removing chromosome 1")
-	cross_ <- removeTooSmallChromosomes(cross,5,verb=TRUE)
+	cross_ <- removeTooSmallChromosomes(yeastCross,5,verb=TRUE)
 	plot.rf(cross_, main="Leaving only chromosomes with more than 5 markers")
-
-
 }
 
 \seealso{

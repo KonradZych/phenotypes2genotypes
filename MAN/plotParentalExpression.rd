@@ -31,10 +31,9 @@
 }
 
 \examples{
-	### simulating data
-	population <- fakePopulation()
+	data(yeastPopulation)
 	### plotting 
-	plotParentalExpression(population)
+	plotParentalExpression(yeastPopulation)
 }
 
 \seealso{

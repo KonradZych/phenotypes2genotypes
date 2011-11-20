@@ -33,8 +33,8 @@
 
 \examples{
 	### simulating data
-	population <- fakePopulation()
-	population <- removeIndividuals(population,"RIL_1",TRUE)
+	data(yeastPopulation)
+	yeastPopulation <- removeIndividuals(yeastPopulation,"V87",TRUE)
 
 }
 

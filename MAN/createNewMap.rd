@@ -41,10 +41,8 @@ R/qtl package with number of different parameter values and afterwards assesses 
 }
 
 \examples{
-	population <- fakePopulation()
-	population <- findDiffExpressed(population)
-	population <- toGenotypes(population)
-	cross <- createNewMap(population,10)
+	data(yeastPopulation)
+	cross <- createNewMap(yeastPopulation,16,verbose=TRUE,map="physical",comparisonMethod=sumMajorityCorrelation)
 }
 
 \seealso{

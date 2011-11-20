@@ -43,10 +43,8 @@ being placed on the map.
 }
 
 \examples{
-	#population <- fakePopulation()
-	#population <- findDiffExpressed(population)
-	#population <- toGenotypes(population)
-	#cross <-enrichExistingMap(population)
+	data(yeastPopulation)
+	cross <- saturateExistingMap(yeastPopulation,map="physical",verbose=TRUE,debugMode=2)
 }
 
 \seealso{
