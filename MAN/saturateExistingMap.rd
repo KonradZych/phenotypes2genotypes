@@ -5,7 +5,7 @@
 \title{Saturate existing map.}
 
 \description{
-  Creating de novo genetic map.
+  Saturating existing map.
 }
 
 \usage{
