@@ -69,9 +69,10 @@ removeTooSmallChromosomes function.
 }
 
 \seealso{
-  \code{\link{orderChromosomes}} - ordering chromosomes of an object of class cross using majority rule
-  \code{\link{rearrangeMarkers}} - rearrangeing markers inside an object of class cross using correlation
-  \code{\link{postProc}} - postprocessing of an object of class cross in sem-automated fashion
+  \code{\link{reorganizeMarkersWithin}} - apply new ordering on the cross object usign ordering vector
+  \code{\link{assignedChrToMarkers}} - create ordering vector from chromosome assignment vector
+  \code{\link{saturateExistingMap}} - saturate existing map
+  \code{\link{createNewMap}} - create de novo genetic map
 }
 
 \keyword{manip}

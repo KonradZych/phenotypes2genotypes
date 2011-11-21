@@ -1,15 +1,18 @@
-\name{Saturate existing map}
-\alias{saturateExistingMap}
+\name{comparisonMethod}
+\alias{comparisonMethod}
+\alias{sumMajorityCorrelation}
+\alias{majorityCorrelation}
+\alias{meanCorrelation}
+\alias{majorityOfMarkers}
 
-
-\title{Saturate existing map.}
+\title{Methods for comparing maps.}
 
 \description{
-  Saturating existing map.
+  Different methods for comparing maps
 }
 
 \usage{
-	saturateExistingMap(population,cross,map=c("genetic","physical"),corTreshold=0.6,verbose=FALSE,debugMode=0)
+	majorityCorrelation(cross, originalMap, population, verbose=FALSE)
 	
 }
 
