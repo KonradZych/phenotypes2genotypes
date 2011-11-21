@@ -47,7 +47,7 @@
 #
 #
 ############################################################################################################
-markersCorPlot <- function(cross, population, map=c("genetic","physical"), cmBetween=25, comparisonMethod = c(sumMajorityCorrelation,majorityCorrelation,meanCorrelation), chr,verbose=TRUE){
+markersCorPlot <- function(cross, population, map=c("genetic","physical"), cmBetween=25, comparisonMethod = c(sumMajorityCorrelation,majorityCorrelation,meanCorrelation), chr, show.legend=FALSE, verbose=TRUE){
   ### checks
   map <- defaultCheck.internal(map,"map",2,"genetic")
 	if(map=="genetic"){
@@ -95,12 +95,10 @@ markersCorPlot <- function(cross, population, map=c("genetic","physical"), cmBet
     m_max <- sum_gl_off[max(chr)+1]
     m_min <- sum_gl_off[min(chr)]
   }
-  cat("-----1-----\n")
   ### preparing chrom to chrom cor matrix for use in the background
   genotypesCorelationMatrix <- map2mapCorrelationMatrix(cross, population, FALSE)
   chromToChromMatrix <- comparisonMethod(cross,originalMap,population)
   maximum <- max(chromToChromMatrix)
-  cat("-----2-----\n")
   
   ### setting plot canvas
   plot(c(m_min,m_max),c(m_min,m_max),type='n',xlab="Original map",ylab="New map",main="Comparison of genetic maps", xaxt="n", yaxt="n")
@@ -127,6 +125,14 @@ markersCorPlot <- function(cross, population, map=c("genetic","physical"), cmBet
 	axis(1, at = labelsPos[1:n.originalChrom],labels = names(table(originalMap[,1])), lwd = 0, tick = FALSE)
 	axis(2, at = sum_gl_off[-length(sum_gl_off)],labels = FALSE)
 	axis(2, at = labelsPos[1:n.newChrom],labels = chrnames(cross), lwd = 0, tick = FALSE)
+  if(show.legend){
+    maximum <- round(maximum) 
+    text_ <- c(0,maximum*0.2,maximum*0.4,maximum*0.6,maximum*0.8,maximum)
+    colors_ <- c(rgb(1,1,1),rgb(0.8,0.8,0.8),rgb(0.6,0.6,0.6),rgb(0.4,0.4,0.4),rgb(0.2,0.2,0.2),rgb(0,0,0))
+    size_ <- (m_max-m_min)
+    legend(c(m_min,size_*0.3),c(size_*0.67,size_),text_,fill=colors_,bg="white",cex=0.8)
+    legend(c(m_min,size_*0.3),c(size_*0.67,size_*0.77),c("original","new"),col=c("green","red"),cex=0.8,pch=20,bty="n")
+  }
   invisible(chromToChromMatrix)
 }
 
