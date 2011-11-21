@@ -62,7 +62,7 @@ R/qtl package with number of different parameter values and afterwards assesses 
 
 \seealso{
   \code{\link{reorganizeMarkersWithin}} - apply new ordering on the cross object usign ordering vector
-  \code{\link{assignedChrToMarkers}} - create orderign vector from chromosome assignment vector
+  \code{\link{assignedChrToMarkers}} - create ordering vector from chromosome assignment vector
   \code{\link{saturateExistingMap}} - saturate existing map
   \code{\link{reduceChromosomesNumber}} - number of routines to reduce number of chromosomes of cross object
 }

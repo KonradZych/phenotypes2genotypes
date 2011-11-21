@@ -21,8 +21,6 @@
   an object of R/qtl class cross
 }
 
-\details{
-  }
 
 \author{
 	Konrad Zych \email{konrad.zych@uj.edu.pl}, Danny Arends \email{Danny.Arends@gmail.com}
@@ -40,7 +38,7 @@
 
 \seealso{
   \code{\link{createNewMap}} - creating de novo genetic map or chromosome assignment vector
-  \code{\link{assignedChrToMarkers}} - create orderign vector from chromosome assignment vector
+  \code{\link{assignedChrToMarkers}} - create ordering vector from chromosome assignment vector
   \code{\link{saturateExistingMap}} - saturate existing map
 }
 
