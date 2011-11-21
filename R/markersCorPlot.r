@@ -109,10 +109,11 @@ markersCorPlot <- function(cross, population, map=c("genetic","physical"), cmBet
         rect(sum_gl_off[i],sum_gl_off[j],sum_gl_off[i+1],sum_gl_off[j+1],lty=0,col=rgb(cur_col,cur_col,cur_col))
     }
   }
+  size_ <- (m_max-m_min)
   ### markers on new map
-  points(cbind(mloc_o,mloc_o),pch=21,col="red",cex=1.5,lwd=4)
+  points(cbind(mloc_o,mloc_o+0.01*size_),pch=20,col="green",cex=1.5,lwd=2)
   ### markers on original map
-  points(cbind(mloc_original,mloc_original),pch=20,col="green",cex=1.5,lwd=2)
+  points(cbind(mloc_original+0.01*size_,mloc_original),pch=20,col="red",cex=1.5,lwd=2)
   ### gris
   abline(v=sum_gl_off[-length(sum_gl_off)],lty=2)
   abline(h=sum_gl_off[-length(sum_gl_off)],lty=2)
@@ -129,9 +130,8 @@ markersCorPlot <- function(cross, population, map=c("genetic","physical"), cmBet
     maximum <- round(maximum) 
     text_ <- c(0,maximum*0.2,maximum*0.4,maximum*0.6,maximum*0.8,maximum)
     colors_ <- c(rgb(1,1,1),rgb(0.8,0.8,0.8),rgb(0.6,0.6,0.6),rgb(0.4,0.4,0.4),rgb(0.2,0.2,0.2),rgb(0,0,0))
-    size_ <- (m_max-m_min)
     legend(c(m_min,size_*0.3),c(size_*0.67,size_),text_,fill=colors_,bg="white",cex=0.8)
-    legend(c(m_min,size_*0.3),c(size_*0.67,size_*0.77),c("original","new"),col=c("green","red"),cex=0.8,pch=20,bty="n")
+    legend(c(m_min,size_*0.3),c(size_*0.67,size_*0.77),c("original","new"),col=c("red","green"),cex=0.8,pch=20,bty="n",lwd=4)
   }
   invisible(chromToChromMatrix)
 }
