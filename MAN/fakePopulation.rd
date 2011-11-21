@@ -32,7 +32,7 @@
 }
 
 \value{
-  Object of class population. See \code{\link{createPopulation}} for description.
+  An object of class \code{\link{population}}.
 }
 
 \details{

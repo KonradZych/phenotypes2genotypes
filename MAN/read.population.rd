@@ -17,11 +17,7 @@
 }
 
 \value{
-  None.
-}
-
-\details{
-  TODO
+  An object of class \code{\link{population}}.
 }
 
 \author{

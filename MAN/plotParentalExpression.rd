@@ -12,7 +12,7 @@
 }
 
 \arguments{
- \item{population}{ population type object, must contain parental phenotypic data.}
+  \item{population}{ an object of class \code{\link{population}}}
  \item{markers}{ Numbers of markers to be plotted. }
  \item{groupLabels}{ Specify which column of parental data belongs to group 0 and which to group 1.}
 }
@@ -37,8 +37,8 @@
 }
 
 \seealso{
-  \code{\link{plotChildrenExpression}}
-  \code{\link{plotMapComparison}}
+  \code{\link{plotChildrenExpression}} - plotting routine for children gene expression data
+  \code{\link{plotMarkerDistribution}} - plotting gene expression data for a single marker
 }
 
 \keyword{manip}
