@@ -13,10 +13,10 @@
 }
 
 \arguments{
- \item{population}{ An object of class \code{population}. See \code{\link{createPopulation}} for details.}
+ \item{population}{ an object of class \code{\link{population}}}
  \item{use}{ which method should be used for selecting differentially expressed probes:
   \itemize{
-    \item{ttest}{ - t-test}
+    \item{ttest}{ - student t-test}
     \item{rankprod}{ - Rank Product using \code{\link{RP}} function}
   } 
   }
@@ -26,7 +26,7 @@
 }
 
 \value{
-  Object of class population, (see \code{\link{createPopulation}} for more details about structure) with object of class \link[RankProd]{RP} saved into population$founders$RP.
+  Object of class \code{\link{population}}.
 }
 
 \details{
@@ -36,6 +36,10 @@
 \author{
 	Konrad Zych \email{konrad.zych@uj.edu.pl}, Danny Arends \email{Danny.Arends@gmail.com}
 	Maintainer: Konrad Zych \email{konrad.zych@uj.edu.pl}
+}
+
+\references{
+  Hong F, Breitling R, McEntee CW, Wittner BS, Nemhauser JL, Chory J. RankProd: a bioconductor package for detecting differentially expressed genes in meta-analysis. Bioinformatics. 2006 Nov 15;22(22):2825-7.
 }
 
 \examples{

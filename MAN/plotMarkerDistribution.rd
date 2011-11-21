@@ -6,8 +6,7 @@
 \title{plotMarkerDistribution}
 
 \description{
-  Plotting histogram of distribution of values for single marker and specified number
- of normal distribution curves, fitted to data using EM algorithm
+  Plotting histogram out of gene expression data for a single marker and fitting specified number of normal distribution curves, using EM algorithm.
 }
 
 \usage{
@@ -15,7 +14,7 @@
 }
 
 \arguments{
- \item{population}{ population type object, must contain parental phenotypic data}
+ \item{population}{ an object of class \code{\link{population}}}
  \item{marker}{ number or name of marker to be printed }
  \item{nrDistributions}{ numbers of normal distributions to be fitted}
  \item{logarithmic}{ TRUE - log(data) is used instead of raw data }
@@ -30,9 +29,8 @@
 }
 
 \author{
-	Konrad Zych \email{konrad.zych@uj.edu.pl}
+	Konrad Zych \email{konrad.zych@uj.edu.pl}, Danny Arends \email{Danny.Arends@gmail.com}
 	Maintainer: Konrad Zych \email{konrad.zych@uj.edu.pl}
-	Under tender patronage of: Danny Arends \email{Danny.Arends@gmail.com}
 }
 
 \examples{
@@ -41,9 +39,8 @@
 }
 
 \seealso{
-  \code{\link{plotChildrenExpression}}
-  \code{\link{plotParentalExpression}}
-  \code{\link{plotMapComparison}}
+  \code{\link{plotParentalExpression}} - plotting routine for parental gene expression data
+  \code{\link{plotChildrenExpression}} - plotting routine for children gene expression data
 }
 
 \keyword{manip}

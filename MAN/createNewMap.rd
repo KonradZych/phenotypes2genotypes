@@ -17,7 +17,7 @@
 }
 
 \arguments{
- \item{population}{ an object of class population}
+ \item{population}{ an object of class \code{\link{population}}}
  \item{n.chr}{number of chromosomes expected on the map}
  \item{map}{ which map (from ones stored in population$maps) should be used fo assigning chromosomes on the created map}
  \item{comparisonMethod}{method used tocompare chromosomes from the new map to the original ones while assigning
@@ -46,7 +46,7 @@
 }
 
 \details{
-postProc function is makign use of most basic piece of inromation possible which is number of linkage groups
+createNewMap function is making use of most basic piece of inromation possible which is number of linkage groups
 (normally equall to number of chromosome) expected. It is using \code{\link{formLinkageGroups}} functions from
 R/qtl package with number of different parameter values and afterwards assesses which combination was the best one.
 }

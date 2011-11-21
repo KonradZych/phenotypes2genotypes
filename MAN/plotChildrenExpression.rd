@@ -13,7 +13,7 @@
 }
 
 \arguments{
- \item{population}{ Population type object, must contain parental phenotypic data.}
+  \item{population}{ an object of class \code{\link{population}}}
  \item{markers}{ Numbers of markers to be plotted. }
 }
 
@@ -33,13 +33,13 @@
 \examples{
 	data(yeastPopulation)
 	### plotting only 10 markers for clearer image
-	plotChildrenExpression(yeastPopulation,1:10)
+	plotChildrenExpression(yeastPopulation,10:20)
 
 }
 
 \seealso{
-  \code{\link{plotChildrenExpression}}
-  \code{\link{plotMapComparison}}
+  \code{\link{plotParentalExpression}} - plotting routine for parental gene expression data
+  \code{\link{plotMarkerDistribution}} - plotting gene expression data for a single marker
 }
 
 \keyword{manip}
