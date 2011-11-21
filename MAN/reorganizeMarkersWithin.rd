@@ -30,18 +30,18 @@
 }
 
 \examples{
-	### simulating data
-	population <- fakePopulation(type="riself")
-	population <- findDiffExpressed(population)
-	population <- toGenotypes(population,genotype="simulated",proportion=c(50,50),orderUsing="map_genetic",treshold=0.01)
-	cross <- assignChromosomes(population,10,map="physical",verbose=TRUE)
+	data(yeastPopulation)
+  data(yeastCross)
+	assignment <- createNewMap(yeastPopulation,16,verbose=TRUE,map="physical",reOrder=FALSE,comparisonMethod=sumMajorityCorrelation, use.orderMarkers=FALSE)
+  ordering <- assignedChrToMarkers(assignment,yeastCross)
+  yeastCross <- reorganizeMarkersWithin(yeastCross, ordering)
 
 }
 
 \seealso{
-  \code{\link{readFiles}}
-  \code{\link{findDiffExpressed}}
-  \code{\link{toGenotypes}}
+  \code{\link{createNewMap}} - creating de novo genetic map or chromosome assignment vector
+  \code{\link{assignedChrToMarkers}} - create orderign vector from chromosome assignment vector
+  \code{\link{saturateExistingMap}} - saturate existing map
 }
 
 \keyword{manip}
