@@ -19,7 +19,7 @@
 \arguments{
  \item{population}{ an object of class population}
  \item{n.chr}{number of chromosomes expected on the map}
- \item{map}{ which map (from ones stored in population$maps) should be used fo assigning chromosomes on the created map
+ \item{map}{ which map (from ones stored in population$maps) should be used fo assigning chromosomes on the created map}
  \item{comparisonMethod}{method used tocompare chromosomes from the new map to the original ones while assigning
    \itemize{
     \item{\code{\link{sumMajorityCorrelation}}}{}
