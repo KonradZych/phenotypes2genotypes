@@ -8,7 +8,7 @@
 }
 
 \usage{
-	markersCorPlot(cross, population, map=c("genetic","physical"), cmBetween=25, comparisonMethod = c(sumMajorityCorrelation,majorityCorrelation,meanCorrelation), chr, verbose=TRUE)
+	markersCorPlot(cross, population, map=c("genetic","physical"), cmBetween=25, comparisonMethod = c(sumMajorityCorrelation,majorityCorrelation,meanCorrelation), chr, show.legend=FALSE, verbose=TRUE)
 }
 
 \arguments{
@@ -25,6 +25,7 @@
   }
  }
  \item{chr}{ specifies subset of chromosomes to be shown }
+ \item{show.legend}{ shall the legend be shown on the plot}
  \item{verbose}{ be verbose}
 }
 

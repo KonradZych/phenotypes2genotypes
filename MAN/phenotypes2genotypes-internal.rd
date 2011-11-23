@@ -28,15 +28,12 @@
 \alias{removeChromosomes.internal}
 \alias{removeChromosomesSub.internal}
 
-\alias{checkMu.internal}
 \alias{splitPhenoRowEM.internal}
 \alias{splitPhenoRow.internal}
 \alias{print.population}
 \alias{intoPopulationSubPheno.internal}
 \alias{intoPopulationSubGeno.internal}
 \alias{intoPopulationSubMap.internal}
-\alias{selectMarkersUsingMap.internal}
-\alias{chromCorMatrix}
 \alias{fakeMixUps.internal}
 \alias{getChrOffsets.internal}
 \alias{getMarkerOffsetsFromMap}
@@ -57,27 +54,22 @@
 
 \alias{bestCorelated.internal}
 \alias{defaultCheck.internal}
-\alias{getAdditionsOfCross.internal}
-\alias{orderChromosomesC.internal}
-\alias{orderChromosomesMR.internal}
-\alias{putAdditionsOfCross.internal}
 \alias{simBC.internal}
-\alias{chromosomesCorelationMatrix.internal}
-\alias{scoreResults.internal}
-\alias{postProc}
-\alias{chromosomesCorelationPlot}
 
 \alias{checkBeforeOrdering}
 \alias{findUsingTTest.internal}
 \alias{intoPopulationSubGenoSub.internal}
 \alias{intoPopulationSubPhenoSub.internal}
-\alias{middleDistribution.internal}
 \alias{projectOldMarkers.internal}
 \alias{recalculateMap.internal}
 \alias{smoothGenoRow.internal}
 \alias{smoothGenoSub.internal}
-\alias{smoothGeno}
-\alias{projectOldMarkers}
+
+\alias{createNewMap.internal}
+\alias{rearrangeMarkers}
+\alias{assignLinkageGroups}
+\alias{map2mapCorrelationMatrix}
+\alias{map2mapImage}
 
 \title{Internal pheno2geno functions}
 

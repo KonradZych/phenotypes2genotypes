@@ -22,7 +22,7 @@
 }
 
 \arguments{
- \item{cross}{ object of class cross}
+ \item{cross}{ an object of R/qtl class cross}
  \item{numberOfChromosomes}{ how many chromosomes should stay (remove all but 1:numberOfChromosomes)}
  \item{chromosomesToBeRmv}{ explicitly provide functions with NAMES of chromosomes to be removed}
  \item{minNrOfMarkers}{ specify minimal number of markers chromosome is allowed to have (remove all that have less markers than that)}
@@ -35,7 +35,6 @@
 
 \details{
 There are three functions in pheno2geno enabling user to manually reduce number of resulting chromosomes. 
-Those function are dangerous and one should rather use \code{\link{postProc}} function, which is modifing cross object in automated and optimized way, instead. 
 
 reduceChromosomesNumber
 first of three functions is removing all but certain number of chromosomes. It depends only on ordering 

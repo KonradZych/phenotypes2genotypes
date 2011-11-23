@@ -9,7 +9,7 @@
 }
 
 \usage{
-	fakePopulation(n.founders = 4, n.offspring = 250, n.markers=1000,n.chromosomes=10, type = c("riself", "f2", "bc", "risib"), n.mixups=0 verbose=FALSE,...)
+  fakePopulation(n.founders = 4, n.offspring = 100, n.markers=100,n.chromosomes=10, type = c("riself", "f2", "bc", "risib"), n.mixups=0, verbose=FALSE,...)
 }
 
 \arguments{
@@ -27,8 +27,7 @@
  }
  \item{n.mixups}{ number of mixups to be faked}
  \item{verbose}{ be verbose}
- \item{...}{ to be passed to sim.cross
- }
+ \item{...}{ to be passed to sim.cross}
 }
 
 \value{

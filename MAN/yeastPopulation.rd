@@ -8,7 +8,7 @@
   pheno2geno population object made out of yeast data (see references).
 }  
 
-\usage{data(genotypes)}
+\usage{data(yeastPopulation)}
 
 \format{
   Pheno2geno population object.

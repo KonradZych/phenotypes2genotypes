@@ -7,7 +7,7 @@
 # Modified by Danny Arends
 # 
 # first written March 2011
-# last modified October 2011
+# last modified November 2011
 # last modified in version: 0.9.1
 # in current version: active, in main workflow
 #
@@ -261,46 +261,4 @@ getPopulationOffsets.internal <- function(population, originalMap, cmBetween){
   minima <- minima + cmBetween
   minima <- c(0,minima)
   invisible(minima)
-}
-
-############################################################################################################
-#									*** markersCorPlot ***
-#
-# DESCRIPTION:
-# 	function to create new map and save it in cross object
-# 
-# PARAMETERS:
-# 	population - object of class population
-# 	orde - object of class population
-# 	n.chr - expected number of linkage groups
-# 	use - expected number of linkage groups
-#	verbose - be verbose
-#
-# OUTPUT:
-#	an object of class cross
-#
-#
-############################################################################################################
-chromCorMatrix <- function(cross,population,map=c("genetic","physical"),show=c(max,mean),verbose=FALSE){
-  map <- defaultCheck.internal(map,"map",2,"genetic")
-	if(map=="genetic"){
-    old_map <- population$maps$genetic
-  }else{
-    old_map <- population$maps$physical
-  }
-  if(is.null(old_map)) stop("no ",map," map provided!")  
-  result <- matrix(0,nchr(cross),length(unique(old_map[,1])))
-  genotypesCorelationMatrix <- map2mapCorrelationMatrix(cross,population,verbose)
-  s <- proc.time()
-  for(i in 1:nchr(cross)){
-      markersfromnewmap <- colnames(cross$geno[[i]]$data)
-      for(j in unique(old_map[,1])){
-         rownamesOfSomthing <- rownames(old_map)[which(old_map[,1]==j)]
-         markersfromoldmap <- rownames(population$offspring$genotypes$real[rownamesOfSomthing,])
-         result[i,j]<- show(abs(genotypesCorelationMatrix[markersfromoldmap,markersfromnewmap]))
-      }
-      e <- proc.time()
-      cat("Counting correlation matrix:",round(i/nchr(cross)*100),"% done estimated time remaining:",((e-s)[3]/i)*(nchr(cross)-i),"s\n")
-  }
-  invisible(result)
 }

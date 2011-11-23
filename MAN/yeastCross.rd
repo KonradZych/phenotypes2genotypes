@@ -8,7 +8,7 @@
   R/qtl cross object made out of yeast data (see references) using pheno2geno package.
 }  
 
-\usage{data(genotypes)}
+\usage{data(yeastCross)}
 
 \format{
   R/qtl cross object.

@@ -14,7 +14,7 @@
 
 \arguments{
  \item{cross}{ object of class population}
- \item{ordering}{ number of chromosomes expected}
+ \item{ordering}{ ordering vector - for every marker in the cross object (names) specifies chromosome, this marker shall be moved to}
 }
 
 \value{
@@ -28,9 +28,10 @@
 }
 
 \examples{
+	data(yeastCross)
 	data(yeastPopulation)
-  data(yeastCross)
-	assignment <- createNewMap(yeastPopulation,16,verbose=TRUE,map="physical",reOrder=FALSE,comparisonMethod=sumMajorityCorrelation, use.orderMarkers=FALSE)
+	assignment <- createNewMap(yeastPopulation,yeastCross,n.chr=16,verbose=TRUE,map="physical",comparisonMethod=sumMajorityCorrelation, use.orderMarkers=FALSE,reOrder=FALSE)
+  assignment #boring,but expected
   ordering <- assignedChrToMarkers(assignment,yeastCross)
   yeastCross <- reorganizeMarkersWithin(yeastCross, ordering)
 
