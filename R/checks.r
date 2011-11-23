@@ -6,7 +6,7 @@
 #
 # 
 # first written June 2011
-# last modified October 2011
+# last modified November 2011
 # last modified in version: 0.9.1
 # in current version: active, in main workflow
 #

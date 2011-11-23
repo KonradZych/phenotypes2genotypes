@@ -7,8 +7,8 @@
 # Modified by Danny Arends
 # 
 # first written March 2011
-# last modified October 2011
-# last modified in version: 0.9.0
+# last modified November 2011
+# last modified in version: 0.9.1
 # in current version: active, in main workflow
 #
 #     This program is free software; you can redistribute it and/or
@@ -47,7 +47,7 @@
 #	object of class cross
 #
 ############################################################################################################
-saturateExistingMap <- function(population, cross, map=c("genetic","physical"), corSDTreshold=3, reorderMap=FALSE, verbose=FALSE, debugMode=0){
+saturateExistingMap <- function(population, cross, map=c("genetic","physical"), corSDTreshold=3, use.orderMarkers=FALSE, verbose=FALSE, debugMode=0){
   if(missing(population)) stop("Please provide a population object\n")
   if(is.null(population$offspring$genotypes$real)){
     stop("No original genotypes in population$offspring$genotypes$real, load them in using intoPopulation\n")
@@ -84,7 +84,7 @@ saturateExistingMap <- function(population, cross, map=c("genetic","physical"), 
 	if(verbose && debugMode==2)cat("Enrichment of original map done in:",(e1-s1)[3],"seconds.\n")
   
   #*******ORDERING NEW MAP*******
-  if(reorderMap){
+  if(use.orderMarkers){
     if(verbose)cat("Ordering markers inside the cross object\n")
     s1 <- proc.time()
     aa <- tempfile()

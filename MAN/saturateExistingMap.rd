@@ -9,7 +9,7 @@
 }
 
 \usage{
-	saturateExistingMap(population,cross,map=c("genetic","physical"),corTreshold=0.6,verbose=FALSE,debugMode=0)
+	saturateExistingMap(population, cross, map=c("genetic","physical"), corSDTreshold=3, use.orderMarkers=FALSE, verbose=FALSE, debugMode=0)
 	
 }
 
@@ -23,8 +23,9 @@
     \item{physical}{ - physical map from cross$maps$physical}
   }
   }
- \item{corTreshold}{ markers not having corelation above this number with any of chromosomes are removed}
- \item{addMarkers}{ should markers from map used for ordering be added to resulting map}
+ \item{corSDTreshold}{ specifies threshold for selecting/rejecting markers (see \link{markerPlacementPlot} )}
+ \item{use.orderMarkers}{should markers on the newly created map be ordered using R/qtl orderMarkers funtion}
+ \item{debugMode}{ 1: Print out checks, 2: print additional time information }
  \item{verbose}{ Be verbose}
 }
 
@@ -52,6 +53,7 @@ being placed on the map.
   \code{\link{assignedChrToMarkers}} - create ordering vector from chromosome assignment vector
   \code{\link{createNewMap}} - creating de novo genetic map or chromosome assignment vector
   \code{\link{reduceChromosomesNumber}} - number of routines to reduce number of chromosomes of cross object
+  \code{\link{markerPlacementPlot}} - plot showing how many markers will be selected for map saturation with different thresholds
 }
 
 \keyword{manip}

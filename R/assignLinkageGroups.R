@@ -6,8 +6,8 @@
 #
 # Modified by Konrad Zych
 # 
-# first written Oct 2011
-# last modified Oct 2011
+# first written October 2011
+# last modified November 2011
 # last modified in version: 0.9.1-0
 # in current version: active, in main workflow
 #

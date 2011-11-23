@@ -11,7 +11,7 @@
 \title{Creating genotypes from children phenotypes}
 
 \description{
-  Creating genotypes from children phenotypes using parental data and saving cross object.
+  Creating genotype markers  out of gene expression data.
 }
 
 \usage{
@@ -25,7 +25,7 @@
  \item{proportion}{ Proportion of individuals expected to carrying a certain genotype }
  \item{margin}{ Proportion is allowed to varry between this margin (2 sided) }
  \item{verbose}{ Be verbose}
- \item{debugMode}{ 1: Print our checks, 2: print additional time information }
+ \item{debugMode}{ 1: Print out checks, 2: print additional time information }
 }
 
 \value{
@@ -33,7 +33,7 @@
 }
 
 \details{
-	TODO
+	This function, using Mixture Models splits offspring gene expression data into genotype markers, based on founders gene expression data.
 }
 
 \author{
@@ -63,8 +63,10 @@
 }
 
 \seealso{
-  \code{\link{readFiles}} - Loads genotype, phenotype, genetic map data files into R environment into a population object.
-  \code{\link{findDiffExpressed}}
+  \code{\link{readFiles}} - loads genotype, phenotype, genetic map data files into R environment into a population object.
+  \code{\link{createNewMap}} - create de novo genetic map or vector showing how chromosomes should be assigned
+  \code{\link{saturateExistingMap}} - saturate existing map
+  \code{\link{findDiffExpressed}} - using Rank Product or student t-test analysis to select differentially expressed genes
 }
 
 \keyword{manip}

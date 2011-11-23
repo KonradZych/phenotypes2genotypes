@@ -7,7 +7,7 @@
 # Modified by Danny Arends
 # 
 # first written March 2011
-# last modified October 2011
+# last modified November 2011
 # last modified in version: 0.9.1
 # in current version: active, in main workflow
 #
@@ -46,13 +46,13 @@
 #	object of class cross
 #
 ############################################################################################################
-createNewMap <- function(population, n.chr, map=c("none","genetic","physical"), comparisonMethod = c(sumMajorityCorrelation,majorityCorrelation,meanCorrelation,majorityOfMarkers), 
+createNewMap <- function(population, cross, n.chr, map=c("none","genetic","physical"), comparisonMethod = c(sumMajorityCorrelation,majorityCorrelation,meanCorrelation,majorityOfMarkers), 
 assignFunction=c(assignMaximumNoConflicts,assignMaximum), reOrder=TRUE, use.orderMarkers=FALSE, verbose=FALSE, debugMode=0){
 
   map <- defaultCheck.internal(map,"map",3,"none")
   comparisonMethod <- defaultCheck.internal(comparisonMethod,"comparisonMethod",4,sumMajorityCorrelation)
   assignFunction <- defaultCheck.internal(assignFunction,"assignFunction",2,assignMaximumNoConflicts)
-  cross <- createNewMap.internal(population,n.chr,verbose=TRUE,debugMode=2)
+  if(missing(cross)) cross <- createNewMap.internal(population,n.chr,verbose=TRUE,debugMode=2)
   if(length(cross$geno)<=1) stop("selected cross object contains too little chromosomes to proceed")
   if(map=="none"){
     if(reOrder){

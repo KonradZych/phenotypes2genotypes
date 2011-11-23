@@ -5,7 +5,7 @@
 \title{Finding differentially expressed genes.}
 
 \description{
-  Using Rank Product analysis to select differentially expressed genes.
+  Using Rank Product or student t-test analysis to select differentially expressed genes.
 }
 
 \usage{
