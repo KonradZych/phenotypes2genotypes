@@ -34,9 +34,7 @@ be selected with different threshold values.
 \examples{
 	data(yeastCross)
 	data(yeastPopulation)
-	assignment <- createNewMap(yeastPopulation,yeastCross,n.chr=16,verbose=TRUE,map="physical",comparisonMethod=sumMajorityCorrelation, use.orderMarkers=FALSE,reOrder=FALSE)
-  assignment #boring,but expected
-  ordering <- assignedChrToMarkers(assignment,yeastCross)
+	markerPlacementPlot(yeastPopulation,yeastCross)
 }
 
 \seealso{
