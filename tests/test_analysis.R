@@ -8,7 +8,7 @@ map <- read.csv(file="map.csv",header=TRUE,row.names=1)
 
 population <- createPopulation(children,parents,c(0,0,0,0,0,0,1,1,1,1,1,1),t(genotypes),maps_physical=map)
 population <- findDiffExpressed(population)
-population <- toGenotypes(population, treshold=0.01,verbose=T,debug=2)
+population <- findBiomarkers(population, treshold=0.01,verbose=T,debug=2)
 
 ####THREE WAYS TO ASSIGN CHROMOSOMES
 set.seed(101010)
