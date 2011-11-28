@@ -41,7 +41,7 @@
 	\itemize{
     \item \code{\link[RankProd]{RP}} - Add description
     \item \code{\link{readFiles}} - Add description
-    \item \code{\link{toGenotypes}} - Creating genotypes from children phenotypes
+    \item \code{\link{findBiomarkers}} - Creating genotypes from children phenotypes
   }
 }
 

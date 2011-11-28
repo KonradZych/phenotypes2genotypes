@@ -48,7 +48,7 @@ Genotype file should be basically the same as phenotype file, but, apart from ro
 }
 Map files should have really simple structure, always three columns, no header. First column contains rownames, second - chromosome number and third - position on chromosome (in cM for genetic or Mbp for physical map).
 Secodn and third column can contain only numbers (any NA, Inf, etc, will cause dropping of file). Rownames should match either ones from genotype file or ones from phenotype file, depending which one you want to use 
-map with (see toGenotypes for more information). Example of map file structure:
+map with (see findBiomarkers for more information). Example of map file structure:
   \tabular{lrr}{
 "marker"                    \tab 1    \tab 0       \cr
 "marker2"                   \tab 1      \tab 1.2     \cr
@@ -80,7 +80,7 @@ Founders groups should be c(0,1,0,1,0,1) then. Always use only 0 and 1 to specif
 
 \seealso{
   \code{\link{findDiffExpressed}}
-  \code{\link{toGenotypes}}
+  \code{\link{findBiomarkers}}
   \code{\link{createPopulation}}
   \code{\link{intoPopulation}}
 }

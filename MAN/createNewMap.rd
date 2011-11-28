@@ -47,7 +47,7 @@ assignFunction=c(assignMaximumNoConflicts,assignMaximum), reOrder=TRUE, use.orde
 }
 
 \details{
-createNewMap function creates new genetic map using genotypes simulated by toGenotypes function. Then it uses information provided by user to
+createNewMap function creates new genetic map using genotypes simulated by findBiomarkers function. Then it uses information provided by user to
 assign number to newly created chromosomes.
 }
 \author{
@@ -65,7 +65,7 @@ assign number to newly created chromosomes.
   \code{\link{assignedChrToMarkers}} - create ordering vector from chromosome assignment vector
   \code{\link{saturateExistingMap}} - saturate existing map
   \code{\link{reduceChromosomesNumber}} - number of routines to reduce number of chromosomes of cross object
-  \code{\link{toGenotypes}} - creating genotype markers  out of gene expression data.
+  \code{\link{findBiomarkers}} - creating genotype markers  out of gene expression data.
 }
 
 \keyword{manip}

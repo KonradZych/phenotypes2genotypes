@@ -58,7 +58,7 @@ removeTooSmallChromosomes function.
 
 \examples{
 	data(yeastCross)
-	plot.rf(yeastCross, main="riself toGenotypes example")
+	plot.rf(yeastCross, main="riself findBiomarkers example")
 	cross_ <- reduceChromosomesNumber(yeastCross,5,verb=TRUE)
 	plot.rf(cross_, main="Leaving only 5 chromosomes")
 	cross_ <- removeChromosomes(yeastCross,1,verb=TRUE)
