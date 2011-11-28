@@ -23,9 +23,9 @@
 #     A copy of the GNU General Public License, version 3, is available
 #     at http://www.r-project.org/Licenses/GPL-3
 #
-# Contains: findBiomarkers
-#           convertfindBiomarkers.internal, splitPheno.internal, selectMarkersUsingMap.internal,
-#			filterGenotypes.internal, filterRow.internal, splitRowSubEM.internal
+# Contains: findBiomarkers, getBiomarkers
+#           selectTopMarker.internal, scoreMarker.internal, convertfindBiomarkers.internal, splitPheno.internal, 
+#           selectMarkersUsingMap.internal, filterGenotypes.internal, filterRow.internal, splitRowSubEM.internal
 #
 ############################################################################################################
 
@@ -77,6 +77,83 @@ findBiomarkers <- function(population, treshold=0.05, overlapInd = 0, proportion
 	e<-proc.time()
 	if(verbose) cat("findBiomarkers done in",(e-s)[3],"seconds\n")
 	invisible(population)
+}
+
+############################################################################################################
+#									*** getBiomarkers ***
+#
+# DESCRIPTION:
+#	function returning all biomarkers or top marker matching given pattern
+# 
+# PARAMETERS:
+# 	population - an object of class population
+# 	pattern - vector of 0s and 1s (or 0,1,2s)
+# 	verbose - be verbose
+# 
+# OUTPUT:
+#	vector/matrix
+#
+############################################################################################################
+getBiomarkers <- function(population,pattern,verbose=FALSE){
+  if(missing(population)) stop("No population object provided.\n")
+  if(is.null(population$offspring$genotypes$simulated)) stop("Population object doesn't contain de novo genotypes, run findBiomarkers.\n")
+  markers <- population$offspring$genotypes$simulated
+  if(verbose) cat("Selected",nrow(markers),"markers.\n")
+  if(!missing(pattern)){
+    if(verbose) cat("Selecting marker best matching given pattern.\n")
+    markers <- selectTopMarker.internal(markers,pattern,verbose)
+  }
+  invisible(markers)
+}
+
+############################################################################################################
+#									*** selectTopMarker.internal  ***
+#
+# DESCRIPTION:
+#	function returning all biomarkers or top marker matching given pattern
+# 
+# PARAMETERS:
+# 	population - an object of class population
+# 	pattern - vector of 0s and 1s (or 0,1,2s)
+# 	verbose - be verbose
+# 
+# OUTPUT:
+#	vector/matrix
+#
+############################################################################################################
+selectTopMarker.internal <- function(markers,pattern,verbose){
+  markerPoints <- apply(markers,1,scoreMarker.internal,pattern)
+  print(markerPoints)
+  topMarker <- rownames(markers)[which.max(markerPoints)]
+  if(verbose) cat("Markers best matching pattern:",topMarker,"with score:",max(markerPoints),"\n")
+  invisible(markers[topMarker,])
+}
+
+############################################################################################################
+#									*** scoreMarker.internal  ***
+#
+# DESCRIPTION:
+#	function returning all biomarkers or top marker matching given pattern
+# 
+# PARAMETERS:
+# 	population - an object of class population
+# 	pattern - vector of 0s and 1s (or 0,1,2s)
+# 	verbose - be verbose
+# 
+# OUTPUT:
+#	vector/matrix
+#
+############################################################################################################
+scoreMarker.internal <- function(marker,pattern){
+  bestScore <- 0
+  windowLength <- length(pattern)
+  for(i in 1:(length(marker)-windowLength)){
+    currentScore <- sum(marker[i:(i+windowLength-1)]==pattern)
+    if(currentScore>bestScore){
+      bestScore <- currentScore
+    }
+  }
+  invisible(bestScore)
 }
 
 ############################################################################################################

@@ -70,6 +70,8 @@
 \alias{assignLinkageGroups}
 \alias{map2mapCorrelationMatrix}
 \alias{map2mapImage}
+\alias{selectTopMarker.internal}
+\alias{scoreMarker.internal}
 
 \title{Internal pheno2geno functions}
 
