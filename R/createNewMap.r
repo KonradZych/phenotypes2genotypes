@@ -350,7 +350,7 @@ createNewMap.internal  <- function(population,  n.chr,  use=c("geno","rf"), verb
 	use <- defaultCheck.internal(use, "use", 2, "geno")
 	check.population(population)
 	if(is.null(population$offspring$genotypes$simulated)){
-		stop("no simulated genotypes in population object, first use toGenotypes!\n")
+		stop("no simulated genotypes in population object, first use findBiomarkers!\n")
 	}
 	#*******SAVING CROSS OBJECT*******
 	s1 <- proc.time()

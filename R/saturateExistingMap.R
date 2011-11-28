@@ -56,7 +56,7 @@ saturateExistingMap <- function(population, cross, map=c("genetic","physical"), 
   
   if(missing(cross)){
     if(is.null(population$offspring$genotypes$simulated)){
-      stop("No genotype data in population$offspring$genotypes$simulated, run toGenotypes first\n")
+      stop("No genotype data in population$offspring$genotypes$simulated, run findBiomarkers first\n")
     }else{
       cat("No cross object provided, creating one using population object\n")
       	#*******SAVING CROSS OBJECT*******

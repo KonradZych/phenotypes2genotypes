@@ -41,7 +41,7 @@
 \seealso{
   \code{\link{readFiles}}
   \code{\link{findDiffExpressed}}
-  \code{\link{toGenotypes}}
+  \code{\link{findBiomarkers}}
 }
 
 \keyword{manip}

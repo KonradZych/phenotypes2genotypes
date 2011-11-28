@@ -13,7 +13,7 @@
 \alias{majorityRule.internal}
 \alias{doCleanUp.internal}
 
-\alias{convertToGenotypes.internal}
+\alias{convertfindBiomarkers.internal}
 \alias{splitPheno.internal}
 \alias{filterRowSub.internal }
 \alias{filterRow.internal}

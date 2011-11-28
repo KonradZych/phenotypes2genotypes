@@ -1,6 +1,6 @@
 ############################################################################################################
 #
-# toGenotypes.R
+# findBiomarkers.R
 #
 # Copyright (c) 2011, Konrad Zych
 #
@@ -23,14 +23,14 @@
 #     A copy of the GNU General Public License, version 3, is available
 #     at http://www.r-project.org/Licenses/GPL-3
 #
-# Contains: toGenotypes
-#           convertToGenotypes.internal, splitPheno.internal, selectMarkersUsingMap.internal,
+# Contains: findBiomarkers
+#           convertfindBiomarkers.internal, splitPheno.internal, selectMarkersUsingMap.internal,
 #			filterGenotypes.internal, filterRow.internal, splitRowSubEM.internal
 #
 ############################################################################################################
 
 ############################################################################################################
-#									*** toGenotypes ***
+#									*** findBiomarkers ***
 #
 # DESCRIPTION:
 #	function that chooses from the matrix only appropriate markers with specified rules
@@ -53,7 +53,7 @@
 #	an object of class cross
 #
 ############################################################################################################
-toGenotypes <- function(population, treshold=0.05, overlapInd = 0, proportion = c(50,50), margin = 15, verbose=FALSE, debugMode=0){
+findBiomarkers <- function(population, treshold=0.05, overlapInd = 0, proportion = c(50,50), margin = 15, verbose=FALSE, debugMode=0){
 	#*******CHECKS*******
 	check.population(population)
 	s<-proc.time()
@@ -65,22 +65,22 @@ toGenotypes <- function(population, treshold=0.05, overlapInd = 0, proportion = 
 		population <- intoPopulation(population, population$offspring$phenotypes, "offspring$phenotypes")
 	}
 	if(overlapInd < 0 || overlapInd > ncol(population$offspring$phenotypes)) stop("overlapInd is a number (0,lenght of the row).")
-	if(verbose && debugMode==1) cat("toGenotypes starting withour errors in checkpoint.\n")
+	if(verbose && debugMode==1) cat("findBiomarkers starting withour errors in checkpoint.\n")
 	
 	#*******CONVERTING CHILDREN PHENOTYPIC DATA TO GENOTYPES*******
 	s1 <- proc.time()
-	population <- convertToGenotypes.internal(population, treshold, overlapInd, proportion, margin, verbose, debugMode)
+	population <- convertfindBiomarkers.internal(population, treshold, overlapInd, proportion, margin, verbose, debugMode)
 	e1 <- proc.time()
 	if(verbose && debugMode==2)cat("Converting phenotypes to genotypes done in:",(e1-s1)[3],"seconds.\n")
 	
 	#*******RETURNING CROSS OBJECT*******
 	e<-proc.time()
-	if(verbose) cat("toGenotypes done in",(e-s)[3],"seconds\n")
+	if(verbose) cat("findBiomarkers done in",(e-s)[3],"seconds\n")
 	invisible(population)
 }
 
 ############################################################################################################
-#									*** convertToGenotypes.internal ***
+#									*** convertfindBiomarkers.internal ***
 #
 # DESCRIPTION:
 #	function splitting differentially expressed markers into two genotypes
@@ -101,9 +101,9 @@ toGenotypes <- function(population, treshold=0.05, overlapInd = 0, proportion = 
 #	object of class population
 #
 ############################################################################################################
-convertToGenotypes.internal <- function(population, treshold, overlapInd, proportion, margin, verbose=FALSE, debugMode=0){
+convertfindBiomarkers.internal <- function(population, treshold, overlapInd, proportion, margin, verbose=FALSE, debugMode=0){
 	### initialization
-	if(verbose && debugMode==1) cat("convertToGenotypes starting.\n")
+	if(verbose && debugMode==1) cat("convertfindBiomarkers starting.\n")
 	output <- NULL
 	markerNames <- NULL 
 	
@@ -163,7 +163,7 @@ convertToGenotypes.internal <- function(population, treshold, overlapInd, propor
 #									*** splitPheno.internal ***
 #
 # DESCRIPTION:
-#	subfunction of convertToGenotypes.internal, splitting children markers using founders mean values
+#	subfunction of convertfindBiomarkers.internal, splitting children markers using founders mean values
 # 
 # PARAMETERS:
 # 	offspring - matrix of up/down regulated genes in offspring
