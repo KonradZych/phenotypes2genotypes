@@ -65,7 +65,7 @@
 \alias{smoothGenoRow.internal}
 \alias{smoothGenoSub.internal}
 
-\alias{createNewMap.internal}
+\alias{cross.denovo.internal}
 \alias{rearrangeMarkers}
 \alias{assignLinkageGroups}
 \alias{map2mapCorrelationMatrix}

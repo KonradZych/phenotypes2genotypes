@@ -30,7 +30,7 @@
 \examples{
 	data(yeastCross)
 	data(yeastPopulation)
-	assignment <- createNewMap(yeastPopulation,yeastCross,n.chr=16,verbose=TRUE,map="physical",comparisonMethod=sumMajorityCorrelation, use.orderMarkers=FALSE,reOrder=FALSE)
+	assignment <- cross.denovo(yeastPopulation,yeastCross,n.chr=16,verbose=TRUE,map="physical",comparisonMethod=sumMajorityCorrelation, use.orderMarkers=FALSE,reOrder=FALSE)
   assignment #boring,but expected
   ordering <- assignedChrToMarkers(assignment,yeastCross)
   yeastCross <- reorganizeMarkersWithin(yeastCross, ordering)
@@ -38,9 +38,9 @@
 }
 
 \seealso{
-  \code{\link{createNewMap}} - creating de novo genetic map or chromosome assignment vector
+  \code{\link{cross.denovo}} - creating de novo genetic map or chromosome assignment vector
   \code{\link{assignedChrToMarkers}} - create ordering vector from chromosome assignment vector
-  \code{\link{saturateExistingMap}} - saturate existing map
+  \code{\link{cross.saturate}} - saturate existing map
 }
 
 \keyword{manip}

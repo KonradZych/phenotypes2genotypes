@@ -1,6 +1,6 @@
 ############################################################################################################
 #
-# saturateExistingMap.R
+# cross.saturate.R
 #
 # Copyright (c) 2011, Konrad Zych
 #
@@ -23,13 +23,13 @@
 #     A copy of the GNU General Public License, version 3, is available
 #     at http://www.r-project.org/Licenses/GPL-3
 #
-# Contains: saturateExistingMap, rearrangeMarkers,
+# Contains: cross.saturate, rearrangeMarkers,
 #             bestCorelated.internal, map2mapCorrelationMatrix.internal, map2mapImage
 #
 ############################################################################################################
 
 ###########################################################################################################
-#                                    *** saturateExistingMap ***
+#                                    *** cross.saturate ***
 #
 # DESCRIPTION:
 # 	saturate existing genetic map adding markers derived from gene expression
@@ -47,7 +47,7 @@
 #	object of class cross
 #
 ############################################################################################################
-saturateExistingMap <- function(population, cross, map=c("genetic","physical"), corSDTreshold=3, use.orderMarkers=FALSE, verbose=FALSE, debugMode=0){
+cross.saturate <- function(population, cross, map=c("genetic","physical"), corSDTreshold=3, use.orderMarkers=FALSE, verbose=FALSE, debugMode=0){
   if(missing(population)) stop("Please provide a population object\n")
   if(is.null(population$offspring$genotypes$real)){
     stop("No original genotypes in population$offspring$genotypes$real, load them in using intoPopulation\n")
@@ -275,7 +275,7 @@ map2mapImage <- function(genotypesCorelationMatrix,population,cross,corThreshold
   if(missing(genotypesCorelationMatrix)){
     cat("Correlation matrix not provided, calulating one")
     genotypesCorelationMatrix <- map2mapCorrelationMatrix(cross,population,verbose)
-    if(missing(cross)) stop("No object of class cross, please run either createNewMap or enrichExistingMap\n")
+    if(missing(cross)) stop("No object of class cross, please run either cross.denovo or enrichExistingMap\n")
     if(missing(population)) stop("Please provide a population object\n")
     check.population(population)
   }

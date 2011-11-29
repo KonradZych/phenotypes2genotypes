@@ -1,6 +1,6 @@
 ############################################################################################################
 #
-# createNewMap.R
+# cross.denovo.R
 #
 # Copyright (c) 2011, Konrad Zych
 #
@@ -30,7 +30,7 @@
 
 
 ############################################################################################################
-#									*** createNewMap ***
+#									*** cross.denovo ***
 #
 # DESCRIPTION:
 #	ordering chromosomes using genetic/physical map and majority rule
@@ -46,13 +46,13 @@
 #	object of class cross
 #
 ############################################################################################################
-createNewMap <- function(population, cross, n.chr, map=c("none","genetic","physical"), comparisonMethod = c(sumMajorityCorrelation,majorityCorrelation,meanCorrelation,majorityOfMarkers), 
+cross.denovo <- function(population, cross, n.chr, map=c("none","genetic","physical"), comparisonMethod = c(sumMajorityCorrelation,majorityCorrelation,meanCorrelation,majorityOfMarkers), 
 assignFunction=c(assignMaximumNoConflicts,assignMaximum), reOrder=TRUE, use.orderMarkers=FALSE, verbose=FALSE, debugMode=0){
 
   map <- defaultCheck.internal(map,"map",3,"none")
   comparisonMethod <- defaultCheck.internal(comparisonMethod,"comparisonMethod",4,sumMajorityCorrelation)
   assignFunction <- defaultCheck.internal(assignFunction,"assignFunction",2,assignMaximumNoConflicts)
-  if(missing(cross)) cross <- createNewMap.internal(population,n.chr,verbose=TRUE,debugMode=2)
+  if(missing(cross)) cross <- cross.denovo.internal(population,n.chr,verbose=TRUE,debugMode=2)
   if(length(cross$geno)<=1) stop("selected cross object contains too little chromosomes to proceed")
   if(map=="none"){
     if(reOrder){
@@ -327,7 +327,7 @@ majorityOfMarkers <- function(cross,originalMap,population,verbose=FALSE){
 
 
 ############################################################################################################
-#									*** createNewMap.internal ***
+#									*** cross.denovo.internal ***
 #
 # DESCRIPTION:
 # 	function to create new map and save it in cross object
@@ -344,7 +344,7 @@ majorityOfMarkers <- function(cross,originalMap,population,verbose=FALSE){
 #
 #
 ############################################################################################################
-createNewMap.internal  <- function(population,  n.chr,  use=c("geno","rf"), verbose=FALSE, debugMode=0){
+cross.denovo.internal  <- function(population,  n.chr,  use=c("geno","rf"), verbose=FALSE, debugMode=0){
 	if(missing(n.chr)) stop("n.chr in an obligatory parameter")
 	if(missing(population)) stop("no population object provided")
 	use <- defaultCheck.internal(use, "use", 2, "geno")

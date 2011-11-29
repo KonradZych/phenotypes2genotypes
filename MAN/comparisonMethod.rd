@@ -26,7 +26,7 @@
 }
 
 \details{
-Using createNewMap or markersCorPlot functions, user will need choose one of these methods of comparing created map to the original one.
+Using cross.denovo or markersCorPlot functions, user will need choose one of these methods of comparing created map to the original one.
 They are described below. However, those functions are always called inside the function, so only description without examples of usage,
 is given. 
 
@@ -53,7 +53,7 @@ majorityOfMarkers - for each chromosome in the cross object (either created insi
 \seealso{
   \code{\link{reorganizeMarkersWithin}} - apply new ordering on the cross object usign ordering vector
   \code{\link{assignedChrToMarkers}} - create ordering vector from chromosome assignment vector
-  \code{\link{createNewMap}} - creating de novo genetic map or chromosome assignment vector
+  \code{\link{cross.denovo}} - creating de novo genetic map or chromosome assignment vector
   \code{\link{reduceChromosomesNumber}} - number of routines to reduce number of chromosomes of cross object
   \code{\link{markersCorPlot}} - Plotting correlation between two maps together with markers placement (comparison of coverage).
 }

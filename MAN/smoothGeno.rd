@@ -43,8 +43,8 @@ border ones. Then the windows slides by one marker and another group is chacked.
 }
 
 \seealso{
-  \code{\link{saturateExistingMap}} - saturate existing map
-  \code{\link{createNewMap}} - create de novo genetic map or vector showing how chromosomes should be assigned
+  \code{\link{cross.saturate}} - saturate existing map
+  \code{\link{cross.denovo}} - create de novo genetic map or vector showing how chromosomes should be assigned
 }
 
 \keyword{manip}

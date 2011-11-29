@@ -38,7 +38,7 @@ be selected with different threshold values.
 }
 
 \seealso{
-  \code{\link{saturateExistingMap}} - saturate existing map
+  \code{\link{cross.saturate}} - saturate existing map
 }
 
 \keyword{manip}
