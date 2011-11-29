@@ -1,5 +1,5 @@
 \name{Create new map}
-\alias{createNewMap}
+\alias{cross.denovo}
 \alias{assignMaximumNoConflicts}
 \alias{assignMaximum}
 
@@ -11,7 +11,7 @@
 }
 
 \usage{
-	createNewMap(population, cross, n.chr, map=c("none","genetic","physical"), comparisonMethod = c(sumMajorityCorrelation,majorityCorrelation,meanCorrelation,majorityOfMarkers), 
+	cross.denovo(population, cross, n.chr, map=c("none","genetic","physical"), comparisonMethod = c(sumMajorityCorrelation,majorityCorrelation,meanCorrelation,majorityOfMarkers), 
 assignFunction=c(assignMaximumNoConflicts,assignMaximum), reOrder=TRUE, use.orderMarkers=FALSE, verbose=FALSE, debugMode=0)
 	
 }
@@ -47,7 +47,7 @@ assignFunction=c(assignMaximumNoConflicts,assignMaximum), reOrder=TRUE, use.orde
 }
 
 \details{
-createNewMap function creates new genetic map using genotypes simulated by findBiomarkers function. Then it uses information provided by user to
+cross.denovo function creates new genetic map using genotypes simulated by findBiomarkers function. Then it uses information provided by user to
 assign number to newly created chromosomes.
 }
 \author{
@@ -57,13 +57,13 @@ assign number to newly created chromosomes.
 
 \examples{
 	data(yeastPopulation)
-	cross <- createNewMap(yeastPopulation,n.chr=16,verbose=TRUE,map="physical",comparisonMethod=sumMajorityCorrelation, use.orderMarkers=FALSE)
+	cross <- cross.denovo(yeastPopulation,n.chr=16,verbose=TRUE,map="physical",comparisonMethod=sumMajorityCorrelation, use.orderMarkers=FALSE)
 }
 
 \seealso{
   \code{\link{reorganizeMarkersWithin}} - apply new ordering on the cross object usign ordering vector
   \code{\link{assignedChrToMarkers}} - create ordering vector from chromosome assignment vector
-  \code{\link{saturateExistingMap}} - saturate existing map
+  \code{\link{cross.saturate}} - saturate existing map
   \code{\link{reduceChromosomesNumber}} - number of routines to reduce number of chromosomes of cross object
   \code{\link{findBiomarkers}} - creating genotype markers  out of gene expression data.
 }

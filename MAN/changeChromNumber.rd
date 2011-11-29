@@ -70,8 +70,8 @@ removeTooSmallChromosomes function.
 \seealso{
   \code{\link{reorganizeMarkersWithin}} - apply new ordering on the cross object usign ordering vector
   \code{\link{assignedChrToMarkers}} - create ordering vector from chromosome assignment vector
-  \code{\link{saturateExistingMap}} - saturate existing map
-  \code{\link{createNewMap}} - create de novo genetic map
+  \code{\link{cross.saturate}} - saturate existing map
+  \code{\link{cross.denovo}} - create de novo genetic map
 }
 
 \keyword{manip}

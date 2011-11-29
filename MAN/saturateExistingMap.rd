@@ -1,5 +1,5 @@
 \name{Saturate existing map}
-\alias{saturateExistingMap}
+\alias{cross.saturate}
 
 
 \title{Saturate existing map.}
@@ -9,7 +9,7 @@
 }
 
 \usage{
-	saturateExistingMap(population, cross, map=c("genetic","physical"), corSDTreshold=3, use.orderMarkers=FALSE, verbose=FALSE, debugMode=0)
+	cross.saturate(population, cross, map=c("genetic","physical"), corSDTreshold=3, use.orderMarkers=FALSE, verbose=FALSE, debugMode=0)
 	
 }
 
@@ -45,13 +45,13 @@ being placed on the map.
 
 \examples{
 	data(yeastPopulation)
-	cross <- saturateExistingMap(yeastPopulation,map="physical",verbose=TRUE,debugMode=2)
+	cross <- cross.saturate(yeastPopulation,map="physical",verbose=TRUE,debugMode=2)
 }
 
 \seealso{
   \code{\link{reorganizeMarkersWithin}} - apply new ordering on the cross object usign ordering vector
   \code{\link{assignedChrToMarkers}} - create ordering vector from chromosome assignment vector
-  \code{\link{createNewMap}} - creating de novo genetic map or chromosome assignment vector
+  \code{\link{cross.denovo}} - creating de novo genetic map or chromosome assignment vector
   \code{\link{reduceChromosomesNumber}} - number of routines to reduce number of chromosomes of cross object
   \code{\link{markerPlacementPlot}} - plot showing how many markers will be selected for map saturation with different thresholds
 }

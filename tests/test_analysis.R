@@ -12,14 +12,14 @@ population <- findBiomarkers(population, treshold=0.01,verbose=T,debug=2)
 
 ####THREE WAYS TO ASSIGN CHROMOSOMES
 set.seed(101010)
-cross_newmap <- createNewMap(population,n.chr=16,map="physical",comparisonMethod=sumMajorityCorrelation,reOrder=TRUE,use.orderMarkers=TRUE,verbose=TRUE,debugMode=2)
+cross_newmap <- cross.denovo(population,n.chr=16,map="physical",comparisonMethod=sumMajorityCorrelation,reOrder=TRUE,use.orderMarkers=TRUE,verbose=TRUE,debugMode=2)
 #set.seed(101010)
-#cross_newmap <- createNewMap(population, n.chr=16,map="physical",comparisonMethod=majorityCorrelation,reOrder=TRUE,verbose=TRUE,debugMode=2)
+#cross_newmap <- cross.denovo(population, n.chr=16,map="physical",comparisonMethod=majorityCorrelation,reOrder=TRUE,verbose=TRUE,debugMode=2)
 #set.seed(101010)
-#cross_newmap <- createNewMap(population, n.chr=16,map="physical",comparisonMethod=meanCorrelation,reOrder=TRUE,verbose=TRUE,debugMode=2)
+#cross_newmap <- cross.denovo(population, n.chr=16,map="physical",comparisonMethod=meanCorrelation,reOrder=TRUE,verbose=TRUE,debugMode=2)
 cross_newmap <- smoothGeno(cross_newmap,3)
 
-cross_enriched <- saturateExistingMap(population,map="physical",verbose=TRUE,debugMode=2)
+cross_enriched <- cross.saturate(population,map="physical",verbose=TRUE,debugMode=2)
 cross_enriched <- smoothGeno(cross_enriched,3)
 
 

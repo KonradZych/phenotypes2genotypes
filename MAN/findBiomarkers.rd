@@ -64,8 +64,8 @@
 
 \seealso{
   \code{\link{readFiles}} - loads genotype, phenotype, genetic map data files into R environment into a population object.
-  \code{\link{createNewMap}} - create de novo genetic map or vector showing how chromosomes should be assigned
-  \code{\link{saturateExistingMap}} - saturate existing map
+  \code{\link{cross.denovo}} - create de novo genetic map or vector showing how chromosomes should be assigned
+  \code{\link{cross.saturate}} - saturate existing map
   \code{\link{findDiffExpressed}} - using Rank Product or student t-test analysis to select differentially expressed genes
 }
 
