@@ -14,23 +14,51 @@
 }
 
 \arguments{
- \item{offspring_phenotypes}{ matrix containing offspring phenotype data (have to be supported, if not - function quits with error)}
- \item{founders}{ matrix containing founders phenotype data (have to be supported, if not - function quits with error)}
-  \item{founders_groups}{ specify groups im founders data (have to be supported, if not - function quits with error)}
- \item{offspring_genotypes}{ matrix containing offspring genotype data (optional)}
- \item{maps_genetic}{ matrix containing genetic map (optional)}
- \item{maps_physical}{ matrix containing physical map (optional)}
- \item{no.warn}{ if TRUE, no warnings will be produced}
- \item{verbose}{ Be verbose}
- \item{debugMode}{ 1: Print out checks, 2: print additional time information }
+ \item{offspring_phenotypes}{ Matrix containing offspring phenotype data (have to be supported, if not - function quits with error).}
+ \item{founders}{ Matrix containing founders phenotype data (have to be supported, if not - function quits with error).}
+  \item{founders_groups}{ Specify groups im founders data (have to be supported, if not - function quits with error).}
+ \item{offspring_genotypes}{ Matrix containing offspring genotype data (optional).}
+ \item{maps_genetic}{ Matrix containing genetic map (optional).}
+ \item{maps_physical}{ Matrix containing physical map (optional).}
+ \item{no.warn}{ If TRUE, no warnings will be produced.}
+ \item{verbose}{ Be verbose.}
+ \item{debugMode}{ 1: Print out checks, 2: print additional time information.}
 }
 
 \value{
-  Object of class population. TODO: description
+  An object of class \code{\link{population}}. 
+  This is a complex object containing all the information needen for the pheno2geno analysis. It is splitted into few parts:
+  \itemize{
+    \item{$offspring}{ - containing all the offspring data:
+      \itemize{
+        \item{$phenotypes}{ - offspring gene expression (phenotype) data - numeric matrix, rows - markers, cols - individuals.}
+        \item{$genotypes}{ - offspring genotype data:
+          \itemize{
+            \item{$real}{ - original data provided by the user - numeric matrix, rows - markers, cols - individuals.}
+            \item{$simulated}{ - simulated by \code{\link{findBiomarkers}} using phenotype data - numeric matrix, rows - markers, cols - individuals.}
+          }
+        }
+      }
+    }
+    \item{$founders}{ - containing all the founders data:
+      \itemize{
+        \item{$phenotypes}{ - founders gene expression (phenotype) data - numeric matrix, rows - markers, cols - individuals.}
+        \item{$groups}{ - vector of 0s and 1s, specifying which column in founders phenotype data belongs to which group.}
+        \item{$RP}{ - results of t.test or RankProd analysis of founders phenotype data made by \code{\link{findDiffExpressed}.}
+      }
+    }
+    }
+    \item{$maps}{ - containing maps:
+      \itemize{
+        \item{$genetic}{ - genetic map - numeric array, rows - markers, 2 columns - 1 - chromosome marker lies on, 2 - position on chromosome in cM.}
+        \item{$physical}{ - physical map - numeric array, rows - markers, 2 columns - 1 - chromosome marker lies on, 2 - position on chromosome in Mbp.}
+      }
+    }
+  }
 }
 
 \details{
-  TODO
+  Functions inputs provided objects (performing some checks beforehand) into an object of class \code{\link{population}}.
 }
 
 \author{
@@ -48,8 +76,10 @@
 }
 
 \seealso{
-  \code{\link{readFiles}}
-  \code{\link{intoPopulation}}
+  \itemize{
+    \item{\code{\link{readFiles}}}{ - Loads genotype, phenotype, genetic map data files into R environment into a population object.}
+    \item{\code{\link{intoPopulation}}}{ - Adding data to existing population object.}
+  }
 }
 
 \keyword{manip}

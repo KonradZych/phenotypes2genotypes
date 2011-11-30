@@ -13,8 +13,8 @@
 }
 
 \arguments{
- \item{assignment}{ chromosome assignment vector created using \link{cross.denovo} finction with reOrder = FALSE}
- \item{cross}{ an object of R/qtl class cross}
+ \item{assignment}{ Chromosome assignment vector created using \link{cross.denovo} with reOrder = FALSE.}
+ \item{cross}{ An object of class \code{cross}. See \code{\link[qtl]{read.cross}} for details. }
 }
 
 \value{
@@ -41,9 +41,9 @@ from created map shall be assigned to chromosomes from original map. This functi
 }
 
 \seealso{
-  \code{\link{reorganizeMarkersWithin}} - apply new ordering on the cross object usign ordering vector
-  \code{\link{cross.saturate}} - saturate existing map
-  \code{\link{cross.denovo}} - create de novo genetic map or vector showing how chromosomes should be assigned
+  \code{\link{reorganizeMarkersWithin}} - Apply new ordering on the cross object usign ordering vector.
+  \code{\link{cross.saturate}} - Saturate existing map.
+  \code{\link{cross.denovo}} - Create de novo genetic map or vector showing how chromosomes should be assigned.
 }
 
 \keyword{manip}

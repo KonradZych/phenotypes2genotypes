@@ -79,10 +79,10 @@ Founders groups should be c(0,1,0,1,0,1) then. Always use only 0 and 1 to specif
 }
 
 \seealso{
-  \code{\link{findDiffExpressed}}
-  \code{\link{findBiomarkers}}
-  \code{\link{createPopulation}}
-  \code{\link{intoPopulation}}
+  \itemize{
+    \item{\code{\link{readFiles}}}{ - Loads genotype, phenotype, genetic map data files into R environment into a population object.}
+    \item{\code{\link{createPopulation}}}{ - Create new object of class population.}
+  }
 }
 
 \keyword{manip}

@@ -35,7 +35,7 @@
 }
 
 \value{
-  Object of class population. See \code{\link{createPopulation}} for description.
+  An object of class \code{\link{population}}. See \code{\link{createPopulation}} for details.
 }
 
 \details{
@@ -58,8 +58,10 @@
 }
 
 \seealso{
-  \code{\link{readFiles}}
-  \code{\link{createPopulation}}
+  \itemize{
+    \item{\code{\link{readFiles}}}{ - Loads genotype, phenotype, genetic map data files into R environment into a population object.}
+    \item{\code{\link{intoPopulation}}}{ - Adding data to existing population object.}
+  }
 }
 
 \keyword{manip}
