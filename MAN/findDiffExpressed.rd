@@ -13,16 +13,16 @@
 }
 
 \arguments{
- \item{population}{ an object of class \code{\link{population}}}
- \item{use}{ which method should be used for selecting differentially expressed probes:
+\item{population}{ An object of class \code{\link{population}}. See \code{\link{createPopulation}} for details. }
+ \item{use}{ Which method should be used for selecting differentially expressed probes:
   \itemize{
-    \item{ttest}{ - student t-test}
-    \item{rankprod}{ - Rank Product using \code{\link{RP}} function}
+    \item{ttest}{ - student t-test.}
+    \item{rankprod}{ - Rank Product using \code{\link{RP}} function.}
   } 
   }
- \item{verbose}{ Be verbose}
- \item{debugMode}{ 1: Print out checks, 2: print additional time information }
- \item{...}{ Additional arguments passed to RP function. }
+ \item{verbose}{ Be verbose.}
+ \item{debugMode}{ 1: Print out checks, 2: print additional time information.}
+ \item{...}{ Additional arguments passed to RP function.}
 }
 
 \value{
@@ -30,7 +30,7 @@
 }
 
 \details{
-  TODO
+  This function performs either RankProd or t.test analysis
 }
 
 \author{
@@ -39,7 +39,9 @@
 }
 
 \references{
-  Hong F, Breitling R, McEntee CW, Wittner BS, Nemhauser JL, Chory J. RankProd: a bioconductor package for detecting differentially expressed genes in meta-analysis. Bioinformatics. 2006 Nov 15;22(22):2825-7.
+  Hong F, Breitling R, McEntee CW, Wittner BS, Nemhauser JL, Chory J.(2006) RankProd: 
+  a bioconductor package for detecting differentially expressed genes in meta-analysis. 
+  \emph{Bioinformatics}, \bold{15};22(22):2825-7.
 }
 
 \examples{
@@ -50,11 +52,11 @@
 
 \seealso{
 	\itemize{
-    \item \code{\link[RankProd]{RP}} - Add description
-    \item \code{\link{readFiles}} - Add description
-    \item \code{\link{findBiomarkers}} - Creating genotypes from children phenotypes
-    \item \code{\link{showRPpval}} - Printing out p-values calculated by the findDiffExpressed function
-    \item \code{\link{plotRPpval}} - Plotting p-values calculated by the findDiffExpressed function
+    \item{\code{\link[RankProd]{RP}}}{ - Perform rank product method to identify differentially expressed genes.}
+    \item{\code{\link{readFiles}}}{ - Load genotype, phenotype, genetic map data files into R environment into a population object.}
+    \item{\code{\link{findBiomarkers}}}{ - Creating genotypes from children phenotypes.}
+    \item{\code{\link{showRPpval}}}{- Printing out p-values calculated by the findDiffExpressed function.}
+    \item{\code{\link{plotRPpval}}}{ - Plotting p-values calculated by the findDiffExpressed function.}
   }
 }
 

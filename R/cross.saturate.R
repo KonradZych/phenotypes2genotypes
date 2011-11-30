@@ -63,8 +63,6 @@ cross.saturate <- function(population, cross, map=c("genetic","physical"), corSD
       s1 <- proc.time()
       aa <- tempfile()
       sink(aa)
-      #DANNY: Why use the simulated map ??? and not the real one ???
-	  #KONRAD SAYS: Mr Danny, we need simulated genotypes, to enrich original with something;p 
       cross <- genotypesToCross.internal(population,"simulated",verbose=verbose,debugMode=debugMode)
       sink()
       file.remove(aa)
@@ -74,10 +72,6 @@ cross.saturate <- function(population, cross, map=c("genetic","physical"), corSD
   }
  
   #*******ENRICHING ORIGINAL MAP*******
-  #DANNY HUH ???? Where does the original map come from ??? (See above the comment about "simulated")
-  #DANNY HUH ???? and in which variable is it stored ???
-  #KONRAD SAYS: Mr Danny, new map is stored inside cross object and old in population, just as we
-  # TOGETHER decided;p
 	s1 <- proc.time()
 	cross <- rearrangeMarkers(cross,population,map,corSDTreshold,addMarkers=TRUE,verbose=verbose)
 	e1 <- proc.time()
