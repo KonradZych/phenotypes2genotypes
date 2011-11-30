@@ -19,17 +19,17 @@
 }
 
 \arguments{
- \item{population}{ Population type object, must contain parental phenotypic data.}
- \item{treshold}{ If Rank Product pval for gene is lower that this value, we assume it is being diff. expressed.}
- \item{overlapInd}{ Number of individuals that are allowed in the overlap }
- \item{proportion}{ Proportion of individuals expected to carrying a certain genotype }
- \item{margin}{ Proportion is allowed to varry between this margin (2 sided) }
- \item{verbose}{ Be verbose}
- \item{debugMode}{ 1: Print out checks, 2: print additional time information }
+  \item{population}{ An object of class \code{\link{population}}. See \code{\link{createPopulation}} for details. }
+ \item{treshold}{ If pval for gene (see \code{\link{findDiffExpressed}}) is lower that this value, we assume it is being diff. expressed.}
+ \item{overlapInd}{ Number of individuals that are allowed to overlap between genotypes.}
+ \item{proportion}{ Proportion of individuals expected to carrying a certain genotype.}
+ \item{margin}{ Proportion is allowed to varry between this margin (2 sided).}
+ \item{verbose}{ Be verbose.}
+ \item{debugMode}{ 1: Print out checks, 2: print additional time information.}
 }
 
 \value{
-  Cross type object. 
+  An object of class \code{cross}. See \code{\link[qtl]{read.cross}} for details 
 }
 
 \details{
@@ -63,10 +63,12 @@
 }
 
 \seealso{
-  \code{\link{readFiles}} - loads genotype, phenotype, genetic map data files into R environment into a population object.
-  \code{\link{cross.denovo}} - create de novo genetic map or vector showing how chromosomes should be assigned
-  \code{\link{cross.saturate}} - saturate existing map
-  \code{\link{findDiffExpressed}} - using Rank Product or student t-test analysis to select differentially expressed genes
+  \itemize{
+    \item{\code{\link{readFiles}}}{ - Load genotype, phenotype, genetic map data files into R environment into a population object.}
+    \item{\code{\link{cross.denovo}}}{ - Create de novo genetic map or vector showing how chromosomes should be assigned.}
+    \item{\code{\link{cross.saturate}}}{ - Saturate existing map.}
+    \item{\code{\link{findDiffExpressed}}}{ - Using Rank Product or student t-test analysis to select differentially expressed genes.}
+  }
 }
 
 \keyword{manip}
