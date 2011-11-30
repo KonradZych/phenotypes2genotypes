@@ -22,15 +22,15 @@
 }
 
 \arguments{
- \item{cross}{ an object of R/qtl class cross}
- \item{numberOfChromosomes}{ how many chromosomes should stay (remove all but 1:numberOfChromosomes)}
- \item{chromosomesToBeRmv}{ explicitly provide functions with NAMES of chromosomes to be removed}
- \item{minNrOfMarkers}{ specify minimal number of markers chromosome is allowed to have (remove all that have less markers than that)}
-  \item{verbose}{ be verbose}
+ \item{cross}{ An object of class \code{cross}. See \code{\link[qtl]{read.cross}} for details. }
+ \item{numberOfChromosomes}{ How many chromosomes should stay (remove all but 1:numberOfChromosomes).}
+ \item{chromosomesToBeRmv}{ NAMES of chromosomes to be removed.}
+ \item{minNrOfMarkers}{ Specify minimal number of markers chromosome is allowed to have (remove all that have less markers than that).}
+  \item{verbose}{ Be verbose.}
 }
 
 \value{
-  Cross type object.
+  An object of class \code{cross}. See \code{\link[qtl]{read.cross}} for details.
 }
 
 \details{
@@ -68,10 +68,10 @@ removeTooSmallChromosomes function.
 }
 
 \seealso{
-  \code{\link{reorganizeMarkersWithin}} - apply new ordering on the cross object usign ordering vector
-  \code{\link{assignedChrToMarkers}} - create ordering vector from chromosome assignment vector
-  \code{\link{cross.saturate}} - saturate existing map
-  \code{\link{cross.denovo}} - create de novo genetic map
+  \code{\link{reorganizeMarkersWithin}} - Apply new ordering on the cross object usign ordering vector.
+  \code{\link{assignedChrToMarkers}} - Create ordering vector from chromosome assignment vector.
+  \code{\link{cross.saturate}} - Saturate existing map.
+  \code{\link{cross.denovo}} - Create de novo genetic map.
 }
 
 \keyword{manip}
