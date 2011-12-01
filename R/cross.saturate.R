@@ -189,19 +189,6 @@ rearrangeMarkers <- function(cross,population,map=c("genetic","physical"), corSD
 #	vector with new ordering of chromosomes inside cross object
 #
 ############################################################################################################
-#bestCorelated.internal <- function(cross,population,corTreshold,verbose=FALSE){
-#  genotypesCorelationMatrix <- map2mapCorrelationMatrix(cross,population,verbose)
-#  #select markers that are correlated highly with more than one of the old markers
-#  selected <- which(apply(abs(genotypesCorelationMatrix),2,function(r){length(which(r > corTreshold))})!=0)
-#  genotypesCorelationMatrix <- genotypesCorelationMatrix[,selected]
-#  output <- matrix(0,length(selected),4)
-#  output[,1] <- colnames(genotypesCorelationMatrix)
-#  output[,2] <- apply(abs(genotypesCorelationMatrix),2,function(r){rownames(genotypesCorelationMatrix)[which.max(r)]})
-#  output[,3] <- apply(abs(genotypesCorelationMatrix),2,function(r){rownames(genotypesCorelationMatrix)[which.max(r[-which.max(r)])]})
-#  rownames(output) <- colnames(genotypesCorelationMatrix)
-#  invisible(output)
-#}
-
 bestCorelated.internal <- function(cross,population, corSDTreshold,verbose=FALSE){
   cormatrix <- map2mapCorrelationMatrix(cross,population,verbose)
   maximums <- apply(abs(cormatrix),2,max)
@@ -215,6 +202,59 @@ bestCorelated.internal <- function(cross,population, corSDTreshold,verbose=FALSE
   output[,2] <- apply(abs(cormatrix),2,function(r){rownames(cormatrix)[which.max(r)]})
   output[,3] <- apply(abs(cormatrix),2,function(r){rownames(cormatrix)[which.max(r[-which.max(r)])]})
   rownames(output) <- colnames(cormatrix)
+  invisible(output)
+}
+
+###########################################################################################################
+#                                    *** bestQTL.internal ***
+#
+# DESCRIPTION:
+# 	subfunction of segragateChromosomes.internal, returns matrix showing for every reco map chromosome from 
+#	which physicall map chromosome majority of markers comes
+# 
+# PARAMETERS:
+# 	cross - object of class cross, containing physical or genetic map
+#	cur_map - object containing map to be used
+#	verbose - be verbose
+# 
+# OUTPUT:
+#	vector with new ordering of chromosomes inside cross object
+#
+############################################################################################################
+bestQTL.internal <- function(cross, population){
+  genotypes <- population$offspring$genotypes$real
+  markers <- markernames(cross)
+  phenotypes <- pull.geno(cross)[,markers]
+  output <- unlist(lapply(markers,QTLscan.internal,phenotypes,genotypes))
+  invisible(output)
+}
+
+###########################################################################################################
+#                                    *** QTLscan.internal ***
+#
+# DESCRIPTION:
+# subfunction by Danny Arends to map QLTs modfied to work on a single phenotype
+# 
+# PARAMETERS:
+# 	cross - object of class cross, containing physical or genetic map
+#	cur_map - object containing map to be used
+#	verbose - be verbose
+# 
+# OUTPUT:
+#	vector with new ordering of chromosomes inside cross object
+#
+############################################################################################################
+QTLscan.internal <- function(markerName,phenotypes,genotypes){
+      result <- abs(apply(genotypes,1, 
+        function(geno){
+          linmod <- lm(phenotypes[,markerName] ~ geno)
+          -log10(anova(linmod)[[5]][1])
+        }
+      ))
+  output <- c(markerName,NA,NA)
+  if(max(result)>5){
+    output <- c(markerName,names(which.max(result)),names(which.max(result[-(which.max(result))])))
+  }
   invisible(output)
 }
 
