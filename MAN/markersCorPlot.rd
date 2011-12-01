@@ -13,20 +13,30 @@
 
 \arguments{
  \item{cross}{ R/qtl cross type object.}
-  \item{population}{ an object of class \code{\link{population}}}
- \item{map}{ which map (from ones stored in population$maps) should be used fo assigning chromosomes on the created map}
- \item{cmBetween}{ offset between chromosomes specified in cM}
- \item{comparisonMethod}{method used tocompare chromosomes from the new map to the original ones while assigning
+  \item{population}{ An object of class \code{\link{population}}.}
+ \item{map}{ Which map (from ones stored in population$maps) should be used fo assigning chromosomes on the created map.}
+ \item{cmBetween}{ Offset between chromosomes specified in cM.}
+ \item{comparisonMethod}{ Method used to compare chromosomes from the new map to the original ones while assigning:
    \itemize{
-    \item{\code{\link{sumMajorityCorrelation}}}{}
-    \item{\code{\link{majorityCorrelation}}}{}
-    \item{\code{\link{meanCorrelation}}}{}
-    \item{\code{\link{majorityOfMarkers}}}{}
+    \item{sumMajorityCorrelation}{ - For each chromosome in cross for every marker checks the marker it is
+   having highest correlation with. Checks on which chromosome this marker is placed in old map. For each of
+   new chromosomes one or more of chromosomes from old map will be represented. Function sums correlations for
+   each pair of those and for every new chromosomes assigns old chromosome with highest cumulative cor.}
+    \item{majorityCorrelation}{ - For each chromosome in cross for every marker checks the marker it is
+   having highest correlation with. Checks on which chromosome this marker is placed in old map. For each of
+   new chromosomee, old chromosome with most markers with high correlation is assigned.}
+    \item{meanCorrelation}{ - Assigning chromosome from new map to old ones using sum of the mean correlation between their markers.}
+    \item{majorityOfMarkers}{ - For each chromosome in the cross object (either created inside the function or provided
+  by user) chromosome from original map, where most markers from new chromosome are is assigned.}
   }
  }
- \item{chr}{ specifies subset of chromosomes to be shown }
- \item{show.legend}{ shall the legend be shown on the plot}
- \item{verbose}{ be verbose}
+ \item{chr}{ Specifies subset of chromosomes to be shown.}
+ \item{show.legend}{ Shall the legend be shown on the plot.}
+ \item{verbose}{ Be verbose.}
+}
+
+\details{
+Plots markers from moth old and new map as points and in the background - comparison between them done using selected comparison method.
 }
 
 \value{
@@ -45,8 +55,12 @@
 }
 
 \seealso{
-  \code{\link{plotMapComparison}} - Plotting routine for comparison of two genetic maps.
-  \code{\link{projectOldMarkers}} - Plotting routine for showing how markers from original map are placed on saturated map.
+  \itemize{
+    \item{\code{\link{plotMapComparison}}}{ -  Plotting routine for comparison of two genetic maps.}
+    \item{\code{\link{projectOldMarkers}}}{ -   Plotting routine for showing how markers from original map are placed on saturated map.}
+    \item{\code{\link{cross.saturate}}}{ - Saturate existing map.}
+    \item{\code{\link{cross.denovo}}}{ - Create de novo genetic map or chromosome assignment vector.}
+}
 }
 
 \keyword{manip}
