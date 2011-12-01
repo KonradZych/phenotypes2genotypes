@@ -27,15 +27,15 @@ assignFunction=c(assignMaximumNoConflicts,assignMaximum), reOrder=TRUE, use.orde
  \item{map}{ Which map ( from ones stored in population$maps) should be used fo assigning chromosomes on the created map.}
  \item{comparisonMethod}{ Method used to compare chromosomes from the new map to the original ones while assigning:
    \itemize{
-    \item{sumMajorityCorrelation}{ - for each chromosome in cross for every marker checks the marker it is
+    \item{sumMajorityCorrelation}{ - For each chromosome in cross for every marker checks the marker it is
    having highest correlation with. Checks on which chromosome this marker is placed in old map. For each of
    new chromosomes one or more of chromosomes from old map will be represented. Function sums correlations for
    each pair of those and for every new chromosomes assigns old chromosome with highest cumulative cor.}
-    \item{majorityCorrelation}{ - for each chromosome in cross for every marker checks the marker it is
+    \item{majorityCorrelation}{ - For each chromosome in cross for every marker checks the marker it is
    having highest correlation with. Checks on which chromosome this marker is placed in old map. For each of
    new chromosomee, old chromosome with most markers with high correlation is assigned.}
-    \item{meanCorrelation}{ - assigning chromosome from new map to old ones using sum of the mean correlation between their markers.}
-    \item{majorityOfMarkers}{ - for each chromosome in the cross object (either created inside the function or provided
+    \item{meanCorrelation}{ - Assigning chromosome from new map to old ones using sum of the mean correlation between their markers.}
+    \item{majorityOfMarkers}{ - For each chromosome in the cross object (either created inside the function or provided
   by user) chromosome from original map, where most markers from new chromosome are is assigned.}
   }
  }

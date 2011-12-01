@@ -5,7 +5,7 @@
 \title{Plotting routine for children expression data.}
 
 \description{
-  Plots children expression data (boxplot) max value of parental exptression (red trangle) min (blue triangle) and mean(line) for selected markers.
+  Plots offspring gene expression data in comparison with founders data.
 }
 
 \usage{
@@ -13,8 +13,8 @@
 }
 
 \arguments{
-  \item{population}{ an object of class \code{\link{population}}}
- \item{markers}{ Numbers of markers to be plotted. }
+ \item{population}{ An object of class \code{\link{population}}. See \code{\link{read.population}} for details. }
+ \item{markers}{ Numbers of markers to be plotted.}
 }
 
 \value{
@@ -22,7 +22,7 @@
 }
 
 \details{
-  TODO
+ Plots offspring expression data (boxplot) max value of parental expression (red triangle) min (blue triangle) and mean(line) for selected markers.
 }
 
 \author{
@@ -38,8 +38,10 @@
 }
 
 \seealso{
-  \code{\link{plotParentalExpression}} - plotting routine for parental gene expression data
-  \code{\link{plotMarkerDistribution}} - plotting gene expression data for a single marker
+  \itemize{
+    \item{\code{\link{plotParentalExpression}}}{ -  Plotting routine for parental gene expression data.}
+    \item{\code{\link{plotMarkerDistribution}}}{ -  Plotting gene expression data for a single marker.}
+}
 }
 
 \keyword{manip}

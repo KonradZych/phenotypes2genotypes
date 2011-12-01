@@ -13,10 +13,10 @@
 }
 
 \arguments{
- \item{cross}{ R/qtl cross type object.}
-  \item{population}{ an object of class \code{\link{population}}}
- \item{map}{ which map (from ones stored in population$maps) should be used fo assigning chromosomes on the created map}
- \item{chr}{ specifies subset of chromosomes to be shown }
+\item{cross}{ An object of class \code{cross}. See \code{\link[qtl]{read.cross}} for details. }
+\item{population}{ An object of class \code{\link{population}}. See \code{\link{createPopulation}} for details. }
+ \item{map}{ Which map (from ones stored in population$maps) should be used fo assigning chromosomes on the created map.}
+ \item{chr}{ Specifies subset of chromosomes to be shown.}
 }
 
 \value{
@@ -35,8 +35,12 @@
 }
 
 \seealso{
-  \code{\link{projectOldMarkers}} - Plotting routine for showing how markers from original map are placed on saturated map.
-  \code{\link{markersCorPlot}} - Plotting correlation between two maps together with markers placement (comparison of coverage).
+  \itemize{
+    \item{\code{\link{markersCorPlot}}}{ -   Plotting correlation between two maps together with markers placement (comparison of coverage).}
+    \item{\code{\link{projectOldMarkers}}}{ -   Plotting routine for showing how markers from original map are placed on saturated map.}
+    \item{\code{\link{cross.saturate}}}{ - Saturate existing map.}
+    \item{\code{\link{cross.denovo}}}{ - Create de novo genetic map or chromosome assignment vector.}
+}
 }
 
 \keyword{manip}
