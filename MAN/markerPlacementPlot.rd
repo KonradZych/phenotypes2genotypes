@@ -13,8 +13,8 @@
 }
 
 \arguments{
- \item{population}{ an object of class \code{\link{population}}}
- \item{cross}{ an object of R/qtl class cross}
+\item{population}{ An object of class \code{\link{population}}. See \code{\link{createPopulation}} for details. }
+\item{cross}{ An object of class \code{cross}. See \code{\link[qtl]{read.cross}} for details. }
 }
 
 \value{
@@ -22,7 +22,7 @@
 }
 
 \details{
-This plot is really usefull while saturating existing map. It helps choose best threshold for marker selection, showing how much markers will
+This plot is really usefull while saturating existing map (using \code{\link{cross.saturate}}). It helps choose best threshold for marker selection, showing how much markers will
 be selected with different threshold values.
 }
 
@@ -38,7 +38,13 @@ be selected with different threshold values.
 }
 
 \seealso{
-  \code{\link{cross.saturate}} - saturate existing map
+  \itemize{
+    \item{\code{\link{cross.saturate}}}{ - Saturate existing map.}
+    \item{\code{\link{reorganizeMarkersWithin}}}{ - Apply new ordering on the cross object usign ordering vector.}
+    \item{\code{\link{assignedChrToMarkers}}}{ - Create ordering vector from chromosome assignment vector.}
+    \item{\code{\link{reduceChromosomesNumber}}}{ - Number of routines to reduce number of chromosomes of cross object.}
+    \item{\code{\link{findBiomarkers}}}{ - Creating genotype markers out of gene expression data.}
+}
 }
 
 \keyword{manip}

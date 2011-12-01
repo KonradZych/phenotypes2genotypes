@@ -12,9 +12,9 @@
 }
 
 \arguments{
- \item{population}{ an object of class \code{\link{population}}}
- \item{pattern}{ vector containg pattern to be matched in markers}
- \item{verbose}{ Be verbose}
+\item{population}{ An object of class \code{\link{population}}. See \code{\link{createPopulation}} for details. }
+ \item{pattern}{ Vector containg pattern to be matched in markers.}
+ \item{verbose}{ Be verbose.}
 }
 
 \value{
@@ -39,11 +39,13 @@
 }
 
 \seealso{
-  \code{\link{readFiles}} - Loads genotype, phenotype, genetic map data files into R environment into a population object.
-  \code{\link{cross.denovo}} - Create de novo genetic map or vector showing how chromosomes should be assigned.
-  \code{\link{cross.saturate}} - Saturate existing map.
-  \code{\link{findDiffExpressed}} - Using Rank Product or student t-test analysis to select differentially expressed genes.
-  \code{\link{findBiomarkers}} - Creating genotype markers  out of gene expression data.
+  \itemize{
+    \item{\code{\link{findBiomarkers}}}{ - Create genotype markers  out of gene expression data.}
+    \item{\code{\link{readFiles}}}{ - Load genotype, phenotype, genetic map data files into R environment into a population object.}
+    \item{\code{\link{cross.denovo}}}{ - Create de novo genetic map or vector showing how chromosomes should be assigned.}
+    \item{\code{\link{cross.saturate}}}{ - Saturate existing map.}
+    \item{\code{\link{findDiffExpressed}}}{ - Using Rank Product or student t-test analysis to select differentially expressed genes.}
+  }
 }
 
 \keyword{manip}
