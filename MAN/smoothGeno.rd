@@ -13,14 +13,14 @@
 }
 
 \arguments{
- \item{cross}{ an object of R/qtl class cross}
- \item{windowSize}{ specifies number of markers that are processed at once}
- \item{chr}{ specifies subset of chromosomes to be processed}
-  \item{verbose}{ be verbose}
+\item{cross}{ An object of class \code{cross}. See \code{\link[qtl]{read.cross}} for details. }
+ \item{windowSize}{ Specifies number of markers that are processed at once.}
+ \item{chr}{ Specifies subset of chromosomes to be processed.}
+  \item{verbose}{ Be verbose.}
 }
 
 \value{
- An object of R/qtl class cross.
+  An object of class \code{cross}. See \code{\link[qtl]{read.cross}} for details. 
 }
 
 \details{
@@ -43,8 +43,10 @@ border ones. Then the windows slides by one marker and another group is chacked.
 }
 
 \seealso{
-  \code{\link{cross.saturate}} - saturate existing map
-  \code{\link{cross.denovo}} - create de novo genetic map or vector showing how chromosomes should be assigned
+  \itemize{
+    \item{\code{\link{cross.denovo}}}{ -  Creating de novo genetic map or chromosome assignment vector.}
+    \item{\code{\link{cross.saturate}}}{ - Saturate existing map.}
+  }
 }
 
 \keyword{manip}

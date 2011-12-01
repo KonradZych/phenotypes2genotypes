@@ -11,7 +11,7 @@
 \usage{data(yeastCross)}
 
 \format{
-  R/qtl cross object.
+  An object of class \code{cross}. See \code{\link[qtl]{read.cross}} for details. 
 }
 
 \references{

@@ -2,10 +2,10 @@
 \alias{removeIndividuals}
 
 
-\title{Removing individuals from population object.}
+\title{Removing individuals.}
 
 \description{
-  Removing specified individuals from population object.
+  Removing individuals from population object.
 }
 
 \usage{
@@ -13,17 +13,17 @@
 }
 
 \arguments{
- \item{population}{ object of class population}
+\item{population}{ An object of class \code{\link{population}}. See \code{\link{createPopulation}} for details. }
  \item{individuals}{ individuals to be romved specified by their names}
   \item{verbose}{ Be verbose}
 }
 
 \value{
-  Cross type object.
+  An object of class \code{\link{population}}. See \code{\link{createPopulation}} for details.
 }
 
 \details{
-  TODO
+  Function removes specified individuals from population object.
 }
 
 \author{
@@ -39,9 +39,10 @@
 }
 
 \seealso{
-  \code{\link{readFiles}}
-  \code{\link{findDiffExpressed}}
-  \code{\link{findBiomarkers}}
+  \itemize{
+    \item{\code{\link{readFiles}}}{ - Load genotype, phenotype, genetic map data files into R environment into a population object.}
+    \item{\code{\link{intoPopulation}}}{ - Adding data to existing population object.}
+  }
 }
 
 \keyword{manip}

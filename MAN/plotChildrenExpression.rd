@@ -18,7 +18,7 @@
 }
 
 \value{
-	Plot.
+	None.
 }
 
 \details{

@@ -40,7 +40,7 @@ Plots markers from moth old and new map as points and in the background - compar
 }
 
 \value{
-	Plot.
+	Matrix of comparisons between chromosomes obtained using comparison method.
 }
 
 \author{

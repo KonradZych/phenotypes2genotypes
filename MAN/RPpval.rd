@@ -14,17 +14,17 @@
 }
 
 \arguments{
- \item{population}{ an object of class \code{population}. See \code{\link{createPopulation}} for details.}
- \item{markers}{ numbers of markers to be printed }
- \item{treshold}{ value on which horizontal line will be plotted}
+\item{population}{ An object of class \code{\link{population}}. See \code{\link{createPopulation}} for details. }
+ \item{markers}{ Numbers of markers to be printed}
+ \item{treshold}{ Value on which horizontal line will be plotted.}
 }
 
 \value{
-  Object of class population, (see \code{\link{createPopulation}} for more details about structure) with object of class \link[RankProd]{RP} saved into population$founders$RP.
+  An object of class population, (see \code{\link{createPopulation}} for more details) with object of class \link[RankProd]{RP} saved into population$founders$RP.
 }
 
 \details{
-  TODO
+  Those are two helper functions of \code{\link{findDiffExpressed}}. One is printing out, while the other is plotting, results of the analysis.
 }
 
 \author{
@@ -42,8 +42,11 @@
 
 \seealso{
 	\itemize{
-    \item \code{\link[RankProd]{RP}} - Add description
-    \item \code{\link{findDiffExpressed}} - Finding differentially expressed genes.
+    \item{\code{\link[RankProd]{RP}}}{ - Perform rank product method to identify differentially expressed genes.}
+    \item{\code{\link{findDiffExpressed}}}{ - Select differentially expressed genes using Rank Product or student t-test analysis.}
+    \item{\code{\link{findBiomarkers}}}{ - Creating genotypes from children phenotypes.}
+    \item{\code{\link{showRPpval}}}{- Printing out p-values calculated by the findDiffExpressed function.}
+    \item{\code{\link{plotRPpval}}}{ - Plotting p-values calculated by the findDiffExpressed function.}
   }
 }
 

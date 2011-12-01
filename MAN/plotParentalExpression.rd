@@ -4,7 +4,7 @@
 \title{Plotting routine for parental expression data.}
 
 \description{
-  Plots parental data in two colors (two parental groups) and mean of values for each marker.
+  Plots parental gene expression data.
 }
 
 \usage{
@@ -12,17 +12,17 @@
 }
 
 \arguments{
-  \item{population}{ an object of class \code{\link{population}}}
+\item{population}{ An object of class \code{\link{population}}. See \code{\link{createPopulation}} for details. }
  \item{markers}{ Numbers of markers to be plotted. }
  \item{groupLabels}{ Specify which column of parental data belongs to group 0 and which to group 1.}
 }
 
 \value{
-	Plot.
+	None.
 }
 
 \details{
-  TODO
+  Plots parental gene expression data in two colors (two parental groups) and mean of values for each marker.
 }
 
 \author{
@@ -37,8 +37,10 @@
 }
 
 \seealso{
-  \code{\link{plotChildrenExpression}} - plotting routine for children gene expression data
-  \code{\link{plotMarkerDistribution}} - plotting gene expression data for a single marker
+  \itemize{
+    \item{\code{\link{plotChildrenExpression}}}{ -  Plotting routine for children gene expression data.}
+    \item{\code{\link{plotMarkerDistribution}}}{ -  Plotting gene expression data for a single marker.}
+}
 }
 
 \keyword{manip}
