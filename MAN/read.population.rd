@@ -12,12 +12,12 @@
 }
 
 \arguments{
- \item{filename}{ name of the population file}
- \item{verbose}{ be verbose}
+ \item{filename}{ Name of the population file.}
+ \item{verbose}{ Be verbose.}
 }
 
 \value{
-  An object of class \code{\link{population}}.
+  An object of class \code{\link{population}}. See \code{\link{createPopulation}} for details.
 }
 
 \author{
@@ -33,9 +33,9 @@
 
 \seealso{
 	\itemize{
-    \item \code{\link[RankProd]{RP}} - Add description
-    \item \code{\link{readFiles}} - Add description
-    \item \code{\link{findBiomarkers}} - Creating genotypes from children phenotypes
+    \item{\code{\link{readFiles}}}{ - Load genotype, phenotype, genetic map data files into R environment into a population object.}
+    \item{\code{\link{createPopulation}}}{ - Create new object of class population.}
+    \item{\code{\link{intoPopulation}}}{ - Adding data to existing population object.}
   }
 }
 

@@ -6,7 +6,7 @@
 \title{plotMarkerDistribution}
 
 \description{
-  Plotting histogram out of gene expression data for a single marker and fitting specified number of normal distribution curves, using EM algorithm.
+  Plotting distribution of gene expression values of a single marker.
 }
 
 \usage{
@@ -14,18 +14,18 @@
 }
 
 \arguments{
- \item{population}{ an object of class \code{\link{population}}}
- \item{marker}{ number or name of marker to be printed }
- \item{nrDistributions}{ numbers of normal distributions to be fitted}
- \item{logarithmic}{ TRUE - log(data) is used instead of raw data }
+\item{population}{ An object of class \code{\link{population}}. See \code{\link{createPopulation}} for details. }
+ \item{marker}{ Number or name of the marker to be printed.}
+ \item{nrDistributions}{ Number of normal distributions to be fitted.}
+ \item{logarithmic}{ TRUE - log(data) is used instead of raw data.}
 }
 
 \value{
-	Plot.
+	None.
 }
 
 \details{
-  TODO
+  Plotting histogram out of gene expression data for a single marker and fitting specified number of normal distribution curves, using EM algorithm.
 }
 
 \author{
@@ -39,8 +39,10 @@
 }
 
 \seealso{
-  \code{\link{plotParentalExpression}} - plotting routine for parental gene expression data
-  \code{\link{plotChildrenExpression}} - plotting routine for children gene expression data
+  \itemize{
+    \item{\code{\link{plotParentalExpression}}}{ -  Plotting routine for parental gene expression data.}
+    \item{\code{\link{plotChildrenExpression}}}{ -   Plotting routine for children gene expression data.}
+}
 }
 
 \keyword{manip}

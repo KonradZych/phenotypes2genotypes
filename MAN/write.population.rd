@@ -13,8 +13,8 @@
 
 \arguments{
  \item{population}{ An object of class \code{population}. See \code{\link{createPopulation}} for details.}
- \item{outputFile}{ name of the output file}
- \item{verbose}{ be verbose}
+ \item{outputFile}{ Name of the output file.}
+ \item{verbose}{ Be verbose.}
 }
 
 \value{
@@ -22,7 +22,7 @@
 }
 
 \details{
-  TODO
+  This function is saving an object of class \code{population} into a file.
 }
 
 \author{
@@ -38,10 +38,10 @@
 }
 
 \seealso{
-	\itemize{
-    \item \code{\link[RankProd]{RP}} - Add description
-    \item \code{\link{readFiles}} - Add description
-    \item \code{\link{findBiomarkers}} - Creating genotypes from children phenotypes
+  \itemize{
+    \item{\code{\link{intoPopulation}}}{ - Adding data to existing population object.}
+    \item{\code{\link{createPopulation}}}{ - Create new object of class population.}
+    \item{\code{\link{read.population}}}{ - Create new object of class population.}
   }
 }
 

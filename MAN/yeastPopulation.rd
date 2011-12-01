@@ -11,7 +11,7 @@
 \usage{data(yeastPopulation)}
 
 \format{
-  Pheno2geno population object.
+  An object of class \code{\link{population}}. See \code{\link{createPopulation}} for details.
 }
 
 \references{

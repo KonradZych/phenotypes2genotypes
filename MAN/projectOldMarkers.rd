@@ -19,7 +19,7 @@
 }
 
 \value{
-	Plot.
+	None.
 }
 
 \author{
@@ -34,8 +34,10 @@
 }
 
 \seealso{
-  \code{\link{plotMapComparison}} - Plotting routine for comparison of two genetic maps.
-  \code{\link{markersCorPlot}} - Plotting correlation between two maps together with markers placement (comparison of coverage).
+  \itemize{
+    \item{\code{\link{plotMapComparison}}}{ -  Plotting routine for comparison of two genetic maps.}
+    \item{\code{\link{markersCorPlot}}}{ -  Plotting correlation between two maps together with markers placement (comparison of coverage).}
+}
 }
 
 \keyword{manip}

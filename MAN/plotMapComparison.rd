@@ -20,7 +20,7 @@
 }
 
 \value{
-	Plot.
+	None.
 }
 
 \author{
