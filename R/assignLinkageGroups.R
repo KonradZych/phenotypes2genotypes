@@ -28,22 +28,13 @@
 ############################################################################################################
 
 ############################################################################################################
-#									*** assignLinkageGroups ***
+#                                        *** assignLinkageGroups ***
 #
 # DESCRIPTION:
-#	Assign linkage groups based on a user supplied known number of chromosomes
-# we can use the genetic map of a cross, or the rf matrix
-# 
-# PARAMETERS:
-#	cross - an object of class cross
-#	n.chr - number of chromosomes expected
-#	use - what kind of data should be used:
-#		geno - genotypes of cross (cross$geno)
-#		rf - recombination fractions (cross$rf)
-#
+#  Assign linkage groups based on a user supplied known number of chromosomes
+#  we can use the genetic map of a cross, or the rf matrix
 # OUTPUT:
-#	 an object of class cross
-#
+#  an object of class cross
 ############################################################################################################
 assignLinkageGroups <- function(cross, n.chr, use=c("geno","rf"), ...){
   inListCheck.internal(use,"use",c("rf","geno"))
@@ -53,18 +44,12 @@ assignLinkageGroups <- function(cross, n.chr, use=c("geno","rf"), ...){
 }
 
 ############################################################################################################
-#									*** regorganizeMarkersWithin ***
+#                                     *** regorganizeMarkersWithin ***
 #
 # DESCRIPTION:
-#	Function to quickly rearange all the markers in a cross based on any ordering
-# 
-# PARAMETERS:
-#	cross - an object of class cross
-#	ordering - vector specifying new ordering of the markers
-#
+#  Function to quickly rearrange all the markers in a cross based on any ordering vector
 # OUTPUT:
-#	 an object of class cross
-#
+#  an object of class cross
 ############################################################################################################
 reorganizeMarkersWithin <- function(cross, ordering){
   cross <- clean(cross)
