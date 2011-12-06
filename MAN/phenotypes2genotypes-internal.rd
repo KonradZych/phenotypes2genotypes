@@ -53,7 +53,7 @@
 \alias{convertMap.internal}
 
 \alias{bestCorelated.internal}
-\alias{defaultCheck.internal}
+\alias{checkParameters.internal}
 \alias{simBC.internal}
 
 \alias{checkBeforeOrdering}

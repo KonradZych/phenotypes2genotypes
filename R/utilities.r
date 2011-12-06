@@ -308,3 +308,25 @@ read.population <- function (filename = "population.txt", verbose = FALSE){
   check.population(population)
   invisible(population)
 }
+
+############################################################################################################
+#                                          ** assignedChrToMarkers***
+#
+# DESCRIPTION:
+#   Creating ordering vector from chromosomes assignment vector
+# OUTPUT:
+#  Vector for each of the markers specifying into which chromosome it should be moved
+#
+############################################################################################################
+assignedChrToMarkers <- function(assignment,cross){
+    ordering <- vector(sum(nmar(cross)),mode="numeric")
+    names(ordering) <- markernames(cross)
+    for(i in 1:length(assignment)){
+      oldChrom <- as.numeric(names(assignment)[i])
+      newChrom <- assignment[i]
+      markersFromOldChrom <- colnames(cross$geno[[oldChrom]]$data)
+      ordering[markersFromOldChrom] <- rep(newChrom,length(markersFromOldChrom))
+    }
+    invisible(ordering)
+}
+    
