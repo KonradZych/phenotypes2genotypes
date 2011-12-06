@@ -7,7 +7,7 @@
 # Modified by Konrad Zych
 # 
 # first written October 2011
-# last modified November 2011
+# last modified December 2011
 # last modified in version: 0.9.1-0
 # in current version: active, in main workflow
 #
@@ -47,9 +47,9 @@
 ############################################################################################################
 assignLinkageGroups <- function(cross, n.chr, use=c("geno","rf"), ...){
   inListCheck.internal(use,"use",c("rf","geno"))
-  if(use=="geno") cl <- kmeans(t(pull.geno(cross)), n.chr, ...)
-  if(use=="rf")cl <- kmeans(est.rf(cross)$rf, n.chr, ...)
-  reorganizeMarkersWithin(cross, cl$cluster)
+  if(use=="geno") clustering <- kmeans(t(pull.geno(cross)), n.chr, ...)
+  if(use=="rf") clustering <- kmeans(est.rf(cross)$rf, n.chr, ...)
+  reorganizeMarkersWithin(cross, clustering$cluster)
 }
 
 ############################################################################################################
