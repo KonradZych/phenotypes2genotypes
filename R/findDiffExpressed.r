@@ -45,9 +45,12 @@
 #
 ############################################################################################################
 findDiffExpressed <- function(population,use=c("ttest","rankprod"),verbose=FALSE,debugMode=0,...){
-	if(missing(population)) stop("provide population object\n")
-	use <- defaultCheck.internal(use,"use",2,"ttest")
-	check.population(population)
+  #checks
+  if(missing(population)) stop("provide population object\n")
+  check.population(population)
+  use <- checkParameters.internal(use,c("ttest","rankprod"),"use")
+  if(verbose && debugMode==1) cat("findDiffExpressed starting withour errors in checkpoints.\n")
+	
 	s<-proc.time()
 	if(use=="rankprod"){
 		rankProdRes <- RP(population$founders$phenotypes,population$founders$groups,gene.names=rownames(population$founders$phenotypes),...)
@@ -102,10 +105,13 @@ findUsingTTest.internal <- function(phenoRow,groupLabels){
 #
 ############################################################################################################
 showRPpval <- function(population,markers=1:10){
-	if(missing(population)) stop("provide population object\n")
-	if(min(markers<1)||max(markers)>nrow(population$founders$phenotypes)) stop("Wrong range of markers selected\n")
-	check.population(population)
-	if(is.null(population$founders$RP$pval)) stop("Population object does not contain results of RP analysis\n")
+	#checks
+  if(missing(population)) stop("provide population object\n")
+  check.population(population)
+  if(is.null(population$founders$RP$pval)) stop("Population object does not contain results of RP analysis run findDiffExpressed first.\n")
+  use <- checkParameters.internal(use,c("ttest","rankprod"),"use")
+  inRangeCheck.internal(markers,"markers",1,nrow(population$founders$phenotypes))
+  
 	toPrint <- matrix(0,length(markers),2)
 	toPrint[,1] <- population$founders$RP$pval[markers,1]
 	toPrint[,2] <- population$founders$RP$pval[markers,2]
@@ -130,10 +136,13 @@ showRPpval <- function(population,markers=1:10){
 #
 ############################################################################################################
 plotRPpval <- function(population,markers=1:10,treshold=0.01){
-	if(missing(population)) stop("provide population object\n")
-	if(min(markers<1)||max(markers)>nrow(population$founders$phenotypes)) stop("Wrong range of markers selected\n")
-	check.population(population)
-	if(is.null(population$founders$RP$pval)) stop("population object does not contain results of RP analysis\n")
+	#checks
+  if(missing(population)) stop("provide population object\n")
+  check.population(population)
+  if(is.null(population$founders$RP$pval)) stop("Population object does not contain results of RP analysis run findDiffExpressed first.\n")
+  use <- checkParameters.internal(use,c("ttest","rankprod"),"use")
+  inRangeCheck.internal(markers,"markers",1,nrow(population$founders$phenotypes))
+  
 	plot(population$founders$RP$pval[markers,1],main="RP analysis p-values",xlab="markers",ylab="p-value",ylim=c(0,1))
 	points(population$founders$RP$pval[markers,2],col="red")
 	abline(h=treshold)

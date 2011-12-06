@@ -40,6 +40,8 @@
 cross.denovo <- function(population, cross, n.chr, map=c("none","genetic","physical"), comparisonMethod = c(sumMajorityCorrelation,majorityCorrelation,meanCorrelation,majorityOfMarkers), 
 assignFunction=c(assignMaximumNoConflicts,assignMaximum), reOrder=TRUE, use.orderMarkers=FALSE, verbose=FALSE, debugMode=0){
   #checks
+  if(missing(population)) stop("provide population object\n")
+  check.population(population)
   if(missing(cross)) cross <- cross.denovo.internal(population,n.chr,verbose=TRUE,debugMode=2)
   if(length(cross$geno)<=1) stop("Selected cross object contains too little chromosomes to proceed.")
   map <- checkParameters.internal(map,c("none","genetic","physical"),"map")
