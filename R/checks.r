@@ -156,3 +156,21 @@ checkParameters.internal <- function(parameterToBeChecked,possibleValues,nameOfP
     stop(nameOfParameter,"parameter is incorrect, possible values:",paste(possibleValues,sep=" "),"\n")
   }
 }
+
+############################################################################################################
+#									*** defaultCheck.internal  ***
+#
+# DESCRIPTION:
+# 	making sure that default parameter is used, when parameter is speicified by =c("","")
+# OUTPUT:
+#	default parameter from list of possible
+############################################################################################################
+defaultCheck.internal <- function(parameterToBeChecked,nameOfParameter,maxLength,defVal){
+	if(length(parameterToBeChecked) == maxLength){
+		invisible(defVal)
+	}else if(length(parameterToBeChecked) != 1){
+		stop("wrong parameter ",nameOfParameter," length, choose one out of possible\n")
+	}else{
+		invisible(parameterToBeChecked)
+	}
+}

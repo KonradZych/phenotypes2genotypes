@@ -33,19 +33,8 @@
 #
 # DESCRIPTION:
 # 	saturate existing genetic map adding markers derived from gene expression
-# 
-# PARAMETERS:
-# 	cross - object of class cross, containing physical or genetic map to saturate
-# 	map - which map should be used for comparison:
-#			- genetic - genetic map from cross$maps$genetic
-#			- physical - physical map from cross$maps$physical
-#	corSDTreshold - markers not having a maximum correlation above ( mean + (corSDTreshold * sd) ) correlation are removed
-#	verbose - be verbose
-#
-#
 # OUTPUT:
 #	object of class cross
-#
 ############################################################################################################
 cross.saturate <- function(population, cross, map=c("genetic","physical"), corSDTreshold=3, use.orderMarkers=FALSE, verbose=FALSE, debugMode=0){
   if(missing(population)) stop("Please provide a population object\n")
@@ -53,6 +42,18 @@ cross.saturate <- function(population, cross, map=c("genetic","physical"), corSD
     stop("No original genotypes in population$offspring$genotypes$real, load them in using intoPopulation\n")
   }
   check.population(population)
+  if(!is.numeric(corSDTreshold)||is.na(corSDTreshold)) stop("Please provide correct corThreshold")
+  if(corSDTreshold<=0){
+	cat("WARNING: corSDTreshold too low, all possible markers will be selected\n")
+  }else if(corSDTreshold>=5){
+	cat("WARNING: corSDTreshold too high, few new markers will be selected\n")
+  }
+  map <- checkParameters.internal(map,c("none","genetic","physical"),"map")
+ if(map=="genetic"){
+    cur_map <- population$maps$genetic
+  }else{
+    cur_map <- population$maps$physical
+  }
   
   if(missing(cross)){
     if(is.null(population$offspring$genotypes$simulated)){
@@ -73,7 +74,7 @@ cross.saturate <- function(population, cross, map=c("genetic","physical"), corSD
  
   #*******ENRICHING ORIGINAL MAP*******
 	s1 <- proc.time()
-	cross <- rearrangeMarkers(cross,population,map,corSDTreshold,addMarkers=TRUE,verbose=verbose)
+	cross <- rearrangeMarkers(cross,population,cur_map,corSDTreshold,addMarkers=TRUE,verbose=verbose)
 	e1 <- proc.time()
 	if(verbose && debugMode==2)cat("Enrichment of original map done in:",(e1-s1)[3],"seconds.\n")
   
@@ -98,39 +99,12 @@ cross.saturate <- function(population, cross, map=c("genetic","physical"), corSD
 #
 # DESCRIPTION:
 # 	ordering chromosomes using genetic/physical map and corelation rule
-# 
-# PARAMETERS:
-# 	cross - object of class cross, containing physical or genetic map
-# 	map - which map should be used for comparison:
-#			- genetic - genetic map from cross$maps$genetic
-#			- physical - physical map from cross$maps$physical
-#	corTreshold - markers not having corelation above this number with any of chromosomes are removed
-#	addMarkers - should markers used for comparison be added to output cross object
-#	verbose - be verbose
-#
-#
 # OUTPUT:
 #	object of class cross
-#
 ############################################################################################################
-rearrangeMarkers <- function(cross,population,map=c("genetic","physical"), corSDTreshold=3, addMarkers=FALSE, verbose=FALSE){
-  if(missing(cross)) stop("Please provide a cross object\n")
-  if(missing(population)) stop("Please provide a population object\n")
-  check.population(population)
-  if(!is.numeric(corSDTreshold)||is.na(corSDTreshold)) stop("Please provide correct corThreshold")
-  if(corSDTreshold<=0){
-	cat("WARNING: corSDTreshold too low, all possible markers will be selected\n")
-  }else if(corSDTreshold>=5){
-	cat("WARNING: corSDTreshold too high, few new markers will be selected\n")
-  }
-  map <- defaultCheck.internal(map,"map",2,"genetic")
- if(map=="genetic"){
-    cur_map <- population$maps$genetic
-  }else{
-    cur_map <- population$maps$physical
-  }
+rearrangeMarkers <- function(cross, population, cur_map, corSDTreshold=3, addMarkers=FALSE, verbose=FALSE){
   if(verbose) cat("old map contains",max(cur_map[,1]),"chromosomes\n")
-  output <- bestCorelated.internal(cross,population,corSDTreshold,verbose)
+  output <- bestQTL.internal(cross,population,corSDTreshold,verbose)
   if(nrow(output) == 0){
 	cat("selected",nrow(output),"markers with current corThreshold, there will be only markers from old map in the cross object\n")
   }else if(verbose){
@@ -179,15 +153,8 @@ rearrangeMarkers <- function(cross,population,map=c("genetic","physical"), corSD
 # DESCRIPTION:
 # 	subfunction of segragateChromosomes.internal, returns matrix showing for every reco map chromosome from 
 #	which physicall map chromosome majority of markers comes
-# 
-# PARAMETERS:
-# 	cross - object of class cross, containing physical or genetic map
-#	cur_map - object containing map to be used
-#	verbose - be verbose
-# 
 # OUTPUT:
 #	vector with new ordering of chromosomes inside cross object
-#
 ############################################################################################################
 bestCorelated.internal <- function(cross,population, corSDTreshold,verbose=FALSE){
   cormatrix <- map2mapCorrelationMatrix(cross,population,verbose)
@@ -211,21 +178,19 @@ bestCorelated.internal <- function(cross,population, corSDTreshold,verbose=FALSE
 # DESCRIPTION:
 # 	subfunction of segragateChromosomes.internal, returns matrix showing for every reco map chromosome from 
 #	which physicall map chromosome majority of markers comes
-# 
-# PARAMETERS:
-# 	cross - object of class cross, containing physical or genetic map
-#	cur_map - object containing map to be used
-#	verbose - be verbose
-# 
 # OUTPUT:
 #	vector with new ordering of chromosomes inside cross object
-#
 ############################################################################################################
-bestQTL.internal <- function(cross, population){
+bestQTL.internal <- function(cross, population, treshold,verbose=FALSE){
   genotypes <- population$offspring$genotypes$real
   markers <- markernames(cross)
   phenotypes <- pull.geno(cross)[,markers]
-  output <- unlist(lapply(markers,QTLscan.internal,phenotypes,genotypes))
+  output <- t(matrix(unlist(lapply(markers,QTLscan.internal,phenotypes,genotypes,treshold)),3,length(markers)))
+  #to have same format of the output as in bestcorrelated
+  output <- cbind(output,rep(0,length(markers)))
+  rownames(output) <- markers
+  if(any(is.na(output[,2]))) output <- output[-which(is.na(output[,2])),]
+  if(any(is.na(output[,3]))) output <- output[-which(is.na(output[,3])),]
   invisible(output)
 }
 
@@ -234,25 +199,19 @@ bestQTL.internal <- function(cross, population){
 #
 # DESCRIPTION:
 # subfunction by Danny Arends to map QLTs modfied to work on a single phenotype
-# 
-# PARAMETERS:
-# 	cross - object of class cross, containing physical or genetic map
-#	cur_map - object containing map to be used
-#	verbose - be verbose
-# 
 # OUTPUT:
 #	vector with new ordering of chromosomes inside cross object
-#
 ############################################################################################################
-QTLscan.internal <- function(markerName,phenotypes,genotypes){
-      result <- abs(apply(genotypes,1, 
+QTLscan.internal <- function(markerName,phenotypes,genotypes,treshold){
+  print(markerName)
+  result <- abs(apply(genotypes,1, 
         function(geno){
           linmod <- lm(phenotypes[,markerName] ~ geno)
           -log10(anova(linmod)[[5]][1])
         }
       ))
   output <- c(markerName,NA,NA)
-  if(max(result)>5){
+  if(max(result)>treshold){
     output <- c(markerName,names(which.max(result)),names(which.max(result[-(which.max(result))])))
   }
   invisible(output)
@@ -263,15 +222,8 @@ QTLscan.internal <- function(markerName,phenotypes,genotypes){
 #
 # DESCRIPTION:
 # 	calculating correlation matrix between genotypes inside cross object and ones from population
-# 
-# PARAMETERS:
-#   cross - an object of class cross
-#   population - an object of class population
-#   verbose - be verbose
-# 
 # OUTPUT:
 #   matrix of correlations
-#
 ############################################################################################################
 map2mapCorrelationMatrix<- function(cross,population,verbose=FALSE){
   if(missing(cross)) stop("Please provide a cross object\n")
@@ -294,16 +246,9 @@ map2mapCorrelationMatrix<- function(cross,population,verbose=FALSE){
 #
 # DESCRIPTION:
 # 	subfunction of segragateChromosomes.internal, returns matrix showing for every reco map chromosome from 
-#	which physicall map chromosome majority of markers comes
-# 
-# PARAMETERS:
-# 	cross - object of class cross, containing physical or genetic map
-#	cur_map - object containing map to be used
-#	verbose - be verbose
-# 
+#	which physicall map chromosome majority of markers comes# 
 # OUTPUT:
 #	vector with new ordering of chromosomes inside cross object
-#
 ############################################################################################################
 map2mapImage <- function(genotypesCorelationMatrix,population,cross,corThreshold=0.5,verbose=FALSE){
   if(missing(genotypesCorelationMatrix)){

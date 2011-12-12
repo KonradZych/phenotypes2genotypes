@@ -8,7 +8,7 @@
 }
 
 \usage{
-	markersCorPlot(cross, population, map=c("genetic","physical"), cmBetween=25, comparisonMethod = c(sumMajorityCorrelation,majorityCorrelation,meanCorrelation), chr, show.legend=FALSE, verbose=TRUE)
+	markersCorPlot(cross, population, map=c("genetic","physical"), cmBetween=25, comparisonMethod = c(sumMajorityCorrelation,majorityCorrelation,meanCorrelation,majorityOfMarkers), chr, show.legend=FALSE, verbose=TRUE)
 }
 
 \arguments{

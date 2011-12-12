@@ -59,8 +59,8 @@
 \seealso{
   \itemize{
     \item{\code{\link{readFiles}}}{ - Loads genotype, phenotype, genetic map data files into R environment into a population object.}
-    \item \code{\link{createPopulation}}}{ - Create object of class population from data already in R environment.}
-    \item \code{\link{fakePopulation}}}{ - Simulate basic population object for use in examples.}
+    \item{\code{\link{createPopulation}}}{ - Create object of class population from data already in R environment.}
+    \item{\code{\link{fakePopulation}}}{ - Simulate basic population object for use in examples.}
   }
 }
 

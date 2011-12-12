@@ -78,5 +78,6 @@ assign number to newly created chromosomes.
     \item{\code{\link{reduceChromosomesNumber}}}{ - Number of routines to reduce number of chromosomes of cross object.}
     \item{\code{\link{findBiomarkers}}}{ - Creating genotype markers out of gene expression data.}
 }
+}
 
 \keyword{manip}
