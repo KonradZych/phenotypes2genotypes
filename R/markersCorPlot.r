@@ -49,13 +49,13 @@
 ############################################################################################################
 markersCorPlot <- function(cross, population, map=c("genetic","physical"), cmBetween=25, comparisonMethod = c(sumMajorityCorrelation,majorityCorrelation,meanCorrelation), chr, show.legend=FALSE, verbose=TRUE){
   ### checks
-  map <- defaultCheck.internal(map,"map",2,"genetic")
+  map <- checkParameters.internal(map,c("none","genetic","physical"),"map")
 	if(map=="genetic"){
     originalMap <- population$maps$genetic
   }else{
     originalMap <- population$maps$physical
   }
-  comparisonMethod <- defaultCheck.internal(comparisonMethod,"comparisonMethod",3,sumMajorityCorrelation)
+  comparisonMethod <- defaultCheck.internal(comparisonMethod,c(sumMajorityCorrelation,majorityCorrelation,meanCorrelation),3,sumMajorityCorrelation)
   if(is.null(originalMap)) stop("no ",map," map provided!")  
   
   ### getting offsets for each chromosome on both maps

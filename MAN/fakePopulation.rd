@@ -71,8 +71,8 @@
   \itemize{
     \item{\code{\link{readFiles}}}{ - Load genotype, phenotype, genetic map data files into R environment into a population object.}
     \item{\code{\link{intoPopulation}}}{ - Add data to existing population object.}
-    \item \code{\link[qtl]{sim.cross}}}{ - Function from R/qtl package used to simulate genotypic data.}
-    \item \code{\link{createPopulation}}}{ - Create object of class population from data already in R environment.}
+    \item{\code{\link[qtl]{sim.cross}}}{ - Function from R/qtl package used to simulate genotypic data.}
+    \item{\code{\link{createPopulation}}}{ - Create object of class population from data already in R environment.}
   }
 }
 

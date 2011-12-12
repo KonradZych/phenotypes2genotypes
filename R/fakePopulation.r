@@ -35,24 +35,8 @@
 #
 # DESCRIPTION:
 #	simulating object of class population 
-# 
-# PARAMETERS:
-#	n.founders - number of founders to be simulated
-#	n.offspring - number of offspring individuals to be simulated
-#	n.markers - number of markers to be simulated
-#	n.chromosomes - number of chromosomes to be simulated
-
-#	type - type of the cross 
-#		- "riself" - RIL by selfing
-#		- "f2" - f2 cross
-#		- "bc" - back cross
-#		- "risib" - RIL by sibling mating
-#	n.mixups - number of mixups to be simulated in data
-#	... - parameters send to sim.cross function
-#
 # OUTPUT:
 #	object of class population
-#
 ############################################################################################################
 fakePopulation <- function(n.founders = 4, n.offspring = 100, n.markers=100,n.chromosomes=10, type = c("riself", "f2", "bc", "risib"), n.mixups=0, verbose=FALSE,...){
   type <- match.arg(type)
@@ -116,13 +100,8 @@ fakePopulation <- function(n.founders = 4, n.offspring = 100, n.markers=100,n.ch
 #
 # DESCRIPTION:
 #	subfunction of fakePopulation - simulating phenotype data using genotype data simulated by sim.cross
-# 
-# PARAMETERS:
-#	genoRow - row of offspring genotype matrix
-#
 # OUTPUT:
 #	row of offspring phenotype matrix
-#
 ############################################################################################################
 fakePheno.internal <- function(genoRow,maxScale=10,maxError=3){
 	scalingF <- runif(1,1,maxScale)
@@ -136,13 +115,8 @@ fakePheno.internal <- function(genoRow,maxScale=10,maxError=3){
 #
 # DESCRIPTION:
 #	subfunction of fakePopulation - simulating founders phenotype data using offspring phenotype data
-# 
-# PARAMETERS:
-#	phenoRow - row of offspring phenotype matrix
-#
 # OUTPUT:
 #	row of parental phenotype matrix
-#
 ############################################################################################################
 fakeFounders.internal <- function(phenoRow,n.founders){
 	errorF <- runif(n.founders,0,2)
@@ -162,13 +136,8 @@ fakeFounders.internal <- function(phenoRow,n.founders){
 #
 # DESCRIPTION:
 #	simulating physical map using genetic one
-# 
-# PARAMETERS:
-#	map - map as used in population object (matrix with two cols 1-chr nr, 2- position)
-#
 # OUTPUT:
 #	map of the same type
-#
 ############################################################################################################
 fakePhysicalMap.internal <- function(map){
 	for(i in 1:nrow(map)){
@@ -186,15 +155,9 @@ fakePhysicalMap.internal <- function(map){
 #
 # DESCRIPTION:
 #	convert rqtl type map into population type one
-# 
-# PARAMETERS:
-#	map - map of cross type (list with names - names of chromosomes, elements o the list - markers and their
-#		  positions)
-#
 # OUTPUT:
 #	map of population class type - rownames - names of the markers, first column - numbers of chromosomes,
 #		second - position of the marker on chromosome
-#
 ############################################################################################################
 convertMap.internal <- function(map){
 	map_ <- NULL
@@ -210,15 +173,9 @@ convertMap.internal <- function(map){
 #
 # DESCRIPTION:
 #	convert rqtl type map into population type one
-# 
-# PARAMETERS:
-#	map - map of cross type (list with names - names of chromosomes, elements o the list - markers and their
-#		  positions)
-#
 # OUTPUT:
 #	map of population class type - rownames - names of the markers, first column - numbers of chromosomes,
 #		second - position of the marker on chromosome
-#
 ############################################################################################################
 simBC.internal <- function(genoRow){
 	n.ind <- length(genoRow)
@@ -246,15 +203,9 @@ simBC.internal <- function(genoRow){
 #
 # DESCRIPTION:
 #	convert rqtl type map into population type one
-# 
-# PARAMETERS:
-#	map - map of cross type (list with names - names of chromosomes, elements o the list - markers and their
-#		  positions)
-#
 # OUTPUT:
 #	map of population class type - rownames - names of the markers, first column - numbers of chromosomes,
 #		second - position of the marker on chromosome
-#
 ############################################################################################################
 fakeMixUps.internal<- function(pheno, n.mixups){
   for(i in 1:n.mixups){
