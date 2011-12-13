@@ -9,7 +9,7 @@
 }
 
 \usage{
-cross.saturate(population, cross, map=c("genetic","physical"), corSDTreshold=3, use.orderMarkers=FALSE, verbose=FALSE, debugMode=0)
+cross.saturate(population, cross, map=c("genetic","physical"), placeUsing=c("qtl","correlation"), threshold=3, use.orderMarkers=FALSE, verbose=FALSE, debugMode=0)
 	
 }
 
@@ -23,7 +23,14 @@ cross.saturate(population, cross, map=c("genetic","physical"), corSDTreshold=3, 
     \item{physical}{ - physical map from cross$maps$physical.}
   }
   }
- \item{corSDTreshold}{ Specifies threshold for selecting/rejecting markers (see \link{markerPlacementPlot}).}
+\item{placeUsing}{ 
+  How position of the new markers on the saturated map should be determinate:
+  \itemize{
+    \item{qtl}{ - placed between two markers with highest .}
+    \item{correlation}{ - physical map from cross$maps$physical.}
+  }
+  }
+ \item{threshold}{ Specifies threshold for selecting/rejecting markers (see \link{markerPlacementPlot}).}
  \item{use.orderMarkers}{Should markers on the newly created map be ordered using\code{\link[qtl]{orderMarkers}} function.}
  \item{debugMode}{ 1: Print out checks, 2: print additional time information.}
  \item{verbose}{ Be verbose.}

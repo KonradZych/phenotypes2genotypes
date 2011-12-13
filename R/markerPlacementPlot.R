@@ -4,9 +4,11 @@
 #
 # Copyright (c) 2011, Danny Arends
 #
+# Modified by Konrad Zych
 # 
-# first written Nov 2011
-# last modified Nov 2011
+# first written November 2011
+# last modified December 2011
+# last modified in version: 0.9.1
 #
 #     This program is free software; you can redistribute it and/or
 #     modify it under the terms of the GNU General Public License,

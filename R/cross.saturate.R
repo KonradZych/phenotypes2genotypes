@@ -36,17 +36,17 @@
 # OUTPUT:
 #	object of class cross
 ############################################################################################################
-cross.saturate <- function(population, cross, map=c("genetic","physical"), corSDTreshold=3, use.orderMarkers=FALSE, verbose=FALSE, debugMode=0){
+cross.saturate <- function(population, cross, map=c("genetic","physical"), placeUsing=c("qtl","correlation"), threshold=3, use.orderMarkers=FALSE, verbose=FALSE, debugMode=0){
   if(missing(population)) stop("Please provide a population object\n")
   if(is.null(population$offspring$genotypes$real)){
     stop("No original genotypes in population$offspring$genotypes$real, load them in using intoPopulation\n")
   }
   check.population(population)
-  if(!is.numeric(corSDTreshold)||is.na(corSDTreshold)) stop("Please provide correct corThreshold")
-  if(corSDTreshold<=0){
-	cat("WARNING: corSDTreshold too low, all possible markers will be selected\n")
-  }else if(corSDTreshold>=5){
-	cat("WARNING: corSDTreshold too high, few new markers will be selected\n")
+  if(!is.numeric(threshold)||is.na(threshold)) stop("Please provide correct threshold")
+  if(threshold<=0){
+	cat("WARNING: threshold too low, all possible markers will be selected\n")
+  }else if(threshold>=5){
+	cat("WARNING: threshold too high, few new markers will be selected\n")
   }
   map <- checkParameters.internal(map,c("none","genetic","physical"),"map")
  if(map=="genetic"){
@@ -74,7 +74,7 @@ cross.saturate <- function(population, cross, map=c("genetic","physical"), corSD
  
   #*******ENRICHING ORIGINAL MAP*******
 	s1 <- proc.time()
-	cross <- rearrangeMarkers(cross,population,cur_map,corSDTreshold,addMarkers=TRUE,verbose=verbose)
+	cross <- rearrangeMarkers(cross,population,cur_map,threshold,placeUsing,addMarkers=TRUE,verbose=verbose)
 	e1 <- proc.time()
 	if(verbose && debugMode==2)cat("Enrichment of original map done in:",(e1-s1)[3],"seconds.\n")
   
@@ -102,9 +102,13 @@ cross.saturate <- function(population, cross, map=c("genetic","physical"), corSD
 # OUTPUT:
 #	object of class cross
 ############################################################################################################
-rearrangeMarkers <- function(cross, population, cur_map, corSDTreshold=3, addMarkers=FALSE, verbose=FALSE){
+rearrangeMarkers <- function(cross, population, cur_map, threshold=3, placeUsing,addMarkers=FALSE, verbose=FALSE){
   if(verbose) cat("old map contains",max(cur_map[,1]),"chromosomes\n")
-  output <- bestQTL.internal(cross,population,corSDTreshold,verbose)
+  if(placeUsing=="qtl"){
+    output <- bestQTL.internal(cross,population,corSDTreshold,verbose)
+  }else{
+    output <- bestCorelated.internal(cross,population,corSDTreshold,verbose)
+  }
   if(nrow(output) == 0){
 	cat("selected",nrow(output),"markers with current corThreshold, there will be only markers from old map in the cross object\n")
   }else if(verbose){
