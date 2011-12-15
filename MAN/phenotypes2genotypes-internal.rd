@@ -72,6 +72,7 @@
 \alias{map2mapImage}
 \alias{selectTopMarker.internal}
 \alias{scoreMarker.internal}
+\alias{getpeaks.internal}
 
 \title{Internal pheno2geno functions}
 

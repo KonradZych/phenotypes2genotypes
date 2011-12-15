@@ -26,7 +26,12 @@
 #
 ############################################################################################################
 
-markerPlacementPlot <- function(population, placeUsing=c("qtl","correlation"), cross){
+markerPlacementPlot <- function(population, placeUsing=c("qtl","correlation"), map=c("genetic","physical"), cross){
+  if(missing(population)) stop("Please provide a population object\n")
+  if(is.null(population$offspring$genotypes$real)){
+    stop("No original genotypes in population$offspring$genotypes$real, load them in using intoPopulation\n")
+  }
+  check.population(population)
   if(missing(cross)){
     cross <- genotypesToCross.internal(population, "simulated")
   }
@@ -43,6 +48,12 @@ markerPlacementPlot <- function(population, placeUsing=c("qtl","correlation"), c
     }
   plot(p,s,type='o',main="Number of markers placed",xlab="corThreshold",ylab="# of markers")
   }else{
+    map <- checkParameters.internal(map,c("genetic","physical"),"map")
+    if(map=="genetic"){
+      cur_map <- population$maps$genetic
+    }else{
+      cur_map <- population$maps$physical
+    }
     genotypes <- population$offspring$genotypes$real
     markers <- markernames(cross)
     phenotypes <- pull.geno(cross)[,markers]
@@ -63,14 +74,82 @@ markerPlacementPlot <- function(population, placeUsing=c("qtl","correlation"), c
   singleqtl <- NULL
   noqtl <- NULL
   multipleqtl <- NULL
-  for(tr in seq(0,20,0.5)){
-    nqtls <- apply(results,1,function(x){sum(x>tr)})
+  thrRange <- seq(0,20,0.25)
+  for(tr in thrRange){
+    #peaks <- getpeaks.internal(results,tr)
+    #rownames(peaks) <- rownames(results)
+    #colnames(peaks) <- colnames(results)
+    nqtls <- checkpeaks.internal(results,cur_map,tr)
     singleqtl <- c(singleqtl,sum(nqtls==1))
     noqtl <- c(noqtl,sum(nqtls==0))
     multipleqtl <- c(multipleqtl,sum(nqtls>1))
   }
-  plot(noqtl,type='l',col="red",main="Number of markers placed",xlab="threshold",ylab="# of markers")
-  points(singleqtl,type='l',col="green")
-  points(multipleqtl,type='l',col="blue")
+  plot(thrRange,noqtl,type='o',col="red",main="Number of markers placed",xlab="threshold",ylab="# of markers",ylim=c(0,ncol(phenotypes)))
+  points(thrRange,singleqtl,type='o',col="green")
+  points(thrRange,multipleqtl,type='o',col="blue")
+  legend(c(10,18),c(0.85*ncol(phenotypes),ncol(phenotypes)),c("no peak","single peak","multiple peaks"),col=c("red","green","blue"),cex=0.8,pch=21,lwd=2,bg="white")
+  invisible(results)
   }
+}
+
+getpeaks.internal <- function(qtlprofiles, cutoff = 4.0){
+  cat("Starting peak detection above",cutoff,"\n")
+  mmatrix <- NULL
+  for(x in 1:nrow(qtlprofiles)){
+    peak <- FALSE
+    curmax <- 0
+    curmaxindex <- 1
+    marker <- 1
+    maximums <- NULL
+    mrow <- rep(0,ncol(qtlprofiles))
+    for(ab in (qtlprofiles[x,]>cutoff | qtlprofiles[x,]<(-cutoff))){
+      if(ab){
+        peak <- TRUE
+        if(qtlprofiles[x,marker]/abs(qtlprofiles[x,marker]) > 0){
+          if(qtlprofiles[x,marker] > curmax){
+            curmax <- qtlprofiles[x,marker]
+            curmaxindex <- marker
+          }
+        }else{
+          if(qtlprofiles[x,marker] < (-curmax)){
+            curmax <- qtlprofiles[x,marker]
+            curmaxindex <- -marker
+          }
+        }
+        if(ncol(qtlprofiles)==marker){
+          if(curmax!=0) maximums <- c(maximums,curmaxindex)
+        }
+      }else{
+        if(curmax!=0) maximums <- c(maximums,curmaxindex)
+        peak <- FALSE
+        curmax <- 0
+      }
+      marker <- marker+1
+    }
+    mrow[which(qtlprofiles[x,] > cutoff)] <- 1
+    mrow[which(qtlprofiles[x,] < -cutoff)] <- -1
+    for(a in which(maximums>0)){
+      mrow[maximums[a]] <- 2
+    }
+    for(b in which(maximums<0)){
+      mrow[(-maximums[b])] <- -2
+    }
+    mmatrix <- rbind(mmatrix,mrow)
+  }
+  mmatrix
+}
+
+checkpeaks.internal <- function(peaks,cur_map,threshold){
+  result <- NULL
+  for(i in 1:nrow(peaks)){
+  markerpeaks <- 0
+    for(chr in unique(cur_map[,1])){
+      markers <- rownames(cur_map)[which(cur_map[,1]==chr)]
+      if(sum(peaks[i,markers]>threshold)>0){
+        markerpeaks <- markerpeaks + 1
+      }
+    }
+  result <- c(result,markerpeaks)
+  }
+  invisible(result)
 }
