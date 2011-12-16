@@ -100,6 +100,7 @@ getBiomarkers <- function(population,pattern,verbose=FALSE){
   markers <- population$offspring$genotypes$simulated
   if(verbose) cat("Selected",nrow(markers),"markers.\n")
   if(!missing(pattern)){
+    if(length(pattern)!=ncol(markers)) stop("Wrong length of the pattern: ",length(pattern)," instead of: ",ncol(markers)," \n")
     if(verbose) cat("Selecting marker best matching given pattern.\n")
     markers <- selectTopMarker.internal(markers,pattern,verbose)
   }
@@ -122,38 +123,11 @@ getBiomarkers <- function(population,pattern,verbose=FALSE){
 #
 ############################################################################################################
 selectTopMarker.internal <- function(markers,pattern,verbose){
-  markerPoints <- apply(markers,1,scoreMarker.internal,pattern)
-  print(markerPoints)
+  markerPoints <- apply(markers,1,function(x){sum(x==pattern)})
   topMarker <- rownames(markers)[which.max(markerPoints)]
-  if(verbose) cat("Markers best matching pattern:",topMarker,"with score:",max(markerPoints),"\n")
-  invisible(markers[topMarker,])
-}
-
-############################################################################################################
-#									*** scoreMarker.internal  ***
-#
-# DESCRIPTION:
-#	function returning all biomarkers or top marker matching given pattern
-# 
-# PARAMETERS:
-# 	population - an object of class population
-# 	pattern - vector of 0s and 1s (or 0,1,2s)
-# 	verbose - be verbose
-# 
-# OUTPUT:
-#	vector/matrix
-#
-############################################################################################################
-scoreMarker.internal <- function(marker,pattern){
-  bestScore <- 0
-  windowLength <- length(pattern)
-  for(i in 1:(length(marker)-windowLength)){
-    currentScore <- sum(marker[i:(i+windowLength-1)]==pattern)
-    if(currentScore>bestScore){
-      bestScore <- currentScore
-    }
-  }
-  invisible(bestScore)
+  if(verbose) cat("Markers best matching pattern:",topMarker,"with identity:",max(markerPoints)/ncol(markers)*100,"%\n")
+  #invisible(markers[topMarker,])
+  return(max(markerPoints)/ncol(markers)*100)
 }
 
 ############################################################################################################
