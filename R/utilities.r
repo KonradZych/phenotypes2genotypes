@@ -51,9 +51,14 @@ print.population <- function(x, ...){
 			stop("No phenotype data for offspring, this is not a valid population object\n")
 		}
 		if(!(is.null(x$offspring$genotypes$real))){
-			cat("\tGenotypes:",ncol(x$offspring$genotypes$real),"\n",...)
+			cat("\tOriginal genotypes:",ncol(x$offspring$genotypes$real),"\n",...)
 		}else{
-			cat("\tGenotypes: None\n",...)
+			cat("\tOriginal genotypes: None\n",...)
+		}
+    if(!(is.null(x$offspring$genotypes$simulated))){
+			cat("\tSimulated genotypes:",ncol(x$offspring$genotypes$simulated),"\n",...)
+		}else{
+			cat("\tSimulated genotypes: None\n",...)
 		}
 		if(!(is.null(x$maps$genetic))){
 			cat("\tGenetic map:",nrow(x$maps$genetic),"markers, ",length(table(x$maps$genetic[,1]))," chromosomes\n",...)
@@ -63,7 +68,7 @@ print.population <- function(x, ...){
 		if(!(is.null(x$maps$physical))){
 			cat("\tPhysical map:",nrow(x$maps$physical),"markers, ",length(table(x$maps$physical[,1]))," chromosomes\n",...)
 		}else{
-			cat("\tPhysical ap: None\n")
+			cat("\tPhysical map: None\n")
 		}    
 	}else{
 		stop("No phenotype data for offspring, this is not a valid population object\n")
