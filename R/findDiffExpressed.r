@@ -135,15 +135,15 @@ showRPpval <- function(population,markers=1:10){
 #	none
 #
 ############################################################################################################
-plotRPpval <- function(population,markers=1:10,treshold=0.01){
+plotRPpval <- function(population,thresholdRange=c(0.01,0.1,0.01)){
 	#checks
   if(missing(population)) stop("provide population object\n")
   check.population(population)
   if(is.null(population$founders$RP$pval)) stop("Population object does not contain results of RP analysis run findDiffExpressed first.\n")
-  use <- checkParameters.internal(use,c("ttest","rankprod"),"use")
-  inRangeCheck.internal(markers,"markers",1,nrow(population$founders$phenotypes))
-  
-	plot(population$founders$RP$pval[markers,1],main="RP analysis p-values",xlab="markers",ylab="p-value",ylim=c(0,1))
-	points(population$founders$RP$pval[markers,2],col="red")
-	abline(h=treshold)
+  x <- seq(thresholdRange[1],thresholdRange[2],thresholdRange[3])
+  y <- NULL
+  for(i in x){
+    y <- c(y, sum(population$founders$RP$pval[,1]<i)+sum(population$founders$RP$pval[,2]<i))
+  }
+	plot(x,y,main="RP analysis p-values",xlab="p-value",ylab="# markers selected",xlim=c(thresholdRange[1],thresholdRange[2]),type="o")
 }
