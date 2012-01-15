@@ -59,8 +59,8 @@ markerPlacementPlot <- function(population, placeUsing=c("qtl","correlation"), m
     phenotypes <- pull.geno(cross)[,markers]
     results <- NULL
     rnames <- NULL
-    cnt <- 1
     for(x in 1:ncol(phenotypes)){
+      if(x%%10==0) cat("-----",x,"-------\n")
       results <- rbind(results,apply(genotypes,1, 
         function(geno){
           linmod <- lm(phenotypes[,x] ~ geno)
@@ -68,17 +68,16 @@ markerPlacementPlot <- function(population, placeUsing=c("qtl","correlation"), m
         }
       ))
       rnames <- c(rnames,colnames(phenotypes)[x])
-      cnt <- cnt +1
     }
   rownames(results) <- rnames
   singleqtl <- NULL
   noqtl <- NULL
   multipleqtl <- NULL
-  thrRange <- seq(0,20,0.25)
+  thrRange <- seq(0,20,0.1)
   for(tr in thrRange){
-    #peaks <- getpeaks.internal(results,tr)
-    #rownames(peaks) <- rownames(results)
-    #colnames(peaks) <- colnames(results)
+    peaks <- getpeaks.internal(results,tr)
+    rownames(peaks) <- rownames(results)
+    colnames(peaks) <- colnames(results)
     nqtls <- checkpeaks.internal(results,cur_map,tr)
     singleqtl <- c(singleqtl,sum(nqtls==1))
     noqtl <- c(noqtl,sum(nqtls==0))
@@ -95,6 +94,7 @@ markerPlacementPlot <- function(population, placeUsing=c("qtl","correlation"), m
 getpeaks.internal <- function(qtlprofiles, cutoff = 4.0){
   cat("Starting peak detection above",cutoff,"\n")
   mmatrix <- NULL
+  #qtlprofiles[which(qtlprofiles==Inf)]<-10000
   for(x in 1:nrow(qtlprofiles)){
     peak <- FALSE
     curmax <- 0
@@ -139,17 +139,15 @@ getpeaks.internal <- function(qtlprofiles, cutoff = 4.0){
   mmatrix
 }
 
-checkpeaks.internal <- function(peaks,cur_map,threshold){
+checkpeaks.internal <- function(results,cur_map,threshold){
   result <- NULL
-  for(i in 1:nrow(peaks)){
-  markerpeaks <- 0
+  for(i in 1:nrow(results)){
+  markerpeaks <- NULL
     for(chr in unique(cur_map[,1])){
       markers <- rownames(cur_map)[which(cur_map[,1]==chr)]
-      if(sum(peaks[i,markers]>threshold)>0){
-        markerpeaks <- markerpeaks + 1
-      }
+      markerpeaks <- c(markerpeaks,(sum(results[i,markers]>threshold)/length(markers)))
     }
-  result <- c(result,markerpeaks)
+  result <- rbind(result,markerpeaks)
   }
   invisible(result)
 }

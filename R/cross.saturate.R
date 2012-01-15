@@ -7,8 +7,8 @@
 # Modified by Danny Arends
 # 
 # first written March 2011
-# last modified November 2011
-# last modified in version: 0.9.1
+# last modified January 2012
+# last modified in version: 1.0.0
 # in current version: active, in main workflow
 #
 #     This program is free software; you can redistribute it and/or
@@ -44,11 +44,12 @@ cross.saturate <- function(population, cross, map=c("genetic","physical"), place
   check.population(population)
   if(!is.numeric(threshold)||is.na(threshold)) stop("Please provide correct threshold")
   if(threshold<=0){
-	cat("WARNING: threshold too low, all possible markers will be selected\n")
+    cat("WARNING: threshold too low, all possible markers will be selected\n")
   }else if(threshold>=5){
-	cat("WARNING: threshold too high, few new markers will be selected\n")
+    cat("WARNING: threshold too high, few new markers will be selected\n")
   }
   map <- checkParameters.internal(map,c("none","genetic","physical"),"map")
+  placeUsing <- checkParameters.internal(placeUsing,c("qtl","correlation"),"qtl")
  if(map=="genetic"){
     cur_map <- population$maps$genetic
   }else{
@@ -105,15 +106,15 @@ cross.saturate <- function(population, cross, map=c("genetic","physical"), place
 rearrangeMarkers <- function(cross, population, cur_map, threshold=3, placeUsing,addMarkers=FALSE, verbose=FALSE){
   if(verbose) cat("old map contains",max(cur_map[,1]),"chromosomes\n")
   if(placeUsing=="qtl"){
-    output <- bestQTL.internal(cross,population,corSDTreshold,verbose)
+    output <- bestQTL.internal(cross,population,threshold,verbose)
   }else{
-    output <- bestCorelated.internal(cross,population,corSDTreshold,verbose)
+    output <- bestCorelated.internal(cross,population,threshold,verbose)
   }
   if(nrow(output) == 0){
-	cat("selected",nrow(output),"markers with current corThreshold, there will be only markers from old map in the cross object\n")
+    cat("selected",nrow(output),"markers with current corThreshold, there will be only markers from old map in the cross object\n")
   }else if(verbose){
-	cat("selected",nrow(output),"markers for further analysis\n")
-	output[,4] <- apply(output,1,function(e){mean(abs(cur_map[e[3],2]),abs(cur_map[e[2],2]))})
+    cat("selected",nrow(output),"markers for further analysis\n")
+    output[,4] <- apply(output,1,function(e){mean(abs(cur_map[e[3],2]),abs(cur_map[e[2],2]))})
   }
 	cross_ <- cross
 	cross_$geno <- vector(max(cur_map[,1]), mode="list")
@@ -189,13 +190,58 @@ bestQTL.internal <- function(cross, population, treshold,verbose=FALSE){
   genotypes <- population$offspring$genotypes$real
   markers <- markernames(cross)
   phenotypes <- pull.geno(cross)[,markers]
-  output <- t(matrix(unlist(lapply(markers,QTLscan.internal,phenotypes,genotypes,treshold)),3,length(markers)))
+  output <- NULL
+  if(verbose) cat("Starting qtl analysis.\n")
+  s<- proc.time()
+  if(is.null(population$offspring$genotypes$qtl)){
+    cat("No qtl data in population$offspring$genotypes$qtl, scanning qtls, may take a long time.")
+    population$offspring$genotypes$qtl <- t(matrix(unlist(lapply(markers,QTLscan.internal,phenotypes,genotypes)),nrow(genotypes),length(markers)))
+    rownames(population$offspring$genotypes$qtl) <- markers
+    colnames(population$offspring$genotypes$qtl) <- rownames(genotypes)
+  }
+  peaksMatrix <- getpeaks.internal(abs(population$offspring$genotypes$qtl ),treshold)
+  e<- proc.time()
+  if(verbose) cat("Qtl analysis done in:",(e-s)[3],"seconds\n")
+  rownames(peaksMatrix) <- markers
+  for(marker in markers){
+    if(sum(peaksMatrix[marker,]==2)==1){
+      output <- rbind(output,c(marker,names(which.max(population$offspring$genotypes$qtl[marker,])),names(which.max(population$offspring$genotypes$qtl[marker,-(which.max(population$offspring$genotypes$qtl[marker,]))]))))
+    }else{
+      output <- rbind(output,c(marker,NA,NA))
+    }
+  }
   #to have same format of the output as in bestcorrelated
   output <- cbind(output,rep(0,length(markers)))
   rownames(output) <- markers
   if(any(is.na(output[,2]))) output <- output[-which(is.na(output[,2])),]
   if(any(is.na(output[,3]))) output <- output[-which(is.na(output[,3])),]
   invisible(output)
+}
+
+
+###########################################################################################################
+#                                    *** QTLscan.internal ***
+#
+# DESCRIPTION:
+# subfunction by Danny Arends to map QLTs modfied to work on a single phenotype
+# OUTPUT:
+#	vector with new ordering of chromosomes inside cross object
+############################################################################################################
+scanQTLs <- function(population){
+  if(missing(population)) stop("Please provide a population object\n")
+  check.population(population)
+  if(is.null(population$offspring$genotypes$real)){
+    stop("No original genotypes in population$offspring$genotypes$real, load them in using intoPopulation\n")
+  }
+  if(is.null(population$offspring$genotypes$simulated)){
+    stop("No simulated genotypes in population$offspring$genotypes$simulated, run findBiomarkers first\n")
+  }
+  genotypes <- population$offspring$genotypes$real
+  markers <-rownames(population$offspring$genotypes$simulated)
+  phenotypes <- population$offspring$genotypes$simulated
+  population$offspring$genotypes$qtl <- t(matrix(unlist(lapply(markers,QTLscan.internal,phenotypes,genotypes)),nrow(genotypes),length(markers)))
+  rownames(population$offspring$genotypes$qtl ) <- markers
+  colnames(population$offspring$genotypes$qtl ) <- rownames(genotypes)
 }
 
 ###########################################################################################################
@@ -206,19 +252,68 @@ bestQTL.internal <- function(cross, population, treshold,verbose=FALSE){
 # OUTPUT:
 #	vector with new ordering of chromosomes inside cross object
 ############################################################################################################
-QTLscan.internal <- function(markerName,phenotypes,genotypes,treshold){
-  print(markerName)
+QTLscan.internal <- function(markerName,phenotypes,genotypes){
   result <- abs(apply(genotypes,1, 
         function(geno){
           linmod <- lm(phenotypes[,markerName] ~ geno)
           -log10(anova(linmod)[[5]][1])
         }
       ))
-  output <- c(markerName,NA,NA)
-  if(max(result)>treshold){
-    output <- c(markerName,names(which.max(result)),names(which.max(result[-(which.max(result))])))
+  invisible(result)
+}
+
+###########################################################################################################
+#                                    *** QTLscan.internal ***
+#
+# DESCRIPTION:
+# subfunction by Danny Arends to map QLTs modfied to work on a single phenotype
+# OUTPUT:
+#	vector with new ordering of chromosomes inside cross object
+############################################################################################################
+getpeaks.internal <- function(qtlprofiles, cutoff = 4.0){
+  mmatrix <- NULL
+  for(x in 1:nrow(qtlprofiles)){
+    peak <- FALSE
+    curmax <- 0
+    curmaxindex <- 1
+    marker <- 1
+    maximums <- NULL
+    mrow <- rep(0,ncol(qtlprofiles))
+    for(ab in (qtlprofiles[x,]>cutoff | qtlprofiles[x,]<(-cutoff))){
+      if(ab){
+        peak <- TRUE
+        if(qtlprofiles[x,marker]/abs(qtlprofiles[x,marker]) > 0){
+          if(qtlprofiles[x,marker] > curmax){
+            curmax <- qtlprofiles[x,marker]
+            curmaxindex <- marker
+          }
+        }else{
+          if(qtlprofiles[x,marker] < (-curmax)){
+            curmax <- qtlprofiles[x,marker]
+            curmaxindex <- -marker
+          }
+        }
+        if(ncol(qtlprofiles)==marker){
+          if(curmax!=0) maximums <- c(maximums,curmaxindex)
+        }
+      }else{
+        if(curmax!=0) maximums <- c(maximums,curmaxindex)
+        peak <- FALSE
+        curmax <- 0
+      }
+      marker <- marker+1
+    }
+    mrow[which(qtlprofiles[x,] > cutoff)] <- 1
+    mrow[which(qtlprofiles[x,] < -cutoff)] <- -1
+    for(a in which(maximums>0)){
+      mrow[maximums[a]] <- 2
+    }
+    for(b in which(maximums<0)){
+      mrow[(-maximums[b])] <- -2
+    }
+    mmatrix <- rbind(mmatrix,mrow)
   }
-  invisible(output)
+  mmatrix
 }
 
 ###########################################################################################################

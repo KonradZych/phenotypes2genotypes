@@ -49,7 +49,7 @@
 ############################################################################################################
 markersCorPlot <- function(cross, population, map=c("genetic","physical"), cmBetween=25, comparisonMethod = c(sumMajorityCorrelation,majorityCorrelation,meanCorrelation), chr, show.legend=FALSE, verbose=TRUE){
   ### checks
-  map <- checkParameters.internal(map,c("none","genetic","physical"),"map")
+  map <- checkParameters.internal(map,c("genetic","physical"),"map")
 	if(map=="genetic"){
     originalMap <- population$maps$genetic
   }else{

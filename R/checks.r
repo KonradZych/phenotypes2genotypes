@@ -142,18 +142,18 @@ check.population <- function(objectToBeChecked){
 checkParameters.internal <- function(parameterToBeChecked,possibleValues,nameOfParameter=""){
   if(length(parameterToBeChecked)==length(possibleValues)){
     if(any(!(parameterToBeChecked%in%possibleValues))){
-      stop(nameOfParameter,"parameter is incorrect, possible values:",paste(possibleValues,sep=" "),"\n")
+      stop(nameOfParameter," parameter is incorrect, possible values: ",paste(possibleValues,sep="\t"),"\n")
     }else{
       return(parameterToBeChecked[1])
     }
   }else if(length(parameterToBeChecked)==1){
     if(!(parameterToBeChecked%in%possibleValues)){
-      stop(nameOfParameter,"parameter is incorrect, possible values:",paste(possibleValues,sep=" "),"\n")
+      stop(nameOfParameter," parameter is incorrect, possible values: ",paste(possibleValues,sep="\t"),"\n")
     }else{
       return(parameterToBeChecked)
     }
   }else{
-    stop(nameOfParameter,"parameter is incorrect, possible values:",paste(possibleValues,sep=" "),"\n")
+    stop(nameOfParameter," parameter is incorrect, possible values: ",paste(possibleValues,sep="\t"),"\n")
   }
 }
 
