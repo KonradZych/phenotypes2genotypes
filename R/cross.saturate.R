@@ -227,7 +227,7 @@ bestQTL.internal <- function(cross, population, treshold,verbose=FALSE){
 # OUTPUT:
 #	vector with new ordering of chromosomes inside cross object
 ############################################################################################################
-scanQTLs <- function(population){
+scanQTLs <- function(population,verbose=FALSE){
   if(missing(population)) stop("Please provide a population object\n")
   check.population(population)
   if(is.null(population$offspring$genotypes$real)){
@@ -238,10 +238,15 @@ scanQTLs <- function(population){
   }
   genotypes <- population$offspring$genotypes$real
   markers <-rownames(population$offspring$genotypes$simulated)
-  phenotypes <- population$offspring$genotypes$simulated
+  phenotypes <- t(population$offspring$genotypes$simulated)
+  if(verbose) cat("Starting qtl scan, this may take a long time to finish!\n")
+  s <- proc.time()
   population$offspring$genotypes$qtl <- t(matrix(unlist(lapply(markers,QTLscan.internal,phenotypes,genotypes)),nrow(genotypes),length(markers)))
+  e <- proc.time()
+  if(verbose) cat("Qtl scan done in",(e-s)[3],"s\n")
   rownames(population$offspring$genotypes$qtl ) <- markers
   colnames(population$offspring$genotypes$qtl ) <- rownames(genotypes)
+  invisible(population)
 }
 
 ###########################################################################################################
