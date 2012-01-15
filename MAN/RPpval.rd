@@ -10,13 +10,13 @@
 
 \usage{
 	showRPpval(population,markers=1:10)
-	plotRPpval(population,markers=1:10,treshold=0.01)
+	plotRPpval(population,thresholdRange=c(0.01,0.1,0.01))
 }
 
 \arguments{
 \item{population}{ An object of class \code{\link{population}}. See \code{\link{createPopulation}} for details. }
  \item{markers}{ Numbers of markers to be printed}
- \item{treshold}{ Value on which horizontal line will be plotted.}
+ \item{thresholdRange}{ Specifies in which range threshold will be checked (start, stop, step).}
 }
 
 \value{
@@ -24,7 +24,8 @@
 }
 
 \details{
-  Those are two helper functions of \code{\link{findDiffExpressed}}. One is printing out, while the other is plotting, results of the analysis.
+  Those are two helper functions of \code{\link{findDiffExpressed}}. showRPpval is printing to the screen p-values for specified markers, while plotRPpval is showing
+  how many markers will be selected using different thresholds.
 }
 
 \author{

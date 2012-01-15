@@ -293,10 +293,10 @@ majorityOfMarkers <- function(cross,originalMap,population,verbose=FALSE){
 #
 #
 ############################################################################################################
-cross.denovo.internal  <- function(population,  n.chr,  use=c("geno","rf"), verbose=FALSE, debugMode=0){
+cross.denovo.internal<- function(population,  n.chr,  use=c("geno","rf"), verbose=FALSE, debugMode=0){
   if(missing(n.chr)) stop("n.chr in an obligatory parameter")
   if(missing(population)) stop("no population object provided")
-  use <- defaultCheck.internal(use, "use", 2, "geno")
+  use <- checkParameters.internal(use,c("geno","rf"),"use")
   check.population(population)
   if(is.null(population$offspring$genotypes$simulated)){
     stop("no simulated genotypes in population object, first use findBiomarkers!\n")
