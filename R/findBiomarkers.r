@@ -126,8 +126,7 @@ selectTopMarker.internal <- function(markers,pattern,verbose){
   markerPoints <- apply(markers,1,function(x){sum(x==pattern)})
   topMarker <- rownames(markers)[which.max(markerPoints)]
   if(verbose) cat("Markers best matching pattern:",topMarker,"with identity:",max(markerPoints)/ncol(markers)*100,"%\n")
-  #invisible(markers[topMarker,])
-  return(max(markerPoints)/ncol(markers)*100)
+  invisible(markers[topMarker,])
 }
 
 ############################################################################################################
