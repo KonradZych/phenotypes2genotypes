@@ -35,7 +35,6 @@
 \examples{
 	data(yeastPopulation)
   markers <- getBiomarkers(yeastPopulation,verbose=TRUE)
-  bestMarker <- getBiomarkers(yeastPopulation,c(1,0,0,0,0,1,0,1,0,1,0,1,1,1,1,0,0),verbose=TRUE)
 }
 
 \seealso{

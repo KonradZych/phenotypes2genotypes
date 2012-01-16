@@ -9,11 +9,18 @@
 }
 
 \usage{
-	markerPlacementPlot(population, cross)
+	markerPlacementPlot(population, placeUsing=c("qtl","correlation"), cross)
 }
 
 \arguments{
 \item{population}{ An object of class \code{\link{population}}. See \code{\link{createPopulation}} for details. }
+\item{placeUsing}{ 
+  How position of the new markers on the saturated map should be determinate:
+  \itemize{
+    \item{qtl}{ - placed between two markers with highest .}
+    \item{correlation}{ - physical map from cross$maps$physical.}
+  }
+  }
 \item{cross}{ An object of class \code{cross}. See \code{\link[qtl]{read.cross}} for details. }
 }
 
@@ -22,7 +29,7 @@
 }
 
 \details{
-This plot is really usefull while saturating existing map (using \code{\link{cross.saturate}}). It helps choose best threshold for marker selection, showing how much markers will
+This plot is really useful while saturating existing map (using \code{\link{cross.saturate}}). It helps choose best threshold for marker selection, showing how much markers will
 be selected with different threshold values.
 }
 
@@ -34,7 +41,8 @@ be selected with different threshold values.
 \examples{
 	data(yeastCross)
 	data(yeastPopulation)
-	markerPlacementPlot(yeastPopulation,yeastCross)
+	markerPlacementPlot(yeastPopulation,yeastCross,placeUsing="correlation")
+	markerPlacementPlot(yeastPopulation,yeastCross,placeUsing="qtl")
 }
 
 \seealso{

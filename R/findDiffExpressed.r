@@ -109,7 +109,6 @@ showRPpval <- function(population,markers=1:10){
   if(missing(population)) stop("provide population object\n")
   check.population(population)
   if(is.null(population$founders$RP$pval)) stop("Population object does not contain results of RP analysis run findDiffExpressed first.\n")
-  use <- checkParameters.internal(use,c("ttest","rankprod"),"use")
   inRangeCheck.internal(markers,"markers",1,nrow(population$founders$phenotypes))
   
 	toPrint <- matrix(0,length(markers),2)

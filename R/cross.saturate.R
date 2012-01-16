@@ -193,12 +193,7 @@ bestQTL.internal <- function(cross, population, treshold,verbose=FALSE){
   output <- NULL
   if(verbose) cat("Starting qtl analysis.\n")
   s<- proc.time()
-  if(is.null(population$offspring$genotypes$qtl)){
-    cat("No qtl data in population$offspring$genotypes$qtl, scanning qtls, may take a long time.")
-    population$offspring$genotypes$qtl <- t(matrix(unlist(lapply(markers,QTLscan.internal,phenotypes,genotypes)),nrow(genotypes),length(markers)))
-    rownames(population$offspring$genotypes$qtl) <- markers
-    colnames(population$offspring$genotypes$qtl) <- rownames(genotypes)
-  }
+  if(is.null(population$offspring$genotypes$qtl)) stop("No qtl data in population$offspring$genotypes$qtl, run scanQTLs function first.")
   peaksMatrix <- getpeaks.internal(abs(population$offspring$genotypes$qtl ),treshold)
   e<- proc.time()
   if(verbose) cat("Qtl analysis done in:",(e-s)[3],"seconds\n")

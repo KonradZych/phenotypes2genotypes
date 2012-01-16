@@ -7,9 +7,8 @@
 # Modified by Danny Arends
 # 
 # first written March 2011
-# last modified November 2011
-# last modified in version: 0.9.1
-# in current version: active, in main workflow
+# last modified January 2012
+# last modified in version: 1.0.0
 #
 #     This program is free software; you can redistribute it and/or
 #     modify it under the terms of the GNU General Public License,
@@ -47,7 +46,7 @@
 #
 #
 ############################################################################################################
-markersCorPlot <- function(cross, population, map=c("genetic","physical"), cmBetween=25, comparisonMethod = c(sumMajorityCorrelation,majorityCorrelation,meanCorrelation), chr, show.legend=FALSE, verbose=TRUE){
+markersCorPlot <- function(cross, population, map=c("genetic","physical"), cmBetween=25, comparisonMethod = c(sumMajorityCorrelation,majorityCorrelation,meanCorrelation,majorityOfMarkers), chr, show.legend=FALSE, verbose=TRUE){
   ### checks
   map <- checkParameters.internal(map,c("genetic","physical"),"map")
 	if(map=="genetic"){
@@ -55,7 +54,7 @@ markersCorPlot <- function(cross, population, map=c("genetic","physical"), cmBet
   }else{
     originalMap <- population$maps$physical
   }
-  comparisonMethod <- defaultCheck.internal(comparisonMethod,c(sumMajorityCorrelation,majorityCorrelation,meanCorrelation),3,sumMajorityCorrelation)
+  comparisonMethod <- defaultCheck.internal(comparisonMethod,"comparisonMethod",4,sumMajorityCorrelation)
   if(is.null(originalMap)) stop("no ",map," map provided!")  
   
   ### getting offsets for each chromosome on both maps
