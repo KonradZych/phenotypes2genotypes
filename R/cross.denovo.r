@@ -45,8 +45,8 @@ assignFunction=c(assignMaximumNoConflicts,assignMaximum), reOrder=TRUE, use.orde
   if(missing(cross)) cross <- cross.denovo.internal(population,n.chr,verbose=TRUE,debugMode=2)
   if(length(cross$geno)<=1) stop("Selected cross object contains too little chromosomes to proceed.")
   map <- checkParameters.internal(map,c("none","genetic","physical"),"map")
-  comparisonMethod <- checkParameters.internal(comparisonMethod,c(sumMajorityCorrelation,majorityCorrelation,meanCorrelation,majorityOfMarkers),"comparisonMethod")
-  assignFunction <- checkParameters.internal(assignFunction,c(assignMaximumNoConflicts,assignMaximum),"assignFunction")
+  comparisonMethod <- defaultCheck.internal(comparisonMethod,"comparisonMethod",4,sumMajorityCorrelation)
+  assignFunction <- defaultCheck.internal(assignFunction,"assignFunction",2,assignMaximumNoConflicts)
   if(verbose && debugMode==1) cat("cross.denovo starting withour errors in checkpoints.\n")
 
   if(map=="none"){

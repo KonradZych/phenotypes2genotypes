@@ -73,6 +73,10 @@
 \alias{selectTopMarker.internal}
 \alias{scoreMarker.internal}
 \alias{getpeaks.internal}
+\alias{QTLscan.internal}
+\alias{bestQTL.internal}
+\alias{defaultCheck.internal}
+\alias{scoreMixups.internal}
 
 \title{Internal pheno2geno functions}
 
