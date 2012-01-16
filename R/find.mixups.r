@@ -64,8 +64,8 @@ find.mixups <- function(population,n.qtls=50,threshold=5,verbose=FALSE){
   for(j in 1:qtls_found){
     group_a <- population$offspring$phenotypes[qtls[j],which(population$offspring$genotypes$real[as.numeric(names(qtls))[j],]==1)]
     group_b <- population$offspring$phenotypes[qtls[j],which(population$offspring$genotypes$real[as.numeric(names(qtls))[j],]==2)]
-    scores <- scoreMixups.internal(group_a,scores)
-    scores <- scoreMixups.internal(group_b,scores)
+    scores <- scoreMixups.internal(group_a,scores,qtls_found)
+    scores <- scoreMixups.internal(group_b,scores,qtls_found)
   }
   if(any(scores>threshold)){
     flagged <- which(scores>threshold)
@@ -77,16 +77,17 @@ find.mixups <- function(population,n.qtls=50,threshold=5,verbose=FALSE){
   invisible(scores)
 }
 
-scoreMixups.internal <- function(values,scores){
+scoreMixups.internal <- function(values,scores,qtls_found){
   cur_mean <- mean(values)
   cur_sd <- abs(sd(values))
+  increase <- 1/qtls_found*100
   if(any(values>cur_mean+3*cur_sd)){
     positions <- names(values)[which(values>cur_mean+3*cur_sd)]
-    scores[positions] <- scores[positions]+1
+    scores[positions] <- scores[positions]+increase
   }
   if(any(values<cur_mean-3*cur_sd)){
     positions <- names(values)[which(values<cur_mean-3*cur_sd)]
-    scores[positions] <- scores[positions]+1
+    scores[positions] <- scores[positions]+increase
   }
   invisible(scores)
 }

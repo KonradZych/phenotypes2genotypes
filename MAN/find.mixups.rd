@@ -8,13 +8,13 @@
 }
 
 \usage{
-  find.mixups(population,n.qtls=50,threshold=5,verbose=FALSE)
+  find.mixups(population,n.qtls=50,threshold=50,verbose=FALSE)
 }
 
 \arguments{
   \item{population}{ An object of class \code{\link{population}}. See \code{\link{createPopulation}} for details. }
  \item{n.qtls}{ Number of qtls that should be scanned.}
- \item{threshold}{ How many time and individual must be flagged to be considered a mix-up.}
+ \item{threshold}{ How big percentage of being flagged must be for the individual to be considered as a mix-up.}
  \item{verbose}{ Be verbose.}
 }
 
@@ -23,9 +23,9 @@
 }
 
 \details{
-	This function scans data, looking for qtls. When requested number of qtls are found, they are bieng checked for outliers. If a value for an
-  individual is not in the range (mean - 3*sd, mean+3*sd) of its group, it's being flagged. Sum of flags for each of the individuals is returned
-  in a for of a matrix. Additionally, individuals crossing threshold set by the user are being printed out with the warning about possible mix-up.
+	This function scans data, looking for qtls. When requested number of qtls are found, they are being checked for outliers. If a value for an
+  individual is not in the range (mean - 3*sd, mean+3*sd) of its group, it's being flagged. For each of the markers, percentage of being flagged is returned.
+  Additionally, individuals crossing threshold set by the user are being printed out with the warning about possible mix-up.
 }
 
 \author{
@@ -35,7 +35,7 @@
 
 \examples{
 	data(yeastPopulation)
-  scores <- find.mixups(yeastPopulation,10)
+  scores <- find.mixups(yeastPopulation,10,verbose=TRUE)
   plot(scores)
 }
 
