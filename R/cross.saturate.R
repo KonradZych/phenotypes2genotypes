@@ -48,7 +48,7 @@ cross.saturate <- function(population, cross, map=c("genetic","physical"), place
   }else if(threshold>=5){
     cat("WARNING: threshold too high, few new markers will be selected\n")
   }
-  map <- checkParameters.internal(map,c("none","genetic","physical"),"map")
+  map <- checkParameters.internal(map,c("genetic","physical"),"map")
   placeUsing <- checkParameters.internal(placeUsing,c("qtl","correlation"),"qtl")
  if(map=="genetic"){
     cur_map <- population$maps$genetic
@@ -120,7 +120,7 @@ rearrangeMarkers <- function(cross, population, cur_map, threshold=3, placeUsing
 	cross_$geno <- vector(max(cur_map[,1]), mode="list")
 	cross_$pheno <- pull.pheno(cross)
 	if(verbose) cat("Reordering markers \n")  
-	for(x in 1:max(cur_map[,1])){
+	for(x in unique(cur_map[,1])){
 		if(verbose) cat("- chr ",x," -\n")    
 		oldnames <- rownames(cur_map)[which(cur_map[,1]==x)]
     oldpositions <- cur_map[oldnames,2]
@@ -129,7 +129,7 @@ rearrangeMarkers <- function(cross, population, cur_map, threshold=3, placeUsing
     if(verbose) cat("Selected:",length(newmarkers),"new and",length(oldnames),"original markers \n") 
 		if(addMarkers){
 			cross_$geno[[x]]$data <- cbind(pull.geno(cross)[,output[newmarkers,1]],t(population$offspring$genotypes$real[oldnames,]))
-			newmap <- c(oldpositions,as.numeric(newpositions))
+			newmap <- c(as.numeric(newpositions),oldpositions)
 			names(newmap) <- c(output[newmarkers,1],oldnames)
       newmap <- sort(newmap)
       colnames(cross_$geno[[x]]$data) <- c(output[newmarkers,1],oldnames)
@@ -194,13 +194,14 @@ bestQTL.internal <- function(cross, population, treshold,verbose=FALSE){
   if(verbose) cat("Starting qtl analysis.\n")
   s<- proc.time()
   if(is.null(population$offspring$genotypes$qtl)) stop("No qtl data in population$offspring$genotypes$qtl, run scanQTLs function first.")
-  peaksMatrix <- getpeaks.internal(abs(population$offspring$genotypes$qtl ),treshold)
+  peaksMatrix <- getpeaks.internal(abs(population$offspring$genotypes$qtl),treshold)
   e<- proc.time()
   if(verbose) cat("Qtl analysis done in:",(e-s)[3],"seconds\n")
   rownames(peaksMatrix) <- markers
   for(marker in markers){
     if(sum(peaksMatrix[marker,]==2)==1){
-      output <- rbind(output,c(marker,names(which.max(population$offspring$genotypes$qtl[marker,])),names(which.max(population$offspring$genotypes$qtl[marker,-(which.max(population$offspring$genotypes$qtl[marker,]))]))))
+      cur_row <- c(marker,names(which.max(population$offspring$genotypes$qtl[marker,])),names(which.max(population$offspring$genotypes$qtl[marker,-(which.max(population$offspring$genotypes$qtl[marker,]))])))
+      output <- rbind(output,cur_row)
     }else{
       output <- rbind(output,c(marker,NA,NA))
     }
