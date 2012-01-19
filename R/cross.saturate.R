@@ -127,15 +127,17 @@ rearrangeMarkers <- function(cross, population, cur_map, threshold=3, placeUsing
     newmarkers <- which(output[,2]%in%oldnames)
     newpositions <- as.numeric(output[newmarkers,4])
     toRmv <- NULL
-    for(i in 1:length(newpositions)){
-      if(newpositions[i]%in%oldpositions||newpositions[i]==Inf){
-        toRmv <- c(toRmv,i)
+    if(length(newmarkers)>0){
+      for(i in 1:length(newpositions)){
+        if(newpositions[i]%in%oldpositions||newpositions[i]==Inf){
+          toRmv <- c(toRmv,i)
+        }
       }
+      if(length(toRmv)>0){
+        newmarkers <- newmarkers[-toRmv]
+        newpositions <- newpositions[-toRmv]
+        }
     }
-    if(length(toRmv)>0){
-      newmarkers <- newmarkers[-toRmv]
-      newpositions <- newpositions[-toRmv]
-      }
     if(verbose) cat("Selected:",length(newmarkers),"new and",length(oldnames),"original markers,",length(toRmv),"markers were removed\n") 
 		if(addMarkers){
 			cross_$geno[[x]]$data <- cbind(pull.geno(cross)[,output[newmarkers,1]],t(population$offspring$genotypes$real[oldnames,]))
