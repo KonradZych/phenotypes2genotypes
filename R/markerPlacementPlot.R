@@ -26,7 +26,7 @@
 #
 ############################################################################################################
 
-markerPlacementPlot <- function(population, placeUsing=c("qtl","correlation"),cross){
+markerPlacementPlot <- function(population, placeUsing=c("qtl","correlation"),thrRange=c(1,5,1),cross,verbose=FALSE){
   if(missing(population)) stop("Please provide a population object\n")
   if(is.null(population$offspring$genotypes$real)){
     stop("No original genotypes in population$offspring$genotypes$real, load them in using intoPopulation\n")
@@ -38,7 +38,7 @@ markerPlacementPlot <- function(population, placeUsing=c("qtl","correlation"),cr
     }
     cormatrix <- map2mapCorrelationMatrix(cross,population)
     s <- NULL
-    p <- seq(1,5,0.1)
+    p <- seq(thrRange[1],thrRange[2],thrRange[3])
     for(x in p){
       maximums <- apply(abs(cormatrix),2,max)
       means <- apply(abs(cormatrix),2,mean)
@@ -52,19 +52,22 @@ markerPlacementPlot <- function(population, placeUsing=c("qtl","correlation"),cr
     singleqtl <- NULL
     noqtl <- NULL
     multipleqtl <- NULL
-    thrRange <- seq(0,20,0.1)
-    for(tr in thrRange){
-      peaks <- getpeaks.internal(population$offspring$genotypes$qtl,tr)
-      rownames(peaks) <- rownames(population$offspring$genotypes$qtl)
-      colnames(peaks) <- colnames(population$offspring$genotypes$qtl)
+    p <- seq(thrRange[1],thrRange[2],thrRange[3])
+    for(tr in p){
+      if(verbose) if(tr%%1==0) cat("Analysing threshold value:",tr,"\n")
+      peaks <- getpeaks.internal(population$offspring$genotypes$qtl$values,tr)
+      rownames(peaks) <- rownames(population$offspring$genotypes$qtl$values)
+      colnames(peaks) <- colnames(population$offspring$genotypes$qtl$values)
       nqtl <- apply(peaks,1,function(row){sum(row==2)})
       singleqtl <- c(singleqtl,sum(nqtl==1))
       noqtl <- c(noqtl,sum(nqtl==0))
       multipleqtl <- c(multipleqtl,sum(nqtl>1))
     }
-    plot(thrRange,noqtl,type='o',col="red",main="Number of markers placed",xlab="threshold",ylab="# of markers",ylim=c(0,nrow(population$offspring$genotypes$qtl)))
-    points(thrRange,singleqtl,type='o',col="green")
-    points(thrRange,multipleqtl,type='o',col="blue")
+    plot(p,noqtl,type='o',col="red",main="Number of markers placed",xlab="threshold",ylab="# of markers",ylim=c(0,nrow(population$offspring$genotypes$qtl$values)))
+    points(p,singleqtl,type='o',col="green")
+    points(p,multipleqtl,type='o',col="blue")
+    cat("Maximal number of markers that can be placed:",max(singleqtl),"for threshold value:",p[which.max(singleqtl)],"\n")
+    abline(v=p[which.max(singleqtl)],col="grey",lty=2)
     legend(x="topright",legend=c("no peak","single peak","multiple peaks"),col=c("red","green","blue"),cex=0.8,pch=21,lwd=2,bg="white")
   }
 }
