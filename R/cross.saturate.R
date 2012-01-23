@@ -51,8 +51,21 @@ cross.saturate <- function(population, cross, map=c("genetic","physical"), place
   map <- checkParameters.internal(map,c("genetic","physical"),"map")
   placeUsing <- checkParameters.internal(placeUsing,c("qtl","correlation"),"placeUsing")
  if(map=="genetic"){
+    matchingMarkers <- which(rownames(population$offspring$genotypes$real)%in%rownames(population$maps$genetic))
+    if(length(matchingMarkers)<=0) stop("Marker names on the map and in the genotypes doesn't match!\n")
+    if(length(matchingMarkers)!=nrow(population$offspring$genotypes$real)){
+      population$offspring$genotypes$real <- population$offspring$genotypes$real[matchingMarkers,]
+      population$maps$genetic <- population$maps$genetic[rownames(population$offspring$genotypes$real),]
+    }
     cur_map <- population$maps$genetic
   }else{
+    matchingMarkers <- which(rownames(population$offspring$genotypes$real)%in%rownames(population$maps$physical))
+    if(length(matchingMarkers)<=0) stop("Marker names on the map and in the genotypes doesn't match!\n")
+    if(length(matchingMarkers)!=nrow(population$offspring$genotypes$real)){
+      population$offspring$genotypes$real <- population$offspring$genotypes$real[matchingMarkers,]
+      population$maps$physical <- population$maps$physical[rownames(population$offspring$genotypes$real),]
+      if(verbose) cat(nrow(population$offspring$genotypes$real)-length(matchingMarkers),"markers were removed due to name mismatch\n")
+    }
     cur_map <- population$maps$physical
   }
   
@@ -116,8 +129,8 @@ rearrangeMarkers <- function(cross, population, cur_map, threshold=3, placeUsing
     cat("selected",nrow(markersNewPostions),"markers for further analysis\n")
   }
 	returncross <- cross
-	cross_$geno <- vector(max(cur_map[,1]), mode="list")
-	cross_$pheno <- pull.pheno(cross)
+	returncross$geno <- vector(max(cur_map[,1]), mode="list")
+	returncross$pheno <- pull.pheno(cross)
 	if(verbose) cat("Reordering markers \n")  
 	for(x in unique(cur_map[,1])){
 		if(verbose) cat("- chr ",x," -\n")    
@@ -139,27 +152,27 @@ rearrangeMarkers <- function(cross, population, cur_map, threshold=3, placeUsing
     }
     if(verbose) cat("Selected:",length(newnames),"new and",length(oldnames),"original markers,",length(toRmv),"markers were removed\n") 
 		if(addMarkers){
-			cross_$geno[[x]]$data <- cbind(pull.geno(cross)[,markersNewPostions[newnames,1]],t(population$offspring$genotypes$real[oldnames,]))
+			returncross$geno[[x]]$data <- cbind(pull.geno(cross)[,newnames],t(population$offspring$genotypes$real[oldnames,]))
 			newmap <- c(as.numeric(newpositions),oldpositions)
 			names(newmap) <- c(newnames,oldnames)
       newmap <- sort(newmap)
-      colnames(cross_$geno[[x]]$data) <- c(newnames,oldnames)
-      cross_$geno[[x]]$data <- cross_$geno[[x]]$data[,names(newmap)]
+      colnames(returncross$geno[[x]]$data) <- c(newnames,oldnames)
+      returncross$geno[[x]]$data <- returncross$geno[[x]]$data[,names(newmap)]
 		}else{
-			cross_$geno[[x]]$data <- pull.geno(cross)[,newnames]
+			returncross$geno[[x]]$data <- pull.geno(cross)[,newnames]
 			newmap <- as.numeric(newpositions)
 			names(newmap) <- newnames
       newmap <- sort(newmap)
-      colnames(cross_$geno[[x]]$data) <- newnames
-      cross_$geno[[x]]$data <- cross_$geno[[x]]$data[,names(newmap)]
+      colnames(returncross$geno[[x]]$data) <- newnames
+      returncross$geno[[x]]$data <- returncross$geno[[x]]$data[,names(newmap)]
 		}
-		cross_$geno[[x]]$map <- c(newmap)
+		returncross$geno[[x]]$map <- c(newmap)
 	}
-	names(cross_$geno) <- 1:length(cross_$geno)
-	for(i in 1:length(cross_$geno)){
-		class(cross_$geno[[i]]) <- "A"
+	names(returncross$geno) <- 1:length(returncross$geno)
+	for(i in 1:length(returncross$geno)){
+		class(returncross$geno[[i]]) <- "A"
 	}
-	invisible(cross_)
+	invisible(returncross)
 }
 
 
@@ -180,20 +193,18 @@ bestCorelated.internal <- function(cross,population, cur_map,corSDTreshold,verbo
   #select markers that are correlated highly with more than one of the old markers
   selected <- which(maximums > (means+corSDTreshold*sds))
   cormatrix <- cormatrix[,selected]
-  bestCorMarkers <- matrix(0,length(selected),4)
+  bestCorMarkers <- matrix(0,length(selected),2)
   bestCorMarkers[,1] <- apply(abs(cormatrix),2,function(r){rownames(cormatrix)[which.max(r)]})
   bestCorMarkers[,2] <- apply(abs(cormatrix),2,function(r){rownames(cormatrix)[which.max(r[-which.max(r)])]})
-  output <- apply(bestCorMarkers,1,bestCorelatedSub.internal,cur_map)
-  print(output[1:10,])
-  rownames(output) <- colnames(cormatrix)
+  rownames(bestCorMarkers) <- rownames(cormatrix)
+  output <- t(apply(bestCorMarkers,1,bestCorelatedSub.internal,cur_map))
   invisible(output)
 }
 
 bestCorelatedSub.internal <- function(bestCorMarkersRow,cur_map){
-  outputRow <- vector(mode="numeric",length=2)
-  outputRow <- cur_map[bestCorMarkersRow[1],1]
+  chr <- cur_map[bestCorMarkersRow[1],1]
   pos <- mean(cur_map[bestCorMarkersRow[1],2],cur_map[bestCorMarkersRow[2],2])
-  invisible(outputRow)
+  invisible(c(chr,pos))
 }
 
 ###########################################################################################################
@@ -227,10 +238,9 @@ bestQTL.internal <- function(cross, population, treshold,verbose=FALSE){
     }
   }
   #to have same format of the output as in bestcorrelated
-  output <- cbind(output,rep(0,length(markers)))
   rownames(output) <- markers
+  if(any(is.na(output[,1]))) output <- output[-which(is.na(output[,1])),]
   if(any(is.na(output[,2]))) output <- output[-which(is.na(output[,2])),]
-  if(any(is.na(output[,3]))) output <- output[-which(is.na(output[,3])),]
   invisible(output)
 }
 
@@ -261,7 +271,9 @@ scanQTLs <- function(population,map=c("genetic","physical"),verbose=FALSE){
       population$maps$genetic <- population$maps$genetic[rownames(population$offspring$genotypes$real),]
       if(verbose) cat(nrow(population$offspring$genotypes$real)-length(matchingMarkers),"markers were removed due to name mismatch\n")
     }
-    cross_ <- genotypesToCross.internal(population,"real","map_genetic")
+    population10pheno <- population
+    population10pheno$offspring$phenotypes <- population10pheno$offspring$phenotypes[1:10,]
+    returncross <- genotypesToCross.internal(population10pheno,"real","map_genetic")
   }else{
     matchingMarkers <- which(rownames(population$offspring$genotypes$real)%in%rownames(population$maps$physical))
     if(length(matchingMarkers)<=0) stop("Marker names on the map and in the genotypes doesn't match!\n")
@@ -270,25 +282,28 @@ scanQTLs <- function(population,map=c("genetic","physical"),verbose=FALSE){
       population$maps$physical <- population$maps$physical[rownames(population$offspring$genotypes$real),]
       if(verbose) cat(nrow(population$offspring$genotypes$real)-length(matchingMarkers),"markers were removed due to name mismatch\n")
     }
-    cross_ <- genotypesToCross.internal(population,"real","map_physical")
+    #for faster creation of cross
+    population10pheno <- population
+    population10pheno$offspring$phenotypes <- population10pheno$offspring$phenotypes[1:10,]
+    returncross <- genotypesToCross.internal(population10pheno,"real","map_physical")
   }
-  cross_$pheno <- t(population$offspring$genotypes$simulated)
-  cross_ <- calc.genoprob(cross_, step=0.1)
+  returncross$pheno <- t(population$offspring$genotypes$simulated)
+  returncross <- calc.genoprob(returncross, step=0.1)
   if(verbose) cat("Starting qtl scan, this may take a long time to finish!\n")
   s <- proc.time()
   res <- NULL
   pos <- NULL
   chr <- NULL
-  kupa <- NULL
+  names_ <- NULL
   for(i in 1:nrow(population$offspring$genotypes$simulated)){
     if(i%%50==0){
       cat("Analysing marker:",i,"\n")
       }
-    curScan <- scanone(cross_,pheno.col=i,method="hk")
+    curScan <- scanone(returncross,pheno.col=i,method="hk")
     pos <- rbind(pos,curScan[,2])
     res <- rbind(res,curScan[,3])
     chr <- rbind(chr,curScan[,1])
-    kupa <- c(kupa,colnames(cross$pheno)[i])
+    names_ <- c(names_,colnames(returncross$pheno)[i])
   }
   #population$offspring$genotypes$qtl <- t(matrix(unlist(lapply(markers,QTLscan.internal,phenotypes,genotypes)),nrow(genotypes),length(markers)))
   e <- proc.time()
@@ -296,13 +311,12 @@ scanQTLs <- function(population,map=c("genetic","physical"),verbose=FALSE){
   population$offspring$genotypes$qtl$lod <- res
   population$offspring$genotypes$qtl$pos <- pos
   population$offspring$genotypes$qtl$chr <- chr
-  population$offspring$genotypes$qtl$kupa <- kupa
-  rownames(population$offspring$genotypes$qtl$lod) <- rownames(population$offspring$genotypes$simulated)
+  population$offspring$genotypes$qtl$names <- names_
+  rownames(population$offspring$genotypes$qtl$lod) <- names_
   colnames(population$offspring$genotypes$qtl$lod) <- rownames(curScan)   
-  rownames(population$offspring$genotypes$qtl$chr) <- rownames(population$offspring$genotypes$simulated)
+  rownames(population$offspring$genotypes$qtl$chr) <- names_
   colnames(population$offspring$genotypes$qtl$chr) <- rownames(curScan)  
-  rownames(population$offspring$genotypes$qtl$pos) <- rownames(population$offspring$genotypes$simulated)
-  names(population$offspring$genotypes$qtl$kupa) <- rownames(population$offspring$genotypes$simulated)
+  rownames(population$offspring$genotypes$qtl$pos) <- names_
   colnames(population$offspring$genotypes$qtl$pos) <- rownames(curScan)
   invisible(population)
 }
