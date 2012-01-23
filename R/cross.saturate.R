@@ -298,7 +298,7 @@ scanQTLs <- function(population,map=c("genetic","physical"),verbose=FALSE){
 #	vector with new ordering of chromosomes inside cross object
 ############################################################################################################
 getpeaks.internal <- function(qtlprofiles, cutoff = 4.0){
-  if(!any(abs(qtlprofiles==Inf)) qtlprofiles[which(qtlprofiles==Inf)] <- 1000
+  if(!any(qtlprofiles==Inf)) qtlprofiles[which(qtlprofiles==Inf)] <- 1000
   mmatrix <- NULL
   for(x in 1:nrow(qtlprofiles)){
     peak <- FALSE
