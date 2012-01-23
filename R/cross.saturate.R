@@ -56,6 +56,7 @@ cross.saturate <- function(population, cross, map=c("genetic","physical"), place
     if(length(matchingMarkers)!=nrow(population$offspring$genotypes$real)){
       population$offspring$genotypes$real <- population$offspring$genotypes$real[matchingMarkers,]
       population$maps$genetic <- population$maps$genetic[rownames(population$offspring$genotypes$real),]
+      if(verbose) cat(nrow(population$offspring$genotypes$real)-length(matchingMarkers),"markers were removed due to name mismatch\n")
     }
     cur_map <- population$maps$genetic
   }else{
@@ -68,7 +69,6 @@ cross.saturate <- function(population, cross, map=c("genetic","physical"), place
     }
     cur_map <- population$maps$physical
   }
-  
   if(missing(cross)){
     if(is.null(population$offspring$genotypes$simulated)){
       stop("No genotype data in population$offspring$genotypes$simulated, run findBiomarkers first\n")

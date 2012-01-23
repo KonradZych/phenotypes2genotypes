@@ -205,19 +205,43 @@ removeChromosomesSub.internal <- function(cross, chr,verbose=FALSE){
 #	boolean
 #
 ############################################################################################################
-smoothGeno <- function(cross,windowSize=1,chr,verbose=FALSE){
+smoothGeno <- function(cross,windowSize=1,chr,population,map=c("genetic","physical"),verbose=FALSE){
 	if(!any(class(cross) == "cross")) stop("Input should have class \"cross\".")
+  if(!(missing(population))){ 
+    map <- checkParameters.internal(map,c("genetic","physical"),"map")
+    if(map=="genetic"){
+      matchingMarkers <- which(rownames(population$offspring$genotypes$real)%in%rownames(population$maps$genetic))
+      if(length(matchingMarkers)<=0) stop("Marker names on the map and in the genotypes doesn't match!\n")
+      if(length(matchingMarkers)!=nrow(population$offspring$genotypes$real)){
+        population$offspring$genotypes$real <- population$offspring$genotypes$real[matchingMarkers,]
+        if(verbose) cat(nrow(population$offspring$genotypes$real)-length(matchingMarkers),"markers were removed due to name mismatch\n")
+      }
+      oldMarkers <- pull.geno(cross)[,rownames(population$offspring$genotypes$real)]
+    }else{
+      matchingMarkers <- which(rownames(population$offspring$genotypes$real)%in%rownames(population$maps$physical))
+      if(length(matchingMarkers)<=0) stop("Marker names on the map and in the genotypes doesn't match!\n")
+      if(length(matchingMarkers)!=nrow(population$offspring$genotypes$real)){
+        population$offspring$genotypes$real <- population$offspring$genotypes$real[matchingMarkers,]
+        if(verbose) cat(nrow(population$offspring$genotypes$real)-length(matchingMarkers),"markers were removed due to name mismatch\n")
+      }
+      oldMarkers <- pull.geno(cross)[,rownames(population$offspring$genotypes$real)]
+    }
+  }else{
+    oldMarkers <- NULL
+  }
+  print(oldMarkers[1:10,1:10])
 	n.ind <- nind(cross)
-  cross <- fill.geno(cross)
+  #cross <- fill.geno(cross)
   if(missing(chr)) chr <- 1:nchr(cross)
   cross_geno  <- vector(length(chr),mode="list")
   for(i in 1:length(chr)){
   if(verbose)cat("--- chr",i,"----\n")
-    cross_geno[[i]]  <- smoothGenoSub.internal(cross$geno[[chr[i]]],windowSize,verbose)
+    cross_geno[[i]]  <- smoothGenoSub.internal(cross$geno[[chr[i]]],windowSize,oldMarkers,verbose)
   }
 	for(i in 1:length(chr)){
 		cross$geno[[chr[i]]]$data <- cross_geno[[i]]$data
 	}
+  #cross <- fill.geno(cross)
   if(verbose)cat("running est.rf\n")
 	cross <- est.rf(cross)
   if(verbose)cat("running est.map\n")
@@ -240,13 +264,21 @@ smoothGeno <- function(cross,windowSize=1,chr,verbose=FALSE){
 #	boolean
 #
 ############################################################################################################
-smoothGenoSub.internal <- function(geno,windowSize,verbose){
+smoothGenoSub.internal <- function(geno,windowSize,oldMarkers,verbose){
   if(!is.null(dim(geno$data))){
     if(ncol(geno$data)>windowSize){
     old_genotype <- geno$data
+    old_genotype[which(is.na(old_genotype))]<- 0
     genotype <- old_genotype
     genotype <- t(apply(genotype,1,smoothGenoRow.internal,windowSize))
     if(verbose) cat("changed",sum(genotype!=old_genotype)/length(genotype)*100,"% values because of genotyping error\n")
+    if(any(colnames(genotype)%in%colnames(oldMarkers))){
+      markersToBeUnchanged <- colnames(genotype)[which(colnames(genotype)%in%colnames(oldMarkers))]
+      print(markersToBeUnchanged)
+      print(genotype[1:10,1:10])
+      genotype[,markersToBeUnchanged] <- oldMarkers[,markersToBeUnchanged]
+      print(genotype[1:10,1:10])
+    }
     geno$data <- genotype
     }
   }
@@ -269,17 +301,23 @@ smoothGenoSub.internal <- function(geno,windowSize,verbose){
 #
 ############################################################################################################
 smoothGenoRow.internal <- function(genoRow,windowSize){
-  if(length(genoRow)>windowSize+2){
-    if(any(genoRow[1:windowSize]!=genoRow[windowSize+1])&&any(genoRow[1:windowSize]!=genoRow[windowSize+2])&&(genoRow[windowSize+1]==genoRow[windowSize+2])){
-      genoRow[1:windowSize] <- genoRow[windowSize+1]
-    }
-    for(i in 2:(length(genoRow)-windowSize-1)){
-      if(any(genoRow[i:(i+windowSize)]!=genoRow[i-1])&&any(genoRow[i:(i+windowSize)]!=genoRow[i+windowSize+1])&&(genoRow[i-1]==genoRow[i+windowSize+1])){
-        genoRow[i:(i+windowSize)] <- genoRow[i-1]
+  if(length(table(genoRow))>1){
+    wrongMarkers <- NULL
+    if(length(genoRow)>windowSize+2){
+      if(any(genoRow[1:windowSize]!=genoRow[windowSize+1])&&any(genoRow[1:windowSize]!=genoRow[windowSize+2])&&(genoRow[windowSize+1]==genoRow[windowSize+2])){
+        wrongMarkers<-c(wrongMarkers,1:windowSize)
+      }
+      for(i in 2:(length(genoRow)-windowSize-1)){
+        if(any(genoRow[i:(i+windowSize)]!=genoRow[i-1])&&any(genoRow[i:(i+windowSize)]!=genoRow[i+windowSize+1])&&(genoRow[i-1]==genoRow[i+windowSize+1])){
+          wrongMarkers<-c(wrongMarkers,i:(i+windowSize))
+        }
+      }
+      if(any(genoRow[(length(genoRow)-windowSize):(length(genoRow))]!=genoRow[(length(genoRow)-windowSize-1)])&&any(genoRow[(length(genoRow)-windowSize):(length(genoRow))]!=genoRow[(length(genoRow)-windowSize-2)])&&(genoRow[(length(genoRow)-windowSize-1)]==genoRow[(length(genoRow)-windowSize-2)])){
+        wrongMarkers<-c(wrongMarkers,(length(genoRow)-windowSize):(length(genoRow)))
       }
     }
-    if(any(genoRow[(length(genoRow)-windowSize):(length(genoRow))]!=genoRow[(length(genoRow)-windowSize-1)])&&any(genoRow[(length(genoRow)-windowSize):(length(genoRow))]!=genoRow[(length(genoRow)-windowSize-2)])&&(genoRow[(length(genoRow)-windowSize-1)]==genoRow[(length(genoRow)-windowSize-2)])){
-      genoRow[(length(genoRow)-windowSize):(length(genoRow))] <- genoRow[(length(genoRow)-windowSize-1)]
+    if(length(wrongMarkers)>0){
+      genoRow[wrongMarkers]<-NA
     }
   }
   invisible(genoRow)
