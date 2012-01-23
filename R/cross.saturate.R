@@ -254,8 +254,22 @@ scanQTLs <- function(population,map=c("genetic","physical"),verbose=FALSE){
   }
   map <- checkParameters.internal(map,c("genetic","physical"),"map")
   if(map=="genetic"){
+    matchingMarkers <- which(rownames(population$offspring$genotypes$real)%in%rownames(population$maps$genetic))
+    if(length(matchingMarkers)<=0) stop("Marker names on the map and in the genotypes doesn't match!\n")
+    if(length(matchingMarkers)!=nrow(population$offspring$genotypes$real)){
+      population$offspring$genotypes$real <- population$offspring$genotypes$real[matchingMarkers,]
+      population$maps$genetic <- population$maps$genetic[rownames(population$offspring$genotypes$real),]
+      if(verbose) cat(nrow(population$offspring$genotypes$real)-length(matchingMarkers),"markers were removed due to name mismatch\n")
+    }
     cross_ <- genotypesToCross.internal(population,"real","map_genetic")
   }else{
+    matchingMarkers <- which(rownames(population$offspring$genotypes$real)%in%rownames(population$maps$physical))
+    if(length(matchingMarkers)<=0) stop("Marker names on the map and in the genotypes doesn't match!\n")
+    if(length(matchingMarkers)!=nrow(population$offspring$genotypes$real)){
+      population$offspring$genotypes$real <- population$offspring$genotypes$real[matchingMarkers,]
+      population$maps$physical <- population$maps$physical[rownames(population$offspring$genotypes$real),]
+      if(verbose) cat(nrow(population$offspring$genotypes$real)-length(matchingMarkers),"markers were removed due to name mismatch\n")
+    }
     cross_ <- genotypesToCross.internal(population,"real","map_physical")
   }
   cross_$pheno <- t(population$offspring$genotypes$simulated)
@@ -265,6 +279,7 @@ scanQTLs <- function(population,map=c("genetic","physical"),verbose=FALSE){
   res <- NULL
   pos <- NULL
   chr <- NULL
+  kupa <- NULL
   for(i in 1:nrow(population$offspring$genotypes$simulated)){
     if(i%%50==0){
       cat("Analysing marker:",i,"\n")
@@ -273,6 +288,7 @@ scanQTLs <- function(population,map=c("genetic","physical"),verbose=FALSE){
     pos <- rbind(pos,curScan[,2])
     res <- rbind(res,curScan[,3])
     chr <- rbind(chr,curScan[,1])
+    kupa <- c(kupa,colnames(cross$pheno)[i])
   }
   #population$offspring$genotypes$qtl <- t(matrix(unlist(lapply(markers,QTLscan.internal,phenotypes,genotypes)),nrow(genotypes),length(markers)))
   e <- proc.time()
@@ -280,11 +296,13 @@ scanQTLs <- function(population,map=c("genetic","physical"),verbose=FALSE){
   population$offspring$genotypes$qtl$lod <- res
   population$offspring$genotypes$qtl$pos <- pos
   population$offspring$genotypes$qtl$chr <- chr
+  population$offspring$genotypes$qtl$kupa <- kupa
   rownames(population$offspring$genotypes$qtl$lod) <- rownames(population$offspring$genotypes$simulated)
   colnames(population$offspring$genotypes$qtl$lod) <- rownames(curScan)   
   rownames(population$offspring$genotypes$qtl$chr) <- rownames(population$offspring$genotypes$simulated)
   colnames(population$offspring$genotypes$qtl$chr) <- rownames(curScan)  
   rownames(population$offspring$genotypes$qtl$pos) <- rownames(population$offspring$genotypes$simulated)
+  names(population$offspring$genotypes$qtl$kupa) <- rownames(population$offspring$genotypes$simulated)
   colnames(population$offspring$genotypes$qtl$pos) <- rownames(curScan)
   invisible(population)
 }
