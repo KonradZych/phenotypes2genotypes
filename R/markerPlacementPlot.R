@@ -55,9 +55,9 @@ markerPlacementPlot <- function(population, placeUsing=c("qtl","correlation"),th
     p <- seq(thrRange[1],thrRange[2],thrRange[3])
     for(tr in p){
       if(verbose) if(tr%%1==0) cat("Analysing threshold value:",tr,"\n")
-      peaks <- getpeaks.internal(population$offspring$genotypes$qtl$values,tr)
-      rownames(peaks) <- rownames(population$offspring$genotypes$qtl$values)
-      colnames(peaks) <- colnames(population$offspring$genotypes$qtl$values)
+      peaks <- getpeaks.internal(population$offspring$genotypes$qtl$lod,tr)
+      rownames(peaks) <- rownames(population$offspring$genotypes$qtl$lod)
+      colnames(peaks) <- colnames(population$offspring$genotypes$qtl$lod)
       nqtl <- apply(peaks,1,function(row){sum(row==2)})
       singleqtl <- c(singleqtl,sum(nqtl==1))
       noqtl <- c(noqtl,sum(nqtl==0))
