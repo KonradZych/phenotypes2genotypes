@@ -201,7 +201,7 @@ projectOldMarkers <- function(cross,population,map=c("genetic","physical"),label
 	for(i in 1:nchr(cross)){
 		qp_ <- c(qp_,cross$geno[[i]]$map)
 	}
-  presentMarkers <- rownames(cur_map)[which(rownames(cur_map) %in% names(qp_))]
+  presentMarkers <- as.character(rownames(cur_map)[which(rownames(cur_map) %in% names(qp_))])
   qc <- cur_map[presentMarkers,1]
 	qp <- qp_[presentMarkers]
 	if(label=="positions"){
