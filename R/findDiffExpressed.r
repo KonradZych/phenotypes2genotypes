@@ -139,10 +139,16 @@ plotRPpval <- function(population,thresholdRange=c(0.01,0.1,0.01)){
   if(missing(population)) stop("provide population object\n")
   check.population(population)
   if(is.null(population$founders$RP$pval)) stop("Population object does not contain results of RP analysis run findDiffExpressed first.\n")
-  x <- seq(thresholdRange[1],thresholdRange[2],thresholdRange[3])
-  y <- NULL
-  for(i in x){
-    y <- c(y, sum(population$founders$RP$pval[,1]<i)+sum(population$founders$RP$pval[,2]<i))
+  thrRange <- seq(thresholdRange[1],thresholdRange[2],thresholdRange[3])
+  n.upSelected <- NULL
+  n.downSelected <- NULL
+  for(threshold in thrRange){
+    upNotNull <- population$founders$RP$pval[which(population$founders$RP$pval[,1] > 0),1]
+    downNotNull <- population$founders$RP$pval[which(population$founders$RP$pval[,2] > 0),2]
+    n.upSelected <- c(n.upSelected,length(which(upNotNull < threshold)))
+    n.downSelected <- c(n.downSelected,length(which(downNotNull < threshold)))
   }
-	plot(x,y,main="RP analysis p-values",xlab="p-value",ylab="# markers selected",xlim=c(thresholdRange[1],thresholdRange[2]),type="o")
+	plot(thrRange,n.upSelected ,main="RP analysis p-values",xlab="p-value",ylab="# markers selected",xlim=c(thresholdRange[1],thresholdRange[2]),ylim=c(min(min(n.upSelected),min(n.downSelected )),max(max(n.upSelected),max(n.downSelected))),type="o")
+  points(thrRange,n.downSelected,col="red",type="o")
+  legend(x="topleft",legend=c("up regulated","down regulated"),col=c("black","red"),cex=0.8,pch=21,lwd=2,bg="white")
 }
