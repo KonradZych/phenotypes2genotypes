@@ -28,10 +28,11 @@
 
 markerPlacementPlot <- function(population, placeUsing=c("qtl","correlation"),thrRange=c(1,5,1),cross,verbose=FALSE){
   if(missing(population)) stop("Please provide a population object\n")
+  placeUsing <- checkParameters.internal(placeUsing,c("qtl","correlation"),"placeUsing")
+  check.population(population)
   if(is.null(population$offspring$genotypes$real)){
     stop("No original genotypes in population$offspring$genotypes$real, load them in using intoPopulation\n")
   }
-  check.population(population)
   if(placeUsing=="correlation"){
     if(missing(cross)){
       cross <- genotypesToCross.internal(population, "simulated")
@@ -63,9 +64,9 @@ markerPlacementPlot <- function(population, placeUsing=c("qtl","correlation"),th
       noqtl <- c(noqtl,sum(nqtl==0))
       multipleqtl <- c(multipleqtl,sum(nqtl>1))
     }
-    plot(p,noqtl,type='o',col="red",main="Number of markers placed",xlab="threshold",ylab="# of markers",ylim=c(0,nrow(population$offspring$genotypes$qtl$values)))
-    points(p,singleqtl,type='o',col="green")
-    points(p,multipleqtl,type='o',col="blue")
+    plot(p,noqtl,type='o',col="red",main="Number of markers placed",xlab="threshold",ylab="# of markers",ylim=c(0,nrow(population$offspring$genotypes$qtl$values)),lwd=3)
+    points(p,singleqtl,type='o',col="green",lwd=3)
+    points(p,multipleqtl,type='o',col="blue",lwd=3)
     cat("Maximal number of markers that can be placed:",max(singleqtl),"for threshold value:",p[which.max(singleqtl)],"\n")
     abline(v=p[which.max(singleqtl)],col="grey",lty=2)
     legend(x="topright",legend=c("no peak","single peak","multiple peaks"),col=c("red","green","blue"),cex=0.8,pch=21,lwd=2,bg="white")
