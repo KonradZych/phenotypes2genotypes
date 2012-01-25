@@ -53,7 +53,7 @@
 #	an object of class cross
 #
 ############################################################################################################
-findBiomarkers <- function(population, treshold=0.05, overlapInd = 0, proportion = c(50,50), margin = 15, verbose=FALSE, debugMode=0){
+findBiomarkers <- function(population, threshold=0.05, overlapInd = 0, proportion = c(50,50), margin = 15, verbose=FALSE, debugMode=0){
 	#*******CHECKS*******
 	check.population(population)
 	s<-proc.time()
@@ -69,7 +69,7 @@ findBiomarkers <- function(population, treshold=0.05, overlapInd = 0, proportion
 	
 	#*******CONVERTING CHILDREN PHENOTYPIC DATA TO GENOTYPES*******
 	s1 <- proc.time()
-	population <- convertfindBiomarkers.internal(population, treshold, overlapInd, proportion, margin, verbose, debugMode)
+	population <- convertfindBiomarkers.internal(population, threshold, overlapInd, proportion, margin, verbose, debugMode)
 	e1 <- proc.time()
 	if(verbose && debugMode==2)cat("Converting phenotypes to genotypes done in:",(e1-s1)[3],"seconds.\n")
 	

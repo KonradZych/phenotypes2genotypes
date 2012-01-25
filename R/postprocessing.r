@@ -229,7 +229,6 @@ smoothGeno <- function(cross,windowSize=1,chr,population,map=c("genetic","physic
   }else{
     oldMarkers <- NULL
   }
-  print(oldMarkers[1:10,1:10])
 	n.ind <- nind(cross)
   #cross <- fill.geno(cross)
   if(missing(chr)) chr <- 1:nchr(cross)
@@ -241,7 +240,7 @@ smoothGeno <- function(cross,windowSize=1,chr,population,map=c("genetic","physic
 	for(i in 1:length(chr)){
 		cross$geno[[chr[i]]]$data <- cross_geno[[i]]$data
 	}
-  #cross <- fill.geno(cross)
+  cross <- fill.geno(cross)
   if(verbose)cat("running est.rf\n")
 	cross <- est.rf(cross)
   if(verbose)cat("running est.map\n")

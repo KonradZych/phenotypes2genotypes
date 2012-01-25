@@ -1,7 +1,7 @@
 \name{findBiomarkers}
 \alias{findBiomarkers}
 \alias{use}
-\alias{treshold}
+\alias{threshold}
 \alias{overlapInd}
 \alias{proportion}
 \alias{margin}
@@ -15,12 +15,12 @@
 }
 
 \usage{
-  findBiomarkers(population, treshold=0.05, overlapInd = 0, proportion = c(50,50), margin = 15, verbose=FALSE, debugMode=0)
+  findBiomarkers(population, threshold=0.05, overlapInd = 0, proportion = c(50,50), margin = 15, verbose=FALSE, debugMode=0)
 }
 
 \arguments{
   \item{population}{ An object of class \code{\link{population}}. See \code{\link{createPopulation}} for details. }
- \item{treshold}{ If pval for gene (see \code{\link{findDiffExpressed}}) is lower that this value, we assume it is being diff. expressed.}
+ \item{threshold}{ If pval for gene (see \code{\link{findDiffExpressed}}) is lower that this value, we assume it is being diff. expressed.}
  \item{overlapInd}{ Number of individuals that are allowed to overlap between genotypes.}
  \item{proportion}{ Proportion of individuals expected to carrying a certain genotype.}
  \item{margin}{ Proportion is allowed to varry between this margin (2 sided).}
