@@ -37,16 +37,30 @@
 # OUTPUT:
 #  an object of class cross
 ############################################################################################################
-cross.denovo <- function(population, cross, n.chr, map=c("none","genetic","physical"), comparisonMethod = c(sumMajorityCorrelation,majorityCorrelation,meanCorrelation,majorityOfMarkers), 
-assignFunction=c(assignMaximumNoConflicts,assignMaximum), reOrder=TRUE, use.orderMarkers=FALSE, verbose=FALSE, debugMode=0){
+cross.denovo <- function(population, n.chr, orderUsingMap=FALSE, map=c("none","genetic","physical"), comparisonMethod = c(sumMajorityCorrelation,majorityCorrelation,meanCorrelation,majorityOfMarkers), 
+assignFunction=c(assignMaximumNoConflicts,assignMaximum), reOrder=TRUE, use.orderMarkers=FALSE, cross, verbose=FALSE, debugMode=0){
   #checks
   if(missing(population)) stop("provide population object\n")
   check.population(population)
-  if(missing(cross)) cross <- cross.denovo.internal(population,n.chr,verbose=TRUE,debugMode=2)
-  if(length(cross$geno)<=1) stop("Selected cross object contains too little chromosomes to proceed.")
   map <- checkParameters.internal(map,c("none","genetic","physical"),"map")
   comparisonMethod <- defaultCheck.internal(comparisonMethod,"comparisonMethod",4,sumMajorityCorrelation)
   assignFunction <- defaultCheck.internal(assignFunction,"assignFunction",2,assignMaximumNoConflicts)
+  if(orderUsingMap==TRUE){
+    if(map=="none"){
+      stop("OrderUsingMap chosen but no map specified! Use map parameter to specify which map should be used!\n")
+    }else if(map=="genetic"){
+      cross <- genotypesToCross.internal(population,"simulated","map_genetic")
+      invisible(cross)
+    }else if(map=="physical"){
+      cross <- genotypesToCross.internal(population,"simulated","map_physical")
+      invisible(cross)
+    }
+  }
+  if(missing(cross)) cross <- cross.denovo.internal(population,n.chr,verbose=TRUE,debugMode=2)
+  if(length(cross$geno)<=1){
+    cat("Selected cross object contains too little chromosomes to assign them, returning it.")
+    return(cross)
+  }
   if(verbose && debugMode==1) cat("cross.denovo starting withour errors in checkpoints.\n")
 
   if(map=="none"){
@@ -93,6 +107,8 @@ assignFunction=c(assignMaximumNoConflicts,assignMaximum), reOrder=TRUE, use.orde
     }
     e0 <- proc.time()
     if(verbose && debugMode==2)cat("Ordering markers inside the cross object done in:",(e0-s0)[3],"seconds.\n")
+  }else{
+    cross <- cross2
   }
     invisible(cross)
   }
@@ -293,10 +309,10 @@ majorityOfMarkers <- function(cross,originalMap,population,verbose=FALSE){
 #
 #
 ############################################################################################################
-cross.denovo.internal<- function(population,  n.chr,  use=c("geno","rf"), verbose=FALSE, debugMode=0){
+cross.denovo.internal<- function(population,  n.chr,  use=c("rf","geno"), verbose=FALSE, debugMode=0){
   if(missing(n.chr)) stop("n.chr in an obligatory parameter")
   if(missing(population)) stop("no population object provided")
-  use <- checkParameters.internal(use,c("geno","rf"),"use")
+  use <- checkParameters.internal(use,c("rf","geno"),"use")
   check.population(population)
   if(is.null(population$offspring$genotypes$simulated)){
     stop("no simulated genotypes in population object, first use findBiomarkers!\n")
