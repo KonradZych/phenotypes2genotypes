@@ -184,7 +184,7 @@ plotMarkerDistribution <- function(population,marker,nrDistributions,logarithmic
 #	matrix of corelations
 #
 ############################################################################################################
-projectOldMarkers <- function(cross,population,map=c("genetic","physical"),label=c("positions","names")){
+projectOldMarkers <- function(cross,population,map=c("genetic","physical"),label=c("positions","names","no"),...){
 	if(missing(cross)) stop("No cross object provided!\n")
 	if(missing(population)) stop("No population object provided!\n")
   map <- checkParameters.internal(map,c("genetic","physical"),"map")
@@ -194,9 +194,9 @@ projectOldMarkers <- function(cross,population,map=c("genetic","physical"),label
     cur_map <- population$maps$physical
   }
   if(is.null(cur_map)) stop("no ",map," map provided!")  
-  label <- checkParameters.internal(label,c("positions","names"),"label")
+  label <- checkParameters.internal(label,c("positions","names","no"),"label")
 	qp_ <- NULL
-	inListCheck.internal(label,"label",c("positions","names"))
+	inListCheck.internal(label,"label",c("positions","names","no"))
   cross <- jittermap(cross)
 	for(i in 1:nchr(cross)){
 		qp_ <- c(qp_,cross$geno[[i]]$map)
@@ -206,10 +206,12 @@ projectOldMarkers <- function(cross,population,map=c("genetic","physical"),label
 	qp <- qp_[presentMarkers]
 	if(label=="positions"){
 		qn <- round(cur_map[presentMarkers,2])
-	}else{
-		qn <- presentMarkers
+	}else if(label=="names"){
+    qn <- presentMarkers
+	}else if(label=="no"){
+		qn <- rep('',length(presentMarkers))
 	}
 	cross <- sim.geno(cross)
 	qtl <- makeqtl(cross,qc,qp,qn)
-	plot(qtl)
+	plot(qtl,...)
 }
