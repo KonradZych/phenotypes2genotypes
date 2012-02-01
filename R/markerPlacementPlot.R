@@ -69,6 +69,6 @@ markerPlacementPlot <- function(population, placeUsing=c("qtl","correlation"),th
     points(p,multipleqtl,type='o',col="blue",lwd=3)
     cat("Maximal number of markers that can be placed:",max(singleqtl),"for threshold value:",p[which.max(singleqtl)],"\n")
     abline(v=p[which.max(singleqtl)],col="grey",lty=2)
-    legend(x="topright",legend=c("no peak","single peak","multiple peaks"),col=c("red","green","blue"),cex=0.8,pch=21,lwd=2,bg="white")
+    legend(x="topright",legend=c("no peak","single peak","multiple peaks"),col=c("red","green","blue"),cex=1.7,pch=21,lwd=2,bg="white")
   }
 }
