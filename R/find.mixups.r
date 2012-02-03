@@ -52,7 +52,7 @@ find.mixups <- function(population,map=c("genetic","physical"),n.qtls=50,thresho
   if(threshold>100){
     warning("Too high threshold, none of the markers will pass it.\n")
   }
-  selectedphenotypes <- round(runif(n.selectedPhenotypes,1,nrow(population$offspring$phenotypes)))
+  #selectedphenotypes <- round(runif(n.selectedPhenotypes,1,nrow(population$offspring$phenotypes)))
   map <- checkParameters.internal(map,c("genetic","physical"),"map")
   if(map=="genetic"){
     matchingMarkers <- which(rownames(population$offspring$genotypes$real)%in%rownames(population$maps$genetic))
@@ -63,10 +63,11 @@ find.mixups <- function(population,map=c("genetic","physical"),n.qtls=50,thresho
       if(verbose) cat(nrow(population$offspring$genotypes$real)-length(matchingMarkers),"markers were removed due to name mismatch\n")
     }
     population10pheno <- population
-    population10pheno$offspring$phenotypes <- population10pheno$offspring$phenotypes[selectedphenotypes,]
+    #population10pheno$offspring$phenotypes <- population10pheno$offspring$phenotypes[1:10,]
     aa <- tempfile()
     sink(aa)
     returncross <- genotypesToCross.internal(population10pheno,"real","map_genetic")
+    returncross$pheno <- t(population$offspring$phenotypes)
     sink()
     file.remove(aa)
   }else{
@@ -79,15 +80,16 @@ find.mixups <- function(population,map=c("genetic","physical"),n.qtls=50,thresho
     }
     #for faster creation of cross
     population10pheno <- population
-    population10pheno$offspring$phenotypes <- population10pheno$offspring$phenotypes[selectedphenotypes,]
+    #population10pheno$offspring$phenotypes <- population10pheno$offspring$phenotypes[1:10,]
     aa <- tempfile()
     sink(aa)
     returncross <- genotypesToCross.internal(population10pheno,"real","map_physical")
+    returncross$pheno <- t(population$offspring$phenotypes)
     sink()
     file.remove(aa)
   }
   returncross <- calc.genoprob(returncross)
-  i <- round(runif(1,1,length(selectedphenotypes)))
+  i <- round(runif(1,1,nrow(population$offspring$phenotypes)))
   qtls_found <- 0
   qtls <- NULL
   markers <- rownames(population$offspring$phenotypes)
@@ -95,7 +97,7 @@ find.mixups <- function(population,map=c("genetic","physical"),n.qtls=50,thresho
   names(scores) <- colnames(population$offspring$phenotypes)
   while(qtls_found<n.qtls){
     cur_phenotype <- matrix(scanone(returncross,pheno.col=i,method="hk")[,3],1,nrow(population$offspring$genotypes$real))
-    cur_peaks <- getpeaks.internal(abs(cur_phenotype),5)
+    cur_peaks <- getpeaks.internal(abs(cur_phenotype),15)
     if(any(cur_peaks==2)){
       peakLocations <- which(cur_peaks==2)
       qtls_found <- qtls_found + length(peakLocations)
@@ -104,7 +106,7 @@ find.mixups <- function(population,map=c("genetic","physical"),n.qtls=50,thresho
       qtls <- c(qtls,rep(i,length(peakLocations)))
       names(qtls) <- c(old_names,peakLocations)
     }
-    i <- round(runif(1,1,length(selectedphenotypes)))
+    i <- round(runif(1,1,nrow(population$offspring$phenotypes)))
   }
   for(j in 1:qtls_found){
     group_a <- which(population$offspring$genotypes$real[as.numeric(names(qtls))[j],]==1)
