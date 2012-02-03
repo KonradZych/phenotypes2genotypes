@@ -63,7 +63,7 @@ find.mixups <- function(population,map=c("genetic","physical"),n.qtls=50,thresho
       if(verbose) cat(nrow(population$offspring$genotypes$real)-length(matchingMarkers),"markers were removed due to name mismatch\n")
     }
     population10pheno <- population
-    #population10pheno$offspring$phenotypes <- population10pheno$offspring$phenotypes[1:10,]
+    population10pheno$offspring$phenotypes <- population10pheno$offspring$phenotypes[1:10,]
     aa <- tempfile()
     sink(aa)
     returncross <- genotypesToCross.internal(population10pheno,"real","map_genetic")
@@ -80,7 +80,7 @@ find.mixups <- function(population,map=c("genetic","physical"),n.qtls=50,thresho
     }
     #for faster creation of cross
     population10pheno <- population
-    #population10pheno$offspring$phenotypes <- population10pheno$offspring$phenotypes[1:10,]
+    population10pheno$offspring$phenotypes <- population10pheno$offspring$phenotypes[1:10,]
     aa <- tempfile()
     sink(aa)
     returncross <- genotypesToCross.internal(population10pheno,"real","map_physical")
