@@ -315,7 +315,7 @@ cross.denovo.internal<- function(population,  n.chr,  use=c("rf","geno"), verbos
   use <- checkParameters.internal(use,c("rf","geno"),"use")
   check.population(population)
   if(is.null(population$offspring$genotypes$simulated)){
-    stop("no simulated genotypes in population object, first use findBiomarkers!\n")
+    stop("no simulated genotypes in population object, first use generateBiomarkers!\n")
   }
   #*******SAVING CROSS OBJECT*******
   s1 <- proc.time()

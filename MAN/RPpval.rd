@@ -45,7 +45,7 @@
 	\itemize{
     \item{\code{\link[RankProd]{RP}}}{ - Perform rank product method to identify differentially expressed genes.}
     \item{\code{\link{findDiffExpressed}}}{ - Select differentially expressed genes using Rank Product or student t-test analysis.}
-    \item{\code{\link{findBiomarkers}}}{ - Creating genotypes from children phenotypes.}
+    \item{\code{\link{generateBiomarkers}}}{ - Creating genotypes from children phenotypes.}
     \item{\code{\link{showRPpval}}}{- Printing out p-values calculated by the findDiffExpressed function.}
     \item{\code{\link{plotRPpval}}}{ - Plotting p-values calculated by the findDiffExpressed function.}
   }

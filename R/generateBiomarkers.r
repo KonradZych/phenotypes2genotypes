@@ -53,7 +53,7 @@
 #	an object of class cross
 #
 ############################################################################################################
-findBiomarkers <- function(population, threshold=0.05, overlapInd = 0, proportion = c(50,50), margin = 15, verbose=FALSE, debugMode=0){
+generateBiomarkers <- function(population, threshold=0.05, overlapInd = 0, proportion = c(50,50), margin = 15, verbose=FALSE, debugMode=0){
 	#*******CHECKS*******
 	check.population(population)
 	s<-proc.time()

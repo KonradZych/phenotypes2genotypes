@@ -22,7 +22,7 @@
 }
 
 \details{
-	After running \code{\link{findBiomarkers}} function, biomarkers are stored inside \code{\link{population}} class object.
+	After running \code{\link{generateBiomarkers}} function, biomarkers are stored inside \code{\link{population}} class object.
   To get them out, one can use getBiomarkers function. It will return matrix will all the markers or, if pattern is given,
   vector with marker matching best.
 }
@@ -40,7 +40,7 @@
 
 \seealso{
   \itemize{
-    \item{\code{\link{findBiomarkers}}}{ - Create genotype markers  out of gene expression data.}
+    \item{\code{\link{generateBiomarkers}}}{ - Create genotype markers  out of gene expression data.}
     \item{\code{\link{readFiles}}}{ - Load genotype, phenotype, genetic map data files into R environment into a population object.}
     \item{\code{\link{cross.denovo}}}{ - Create de novo genetic map or vector showing how chromosomes should be assigned.}
     \item{\code{\link{cross.saturate}}}{ - Saturate existing map.}
