@@ -273,7 +273,11 @@ scanQTLs <- function(population,map=c("genetic","physical"),verbose=FALSE){
     }
     population10pheno <- population
     population10pheno$offspring$phenotypes <- population10pheno$offspring$phenotypes[1:10,]
+    aa <- tempfile()
+    sink(aa)
     returncross <- genotypesToCross.internal(population10pheno,"real","map_genetic")
+    sink()
+    file.remove(aa)
   }else{
     matchingMarkers <- which(rownames(population$offspring$genotypes$real)%in%rownames(population$maps$physical))
     if(length(matchingMarkers)<=0) stop("Marker names on the map and in the genotypes doesn't match!\n")
@@ -285,7 +289,11 @@ scanQTLs <- function(population,map=c("genetic","physical"),verbose=FALSE){
     #for faster creation of cross
     population10pheno <- population
     population10pheno$offspring$phenotypes <- population10pheno$offspring$phenotypes[1:10,]
+    aa <- tempfile()
+    sink(aa)
     returncross <- genotypesToCross.internal(population10pheno,"real","map_physical")
+    sink()
+    file.remove(aa)
   }
   returncross$pheno <- t(population$offspring$genotypes$simulated)
   returncross <- calc.genoprob(returncross, step=0.1)

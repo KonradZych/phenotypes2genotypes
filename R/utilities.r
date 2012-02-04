@@ -43,6 +43,9 @@
 ############################################################################################################
 print.population <- function(x, ...){
 	cat("This is object of class \"population\"\n  It is too complex to print, so we provide just this summary.\n")
+	if(missing(x)) stop("Please, provide an object of class population.\n")
+	if(!(any(names(x)=="offspring"))){  stop("This is not correct population object.\n") }
+	if(!(any(names(x)=="founders"))){  stop("This is not correct population object.\n") }
 	if(!(is.null(x$offspring))){
     cat("Offspring (",ncol(x$offspring$phenotypes),"):\n",sep="",...)
 		if(!(is.null(x$offspring$phenotypes))){
@@ -51,14 +54,19 @@ print.population <- function(x, ...){
 			stop("No phenotype data for offspring, this is not a valid population object\n")
 		}
 		if(!(is.null(x$offspring$genotypes$real))){
-			cat("\tOriginal genotypes:",ncol(x$offspring$genotypes$real),"\n",...)
+			cat("\tOriginal genotypes:",ncol(x$offspring$genotypes$real),"individuals",nrow(x$offspring$genotypes$real),"markers\n",...)
 		}else{
 			cat("\tOriginal genotypes: None\n",...)
 		}
     if(!(is.null(x$offspring$genotypes$simulated))){
-			cat("\tSimulated genotypes:",ncol(x$offspring$genotypes$simulated),"\n",...)
+			cat("\tOriginal genotypes:",ncol(x$offspring$genotypes$simulated),"individuals",nrow(x$offspring$genotypes$simulated),"markers\n",...)
 		}else{
 			cat("\tSimulated genotypes: None\n",...)
+		}
+		if(!(is.null(x$offspring$genotypes$qtl))){
+			cat("\tQTL scan results detected.\n",...)
+		}else{
+			cat("\tQTL scan results not detected, run scanQTLs.\n",...)
 		}
 		if(!(is.null(x$maps$genetic))){
 			cat("\tGenetic map:",nrow(x$maps$genetic),"markers, ",length(table(x$maps$genetic[,1]))," chromosomes\n",...)

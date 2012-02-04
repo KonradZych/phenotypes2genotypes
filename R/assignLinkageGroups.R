@@ -40,7 +40,6 @@ assignLinkageGroups <- function(cross, n.chr, use=c("geno","rf"), ...){
   inListCheck.internal(use,"use",c("rf","geno"))
   if(use=="geno") clustering <- kmeans(t(pull.geno(cross)), n.chr, nstart=100, ...)
   if(use=="rf") clustering <- kmeans(est.rf(cross)$rf, n.chr, nstart=100, ...)
-  cat(clustering$cluster,"\n")
   reorganizeMarkersWithin(cross, clustering$cluster)
 }
 
