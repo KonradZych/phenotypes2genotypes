@@ -57,7 +57,7 @@ assignFunction=c(assignMaximumNoConflicts,assignMaximum), reOrder=TRUE, use.orde
 }
 
 \details{
-cross.denovo function creates new genetic map using genotypes simulated by findBiomarkers function. Then it uses information provided by user to
+cross.denovo function creates new genetic map using genotypes simulated by generateBiomarkers function. Then it uses information provided by user to
 assign number to newly created chromosomes.
 }
 \author{
@@ -76,7 +76,7 @@ assign number to newly created chromosomes.
     \item{\code{\link{assignedChrToMarkers}}}{ - Create ordering vector from chromosome assignment vector.}
     \item{\code{\link{cross.saturate}}}{ - Saturate existing map.}
     \item{\code{\link{reduceChromosomesNumber}}}{ - Number of routines to reduce number of chromosomes of cross object.}
-    \item{\code{\link{findBiomarkers}}}{ - Creating genotype markers out of gene expression data.}
+    \item{\code{\link{generateBiomarkers}}}{ - Creating genotype markers out of gene expression data.}
 }
 }
 

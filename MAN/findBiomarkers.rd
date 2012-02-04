@@ -1,5 +1,5 @@
-\name{findBiomarkers}
-\alias{findBiomarkers}
+\name{generateBiomarkers}
+\alias{generateBiomarkers}
 \alias{use}
 \alias{threshold}
 \alias{overlapInd}
@@ -15,7 +15,7 @@
 }
 
 \usage{
-  findBiomarkers(population, threshold=0.05, overlapInd = 0, proportion = c(50,50), margin = 15, verbose=FALSE, debugMode=0)
+  generateBiomarkers(population, threshold=0.05, overlapInd = 0, proportion = c(50,50), margin = 15, verbose=FALSE, debugMode=0)
 }
 
 \arguments{
@@ -46,19 +46,19 @@
 	set.seed(102)
 	population <- fakePopulation(type="f2")
 	population <- findDiffExpressed(population)
-	population <- findBiomarkers(population,proportion=c(25,50,25),treshold=0.01)
+	population <- generateBiomarkers(population,proportion=c(25,50,25),treshold=0.01)
 	\dontrun{
 	#Example for BC population
 	set.seed(102)
 	population <- fakePopulation(type="bc")
 	population <- findDiffExpressed(population)
-	population <- findBiomarkers(population,proportion=c(25,75),treshold=0.01)
+	population <- generateBiomarkers(population,proportion=c(25,75),treshold=0.01)
 
 	#Example for BC population
 	set.seed(102)
 	population <- fakePopulation(type="riself")
 	population <- findDiffExpressed(population)
-	population <- findBiomarkers(population,proportion=c(50,50),treshold=0.01)
+	population <- generateBiomarkers(population,proportion=c(50,50),treshold=0.01)
 	}
 }
 

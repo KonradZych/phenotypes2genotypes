@@ -51,7 +51,7 @@ be selected with different threshold values.
     \item{\code{\link{reorganizeMarkersWithin}}}{ - Apply new ordering on the cross object usign ordering vector.}
     \item{\code{\link{assignedChrToMarkers}}}{ - Create ordering vector from chromosome assignment vector.}
     \item{\code{\link{reduceChromosomesNumber}}}{ - Number of routines to reduce number of chromosomes of cross object.}
-    \item{\code{\link{findBiomarkers}}}{ - Creating genotype markers out of gene expression data.}
+    \item{\code{\link{generateBiomarkers}}}{ - Creating genotype markers out of gene expression data.}
 }
 }
 
