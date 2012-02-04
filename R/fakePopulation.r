@@ -80,16 +80,16 @@ fakePopulation <- function(n.founders = 4, n.offspring = 100, n.markers=100,n.ch
 	pheno <- t(apply(geno,1,fakePheno.internal))
 	rownames(pheno) <- rownames(geno)
 	colnames(pheno) <- colnames(geno)
-  if(n.mixups>0){
-    pheno <- fakeMixUps.internal(pheno,n.mixups)
-  }
 	founders <- t(apply(pheno,1,fakeFounders.internal,n.founders))
 	rownames(founders) <- rownames(geno)
 	colnames(founders) <- 1:n.founders
 	colnames(founders)[1:(n.founders/2)] <- paste("Founder",1,1:(n.founders/2),sep="_")
 	colnames(founders)[(n.founders/2+1):n.founders] <- paste("Founder",2,(n.founders/2+1):n.founders,sep="_")
-	geno[which(geno==2)] <- 0
+	#geno[which(geno==2)] <- 0
 	foundersGroups <- c(rep(0,(n.founders/2)),rep(1,(n.founders/2)))
+	if(n.mixups>0){
+    pheno <- fakeMixUps.internal(pheno,n.mixups)
+	}
 	population <- createPopulation(pheno, founders, foundersGroups, geno, map, physicalMap,verbose=verbose)
 	check.population(population)
 	invisible(population)
@@ -210,9 +210,10 @@ simBC.internal <- function(genoRow){
 fakeMixUps.internal<- function(pheno, n.mixups){
   for(i in 1:n.mixups){
     toMix <- sample(1:nrow(pheno),2)
+    print(toMix)
     temp_ <- pheno[toMix[1],]
     pheno[toMix[1],] <- pheno[toMix[2],]
-    pheno[toMix[2],]<- pheno[toMix[1],]
+    pheno[toMix[2],] <- temp_
   }
   invisible(pheno)
 }
