@@ -53,7 +53,7 @@
 #	an object of class cross
 #
 ############################################################################################################
-generateBiomarkers <- function(population, threshold=0.05, overlapInd = 0, proportion = c(50,50), margin = 15, verbose=FALSE, debugMode=0){
+generateBiomarkers <- function(population, threshold=0.05, overlapInd = 10, proportion = c(50,50), margin = 15, verbose=FALSE, debugMode=0){
 	#*******CHECKS*******
 	check.population(population)
 	s<-proc.time()
@@ -240,11 +240,13 @@ splitPheno.internal <- function(offspring, founders, overlapInd, proportion, mar
 			output <- rbind(output,cur)
 			markerNames <- c(markerNames,rownames(offspring)[x])
 		}
-    if(x%%100==0){
-      e <- proc.time()
-      te <- ((e-s)[3]/x)*(nrow(offspring)-x+left)
-      cat("Done with marker",done+x,"/",nrow(offspring)+left+done,". Time remaining:",te,"s\n")
-    }
+		if(verbose){
+			if(x%%100==0){
+				e <- proc.time()
+				te <- ((e-s)[3]/x)*(nrow(offspring)-x+left)
+				cat("Done with marker",done+x,"/",nrow(offspring)+left+done,". Time remaining:",te,"s\n")
+			}
+		}
 	}
 	invisible(list(output,markerNames))
 }
@@ -271,7 +273,7 @@ splitPheno.internal <- function(offspring, founders, overlapInd, proportion, mar
 ############################################################################################################
 splitPhenoRowEM.internal <- function(x, offspring, founders, overlapInd, proportion, margin, groupLabels, up=1,verbose=FALSE){
 	y<-x
-	x<-rownames(offspring)[x]
+	x<-as.character(rownames(offspring)[x])
 	aa <- tempfile()
 	sink(aa)
 	nrDistributions <- length(proportion)
@@ -279,62 +281,34 @@ splitPhenoRowEM.internal <- function(x, offspring, founders, overlapInd, proport
 	
 	EM <- NULL
 	s1<-proc.time()
-	tryCatch(EM <- normalmixEM(sort(offspring[x,]), k=nrDistributions, maxrestarts=0, maxit = 100,fast=FALSE),error = function(x){cat(x[[1]],"\n")})
+	tryCatch(EM <- normalmixEM((offspring[x,]), k=nrDistributions, maxrestarts=0, maxit = 100,fast=FALSE),error = function(x){cat(x[[1]],"\n")})
 	e1<-proc.time()
-
-	if(is.null(EM)){
-	 result <- NULL
-	}else{
-		if(up==1){
-			genotypes <- c(0:(nrDistributions-1))
-		}else if(up==0){
-			genotypes <- c((nrDistributions-1):0)
-		}
-		
-		len <- vector(mode="numeric",length=nrDistributions)
-		 for(i in 1:nrDistributions){
-			len[i]<-length(offspring[x,])*EM$lambda[which(EM$mu==sort(EM$mu)[i])]
-			startVal <- sum(len[1:i-1])
-			result[which(offspring[x,] %in% sort(offspring[x,])[startVal:(startVal+len[i])])] <- genotypes[i]
-		 }
-      result <- filterRow.internal(result, overlapInd, proportion, margin, genotypes)
-	}
 	sink()
 	file.remove(aa)
+	if(is.null(EM)){
+        result <- NULL
+	}else if(filterRow.internal(EM$lambda,proportion,margin)){
+		if(up==1){
+			genotypes <- c(1:(nrDistributions))
+		}else if(up==0){
+			genotypes <- c((nrDistributions):1)
+		}
+		for(i in (1:length(offspring[x,]))){
+			if(any(EM$posterior[i,]>0.7)){
+				result[i] <- genotypes[which(EM$posterior[i,]>0.7)]
+			}else{
+				result[i] <- NA
+			}
+		}
+		if(sum(is.na(result))>overlapInd){
+			result <- NULL
+		}
+	}else{
+	 result <- NULL
+	}
 	invisible(result)
 }
 
-############################################################################################################
-#									*** filterRow.internal ***
-#
-# DESCRIPTION:
-#	checking whether given genotype row meets given requirments
-# 
-# PARAMETERS:
-# 	population - Ril type object, must contain founders phenotypic data.
-# 	overlapInd - Number of individuals that are allowed in the overlap
-# 	proportion - Proportion of individuals expected to carrying a certain genotype 
-# 	margin - Proportion is allowed to varry between this margin (2 sided)
-# 	verbose - Be verbose
-# 	debugMode - 1: Print our checks, 2: print additional time information
-# 
-# OUTPUT:
-#	genotype row if it meets requirments or NULL
-#
-############################################################################################################
-filterRow.internal <- function(result, overlapInd, proportion, margin, genotypes){
-	### creating inverted genotypes matrix, to be sure, that we won't filter out anythng in correct proportion
-	### this function returns either unchanged result vector, which is then rbinded to other results, or
-	### NULL, which is ignored by rbind, and we drop current result
-	genotypes2 <- genotypes[length(genotypes):1]
-	if(filterRowSub.internal(result, overlapInd, proportion, margin, genotypes)){
-		invisible(result)
-	}else if(filterRowSub.internal(result, overlapInd, proportion, margin, genotypes2)){
-		invisible(result)
-	}else{
-		return(NULL)
-	}
-}
 
 ############################################################################################################
 #									*** filterRowSub.internal ***
@@ -352,14 +326,10 @@ filterRow.internal <- function(result, overlapInd, proportion, margin, genotypes
 #	boolean
 #
 ############################################################################################################
-filterRowSub.internal <- function(genotypeRow, overlapInd, proportion, margin, genotypes){
-	if(sum(is.na(genotypeRow)) > overlapInd) return(FALSE)
-	for(i in 1:length(proportion)){
-		cur <- sum(genotypeRow==genotypes[i])/length(genotypeRow) * 100
-		if(is.na(cur)) return(FALSE)
-		upLimit <- proportion[i] + margin/2
-		downLimit <- proportion[i] - margin/2
-		if(!((cur < upLimit)&&(cur > downLimit))){
+filterRow.internal<- function(lambda, proportion, margin){
+	if(length(lambda)!=length(proportion)) return(FALSE)
+	for(i in 1:length(lambda)){
+		if((lambda[i]>((proportion[i]+margin/2)/100))||(lambda[i]<((proportion[i]-margin/2)/100))){
 			return(FALSE)
 		}
 	}
