@@ -322,6 +322,7 @@ cross.denovo.internal<- function(population,  n.chr,  use=c("rf","geno"), verbos
   aa <- tempfile()
   sink(aa)
   cross <- genotypesToCross.internal(population,"simulated",verbose=verbose,debugMode=debugMode)
+  #cross <- fill.geno(cross)
   sink()
   file.remove(aa)
   e1 <- proc.time()
@@ -330,7 +331,7 @@ cross.denovo.internal<- function(population,  n.chr,  use=c("rf","geno"), verbos
   #####
   ######
   ########## VERY DIRTY HACK
-  cross <- convert2riself(cross)
+  #cross <- convert2riself(cross)
   
   #*******CREATING NEW MAP*******
   s1 <- proc.time()

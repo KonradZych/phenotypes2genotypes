@@ -38,7 +38,10 @@
 ############################################################################################################
 assignLinkageGroups <- function(cross, n.chr, use=c("geno","rf"), ...){
   inListCheck.internal(use,"use",c("rf","geno"))
-  if(use=="geno") clustering <- kmeans(t(pull.geno(cross)), n.chr, nstart=100, ...)
+  geno <- t(pull.geno(cross))
+  inplaceOfNA <- min(geno,na.rm=T)-1
+  geno[which(is.na(geno))] <- inplaceOfNA
+  if(use=="geno") clustering <- kmeans(geno, n.chr, nstart=100, ...)
   if(use=="rf") clustering <- kmeans(est.rf(cross)$rf, n.chr, nstart=100, ...)
   reorganizeMarkersWithin(cross, clustering$cluster)
 }
