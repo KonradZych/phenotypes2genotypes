@@ -36,7 +36,7 @@
 # OUTPUT:
 #	object of class cross
 ############################################################################################################
-find.mixups <- function(population,map=c("genetic","physical"),n.qtls=50,threshold=50,verbose=FALSE){
+find.mixups <- function(population,map=c("genetic","physical"),n.qtls=50,threshold=15,verbose=FALSE){
   if(missing(population)) stop("Please provide a population object\n")
   check.population(population)
   if(is.null(population$offspring$genotypes$real)){
@@ -97,7 +97,7 @@ find.mixups <- function(population,map=c("genetic","physical"),n.qtls=50,thresho
   names(scores) <- colnames(population$offspring$phenotypes)
   while(qtls_found<n.qtls){
     cur_phenotype <- matrix(scanone(returncross,pheno.col=i,method="hk")[,3],1,nrow(population$offspring$genotypes$real))
-    cur_peaks <- getpeaks.internal(abs(cur_phenotype),15)
+    cur_peaks <- getpeaks.internal(abs(cur_phenotype),threshold)
     if(any(cur_peaks==2)){
       peakLocations <- which(cur_peaks==2)
       qtls_found <- qtls_found + length(peakLocations)
@@ -110,12 +110,12 @@ find.mixups <- function(population,map=c("genetic","physical"),n.qtls=50,thresho
   }
   for(j in 1:qtls_found){
     group_a <- which(population$offspring$genotypes$real[as.numeric(names(qtls))[j],]==1)
-    group_b <- population$offspring$phenotypes[qtls[j],which(population$offspring$genotypes$real[as.numeric(names(qtls))[j],]==2)]
+    group_b <- which(population$offspring$genotypes$real[as.numeric(names(qtls))[j],]==2)
     scores <- scoreMixups.internal(group_a,group_b,scores,qtls_found,population$offspring$phenotypes[qtls[j],])
   }
   if(verbose){
-    if(any(scores>threshold)){
-      flagged <- which(scores>threshold)
+    if(any(scores>50)){
+      flagged <- which(scores>50)
       cat("Found",length(flagged),"possible mix-ups:\n")
       for(flag in flagged){      
         cat(names(scores)[flag],":",scores[flag],"% flagged\n")
@@ -126,10 +126,10 @@ find.mixups <- function(population,map=c("genetic","physical"),n.qtls=50,thresho
 }
 
 scoreMixups.internal <- function(group_a,group_b,scores,qtls_found,curRow){
-  rowMean <- mean(curRow)
   meanGroupA <- mean(curRow[group_a])
   meanGroupB <- mean(curRow[group_b])
-  increase <- 1/qtls_found*100
+  rowMean <- mean(meanGroupA,meanGroupB)
+  increase <- 1#/qtls_found*100
   if(meanGroupA>meanGroupB){
     if(any(curRow[group_a]<rowMean)){
       positions <- names(curRow[group_a])[which(curRow[group_a]<rowMean)]

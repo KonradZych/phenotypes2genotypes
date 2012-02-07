@@ -182,20 +182,17 @@ convertfindBiomarkers.internal <- function(population, treshold, overlapInd, pro
         upRils <- upRils[-inupndown,]
       }
 			cur <- splitPheno.internal(downRils, downParental, overlapInd, proportion, margin, population$founders$groups, 0, 0, nrow(upRils),verbose)
-			output <- rbind(output,cur[[1]])
-			markerNames <- c(markerNames,cur[[2]])
+			output <- rbind(output,cur)
 		}else{
 			if(verbose) cat("Selected ",nrow(upRils),"upregulated markers.\n")
 		}
 		cur <- splitPheno.internal(upRils, upParental, overlapInd, proportion, margin, population$founders$groups, 1, nrow(downRils), 0,verbose)
-		output <- rbind(output,cur[[1]])
-		markerNames <- c(markerNames,cur[[2]])
+		output <- rbind(output,cur)
 	}else{
 		if(!(is.null(dim(downRils)))&&(nrow(downRils)!=0)){
 			if(verbose) cat("Selected ",nrow(downRils),"downregulated markers.\n")
 			cur <- splitPheno.internal(downRils, downParental, overlapInd, proportion, margin, population$founders$groups, 0, 0, 0,verbose)
-			output <- rbind(output,cur[[1]])
-			markerNames <- c(markerNames,cur[[2]])
+			output <- rbind(output,cur)
 		}else{
 			stop("None of the markers was selected using specified treshold: ",treshold,"\n")
 		}
@@ -205,7 +202,6 @@ convertfindBiomarkers.internal <- function(population, treshold, overlapInd, pro
 	if(is.null(dim(output))) stop("No markers selected.")
 	population$offspring$genotypes$simulated <- output
 	colnames(population$offspring$genotypes$simulated) <- colnames(upRils)
-	rownames(population$offspring$genotypes$simulated) <- markerNames
 	invisible(population)
 }
 
@@ -248,7 +244,8 @@ splitPheno.internal <- function(offspring, founders, overlapInd, proportion, mar
 			}
 		}
 	}
-	invisible(list(output,markerNames))
+  rownames(output) <- markerNames
+	invisible(output)
 }
 
 ############################################################################################################
@@ -293,9 +290,9 @@ splitPhenoRowEM.internal <- function(x, offspring, founders, overlapInd, proport
 		}else if(up==0){
 			genotypes <- c((nrDistributions):1)
 		}
-		for(i in (1:length(offspring[x,]))){
-			if(any(EM$posterior[i,]>0.7)){
-				result[i] <- genotypes[which(EM$posterior[i,]>0.7)]
+		for(i in (1:length(population$offspring$phenotypes[1,]))){
+			if(any(EM$posterior[i,]>0.8)){
+				result[i] <- genotypes[which.max(EM$posterior[i,])]
 			}else{
 				result[i] <- NA
 			}
