@@ -37,6 +37,7 @@
 #	object of class cross
 ############################################################################################################
 find.mixups <- function(population,map=c("genetic","physical"),n.qtls=50,threshold=15,verbose=FALSE){
+  s <- proc.time()
   if(missing(population)) stop("Please provide a population object\n")
   check.population(population)
   if(is.null(population$offspring$genotypes$real)){
@@ -88,7 +89,6 @@ find.mixups <- function(population,map=c("genetic","physical"),n.qtls=50,thresho
     file.remove(aa)
   }
   returncross <- calc.genoprob(returncross)
-  i <- round(runif(1,1,nrow(population$offspring$phenotypes)))
   qtls_found <- 0
   qtls <- NULL
   markers <- rownames(population$offspring$phenotypes)
@@ -96,18 +96,18 @@ find.mixups <- function(population,map=c("genetic","physical"),n.qtls=50,thresho
   names(scores) <- colnames(population$offspring$phenotypes)
   done <- 0
   while(qtls_found<n.qtls){
-    cur_phenotype <- matrix(scanone(returncross,pheno.col=i,method="hk")[,3],1,nrow(population$offspring$genotypes$real))
+    phenotype <- round(runif(1,1,nrow(population$offspring$phenotypes)))
+    cur_phenotype <- matrix(scanone(returncross,pheno.col=phenotype,method="hk")[,3],1,nrow(population$offspring$genotypes$real))
     cur_peaks <- getpeaks.internal(abs(cur_phenotype),threshold)
     done <- done+1
     if(any(cur_peaks==2)){
       peakLocations <- which(cur_peaks==2)
       qtls_found <- qtls_found + length(peakLocations)
-      if(verbose) cat(qtls_found,"qtls found\n")
+      if(verbose) cat(qtls_found,"qtls found, phenotype:",phenotype,"marker:",peakLocations,"\n")
       old_names <- names(qtls)
-      qtls <- c(qtls,rep(i,length(peakLocations)))
+      qtls <- c(qtls,rep(phenotype,length(peakLocations)))
       names(qtls) <- c(old_names,peakLocations)
     }
-    i <- round(runif(1,1,nrow(population$offspring$phenotypes)))
   }
   newGeno <- population$offspring$genotypes$real
   for(j in 1:qtls_found){
@@ -127,6 +127,8 @@ find.mixups <- function(population,map=c("genetic","physical"),n.qtls=50,thresho
       }
     }
   }
+  e <- proc.time()
+  if(verbose) cat("Function runtime:",(e-s)[3],"s \n")
   invisible(list(newGeno,scores))
 }
 
