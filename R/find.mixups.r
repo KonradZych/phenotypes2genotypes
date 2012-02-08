@@ -48,7 +48,7 @@ find.mixups <- function(population,map=c("genetic","physical"),n.qtls=50,thresho
   if(!is.finite(n.qtls)){
     stop("n.qtls must be a finite, numeric value.\n")
   }
-  if(n.qtls<0 || n.qtls>nrow(population10pheno$offspring$phenotypes)){
+  if(n.qtls<0 || n.qtls>nrow(population$offspring$phenotypes)){
     stop("Value of n.qtls is too high or too low.\n")
   }
   map <- checkParameters.internal(map,c("genetic","physical"),"map")
