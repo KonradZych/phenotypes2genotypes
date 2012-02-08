@@ -42,17 +42,15 @@ find.mixups <- function(population,map=c("genetic","physical"),n.qtls=50,thresho
   if(is.null(population$offspring$genotypes$real)){
     stop("No original genotypes in population$offspring$genotypes$real, load them in using intoPopulation function\n")
   }
-  if((n.qtls*10)<nrow(population$offspring$phenotypes)){
-    n.selectedPhenotypes <- n.qtls*10
-  }else if(n.qtls<nrow(population$offspring$phenotypes)){
-    n.selectedPhenotypes <- n.qtls
-  }else{
-    stop("n.qtls parameter is too high! Please choose at maximum number of the phenotypes/10.\n")
+  if(!is.finite(threshold)){
+    stop("Threshold must be a finite, numeric value.\n")
   }
-  if(threshold>100){
-    warning("Too high threshold, none of the markers will pass it.\n")
+  if(!is.finite(n.qtls)){
+    stop("n.qtls must be a finite, numeric value.\n")
   }
-  #selectedphenotypes <- round(runif(n.selectedPhenotypes,1,nrow(population$offspring$phenotypes)))
+  if(n.qtls<0 || n.qtls>nrow(population10pheno$offspring$phenotypes)){
+    stop("Value of n.qtls is too high or too low.\n")
+  }
   map <- checkParameters.internal(map,c("genetic","physical"),"map")
   if(map=="genetic"){
     matchingMarkers <- which(rownames(population$offspring$genotypes$real)%in%rownames(population$maps$genetic))
@@ -62,6 +60,7 @@ find.mixups <- function(population,map=c("genetic","physical"),n.qtls=50,thresho
       population$maps$genetic <- population$maps$genetic[rownames(population$offspring$genotypes$real),]
       if(verbose) cat(nrow(population$offspring$genotypes$real)-length(matchingMarkers),"markers were removed due to name mismatch\n")
     }
+    ### THAT's just ugly trick to make saving the cross with a lot fo phenotypes faster.
     population10pheno <- population
     population10pheno$offspring$phenotypes <- population10pheno$offspring$phenotypes[1:10,]
     aa <- tempfile()
@@ -95,9 +94,11 @@ find.mixups <- function(population,map=c("genetic","physical"),n.qtls=50,thresho
   markers <- rownames(population$offspring$phenotypes)
   scores <- vector(mode="numeric",length=ncol(population$offspring$phenotypes))
   names(scores) <- colnames(population$offspring$phenotypes)
+  done <- 0
   while(qtls_found<n.qtls){
     cur_phenotype <- matrix(scanone(returncross,pheno.col=i,method="hk")[,3],1,nrow(population$offspring$genotypes$real))
     cur_peaks <- getpeaks.internal(abs(cur_phenotype),threshold)
+    done <- done+1
     if(any(cur_peaks==2)){
       peakLocations <- which(cur_peaks==2)
       qtls_found <- qtls_found + length(peakLocations)
@@ -108,12 +109,16 @@ find.mixups <- function(population,map=c("genetic","physical"),n.qtls=50,thresho
     }
     i <- round(runif(1,1,nrow(population$offspring$phenotypes)))
   }
+  newGeno <- population$offspring$genotypes$real
   for(j in 1:qtls_found){
     group_a <- which(population$offspring$genotypes$real[as.numeric(names(qtls))[j],]==1)
     group_b <- which(population$offspring$genotypes$real[as.numeric(names(qtls))[j],]==2)
-    scores <- scoreMixups.internal(group_a,group_b,scores,qtls_found,population$offspring$phenotypes[qtls[j],])
+    newGeno_ <- scoreMixups.internal(group_a,group_b,scores,qtls_found,population$offspring$phenotypes[qtls[j],],newGeno,as.numeric(names(qtls))[j])
+    newGeno <- newGeno_[[1]]
+    scores <- newGeno_[[2]]
   }
   if(verbose){
+    cat("Numbers of the phenotypes scanned:",done,"\n")
     if(any(scores>50)){
       flagged <- which(scores>50)
       cat("Found",length(flagged),"possible mix-ups:\n")
@@ -122,32 +127,38 @@ find.mixups <- function(population,map=c("genetic","physical"),n.qtls=50,thresho
       }
     }
   }
-  invisible(scores)
+  invisible(list(newGeno,scores))
 }
 
-scoreMixups.internal <- function(group_a,group_b,scores,qtls_found,curRow){
+scoreMixups.internal <- function(group_a,group_b,scores,qtls_found,curRow,genotypes,n.curMarker){
+  newRow <- genotypes[n.curMarker,]
   meanGroupA <- mean(curRow[group_a])
   meanGroupB <- mean(curRow[group_b])
-  rowMean <- mean(meanGroupA,meanGroupB)
-  increase <- 1#/qtls_found*100
+  rowMean <- mean(curRow)
+  increase <- 1/qtls_found*100
   if(meanGroupA>meanGroupB){
     if(any(curRow[group_a]<rowMean)){
       positions <- names(curRow[group_a])[which(curRow[group_a]<rowMean)]
       scores[positions] <- scores[positions]+increase
+      newRow[positions] <- 2
     }
     if(any(curRow[group_b]>rowMean)){
       positions <- names(curRow[group_b])[which(curRow[group_b]>rowMean)]
       scores[positions] <- scores[positions]+increase
+      newRow[positions] <- 1
     }
   }else{
     if(any(curRow[group_a]>rowMean)){
       positions <- names(curRow[group_a])[which(curRow[group_a]>rowMean)]
       scores[positions] <- scores[positions]+increase
+      newRow[positions] <- 2
     }
     if(any(curRow[group_b]<rowMean)){
       positions <- names(curRow[group_b])[which(curRow[group_b]<rowMean)]
       scores[positions] <- scores[positions]+increase
+      newRow[positions] <- 1
     }
   }
-  invisible(scores)
+  genotypes[n.curMarker,] <- newRow
+  invisible(list(genotypes,scores))
 }
