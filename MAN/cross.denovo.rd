@@ -15,16 +15,16 @@
 }
 
 \usage{
-cross.denovo(population, cross, n.chr, map=c("none","genetic","physical"), comparisonMethod = c(sumMajorityCorrelation,majorityCorrelation,meanCorrelation,majorityOfMarkers), 
-assignFunction=c(assignMaximumNoConflicts,assignMaximum), reOrder=TRUE, use.orderMarkers=FALSE, verbose=FALSE, debugMode=0)
+cross.denovo(population, n.chr, orderUsingMap=FALSE, map=c("none","genetic","physical"), comparisonMethod = c(sumMajorityCorrelation,majorityCorrelation,meanCorrelation,majorityOfMarkers), 
+assignFunction=c(assignMaximumNoConflicts,assignMaximum), reOrder=TRUE, use.orderMarkers=FALSE, cross, verbose=FALSE, debugMode=0)
 	
 }
 
 \arguments{
 \item{population}{ An object of class \code{\link{population}}. See \code{\link{createPopulation}} for details. }
-\item{cross}{ An object of class \code{cross}. See \code{\link[qtl]{read.cross}} for details. }
  \item{n.chr}{ Number of chromosomes expected on the map.}
- \item{map}{ Which map ( from ones stored in population$maps) should be used fo assigning chromosomes on the created map.}
+ \item{orderUsingMap}{ Shall markers in the result cross be ordered using one of the maps in population object.}
+ \item{map}{ Which map ( from ones stored in population$maps) should be used for assigning chromosomes on the created map.}
  \item{comparisonMethod}{ Method used to compare chromosomes from the new map to the original ones while assigning:
    \itemize{
     \item{sumMajorityCorrelation}{ - For each chromosome in cross for every marker checks the marker it is
@@ -48,6 +48,7 @@ assignFunction=c(assignMaximumNoConflicts,assignMaximum), reOrder=TRUE, use.orde
  }
  \item{reOrder}{ if TRUE, cross object is returned, FALSE - vector showing how chromosomes should be assigned}
  \item{use.orderMarkers}{should markers on the newly created map be ordered using R/qtl orderMarkers funtion}
+ \item{cross}{ An object of class \code{cross}. See \code{\link[qtl]{read.cross}} for details. }
  \item{verbose}{ be verbose}
  \item{debugMode}{ 1: Print our checks, 2: print additional time information }
 }

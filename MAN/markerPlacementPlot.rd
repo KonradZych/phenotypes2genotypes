@@ -9,7 +9,7 @@
 }
 
 \usage{
-	markerPlacementPlot(population, placeUsing=c("qtl","correlation"), cross)
+	markerPlacementPlot(population, placeUsing=c("qtl","correlation"), thrRange=c(1,5,1),cross,verbose=FALSE)
 }
 
 \arguments{
@@ -21,7 +21,10 @@
     \item{correlation}{ - physical map from cross$maps$physical.}
   }
   }
+\item{thrRange}{ Range of the threshold to be checked. Specified in a format(start,stop,step).}
+}
 \item{cross}{ An object of class \code{cross}. See \code{\link[qtl]{read.cross}} for details. }
+ \item{verbose}{ Be verbose.}
 }
 
 \value{

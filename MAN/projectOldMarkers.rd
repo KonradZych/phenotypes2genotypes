@@ -8,14 +8,15 @@
 }
 
 \usage{
-	projectOldMarkers(cross,population,map=c("genetic","physical"),label=c("positions","names"))
+	projectOldMarkers(cross,population,map=c("genetic","physical"),label=c("positions","names","no"),...)
 }
 
 \arguments{
- \item{cross}{ R/qtl cross type object.}
-  \item{population}{ an object of class \code{\link{population}}}
- \item{map}{ which map (from ones stored in population$maps) should be used fo assigning chromosomes on the created map}
- \item{label}{ how old markers should be labeled on the plot, with their positions or their names}
+\item{cross}{ An object of class \code{cross}. See \code{\link[qtl]{read.cross}} for details. }
+\item{population}{ An object of class \code{\link{population}}. See \code{\link{createPopulation}} for details. }
+ \item{map}{ Which map (from ones stored in population$maps) should be used fo assigning chromosomes on the created map}
+ \item{label}{ How old markers should be labeled on the plot, with their positions, their names or none.}
+ \item{...}{Parameters passed to \code{\link[qtl]{plot.qtl}}.}
 }
 
 \value{

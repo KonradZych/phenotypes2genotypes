@@ -15,7 +15,7 @@
 }
 
 \usage{
-  generateBiomarkers(population, threshold=0.05, overlapInd = 0, proportion = c(50,50), margin = 15, verbose=FALSE, debugMode=0)
+  generateBiomarkers(population, threshold=0.05, overlapInd = 10, proportion = c(50,50), margin = 15, verbose=FALSE, debugMode=0)
 }
 
 \arguments{
