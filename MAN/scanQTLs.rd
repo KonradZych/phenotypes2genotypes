@@ -8,11 +8,12 @@
 }
 
 \usage{
-  scanQTLs(population,verbose=FALSE)
+  scanQTLs(population,map=c("genetic","physical"),verbose=FALSE)
 }
 
 \arguments{
   \item{population}{ An object of class \code{\link{population}}. See \code{\link{createPopulation}} for details. }
+   \item{map}{ Which map (from ones stored in population$maps) should be used fo assigning chromosomes on the created map}
  \item{verbose}{ Be verbose.}
 }
 

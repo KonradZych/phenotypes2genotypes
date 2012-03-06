@@ -290,7 +290,7 @@ splitPhenoRowEM.internal <- function(x, offspring, founders, overlapInd, proport
 		}else if(up==0){
 			genotypes <- c((nrDistributions):1)
 		}
-		for(i in (1:length(population$offspring$phenotypes[1,]))){
+		for(i in (1:length(offspring[1,]))){
 			if(any(EM$posterior[i,]>0.8)){
 				result[i] <- genotypes[which.max(EM$posterior[i,])]
 			}else{

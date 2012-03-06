@@ -35,7 +35,7 @@ from created map shall be assigned to chromosomes from original map. This functi
 \examples{
 	data(yeastCross)
 	data(yeastPopulation)
-	assignment <- cross.denovo(yeastPopulation,yeastCross,n.chr=16,verbose=TRUE,map="physical",comparisonMethod=sumMajorityCorrelation, use.orderMarkers=FALSE,reOrder=FALSE)
+	assignment <- cross.denovo(yeastPopulation,n.chr=16,verbose=TRUE,map="physical",comparisonMethod=sumMajorityCorrelation, use.orderMarkers=FALSE,reOrder=FALSE, cross=yeastCross)
   assignment #boring,but expected
   ordering <- assignedChrToMarkers(assignment,yeastCross)
 }

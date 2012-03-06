@@ -8,11 +8,12 @@
 }
 
 \usage{
-  find.mixups(population,n.qtls=50,threshold=50,verbose=FALSE)
+  find.mixups(population,map=c("genetic","physical"),n.qtls=50,threshold=15,verbose=FALSE)
 }
 
 \arguments{
-  \item{population}{ An object of class \code{\link{population}}. See \code{\link{createPopulation}} for details. }
+  \item{population}{ An object of class \code{\link{population}}. See \code{\link{createPopulation}} for details.}
+   \item{map}{ Which map ( from ones stored in population$maps) contains information about positions of original markers.}
  \item{n.qtls}{ Number of qtls that should be scanned.}
  \item{threshold}{ How big percentage of being flagged must be for the individual to be considered as a mix-up.}
  \item{verbose}{ Be verbose.}
