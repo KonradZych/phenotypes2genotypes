@@ -1,6 +1,4 @@
 require(pheno2geno)
-bremcross <- read.cross("csvr",file="yeast_brem_cross.csv",geno=c(0,1))
-bremcross <- convert2riself(bremcross)
 children <- read.csv(file="offspring_phenotypes.csv",header=TRUE,row.names=1)
 parents <- read.csv(file="parental_phenotypes.csv",header=TRUE,row.names=1)
 genotypes <- read.csv(file="genotypes.csv",header=TRUE,row.names=1)
