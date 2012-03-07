@@ -53,6 +53,8 @@ being placed on the map.
 
 \examples{
 	data(yeastPopulation)
+	###
+	yeastPopulation <- scanQTLs(yeastPopulation,verbose=TRUE,map="physical",step=2)
 	cross <- cross.saturate(yeastPopulation,map="physical",verbose=TRUE,debugMode=2)
 }
 

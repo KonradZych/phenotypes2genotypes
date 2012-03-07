@@ -64,7 +64,8 @@ markerPlacementPlot <- function(population, placeUsing=c("qtl","correlation"),th
       noqtl <- c(noqtl,sum(nqtl==0))
       multipleqtl <- c(multipleqtl,sum(nqtl>1))
     }
-    plot(p,noqtl,type='o',col="red",main="Number of markers placed",xlab="threshold",ylab="# of markers",ylim=c(0,nrow(population$offspring$genotypes$qtl$values)),lwd=3)
+	print(1)
+    plot(p,noqtl,type='o',col="red",main="Number of markers placed",xlab="threshold",ylab="# of markers",ylim=c(0,nrow(population$offspring$genotypes$qtl$lod)),lwd=3)
     points(p,singleqtl,type='o',col="green",lwd=3)
     points(p,multipleqtl,type='o',col="blue",lwd=3)
     cat("Maximal number of markers that can be placed:",max(singleqtl),"for threshold value:",p[which.max(singleqtl)],"\n")

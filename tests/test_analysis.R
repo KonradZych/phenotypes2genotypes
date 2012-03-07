@@ -6,10 +6,10 @@ parents <- read.csv(file="parental_phenotypes.csv",header=TRUE,row.names=1)
 genotypes <- read.csv(file="genotypes.csv",header=TRUE,row.names=1)
 map <- read.csv(file="map.csv",header=TRUE,row.names=1)
 
-population <- createPopulation(children,parents,c(0,0,0,0,0,0,1,1,1,1,1,1),t(genotypes),maps_physical=map)
+population <- createPopulation(children,parents,c(0,0,0,0,0,0,1,1,1,1,1,1),genotypes,maps_physical=map)
 population <- findDiffExpressed(population)
-population <- findBiomarkers(population, treshold=0.01,verbose=T,debug=2)
-population <- scanQTLs(population)
+population <- generateBiomarkers(population, threshold=0.1,verbose=T,debug=2)
+population <- scanQTLs(population,map="physical",verbose=T)
 
 ####THREE WAYS TO ASSIGN CHROMOSOMES
 set.seed(101010)

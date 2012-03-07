@@ -183,7 +183,7 @@ intoPopulationSub.internal <- function(population, dataObject, dataType=c("found
 	}else if(dataType=="offspring$genotypes"){
 		if(!(is.null(dataObject))&&!is.null(dim(dataObject))){	
 			#Checking whether rows are numeric/convertable to numeric
-			rows <- unlist(lapply(c(1:nrow(dataObject)),intoPopulationSubGenoSub.internal,dataObject,verbose))		
+			rows <- unlist(lapply(c(1:nrow(dataObject)),intoPopulationSubGenoSub.internal,dataObject,verbose))
 			#Removes faulty rows
 			if(!(is.null(rows))){
 				if(verbose)cat("Following  rows are not numeric and cannot be converted into numeric:",rows," so will be removed.\n")
@@ -256,7 +256,7 @@ intoPopulationSubPheno.internal <- function(population, dataObject, dataType=c("
 		
 		if(is.null(dim(dataObject))) stop("Not enough data to continue.\n")
 		
-		cur<- matrix(as.numeric(as.matrix(dataObject)),nrow(dataObject),ncol(dataObject))
+		cur<- apply(as.matrix(dataObject),c(1,2),as.numeric)
 		
 		#Keeping colnames
 		if(!is.null(colnames(dataObject))){

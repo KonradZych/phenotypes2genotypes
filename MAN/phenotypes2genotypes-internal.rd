@@ -71,12 +71,14 @@
 \alias{map2mapCorrelationMatrix}
 \alias{map2mapImage}
 \alias{selectTopMarker.internal}
+\alias{bestCorelatedSub.internal}
 \alias{scoreMarker.internal}
 \alias{getpeaks.internal}
 \alias{QTLscan.internal}
 \alias{bestQTL.internal}
 \alias{defaultCheck.internal}
 \alias{scoreMixups.internal}
+\alias{generateBiomarkers.internal}
 
 \title{Internal pheno2geno functions}
 

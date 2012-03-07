@@ -69,7 +69,7 @@ generateBiomarkers <- function(population, threshold=0.05, overlapInd = 10, prop
 	
 	#*******CONVERTING CHILDREN PHENOTYPIC DATA TO GENOTYPES*******
 	s1 <- proc.time()
-	population <- convertfindBiomarkers.internal(population, threshold, overlapInd, proportion, margin, verbose, debugMode)
+	population <- generateBiomarkers.internal(population, threshold, overlapInd, proportion, margin, verbose, debugMode)
 	e1 <- proc.time()
 	if(verbose && debugMode==2)cat("Converting phenotypes to genotypes done in:",(e1-s1)[3],"seconds.\n")
 	
@@ -151,7 +151,7 @@ selectTopMarker.internal <- function(markers,pattern,verbose){
 #	object of class population
 #
 ############################################################################################################
-convertfindBiomarkers.internal <- function(population, treshold, overlapInd, proportion, margin, verbose=FALSE, debugMode=0){
+generateBiomarkers.internal <- function(population, treshold, overlapInd, proportion, margin, verbose=FALSE, debugMode=0){
 	### initialization
 	if(verbose && debugMode==1) cat("convertfindBiomarkers starting.\n")
 	output <- NULL
