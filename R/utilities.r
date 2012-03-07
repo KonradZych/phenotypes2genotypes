@@ -59,7 +59,7 @@ print.population <- function(x, ...){
 			cat("\tOriginal genotypes: None\n",...)
 		}
     if(!(is.null(x$offspring$genotypes$simulated))){
-			cat("\tOriginal genotypes:",ncol(x$offspring$genotypes$simulated),"individuals",nrow(x$offspring$genotypes$simulated),"markers\n",...)
+			cat("\tSimulated genotypes:",ncol(x$offspring$genotypes$simulated),"individuals",nrow(x$offspring$genotypes$simulated),"markers\n",...)
 		}else{
 			cat("\tSimulated genotypes: None\n",...)
 		}

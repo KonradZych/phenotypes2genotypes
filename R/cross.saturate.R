@@ -253,7 +253,7 @@ bestQTL.internal <- function(cross, population, treshold,verbose=FALSE){
 # OUTPUT:
 #	vector with new ordering of chromosomes inside cross object
 ############################################################################################################
-scanQTLs <- function(population,map=c("genetic","physical"),verbose=FALSE){
+scanQTLs <- function(population,map=c("genetic","physical"),step=0.1,verbose=FALSE){
   if(missing(population)) stop("Please provide a population object\n")
   check.population(population)
   if(is.null(population$offspring$genotypes$real)){
@@ -269,7 +269,8 @@ scanQTLs <- function(population,map=c("genetic","physical"),verbose=FALSE){
     if(length(matchingMarkers)!=nrow(population$offspring$genotypes$real)){
       population$offspring$genotypes$real <- population$offspring$genotypes$real[matchingMarkers,]
       population$maps$genetic <- population$maps$genetic[rownames(population$offspring$genotypes$real),]
-      if(verbose) cat(nrow(population$offspring$genotypes$real)-length(matchingMarkers),"markers were removed due to name mismatch\n")
+      n.markersToRmv <- nrow(population$offspring$genotypes$real)-length(matchingMarkers)
+      if(verbose && n.markersToRm>0) cat(n.markersToRmv,"markers were removed due to name mismatch\n")
     }
     population10pheno <- population
     population10pheno$offspring$phenotypes <- population10pheno$offspring$phenotypes[1:10,]
@@ -284,7 +285,8 @@ scanQTLs <- function(population,map=c("genetic","physical"),verbose=FALSE){
     if(length(matchingMarkers)!=nrow(population$offspring$genotypes$real)){
       population$offspring$genotypes$real <- population$offspring$genotypes$real[matchingMarkers,]
       population$maps$physical <- population$maps$physical[rownames(population$offspring$genotypes$real),]
-      if(verbose) cat(nrow(population$offspring$genotypes$real)-length(matchingMarkers),"markers were removed due to name mismatch\n")
+      n.markersToRmv <- nrow(population$offspring$genotypes$real)-length(matchingMarkers)
+      if(verbose && n.markersToRm>0) cat(n.markersToRmv,"markers were removed due to name mismatch\n")
     }
     #for faster creation of cross
     population10pheno <- population
@@ -296,7 +298,7 @@ scanQTLs <- function(population,map=c("genetic","physical"),verbose=FALSE){
     file.remove(aa)
   }
   returncross$pheno <- t(population$offspring$genotypes$simulated)
-  returncross <- calc.genoprob(returncross, step=0.1)
+  returncross <- calc.genoprob(returncross,step=step)
   if(verbose) cat("Starting qtl scan, this may take a long time to finish!\n")
   s <- proc.time()
   res <- NULL

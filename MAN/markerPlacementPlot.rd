@@ -22,7 +22,6 @@
   }
   }
 \item{thrRange}{ Range of the threshold to be checked. Specified in a format(start,stop,step).}
-}
 \item{cross}{ An object of class \code{cross}. See \code{\link[qtl]{read.cross}} for details. }
  \item{verbose}{ Be verbose.}
 }
@@ -44,8 +43,9 @@ be selected with different threshold values.
 \examples{
 	data(yeastCross)
 	data(yeastPopulation)
-	markerPlacementPlot(yeastPopulation,placeUsing="correlation",yeastCross)
-	markerPlacementPlot(yeastPopulation,placeUsing="qtl",yeastCross)
+	yeastPopulation <- scanQTLs(yeastPopulation,verbose=TRUE,map="physical",step=2)
+	markerPlacementPlot(yeastPopulation,placeUsing="qtl",cross=yeastCross)
+	markerPlacementPlot(yeastPopulation,placeUsing="correlation",cross=yeastCross)
 }
 
 \seealso{

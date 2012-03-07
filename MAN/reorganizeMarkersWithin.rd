@@ -33,7 +33,7 @@
 \examples{
 	data(yeastCross)
 	data(yeastPopulation)
-	assignment <- cross.denovo(yeastPopulation,yeastCross,n.chr=16,verbose=TRUE,map="physical",comparisonMethod=sumMajorityCorrelation, use.orderMarkers=FALSE,reOrder=FALSE)
+	assignment <- cross.denovo(yeastPopulation,n.chr=16,verbose=TRUE,map="physical",comparisonMethod=sumMajorityCorrelation, cross = yeastCross, use.orderMarkers=FALSE,reOrder=FALSE)
   assignment #boring,but expected
   ordering <- assignedChrToMarkers(assignment,yeastCross)
   yeastCross <- reorganizeMarkersWithin(yeastCross, ordering)

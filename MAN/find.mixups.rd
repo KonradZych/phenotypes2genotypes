@@ -36,8 +36,8 @@
 
 \examples{
 	data(yeastPopulation)
-  scores <- find.mixups(yeastPopulation,10,verbose=TRUE)
-  plot(scores)
+  scores <- find.mixups(yeastPopulation,map="physical",n.qtls=10,threshold=5,verbose=FALSE)
+  plot(scores[[2]])
 }
 
 \seealso{
