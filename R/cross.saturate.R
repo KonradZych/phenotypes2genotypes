@@ -48,7 +48,9 @@ cross.saturate <- function(population, cross, map=c("genetic","physical"), place
   }else if(threshold>=5){
     cat("WARNING: threshold too high, few new markers will be selected\n")
   }
-  if(!(any(!(rownames(population$offspring$genotypes$simulated)%in%rownames(population$offspring$genotypes$qtl$lod))))){
+  if(!(all(rownames(population$offspring$genotypes$simulated)%in%rownames(population$offspring$genotypes$qtl$lod)))){
+    stop("QTL scan results don't match with simulated genotypes, please, run scanQTLs function\n")
+  }else if(!(all(rownames(population$offspring$genotypes$qtl$lod)%in%rownames(population$offspring$genotypes$simulated)))){
     stop("QTL scan results don't match with simulated genotypes, please, run scanQTLs function\n")
   }
   map <- checkParameters.internal(map,c("genetic","physical"),"map")
@@ -273,7 +275,7 @@ scanQTLs <- function(population,map=c("genetic","physical"),step=0.1,verbose=FAL
       population$offspring$genotypes$real <- population$offspring$genotypes$real[matchingMarkers,]
       population$maps$genetic <- population$maps$genetic[rownames(population$offspring$genotypes$real),]
       n.markersToRmv <- nrow(population$offspring$genotypes$real)-length(matchingMarkers)
-      if(verbose && n.markersToRm>0) cat(n.markersToRmv,"markers were removed due to name mismatch\n")
+      if(verbose && n.markersToRmv>0) cat(n.markersToRmv,"markers were removed due to name mismatch\n")
     }
     population10pheno <- population
     population10pheno$offspring$phenotypes <- population10pheno$offspring$phenotypes[1:10,]
@@ -289,7 +291,7 @@ scanQTLs <- function(population,map=c("genetic","physical"),step=0.1,verbose=FAL
       population$offspring$genotypes$real <- population$offspring$genotypes$real[matchingMarkers,]
       population$maps$physical <- population$maps$physical[rownames(population$offspring$genotypes$real),]
       n.markersToRmv <- nrow(population$offspring$genotypes$real)-length(matchingMarkers)
-      if(verbose && n.markersToRm>0) cat(n.markersToRmv,"markers were removed due to name mismatch\n")
+      if(verbose && n.markersToRmv>0) cat(n.markersToRmv,"markers were removed due to name mismatch\n")
     }
     #for faster creation of cross
     population10pheno <- population
