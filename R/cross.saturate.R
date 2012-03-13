@@ -48,8 +48,8 @@ cross.saturate <- function(population, cross, map=c("genetic","physical"), place
   }else if(threshold>=5){
     cat("WARNING: threshold too high, few new markers will be selected\n")
   }
-  if(rownames(population$offspring$genotypes$simulated)!=rownames(population$offspring$genotypes$qtl$lod)){
-    stop("QTL scan results don't match with simulated genotypes, please, ryun scanQTLs function\n")
+  if(!(any(!(rownames(population$offspring$genotypes$simulated)%in%rownames(population$offspring$genotypes$qtl$lod))))){
+    stop("QTL scan results don't match with simulated genotypes, please, run scanQTLs function\n")
   }
   map <- checkParameters.internal(map,c("genetic","physical"),"map")
   placeUsing <- checkParameters.internal(placeUsing,c("qtl","correlation"),"placeUsing")
