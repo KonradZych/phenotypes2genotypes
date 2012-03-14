@@ -79,6 +79,7 @@
 \alias{defaultCheck.internal}
 \alias{scoreMixups.internal}
 \alias{generateBiomarkers.internal}
+\alias{convertType.internal}
 
 \title{Internal pheno2geno functions}
 

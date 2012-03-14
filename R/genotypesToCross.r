@@ -105,10 +105,21 @@ genotypesToCross.internal <- function(population, genotype=c("simulated","real")
 
   #READING CROSS FILE INTO R
   cross <- invisible(read.cross("csvr",file=outputFile, genotypes=genotypes))
-  
+  cross <- convertType.internal(cross,class(population)[2])
   e <- proc.time()
   if(verbose) cat("genotypesToCross done in",(e-s)[3],"seconds.\n")
   invisible(cross)
+}
+
+convertType.internal <- function(cross,populationType){
+	if(populationType == "riself"){
+		cross <- convert2riself(cross)
+	}else if(populationType == "risib"){
+		cross <- convert2risib(cross)
+	}else{
+		class(cross)[1] <- populationType
+	}
+	return(cross)
 }
 
 ############################################################################################################
