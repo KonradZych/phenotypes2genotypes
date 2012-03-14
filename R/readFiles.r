@@ -47,7 +47,7 @@
 #	object of class population 
 #
 ############################################################################################################
-readFiles <- function(offspring="offspring",founders="founders",map="maps",founders_groups,verbose=FALSE,debugMode=0){
+readFiles <- function(offspring="offspring",founders="founders",map="maps",founders_groups,populationType=c("riself", "f2", "bc", "risib"),verbose=FALSE,debugMode=0){
 	#**********INITIALIZING FUNCTION*************
 	s <- proc.time()
 	if(verbose && debugMode==1) cat("readFiles starting.\n")
@@ -55,7 +55,7 @@ readFiles <- function(offspring="offspring",founders="founders",map="maps",found
 	if(missing(founders_groups)){ 
 		stop("Specify founders_groups!\n")
 	}
-	
+	populationType <- checkParameters.internal(populationType,c("riself", "f2", "bc", "risib"),"populationType")
 	#**********READING CHILDREN PHENOTYPIC DATA*************
 	filename <- paste(offspring,"_phenotypes.txt",sep="")
 	if(file.exists(filename)){
@@ -130,7 +130,7 @@ readFiles <- function(offspring="offspring",founders="founders",map="maps",found
 	#**********FINALIZING FUNCTION*************
 	e <- proc.time()
 	if(verbose) cat("readFiles done in",(e-s)[3],"seconds.\n")
-	class(population) <- "population"
+	class(population) <- c("population", populationType)
 	doCleanUp.internal()
 	invisible(population)
 }
