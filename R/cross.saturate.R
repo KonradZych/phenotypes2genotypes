@@ -89,6 +89,12 @@ cross.saturate <- function(population, cross, map=c("genetic","physical"), place
       e1 <- proc.time()
       if(verbose && debugMode==2)cat("Saving data into cross object done in:",(e1-s1)[3],"seconds.\n")
     }
+  }else{
+    if(!(all(rownames(population$offspring$genotypes$simulated)%in%markernames(cross)))){
+      stop("Marker names from the cross object don't match those from population$offspring$genotypes$simulated!\n")
+    }else if(!(all(markernames(cross)%in%rownames(population$offspring$genotypes$simulated)))){
+      stop("Marker names from the cross object don't match those from population$offspring$genotypes$simulated!\n")
+  }
   }
  
   #*******ENRICHING ORIGINAL MAP*******
