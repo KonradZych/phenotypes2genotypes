@@ -2,11 +2,10 @@
 \alias{createPopulation}
 \alias{population}
 
-
-\title{Create new object of class population.}
+\title{Create a new population object}
 
 \description{
-  Create new object of class population. If object exists, will be overwritten.
+  Create new population object from phenotype data
 }
 
 \usage{
@@ -14,15 +13,15 @@
 }
 
 \arguments{
- \item{offspring_phenotypes}{ Matrix containing offspring phenotype data (have to be supported, if not - function quits with error).}
- \item{founders}{ Matrix containing founders phenotype data (have to be supported, if not - function quits with error).}
+  \item{offspring_phenotypes}{ Matrix containing offspring phenotype data (have to be supported, if not - function quits with error).}
+  \item{founders}{ Matrix containing founders phenotype data (have to be supported, if not - function quits with error).}
   \item{founders_groups}{ Specify groups im founders data (have to be supported, if not - function quits with error).}
- \item{offspring_genotypes}{ Matrix containing offspring genotype data (optional).}
- \item{maps_genetic}{ Matrix containing genetic map (optional).}
- \item{maps_physical}{ Matrix containing physical map (optional).}
- \item{no.warn}{ If TRUE, no warnings will be produced.}
- \item{verbose}{ Be verbose.}
- \item{debugMode}{ 1: Print out checks, 2: print additional time information.}
+  \item{offspring_genotypes}{ Matrix containing offspring genotype data (optional).}
+  \item{maps_genetic}{ Matrix containing genetic map (optional).}
+  \item{maps_physical}{ Matrix containing physical map (optional).}
+  \item{no.warn}{ If TRUE, no warnings will be issued.}
+  \item{verbose}{ Be verbose.}
+  \item{debugMode}{ 1: Print out checks, 2: print additional time information.}
 }
 
 \value{
@@ -58,7 +57,7 @@
 }
 
 \details{
-  Functions inputs provided objects (performing some checks beforehand) into an object of class \code{\link{population}}.
+  An object of class \code{\link{population}}.
 }
 
 \author{
