@@ -13,9 +13,9 @@
 
 \arguments{
   \item{population}{ An object of class \code{\link{population}}. See \code{\link{createPopulation}} for details. }
-   \item{map}{ Which map (from ones stored in population$maps) should be used fo assigning chromosomes on the created map}
- \item{step}{ Maximum distance (in cM) between positions at which the genotype probabilities are calculated, though for step = 0, probabilities are calculated only at the marker locations. See \code{\link{calc.genoprob} for more information} .}
- \item{verbose}{ Be verbose.}
+  \item{map}{ Which map (from ones stored in population$maps) should be used fo assigning chromosomes on the created map}
+  \item{step}{ Maximum distance (in cM) between positions at which the genotype probabilities are calculated, though for step = 0, probabilities are calculated only at the marker locations. See \code{\link{calc.genoprob} for more information} .}
+  \item{verbose}{ Be verbose.}
 }
 
 \value{
