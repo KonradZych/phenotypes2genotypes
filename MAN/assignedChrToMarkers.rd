@@ -1,19 +1,18 @@
 \name{assignedChrToMarkers}
 \alias{assignedChrToMarkers}
 
-
-\title{Creating the ordering vector.}
+\title{Create an ordering vector to assign markers to chromosomes}
 
 \description{
- Create the ordering vector out of the chromosome assignment vector.
+ Creates an ordering vector out of the chromosome assignment vector.
 }
 
 \usage{
-	assignedChrToMarkers(assignment,cross)
+	assignedChrToMarkers(assignment, cross)
 }
 
 \arguments{
- \item{assignment}{ Chromosome assignment vector created using \link{cross.denovo} with reOrder = FALSE.}
+ \item{assignment}{ Chromosome assignment vector created using \link{cross.denovo} with reOrder = FALSE}
  \item{cross}{ An object of class \code{cross}. See \code{\link[qtl]{read.cross}} for details. }
 }
 
@@ -22,9 +21,10 @@
 }
 
 \details{
-After using \link{cross.denovo} finction with reOrder = FALSE, chromosome assignment vector is created, showing how chromosomes
-from created map shall be assigned to chromosomes from original map. This function uses this vector to create ordering vector, that can be used by 
-\link{reorganizeMarkersWithin} function to reorder the cross object.
+When using \link{cross.denovo} function with reOrder = FALSE, an chromosome assignment vector is created. 
+This vector shows how chromosomes from the created map are assigned to chromosomes from the original map. 
+This function transforms this vector and creates an ordering vector, that can be used by the
+\code{\link{reorganizeMarkersWithin}} function to reorder markers inside the cross object.
 }
 
 \author{

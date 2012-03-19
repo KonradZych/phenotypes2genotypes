@@ -3,29 +3,23 @@
 \alias{removeChromosomes}
 \alias{removeTooSmallChromosomes}
 
-
-\title{Change number of the chromosomes.}
+\title{Change the number of chromosomes in a cross object}
 
 \description{
-  Methods to manually modify chromosomes number inside an object of class cross.
+  Methods to manually modify the number of chromosomes inside an cross object
 }
 
 \usage{
 	reduceChromosomesNumber(cross, numberOfChromosomes, verbose=FALSE)
-	
-	
 	removeChromosomes(cross, chromosomesToBeRmv, verbose=FALSE)
-	
-	
 	removeTooSmallChromosomes(cross, minNrOfMarkers, verbose=FALSE)
-	
 }
 
 \arguments{
- \item{cross}{ An object of class \code{cross}. See \code{\link[qtl]{read.cross}} for details. }
- \item{numberOfChromosomes}{ How many chromosomes should stay (remove all but 1:numberOfChromosomes).}
- \item{chromosomesToBeRmv}{ NAMES of chromosomes to be removed.}
- \item{minNrOfMarkers}{ Specify minimal number of markers chromosome is allowed to have (remove all that have less markers than that).}
+  \item{cross}{ An object of class \code{cross}. See \code{\link[qtl]{read.cross}} for details. }
+  \item{numberOfChromosomes}{ How many chromosomes should stay (remove all but 1:numberOfChromosomes).}
+  \item{chromosomesToBeRmv}{ NAMES of chromosomes to be removed.}
+  \item{minNrOfMarkers}{ Specify minimal number of markers chromosome is allowed to have (remove all that have less markers than that).}
   \item{verbose}{ Be verbose.}
 }
 
@@ -34,21 +28,21 @@
 }
 
 \details{
-There are three functions in pheno2geno enabling user to manually reduce number of resulting chromosomes. 
+There are three functions in pheno2geno to allow the user to manually reduce number of resulting chromosomes. 
 
-reduceChromosomesNumber
+{\bf reduceChromosomesNumber}
 first of three functions is removing all but certain number of chromosomes. It depends only on ordering 
 of chromosomes, not on naming. 
 
 
-removeChromosomes
+{\bf removeChromosomes}
 In opposite to previous one, this function operates only on names of chromosomes to be removed, not 
 depending at all on the ordering.
 
-removeTooSmallChromosomes
-After using formLinkageGroups cross object often contains artifacts - linkage groups containing few 
-markers. Those are probably really bad markers and should be removed. To do so, one could use 
-removeTooSmallChromosomes function.
+{\bf removeTooSmallChromosomes}
+After using the formLinkageGroups function, the cross object often contains artifacts - linkage groups 
+containing only a few markers. Those linkage groups consist of markers with poor quality and should be 
+removed from the cross object, for this pheno2geno provides the removeTooSmallChromosomes function.
 }
 
 \author{
