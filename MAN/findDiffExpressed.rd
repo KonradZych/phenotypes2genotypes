@@ -54,9 +54,9 @@
 	\itemize{
     \item{\code{\link[RankProd]{RP}}}{ - Perform rank product method to identify differentially expressed genes.}
     \item{\code{\link{read.population}}}{ - Load genotype, phenotype, genetic map data files into R environment into a population object.}
-    \item{\code{\link{generateBiomarkers}}}{ - Creating genotypes from children phenotypes.}
-    \item{\code{\link{show.RPpval}}}{- Printing out p-values calculated by the find.diff.expressed function.}
-    \item{\code{\link{plot.RPpval}}}{ - Plotting p-values calculated by the find.diff.expressed function.}
+    \item{\code{\link{generate.biomarkers}}}{ - Creating genotypes from children phenotypes.}
+    \item{\code{\link{showRPpval}}}{- Printing out p-values calculated by the find.diff.expressed function.}
+    \item{\code{\link{plotRPpval}}}{ - Plotting p-values calculated by the find.diff.expressed function.}
   }
 }
 

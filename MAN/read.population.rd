@@ -56,7 +56,7 @@ Genotype file should be basically the same as phenotype file, but, apart from ro
 }
 Map files should have really simple structure, always three columns, no header. First column contains rownames, second - chromosome number and third - position on chromosome (in cM for genetic or Mbp for physical map).
 Secodn and third column can contain only numbers (any NA, Inf, etc, will cause dropping of file). Rownames should match either ones from genotype file or ones from phenotype file, depending which one you want to use 
-map with (see generateBiomarkers for more information). Example of map file structure:
+map with (see generate.biomarkers for more information). Example of map file structure:
   \tabular{lrr}{
 "marker"                    \tab 1    \tab 0       \cr
 "marker2"                   \tab 1      \tab 1.2     \cr

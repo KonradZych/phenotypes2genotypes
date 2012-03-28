@@ -1,6 +1,6 @@
 \name{RPpval}
-\alias{show.RPpval}
-\alias{plot.RPpval}
+\alias{showRPpval}
+\alias{plotRPpval}
 
 \title{RP p-values visualisation}
 
@@ -9,8 +9,8 @@
 }
 
 \usage{
-	show.RPpval(population,markers=1:10)
-	plot.RPpval(population,thresholdRange=c(0.01,0.1,0.01))
+	showRPpval(population,markers=1:10)
+	plotRPpval(population,thresholdRange=c(0.01,0.1,0.01))
 }
 
 \arguments{
@@ -24,7 +24,7 @@
 }
 
 \details{
-  Those are two helper functions of \code{\link{find.diff.expressed}}. show.RPpval is printing to the screen p-values for specified markers, while plot.RPpval is showing
+  Those are two helper functions of \code{\link{find.diff.expressed}}. fake.population is printing to the screen p-values for specified markers, while plotRPpval is showing
   how many markers will be selected using different thresholds.
 }
 
@@ -36,8 +36,8 @@
 \examples{
 
 	data(yeastPopulation)
-	show.RPpval(yeastPopulation)
-	plot.RPpval(yeastPopulation)
+	showRPpval(yeastPopulation)
+	plotRPpval(yeastPopulation)
 
 }
 
@@ -45,9 +45,9 @@
 	\itemize{
     \item{\code{\link[RankProd]{RP}}}{ - Perform rank product method to identify differentially expressed genes.}
     \item{\code{\link{find.diff.expressed}}}{ - Select differentially expressed genes using Rank Product or student t-test analysis.}
-    \item{\code{\link{generateBiomarkers}}}{ - Creating genotypes from children phenotypes.}
-    \item{\code{\link{show.RPpval}}}{- Printing out p-values calculated by the find.diff.expressed function.}
-    \item{\code{\link{plot.RPpval}}}{ - Plotting p-values calculated by the find.diff.expressed function.}
+    \item{\code{\link{generate.biomarkers}}}{ - Creating genotypes from children phenotypes.}
+    \item{\code{\link{showRPpval}}}{- Printing out p-values calculated by the find.diff.expressed function.}
+    \item{\code{\link{plotRPpval}}}{ - Plotting p-values calculated by the find.diff.expressed function.}
   }
 }
 

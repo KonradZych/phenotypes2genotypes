@@ -54,11 +54,11 @@ assignFunction=c(assignMaximumNoConflicts,assignMaximum), reOrder=TRUE, use.orde
 }
 
 \value{
-  An object of class \code{cross} or vector showing how chromosomes should be assigned, to be used with \code{\link{assignedChrToMarkers}}
+  An object of class \code{cross} or vector showing how chromosomes should be assigned, to be used with \code{\link{assignChrToMarkers}}
 }
 
 \details{
-cross.denovo function creates new genetic map using genotypes simulated by generateBiomarkers function. Then it uses information provided by user to
+cross.denovo function creates new genetic map using genotypes simulated by generate.biomarkers function. Then it uses information provided by user to
 assign number to newly created chromosomes.
 }
 \author{
@@ -74,10 +74,10 @@ assign number to newly created chromosomes.
 \seealso{
   \itemize{
     \item{\code{\link{reorganizeMarkersWithin}}}{ - Apply new ordering on the cross object usign ordering vector.}
-    \item{\code{\link{assignedChrToMarkers}}}{ - Create ordering vector from chromosome assignment vector.}
+    \item{\code{\link{assignChrToMarkers}}}{ - Create ordering vector from chromosome assignment vector.}
     \item{\code{\link{cross.saturate}}}{ - Saturate existing map.}
     \item{\code{\link{reduceChromosomesNumber}}}{ - Number of routines to reduce number of chromosomes of cross object.}
-    \item{\code{\link{generateBiomarkers}}}{ - Creating genotype markers out of gene expression data.}
+    \item{\code{\link{generate.biomarkers}}}{ - Creating genotype markers out of gene expression data.}
 }
 }
 

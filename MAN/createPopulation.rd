@@ -42,7 +42,7 @@
         \item{$genotypes}{ - offspring genotype data:
           \itemize{
             \item{$real}{ - original data provided by the user - numeric matrix, rows - markers, cols - individuals.}
-            \item{$simulated}{ - simulated by \code{\link{generateBiomarkers}} using phenotype data - numeric matrix, rows - markers, cols - individuals.}
+            \item{$simulated}{ - simulated by \code{\link{generate.biomarkers}} using phenotype data - numeric matrix, rows - markers, cols - individuals.}
           }
         }
       }

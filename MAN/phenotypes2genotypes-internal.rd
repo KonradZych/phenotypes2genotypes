@@ -13,7 +13,7 @@
 \alias{majorityRule.internal}
 \alias{doCleanUp.internal}
 
-\alias{convertgenerateBiomarkers.internal}
+\alias{convertgenerate.biomarkers.internal}
 \alias{splitPheno.internal}
 \alias{filterRowSub.internal }
 \alias{filterRow.internal}
@@ -78,7 +78,7 @@
 \alias{bestQTL.internal}
 \alias{defaultCheck.internal}
 \alias{scoreMixups.internal}
-\alias{generateBiomarkers.internal}
+\alias{generate.biomarkers.internal}
 \alias{convertType.internal}
 
 \title{Internal pheno2geno functions}

@@ -90,7 +90,7 @@ assignFunction=c(assignMaximumNoConflicts,assignMaximum), reOrder=TRUE, use.orde
     if(verbose)cat("Returning new ordering vector.\n")
     invisible(assignment)
   }else{
-    ordering <- assignedChrToMarkers(assignment,cross)
+    ordering <- assignChrToMarkers(assignment,cross)
     if(verbose)cat("Applying new ordering to the cross object.\n")
     cross2 <- reorganizeMarkersWithin(cross,ordering)
   if(use.orderMarkers){
@@ -315,7 +315,7 @@ cross.denovo.internal<- function(population,  n.chr,  use=c("rf","geno"), verbos
   use <- checkParameters.internal(use,c("rf","geno"),"use")
   check.population(population)
   if(is.null(population$offspring$genotypes$simulated)){
-    stop("no simulated genotypes in population object, first use generateBiomarkers!\n")
+    stop("no simulated genotypes in population object, first use generate.biomarkers!\n")
   }
   #*******SAVING CROSS OBJECT*******
   s1 <- proc.time()
