@@ -12,7 +12,7 @@
 }
 
 \arguments{
- \item{population}{ An object of class \code{population}. See \code{\link{createPopulation}} for details.}
+ \item{population}{ An object of class \code{population}. See \code{\link{create.population}} for details.}
  \item{outputFile}{ Name of the output file.}
  \item{verbose}{ Be verbose.}
 }
@@ -32,15 +32,15 @@
 
 \examples{
 	\dontrun{
-		population <- fakePopulation()
+		population <- fake.population()
 		write.population(population,verbose=TRUE)
 	}
 }
 
 \seealso{
   \itemize{
-    \item{\code{\link{intoPopulation}}}{ - Adding data to existing population object.}
-    \item{\code{\link{createPopulation}}}{ - Create new object of class population.}
+    \item{\code{\link{add.to.population}}}{ - Adding data to existing population object.}
+    \item{\code{\link{create.population}}}{ - Create new object of class population.}
     \item{\code{\link{read.population}}}{ - Create new object of class population.}
   }
 }

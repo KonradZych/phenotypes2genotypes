@@ -11,7 +11,7 @@
 \usage{data(yeastPopulation)}
 
 \format{
-  An object of class \code{\link{population}}. See \code{\link{createPopulation}} for details.
+  An object of class \code{\link{population}}. See \code{\link{create.population}} for details.
 }
 
 \references{

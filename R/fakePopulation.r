@@ -1,6 +1,6 @@
 ############################################################################################################
 #
-# fakePopulation.R
+# fake.population.R
 #
 # Copyright (c) 2011, Konrad Zych
 #
@@ -23,7 +23,7 @@
 #     A copy of the GNU General Public License, version 3, is available
 #     at http://www.r-project.org/Licenses/GPL-3
 #
-# Contains: fakePopulation,
+# Contains: fake.population,
 #             fakePheno.internal, fakeFounders.internal, fakePhysicalMap.internal, convertMap.internal, 
 #             simBC.internal, fakeMixUps
 #
@@ -31,14 +31,14 @@
 
 
 ############################################################################################################
-#                                          *** fakePopulation ***
+#                                          *** fake.population ***
 #
 # DESCRIPTION:
 #	simulating object of class population 
 # OUTPUT:
 #	object of class population
 ############################################################################################################
-fakePopulation <- function(n.founders = 4, n.offspring = 100, n.markers=100,n.chromosomes=10, type = c("riself", "f2", "bc", "risib"), n.mixups=0, verbose=FALSE,...){
+fake.population <- function(n.founders = 4, n.offspring = 100, n.markers=100,n.chromosomes=10, type = c("riself", "f2", "bc", "risib"), n.mixups=0, verbose=FALSE,...){
   type <- match.arg(type)
   if(!(is.numeric(n.founders))) stop("n.founders should be numeric\n")
   if(!(is.numeric(n.offspring))) stop("n.offspring should be numeric\n")
@@ -90,7 +90,7 @@ fakePopulation <- function(n.founders = 4, n.offspring = 100, n.markers=100,n.ch
 	if(n.mixups>0){
     pheno <- fakeMixUps.internal(pheno,n.mixups)
 	}
-	population <- createPopulation(pheno, founders, foundersGroups, geno, map, physicalMap,verbose=verbose)
+	population <- create.population(pheno, founders, foundersGroups, geno, map, physicalMap,verbose=verbose)
 	class(population)[2]<- type
 	check.population(population)
 	invisible(population)
@@ -100,7 +100,7 @@ fakePopulation <- function(n.founders = 4, n.offspring = 100, n.markers=100,n.ch
 #                                  *** fakePheno.internal ***
 #
 # DESCRIPTION:
-#	subfunction of fakePopulation - simulating phenotype data using genotype data simulated by sim.cross
+#	subfunction of fake.population - simulating phenotype data using genotype data simulated by sim.cross
 # OUTPUT:
 #	row of offspring phenotype matrix
 ############################################################################################################
@@ -115,7 +115,7 @@ fakePheno.internal <- function(genoRow,maxScale=10,maxError=3){
 #                                  *** fakeFounders.internal ***
 #
 # DESCRIPTION:
-#	subfunction of fakePopulation - simulating founders phenotype data using offspring phenotype data
+#	subfunction of fake.population - simulating founders phenotype data using offspring phenotype data
 # OUTPUT:
 #	row of parental phenotype matrix
 ############################################################################################################

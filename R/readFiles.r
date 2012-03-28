@@ -1,6 +1,6 @@
 #############################################################################################
 #
-# readFiles.R
+# read.population.R
 #
 # Copyright (c) 2011, Konrad Zych
 #
@@ -23,14 +23,14 @@
 #     A copy of the GNU General Public License, version 3, is available
 #     at http://www.r-project.org/Licenses/GPL-3
 #
-# Contains: readFiles 
+# Contains: read.population 
 # 				mapMarkers.internal, gffParser, probesLocation.internal
 #				correctRowGff.internal, correctRowLoc.internal
 #
 #############################################################################################
 
 ############################################################################################################
-#									*** readFiles ***
+#									*** read.population ***
 #
 # DESCRIPTION:
 #	reads geno/phenotypic files into R environment into special object.
@@ -47,10 +47,10 @@
 #	object of class population 
 #
 ############################################################################################################
-readFiles <- function(offspring="offspring",founders="founders",map="maps",founders_groups,populationType=c("riself", "f2", "bc", "risib"),verbose=FALSE,debugMode=0){
+read.population <- function(offspring="offspring",founders="founders",map="maps",founders_groups,populationType=c("riself", "f2", "bc", "risib"),verbose=FALSE,debugMode=0){
 	#**********INITIALIZING FUNCTION*************
 	s <- proc.time()
-	if(verbose && debugMode==1) cat("readFiles starting.\n")
+	if(verbose && debugMode==1) cat("read.population starting.\n")
 	population <- NULL
 	if(missing(founders_groups)){ 
 		stop("Specify founders_groups!\n")
@@ -62,7 +62,7 @@ readFiles <- function(offspring="offspring",founders="founders",map="maps",found
 		if(verbose) cat("Found phenotypic file for offspring:",filename,"and will store  it in population$offspring$phenotypes\n")
 		offspring_phenotypes <- read.table(filename,sep="\t",header=TRUE)
 		offspring_phenotypes <- as.matrix(offspring_phenotypes)
-		population <- intoPopulationSub.internal(population,offspring_phenotypes,"offspring$phenotypes")
+		population <- add.to.populationSub.internal(population,offspring_phenotypes,"offspring$phenotypes")
 		doCleanUp.internal()
 	}else{
 		stop("No phenotype file for offspring: ",filename," this file is essentiall, you have to provide it\n")
@@ -74,7 +74,7 @@ readFiles <- function(offspring="offspring",founders="founders",map="maps",found
 		if(verbose) cat("Found phenotypic file for parents:",filename,"and will store it in population$founders$phenotypes\n")
 		founders <- read.table(filename,sep="\t",header=TRUE)
 		founders <- as.matrix(founders)
-		population <- intoPopulationSub.internal(population, founders, "founders")
+		population <- add.to.populationSub.internal(population, founders, "founders")
 		#removing from founders probes that are not in children:
 		population$founders$phenotypes <- mapMarkers.internal(population$founders$phenotypes,population$offspring$phenotypes, mapMode=1, verbose=verbose)
 		doCleanUp.internal()
@@ -97,7 +97,7 @@ readFiles <- function(offspring="offspring",founders="founders",map="maps",found
 		if(verbose) cat("Found genotypic file for offspring:",filename,"and will store  it in population$offspring$genotypes$real\n")
 		offspring_genotypes <- read.table(filename,sep="\t",header=TRUE)
 		offspring_genotypes <- as.matrix(offspring_genotypes)
-		population <- intoPopulation(population, offspring_genotypes, "offspring$genotypes")
+		population <- add.to.population(population, offspring_genotypes, "offspring$genotypes")
 		doCleanUp.internal()
 	}else{
 		if(verbose)cat("No genotypic file for offspring:",filename,"genotypic data for offspring will be simulated\n")
@@ -109,7 +109,7 @@ readFiles <- function(offspring="offspring",founders="founders",map="maps",found
 		if(verbose) cat("Found genotypic file for offspring:",filename,"and will store  it in population$maps$genetic\n")
 		maps_genetic <- read.table(filename,sep="\t",row.names=1,header=FALSE)
 		maps_genetic <- as.matrix(maps_genetic)
-		population <- intoPopulation(population, maps_genetic, "maps$genetic")
+		population <- add.to.population(population, maps_genetic, "maps$genetic")
 		doCleanUp.internal()
 	}else{
 		if(verbose)cat("No genetic map file:",filename,".\n")
@@ -121,7 +121,7 @@ readFiles <- function(offspring="offspring",founders="founders",map="maps",found
 		if(verbose) cat("Found genotypic file for offspring:",filename,"and will store  it in population$maps$physical\n")
 		physical <-	read.table(filename,sep="\t",row.names=1,header=FALSE)
 		physical <- as.matrix(physical)
-		population <- intoPopulation(population, physical, "maps$physical")
+		population <- add.to.population(population, physical, "maps$physical")
 		doCleanUp.internal()
 	}else{
 		if(verbose)cat("No physical map file:",filename,".\n")
@@ -129,7 +129,7 @@ readFiles <- function(offspring="offspring",founders="founders",map="maps",found
 	
 	#**********FINALIZING FUNCTION*************
 	e <- proc.time()
-	if(verbose) cat("readFiles done in",(e-s)[3],"seconds.\n")
+	if(verbose) cat("read.population done in",(e-s)[3],"seconds.\n")
 	class(population) <- c("population", populationType)
 	doCleanUp.internal()
 	invisible(population)

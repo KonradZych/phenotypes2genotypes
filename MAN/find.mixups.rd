@@ -12,7 +12,7 @@
 }
 
 \arguments{
-  \item{population}{ An object of class \code{\link{population}}. See \code{\link{createPopulation}} for details.}
+  \item{population}{ An object of class \code{\link{population}}. See \code{\link{create.population}} for details.}
    \item{map}{ Which map ( from ones stored in population$maps) contains information about positions of original markers.}
  \item{n.qtls}{ Number of qtls that should be scanned.}
  \item{threshold}{ How big percentage of being flagged must be for the individual to be considered as a mix-up.}
@@ -42,10 +42,10 @@
 
 \seealso{
   \itemize{
-    \item{\code{\link{readFiles}}}{ - Load genotype, phenotype, genetic map data files into R environment into a population object.}
+    \item{\code{\link{read.population}}}{ - Load genotype, phenotype, genetic map data files into R environment into a population object.}
     \item{\code{\link{cross.denovo}}}{ - Create de novo genetic map or vector showing how chromosomes should be assigned.}
     \item{\code{\link{cross.saturate}}}{ - Saturate existing map.}
-    \item{\code{\link{findDiffExpressed}}}{ - Using Rank Product or student t-test analysis to select differentially expressed genes.}
+    \item{\code{\link{find.diff.expressed}}}{ - Using Rank Product or student t-test analysis to select differentially expressed genes.}
   }
 }
 

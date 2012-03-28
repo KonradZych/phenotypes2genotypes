@@ -23,7 +23,7 @@
 #     A copy of the GNU General Public License, version 3, is available
 #     at http://www.r-project.org/Licenses/GPL-3
 #
-# Contains: print.population, removeIndividuals, doCleanUp.internal
+# Contains: print.population, remove.individuals, doCleanUp.internal
 #
 ############################################################################################################
 
@@ -75,7 +75,7 @@ print.population <- function(x, ...){
 		if(!(is.null(x$offspring$genotypes$qtl))){
 			cat("\tQTL scan results detected.\n",...)
 		}else{
-			cat("\tQTL scan results not detected, run scanQTLs.\n",...)
+			cat("\tQTL scan results not detected, run scan.qtls.\n",...)
 		}
 		if(!(is.null(x$maps$genetic))){
 			cat("\tGenetic map:",nrow(x$maps$genetic),"markers, ",length(table(x$maps$genetic[,1]))," chromosomes\n",...)
@@ -101,7 +101,7 @@ print.population <- function(x, ...){
 		if(!(is.null(x$founders$RP))){
 			cat("\tDifferential expression: Detected\n",...)
 		}else{
-			cat("\tDifferential expression: Not Detected (please: use findDiffExpressed) \n",...)
+			cat("\tDifferential expression: Not Detected (please: use find.diff.expressed) \n",...)
 		}
 		if(!(is.null(x$founders$groups))){
 			cat("\tFounder groups:",x$founders$groups,"\n",...)
@@ -114,7 +114,7 @@ print.population <- function(x, ...){
 }
 
 ############################################################################################################
-#									*** removeIndividuals ***
+#									*** remove.individuals ***
 #
 # DESCRIPTION:
 #	Function to remove individual(s) from population object. 
@@ -127,7 +127,7 @@ print.population <- function(x, ...){
 #	object of class population
 #
 ############################################################################################################
-removeIndividuals <- function(population,individuals,verbose=FALSE){
+remove.individuals <- function(population,individuals,verbose=FALSE){
 	check.population(population)
 	for(ind in individuals){
 		if(ind%in%colnames(population$offspring$genotypes$real)){
@@ -290,7 +290,7 @@ read.population <- function (filename = "population.txt", verbose = FALSE){
   }else{
     stop("This is not a correct population file.\n")
   }
-  population <- createPopulation(offspring_phenotypes, founders_phenotypes, founders_groups, verbose = verbose)
+  population <- create.population(offspring_phenotypes, founders_phenotypes, founders_groups, verbose = verbose)
   cur_skip <- cur_skip + 1
   if (!is.na(firstLine[4])) {
     offspring_genotypes <- as.matrix(read.table(filename, sep = "", nrow = firstLine[4], skip = cur_skip, header = TRUE))
@@ -298,7 +298,7 @@ read.population <- function (filename = "population.txt", verbose = FALSE){
           cat("Offspring genotype data read from", filename, "\n")
     }
     cur_skip <- cur_skip + firstLine[4] + 1
-    population <- intoPopulation(population, offspring_genotypes, "offspring$genotypes", verbose = verbose)
+    population <- add.to.population(population, offspring_genotypes, "offspring$genotypes", verbose = verbose)
   }else{
     if(verbose){
       cat("Offspring genotype data not found in", filename,"\n")
@@ -310,7 +310,7 @@ read.population <- function (filename = "population.txt", verbose = FALSE){
       cat("Genetic map read from", filename, "\n")
     }
     cur_skip <- cur_skip + firstLine[5]
-    population <- intoPopulation(population, maps_genetic, "maps$genetic", verbose = verbose)
+    population <- add.to.population(population, maps_genetic, "maps$genetic", verbose = verbose)
   }else{
     if(verbose){
       cat("Genetic map not found in", filename, "\n")
@@ -321,7 +321,7 @@ read.population <- function (filename = "population.txt", verbose = FALSE){
     if (verbose){ 
       cat("Physical map read from", filename, "\n")
     }
-    population <- intoPopulation(population, maps_physical, "maps$physical", verbose = verbose)
+    population <- add.to.population(population, maps_physical, "maps$physical", verbose = verbose)
   }else{
     if(verbose){
       cat("Physical map not found in", filename, "\n")

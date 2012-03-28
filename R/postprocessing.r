@@ -191,7 +191,7 @@ removeChromosomesSub.internal <- function(cross, chr,verbose=FALSE){
 }
 
 ############################################################################################################
-#									*** smoothGeno ***
+#									*** smooth.geno ***
 #
 # DESCRIPTION:
 #	checking if fitted normal distributions do not overlap
@@ -205,7 +205,7 @@ removeChromosomesSub.internal <- function(cross, chr,verbose=FALSE){
 #	boolean
 #
 ############################################################################################################
-smoothGeno <- function(cross,windowSize=1,chr,population,map=c("genetic","physical"),verbose=FALSE){
+smooth.geno <- function(cross,windowSize=1,chr,population,map=c("genetic","physical"),verbose=FALSE){
 	if(!any(class(cross) == "cross")) stop("Input should have class \"cross\".")
   if(!(missing(population))){ 
     map <- checkParameters.internal(map,c("genetic","physical"),"map")
@@ -235,7 +235,7 @@ smoothGeno <- function(cross,windowSize=1,chr,population,map=c("genetic","physic
   cross_geno  <- vector(length(chr),mode="list")
   for(i in 1:length(chr)){
   if(verbose)cat("--- chr",i,"----\n")
-    cross_geno[[i]]  <- smoothGenoSub.internal(cross$geno[[chr[i]]],windowSize,oldMarkers,verbose)
+    cross_geno[[i]]  <- smooth.genoSub.internal(cross$geno[[chr[i]]],windowSize,oldMarkers,verbose)
   }
 	for(i in 1:length(chr)){
 		cross$geno[[chr[i]]]$data <- cross_geno[[i]]$data
@@ -249,7 +249,7 @@ smoothGeno <- function(cross,windowSize=1,chr,population,map=c("genetic","physic
 }
 
 ############################################################################################################
-#									*** smoothGenoSub.internal ***
+#									*** smooth.genoSub.internal ***
 #
 # DESCRIPTION:
 #	checking if fitted normal distributions do not overlap
@@ -263,13 +263,13 @@ smoothGeno <- function(cross,windowSize=1,chr,population,map=c("genetic","physic
 #	boolean
 #
 ############################################################################################################
-smoothGenoSub.internal <- function(geno,windowSize,oldMarkers,verbose){
+smooth.genoSub.internal <- function(geno,windowSize,oldMarkers,verbose){
   if(!is.null(dim(geno$data))){
     if(ncol(geno$data)>windowSize){
     old_genotype <- geno$data
     old_genotype[which(is.na(old_genotype))]<- 0
     genotype <- old_genotype
-    genotype <- t(apply(genotype,1,smoothGenoRow.internal,windowSize))
+    genotype <- t(apply(genotype,1,smooth.genoRow.internal,windowSize))
     if(verbose) cat("changed",sum(genotype!=old_genotype)/length(genotype)*100,"% values because of genotyping error\n")
     if(any(colnames(genotype)%in%colnames(oldMarkers))){
       markersToBeUnchanged <- colnames(genotype)[which(colnames(genotype)%in%colnames(oldMarkers))]
@@ -285,7 +285,7 @@ smoothGenoSub.internal <- function(geno,windowSize,oldMarkers,verbose){
 }
 
 ############################################################################################################
-#									*** smoothGenoRow.internal ***
+#									*** smooth.genoRow.internal ***
 #
 # DESCRIPTION:
 #	checking if fitted normal distributions do not overlap
@@ -299,7 +299,7 @@ smoothGenoSub.internal <- function(geno,windowSize,oldMarkers,verbose){
 #	boolean
 #
 ############################################################################################################
-smoothGenoRow.internal <- function(genoRow,windowSize){
+smooth.genoRow.internal <- function(genoRow,windowSize){
   if(length(table(genoRow))>1){
     wrongMarkers <- NULL
     if(length(genoRow)>windowSize+2){

@@ -39,7 +39,7 @@
 cross.saturate <- function(population, cross, map=c("genetic","physical"), placeUsing=c("qtl","correlation"), threshold=3, use.orderMarkers=FALSE, verbose=FALSE, debugMode=0){
   if(missing(population)) stop("Please provide a population object\n")
   if(is.null(population$offspring$genotypes$real)){
-    stop("No original genotypes in population$offspring$genotypes$real, load them in using intoPopulation\n")
+    stop("No original genotypes in population$offspring$genotypes$real, load them in using add.to.population\n")
   }
   check.population(population)
   if(!is.numeric(threshold)||is.na(threshold)) stop("Please provide correct threshold")
@@ -49,9 +49,9 @@ cross.saturate <- function(population, cross, map=c("genetic","physical"), place
     cat("WARNING: threshold too high, few new markers will be selected\n")
   }
   if(!(all(rownames(population$offspring$genotypes$simulated)%in%rownames(population$offspring$genotypes$qtl$lod)))){
-    stop("QTL scan results don't match with simulated genotypes, please, run scanQTLs function\n")
+    stop("QTL scan results don't match with simulated genotypes, please, run scan.qtls function\n")
   }else if(!(all(rownames(population$offspring$genotypes$qtl$lod)%in%rownames(population$offspring$genotypes$simulated)))){
-    stop("QTL scan results don't match with simulated genotypes, please, run scanQTLs function\n")
+    stop("QTL scan results don't match with simulated genotypes, please, run scan.qtls function\n")
   }
   map <- checkParameters.internal(map,c("genetic","physical"),"map")
   placeUsing <- checkParameters.internal(placeUsing,c("qtl","correlation"),"placeUsing")
@@ -234,7 +234,7 @@ bestQTL.internal <- function(cross, population, treshold,verbose=FALSE){
   output <- NULL
   if(verbose) cat("Starting qtl analysis.\n")
   s<- proc.time()
-  if(is.null(population$offspring$genotypes$qtl)) stop("No qtl data in population$offspring$genotypes$qtl, run scanQTLs function first.")
+  if(is.null(population$offspring$genotypes$qtl)) stop("No qtl data in population$offspring$genotypes$qtl, run scan.qtls function first.")
   peaksMatrix <- getpeaks.internal(abs(population$offspring$genotypes$qtl$lod),treshold)
   e<- proc.time()
   if(verbose) cat("Qtl analysis done in:",(e-s)[3],"seconds\n")
@@ -264,11 +264,11 @@ bestQTL.internal <- function(cross, population, treshold,verbose=FALSE){
 # OUTPUT:
 #	vector with new ordering of chromosomes inside cross object
 ############################################################################################################
-scanQTLs <- function(population,map=c("genetic","physical"),step=0.1,verbose=FALSE){
+scan.qtls <- function(population,map=c("genetic","physical"),step=0.1,verbose=FALSE){
   if(missing(population)) stop("Please provide a population object\n")
   check.population(population)
   if(is.null(population$offspring$genotypes$real)){
-    stop("No original genotypes in population$offspring$genotypes$real, load them in using intoPopulation\n")
+    stop("No original genotypes in population$offspring$genotypes$real, load them in using add.to.population\n")
   }
   if(is.null(population$offspring$genotypes$simulated)){
     stop("No simulated genotypes in population$offspring$genotypes$simulated, run generateBiomarkers first\n")
@@ -417,7 +417,7 @@ map2mapCorrelationMatrix<- function(cross,population,verbose=FALSE){
     rownames(genotypesCorelationMatrix) <- rownames(population$offspring$genotypes$real)    
     invisible(genotypesCorelationMatrix)
   }else{
-    stop("Load known genotypes into the population using intoPopulation(p,genotypes,\"offspring$genotypes\")")
+    stop("Load known genotypes into the population using add.to.population(p,genotypes,\"offspring$genotypes\")")
   }
 }
 

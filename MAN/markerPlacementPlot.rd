@@ -13,7 +13,7 @@
 }
 
 \arguments{
-\item{population}{ An object of class \code{\link{population}}. See \code{\link{createPopulation}} for details. }
+\item{population}{ An object of class \code{\link{population}}. See \code{\link{create.population}} for details. }
 \item{placeUsing}{ 
   How position of the new markers on the saturated map should be determinate:
   \itemize{
@@ -43,7 +43,7 @@ be selected with different threshold values.
 \examples{
 	data(yeastCross)
 	data(yeastPopulation)
-	yeastPopulation <- scanQTLs(yeastPopulation,verbose=TRUE,map="physical",step=2)
+	yeastPopulation <- scan.qtls(yeastPopulation,verbose=TRUE,map="physical",step=2)
 	markerPlacementPlot(yeastPopulation,placeUsing="qtl",cross=yeastCross)
 	markerPlacementPlot(yeastPopulation,placeUsing="correlation",cross=yeastCross)
 }

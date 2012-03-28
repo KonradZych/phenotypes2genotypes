@@ -1,5 +1,5 @@
-\name{smoothGeno}
-\alias{smoothGeno}
+\name{smooth.geno}
+\alias{smooth.geno}
 
 
 \title{Smooth genotype.}
@@ -9,14 +9,14 @@
 }
 
 \usage{
-	smoothGeno(cross,windowSize=1,chr,population,map=c("genetic","physical"),verbose=FALSE)
+	smooth.geno(cross,windowSize=1,chr,population,map=c("genetic","physical"),verbose=FALSE)
 }
 
 \arguments{
 \item{cross}{ An object of class \code{cross}. See \code{\link[qtl]{read.cross}} for details. }
  \item{windowSize}{ Specifies number of markers that are processed at once.}
  \item{chr}{ Specifies subset of chromosomes to be processed.}
- \item{population}{ An object of class \code{\link{population}}. See \code{\link{createPopulation}} for details. }
+ \item{population}{ An object of class \code{\link{population}}. See \code{\link{create.population}} for details. }
  \item{map}{ Which map (from ones stored in population$maps) should be used fo assigning chromosomes on the created map}
   \item{verbose}{ Be verbose.}
 }
@@ -40,7 +40,7 @@ If there are some markers on the map that shall be treated special (this will be
 
 \examples{
 	data(yeastCross)
-  yeastCross_smooth <- smoothGeno(yeastCross,3)
+  yeastCross_smooth <- smooth.geno(yeastCross,3)
   geno.image(yeastCross)
 	geno.image(yeastCross_smooth)
   

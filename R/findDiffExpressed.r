@@ -1,6 +1,6 @@
 #################################################################################
 #
-# findDiffExpressed.R
+# find.diff.expressed.R
 #
 # Copyright (c) 2011, Konrad Zych
 #
@@ -23,13 +23,13 @@
 #     A copy of the GNU General Public License, version 3, is available
 #     at http://www.r-project.org/Licenses/GPL-3
 #
-# Contains: findDiffExpressed
-#				showRPpval, plotRPpval
+# Contains: find.diff.expressed
+#				show.RPpval, plot.RPpval
 #
 #################################################################################
 
 ############################################################################################################
-#									*** findDiffExpressed ***
+#									*** find.diff.expressed ***
 #
 # DESCRIPTION:
 #	Using Rank Product or student t-test analysis to select differentially expressed genes.
@@ -44,12 +44,12 @@
 #	object of class population containing object of class RP in $founders$RP
 #
 ############################################################################################################
-findDiffExpressed <- function(population,use=c("ttest","rankprod"),verbose=FALSE,debugMode=0,...){
+find.diff.expressed <- function(population,use=c("ttest","rankprod"),verbose=FALSE,debugMode=0,...){
   #checks
   if(missing(population)) stop("provide population object\n")
   check.population(population)
   use <- checkParameters.internal(use,c("ttest","rankprod"),"use")
-  if(verbose && debugMode==1) cat("findDiffExpressed starting withour errors in checkpoints.\n")
+  if(verbose && debugMode==1) cat("find.diff.expressed starting withour errors in checkpoints.\n")
 	
 	s<-proc.time()
 	if(use=="rankprod"){
@@ -67,7 +67,7 @@ findDiffExpressed <- function(population,use=c("ttest","rankprod"),verbose=FALSE
 #									*** findUsingTTest.internal ***
 #
 # DESCRIPTION:
-#	subfunction of findDiffExpressed using t-test to assess whether gene is differentially expressed
+#	subfunction of find.diff.expressed using t-test to assess whether gene is differentially expressed
 # 
 # PARAMETERS:
 # 	phenoRow - single row of founders phenotype data
@@ -90,7 +90,7 @@ findUsingTTest.internal <- function(phenoRow,groupLabels){
 }
 
 ############################################################################################################
-#									*** showRPpval ***
+#									*** show.RPpval ***
 #
 # DESCRIPTION:
 #	showing pvals of RP for selected markers
@@ -103,11 +103,11 @@ findUsingTTest.internal <- function(phenoRow,groupLabels){
 #	none
 #
 ############################################################################################################
-showRPpval <- function(population,markers=1:10){
+show.RPpval <- function(population,markers=1:10){
 	#checks
   if(missing(population)) stop("provide population object\n")
   check.population(population)
-  if(is.null(population$founders$RP$pval)) stop("Population object does not contain results of RP analysis run findDiffExpressed first.\n")
+  if(is.null(population$founders$RP$pval)) stop("Population object does not contain results of RP analysis run find.diff.expressed first.\n")
   inRangeCheck.internal(markers,"markers",1,nrow(population$founders$phenotypes))
   
 	toPrint <- matrix(0,length(markers),2)
@@ -119,7 +119,7 @@ showRPpval <- function(population,markers=1:10){
 }
 
 ############################################################################################################
-#									*** plotRPpval ***
+#									*** plot.RPpval ***
 #
 # DESCRIPTION:
 #	ploting pvals of RP for selected markers
@@ -133,11 +133,11 @@ showRPpval <- function(population,markers=1:10){
 #	none
 #
 ############################################################################################################
-plotRPpval <- function(population,thresholdRange=c(0.01,0.1,0.01)){
+plot.RPpval <- function(population,thresholdRange=c(0.01,0.1,0.01)){
 	#checks
   if(missing(population)) stop("provide population object\n")
   check.population(population)
-  if(is.null(population$founders$RP$pval)) stop("Population object does not contain results of RP analysis run findDiffExpressed first.\n")
+  if(is.null(population$founders$RP$pval)) stop("Population object does not contain results of RP analysis run find.diff.expressed first.\n")
   thrRange <- seq(thresholdRange[1],thresholdRange[2],thresholdRange[3])
   n.upSelected <- NULL
   n.downSelected <- NULL
