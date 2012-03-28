@@ -58,7 +58,6 @@ findDiffExpressed <- function(population,use=c("ttest","rankprod"),verbose=FALSE
 	}else{
 		population$founders$RP$pval<- t(rbind(apply(population$founders$phenotypes,1,findUsingTTest.internal,population$founders$groups)))
 	}
-	class(population) <- "population"
 	e<-proc.time()
 	if(verbose && debugMode==2)cat("Differentially expressed genes found in:",(e-s)[3],"seconds.\n")
 	invisible(population)

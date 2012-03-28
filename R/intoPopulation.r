@@ -45,10 +45,11 @@
 #	an object of class population
 #
 ############################################################################################################
-createPopulation <- function(offspring_phenotypes, founders, founders_groups, offspring_genotypes, maps_genetic, maps_physical, no.warn=FALSE, verbose=FALSE,debugMode=0){
+createPopulation <- function(offspring_phenotypes, founders, founders_groups, offspring_genotypes, maps_genetic, maps_physical, populationType=c("riself", "f2", "bc", "risib"), no.warn=FALSE, verbose=FALSE,debugMode=0){
 	if(verbose && debugMode==1) cat("createPopulation starting.\n")
 	s <- proc.time()
 	population <- NULL
+	populationType <- checkParameters.internal(populationType,c("riself", "f2", "bc", "risib"),"populationType")
 	if(missing(offspring_phenotypes)){
 		stop("No offspring phenotype data provided!\n")
 	}else{
@@ -91,7 +92,7 @@ createPopulation <- function(offspring_phenotypes, founders, founders_groups, of
 		population <- intoPopulationSub.internal(population, maps_physical, "maps$physical", verbose, debugMode)
 	}
 	if(is.null(population)) stop("No data provided!\n")
-	class(population) <- "population"
+	class(population) <- c("population", populationType)
 	e <- proc.time()
 	check.population(population)
 	if(verbose){
@@ -143,7 +144,6 @@ intoPopulation <- function(population, dataObject, dataType=c("founders","offspr
 	}
 
 	if(is.null(population)) stop("No data provided!\n")
-	class(population) <- "population"
 	invisible(population)
 }
 
