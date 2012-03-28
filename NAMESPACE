@@ -9,7 +9,6 @@ import(
   graphics,
   stats,
   utils,
-  RankProd,
   qtl,
   mixtools
 )

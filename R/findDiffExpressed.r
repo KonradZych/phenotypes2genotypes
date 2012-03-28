@@ -53,6 +53,7 @@ find.diff.expressed <- function(population,use=c("ttest","rankprod"),verbose=FAL
 	
 	s<-proc.time()
 	if(use=="rankprod"){
+		tryCatch(require(RankProd), error = stop("Install RankProd package to use Rank Product analysis!\n"))
 		rankProdRes <- RP(population$founders$phenotypes,population$founders$groups,gene.names=rownames(population$founders$phenotypes),...)
 		population$founders$RP <- rankProdRes
 	}else{

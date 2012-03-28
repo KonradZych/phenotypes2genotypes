@@ -17,7 +17,7 @@
  \item{use}{ Which method should be used for selecting differentially expressed probes:
   \itemize{
     \item{ttest}{ - student t-test.}
-    \item{rankprod}{ - Rank Product using \code{\link{RP}} function.}
+    \item{rankprod}{ - Rank Product using RP function from RankProd package. \emph{RankProd package from Bioconductor has to be installed before this option is enabled.}}
   } 
   }
  \item{verbose}{ Be verbose.}
@@ -30,7 +30,7 @@
 }
 
 \details{
-  This function performs either RankProd or t.test analysis
+  This function finds probes differentially expressed between founders using either student t.test or RankProd (\emph{RankProd package from Bioconductor has to be installed before this option is enabled.}).
 }
 
 \author{
