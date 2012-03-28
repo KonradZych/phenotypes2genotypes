@@ -24,7 +24,7 @@
 }
 
 \details{
-  Those are two helper functions of \code{\link{find.diff.expressed}}. fake.population is printing to the screen p-values for specified markers, while plotRPpval is showing
+  Those are two helper functions of \code{\link{find.diff.expressed}}. showRPpval is printing to the screen p-values for specified markers, while plotRPpval is showing
   how many markers will be selected using different thresholds.
 }
 
