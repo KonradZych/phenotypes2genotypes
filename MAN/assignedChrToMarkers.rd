@@ -1,5 +1,5 @@
-\name{assignedChrToMarkers}
-\alias{assignedChrToMarkers}
+\name{assignChrToMarkers}
+\alias{assignChrToMarkers}
 
 \title{Create an ordering vector to assign markers to chromosomes}
 
@@ -8,7 +8,7 @@
 }
 
 \usage{
-	assignedChrToMarkers(assignment, cross)
+	assignChrToMarkers(assignment, cross)
 }
 
 \arguments{
@@ -37,7 +37,7 @@ This function transforms this vector and creates an ordering vector, that can be
 	data(yeastPopulation)
 	assignment <- cross.denovo(yeastPopulation,n.chr=16,verbose=TRUE,map="physical",comparisonMethod=sumMajorityCorrelation, use.orderMarkers=FALSE,reOrder=FALSE, cross=yeastCross)
   assignment #boring,but expected
-  ordering <- assignedChrToMarkers(assignment,yeastCross)
+  ordering <- assignChrToMarkers(assignment,yeastCross)
 }
 
 \seealso{

@@ -24,7 +24,7 @@
 #     at http://www.r-project.org/Licenses/GPL-3
 #
 # Contains: find.diff.expressed
-#				show.RPpval, plot.RPpval
+#				fake.population, plotRPpval
 #
 #################################################################################
 
@@ -90,7 +90,7 @@ findUsingTTest.internal <- function(phenoRow,groupLabels){
 }
 
 ############################################################################################################
-#									*** show.RPpval ***
+#									*** showRPpval ***
 #
 # DESCRIPTION:
 #	showing pvals of RP for selected markers
@@ -103,7 +103,7 @@ findUsingTTest.internal <- function(phenoRow,groupLabels){
 #	none
 #
 ############################################################################################################
-show.RPpval <- function(population,markers=1:10){
+showRPpval <- function(population,markers=1:10){
 	#checks
   if(missing(population)) stop("provide population object\n")
   check.population(population)
@@ -119,7 +119,7 @@ show.RPpval <- function(population,markers=1:10){
 }
 
 ############################################################################################################
-#									*** plot.RPpval ***
+#									*** plotRPpval ***
 #
 # DESCRIPTION:
 #	ploting pvals of RP for selected markers
@@ -133,7 +133,7 @@ show.RPpval <- function(population,markers=1:10){
 #	none
 #
 ############################################################################################################
-plot.RPpval <- function(population,thresholdRange=c(0.01,0.1,0.01)){
+plotRPpval <- function(population,thresholdRange=c(0.01,0.1,0.01)){
 	#checks
   if(missing(population)) stop("provide population object\n")
   check.population(population)

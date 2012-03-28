@@ -30,16 +30,15 @@
 \details{
 There are three functions in pheno2geno to allow the user to manually reduce number of resulting chromosomes. 
 
-{\bf reduceChromosomesNumber}
+\emph{reduceChromosomesNumber}
 first of three functions is removing all but certain number of chromosomes. It depends only on ordering 
 of chromosomes, not on naming. 
 
-
-{\bf removeChromosomes}
+\emph{ removeChromosomes}
 In opposite to previous one, this function operates only on names of chromosomes to be removed, not 
 depending at all on the ordering.
 
-{\bf removeTooSmallChromosomes}
+\emph{ removeTooSmallChromosomes}
 After using the formLinkageGroups function, the cross object often contains artifacts - linkage groups 
 containing only a few markers. Those linkage groups consist of markers with poor quality and should be 
 removed from the cross object, for this pheno2geno provides the removeTooSmallChromosomes function.
@@ -52,7 +51,7 @@ removed from the cross object, for this pheno2geno provides the removeTooSmallCh
 
 \examples{
 	data(yeastCross)
-	plot.rf(yeastCross, main="riself generateBiomarkers example")
+	plot.rf(yeastCross, main="riself generate.biomarkers example")
 	cross_ <- reduceChromosomesNumber(yeastCross,5,verb=TRUE)
 	plot.rf(cross_, main="Leaving only 5 chromosomes")
 	cross_ <- removeChromosomes(yeastCross,1,verb=TRUE)
@@ -63,7 +62,7 @@ removed from the cross object, for this pheno2geno provides the removeTooSmallCh
 
 \seealso{
   \code{\link{reorganizeMarkersWithin}} - Apply new ordering on the cross object usign ordering vector.
-  \code{\link{assignedChrToMarkers}} - Create ordering vector from chromosome assignment vector.
+  \code{\link{assignChrToMarkers}} - Create ordering vector from chromosome assignment vector.
   \code{\link{cross.saturate}} - Saturate existing map.
   \code{\link{cross.denovo}} - Create de novo genetic map.
 }

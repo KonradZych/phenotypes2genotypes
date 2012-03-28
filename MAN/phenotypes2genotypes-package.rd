@@ -9,7 +9,7 @@
 	\itemize{
         \item \code{\link{read.population}} - Reading geno/phenotypoc files into R.
 		\item \code{\link{find.diff.expressed}} - Using Rank Prod to select differentially expressed genes.
-		\item \code{\link{generateBiomarkers}} - Convert a phenotypematrix into suitable genotypes and save it into R/qtl cross object.
+		\item \code{\link{generate.biomarkers}} - Convert a phenotypematrix into suitable genotypes and save it into R/qtl cross object.
 		}
 }
 \details{

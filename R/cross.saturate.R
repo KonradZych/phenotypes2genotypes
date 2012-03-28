@@ -76,7 +76,7 @@ cross.saturate <- function(population, cross, map=c("genetic","physical"), place
   }
   if(missing(cross)){
     if(is.null(population$offspring$genotypes$simulated)){
-      stop("No genotype data in population$offspring$genotypes$simulated, run generateBiomarkers first\n")
+      stop("No genotype data in population$offspring$genotypes$simulated, run generate.biomarkers first\n")
     }else{
       cat("No cross object provided, creating one using population object\n")
       	#*******SAVING CROSS OBJECT*******
@@ -271,7 +271,7 @@ scan.qtls <- function(population,map=c("genetic","physical"),step=0.1,verbose=FA
     stop("No original genotypes in population$offspring$genotypes$real, load them in using add.to.population\n")
   }
   if(is.null(population$offspring$genotypes$simulated)){
-    stop("No simulated genotypes in population$offspring$genotypes$simulated, run generateBiomarkers first\n")
+    stop("No simulated genotypes in population$offspring$genotypes$simulated, run generate.biomarkers first\n")
   }
   map <- checkParameters.internal(map,c("genetic","physical"),"map")
   if(map=="genetic"){
