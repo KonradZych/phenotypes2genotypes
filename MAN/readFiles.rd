@@ -8,7 +8,7 @@
 }
 
 \usage{
-	readFiles(offspring="offspring",founders="founders",map="maps",founders_groups,verbose=FALSE,debugMode=0)
+	readFiles(offspring="offspring",founders="founders",map="maps",founders_groups,populationType=c("riself", "f2", "bc", "risib"),verbose=FALSE,debugMode=0)
 }
 
 \arguments{
@@ -16,6 +16,14 @@
  \item{founders}{ Core used to specify names of parental phenotypic ("core_phenotypes.txt") file. }
  \item{map}{ Core used to specify names of genetic ("map_genetic.txt") and physical ("map_physical.txt") map files. }
  \item{founders_groups}{ Specify groups of individuals in founders data, see description below and \code{\link[RankProd]{RP}} for more details }
+   \item{populationType}{ Type of the population data was obtained from:
+   \itemize{
+    \item{riself}{ - RILs by selfing.}
+    \item{f2}{ - f2 cross.}
+    \item{bc}{ - back cross.}
+    \item{risib}{ - RILs by sibling mating.}
+  } 
+ }
  \item{verbose}{ Be verbose}
  \item{debugMode}{ 1: Print out checks, 2: print additional time information }
 }

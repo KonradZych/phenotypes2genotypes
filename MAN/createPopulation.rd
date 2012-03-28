@@ -9,19 +9,27 @@
 }
 
 \usage{
-	createPopulation(offspring_phenotypes, founders, founders_groups, offspring_genotypes, maps_genetic, maps_physical, no.warn=FALSE, verbose=FALSE,debugMode=0)
+	createPopulation(offspring_phenotypes, founders, founders_groups, offspring_genotypes, maps_genetic, maps_physical, populationType=c("riself", "f2", "bc", "risib"), no.warn=FALSE, verbose=FALSE,debugMode=0)
 }
 
 \arguments{
   \item{offspring_phenotypes}{ Matrix containing offspring phenotype data (have to be supported, if not - function quits with error).}
   \item{founders}{ Matrix containing founders phenotype data (have to be supported, if not - function quits with error).}
   \item{founders_groups}{ Specify groups im founders data (have to be supported, if not - function quits with error).}
-  \item{offspring_genotypes}{ Matrix containing offspring genotype data (optional).}
-  \item{maps_genetic}{ Matrix containing genetic map (optional).}
-  \item{maps_physical}{ Matrix containing physical map (optional).}
-  \item{no.warn}{ If TRUE, no warnings will be issued.}
-  \item{verbose}{ Be verbose.}
-  \item{debugMode}{ 1: Print out checks, 2: print additional time information.}
+ \item{offspring_genotypes}{ Matrix containing offspring genotype data (optional).}
+ \item{maps_genetic}{ Matrix containing genetic map (optional).}
+ \item{maps_physical}{ Matrix containing physical map (optional).}
+  \item{populationType}{ Type of the population data was obtained from:
+   \itemize{
+    \item{riself}{ - RILs by selfing.}
+    \item{f2}{ - f2 cross.}
+    \item{bc}{ - back cross.}
+    \item{risib}{ - RILs by sibling mating.}
+  } 
+ }
+ \item{no.warn}{ If TRUE, no warnings will be produced.}
+ \item{verbose}{ Be verbose.}
+ \item{debugMode}{ 1: Print out checks, 2: print additional time information.}
 }
 
 \value{

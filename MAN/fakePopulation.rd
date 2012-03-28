@@ -22,7 +22,7 @@
     \item{riself}{ - RILs by selfing.}
     \item{f2}{ - f2 cross.}
     \item{bc}{ - back cross.}
-    \item{risib}{ - RILs by siblinmg mating.}
+    \item{risib}{ - RILs by sibling mating.}
   } 
  }
  \item{n.mixups}{ Number of mixups to be faked.}

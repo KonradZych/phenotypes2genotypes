@@ -91,6 +91,7 @@ fakePopulation <- function(n.founders = 4, n.offspring = 100, n.markers=100,n.ch
     pheno <- fakeMixUps.internal(pheno,n.mixups)
 	}
 	population <- createPopulation(pheno, founders, foundersGroups, geno, map, physicalMap,verbose=verbose)
+	class(population)[2]<- type
 	check.population(population)
 	invisible(population)
 }

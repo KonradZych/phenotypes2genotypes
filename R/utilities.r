@@ -42,10 +42,19 @@
 #
 ############################################################################################################
 print.population <- function(x, ...){
-	cat("This is object of class \"population\"\n  It is too complex to print, so we provide just this summary.\n")
 	if(missing(x)) stop("Please, provide an object of class population.\n")
 	if(!(any(names(x)=="offspring"))){  stop("This is not correct population object.\n") }
 	if(!(any(names(x)=="founders"))){  stop("This is not correct population object.\n") }
+	cat("This is object of class \"population\"\n  It is too complex to print, so we provide just this summary.\n\n")
+	if(class(x)[2] == "riself"){
+		cat("Population type: RILs by selfing\n\n")
+	}else if(class(x)[2] == "risib"){
+		cat("Population type: RILs by sibling mating\n\n")
+	}else if(class(x)[2] == "bc"){
+		cat("Population type: backcross\n\n")
+	}else if(class(x)[2] == "f2"){
+		cat("Population type: F2 intercross\n\n")
+	}
 	if(!(is.null(x$offspring))){
     cat("Offspring (",ncol(x$offspring$phenotypes),"):\n",sep="",...)
 		if(!(is.null(x$offspring$phenotypes))){

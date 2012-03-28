@@ -273,10 +273,10 @@ smoothGenoSub.internal <- function(geno,windowSize,oldMarkers,verbose){
     if(verbose) cat("changed",sum(genotype!=old_genotype)/length(genotype)*100,"% values because of genotyping error\n")
     if(any(colnames(genotype)%in%colnames(oldMarkers))){
       markersToBeUnchanged <- colnames(genotype)[which(colnames(genotype)%in%colnames(oldMarkers))]
-      print(markersToBeUnchanged)
-      print(genotype[1:10,1:10])
+      #print(markersToBeUnchanged)
+      #print(genotype[1:10,1:10])
       genotype[,markersToBeUnchanged] <- oldMarkers[,markersToBeUnchanged]
-      print(genotype[1:10,1:10])
+      #print(genotype[1:10,1:10])
     }
     geno$data <- genotype
     }
