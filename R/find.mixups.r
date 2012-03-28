@@ -41,7 +41,7 @@ find.mixups <- function(population,map=c("genetic","physical"),n.qtls=50,thresho
   if(missing(population)) stop("Please provide a population object\n")
   check.population(population)
   if(is.null(population$offspring$genotypes$real)){
-    stop("No original genotypes in population$offspring$genotypes$real, load them in using intoPopulation function\n")
+    stop("No original genotypes in population$offspring$genotypes$real, load them in using add.to.population function\n")
   }
   if(!is.finite(threshold)){
     stop("Threshold must be a finite, numeric value.\n")

@@ -1,5 +1,5 @@
-\name{findDiffExpressed}
-\alias{findDiffExpressed}
+\name{find.diff.expressed}
+\alias{find.diff.expressed}
 \alias{groupLabels}
 
 \title{Finding differentially expressed genes.}
@@ -9,11 +9,11 @@
 }
 
 \usage{
-	findDiffExpressed(population,use=c("ttest","rankprod"),verbose=FALSE,debugMode=0,...)
+	find.diff.expressed(population,use=c("ttest","rankprod"),verbose=FALSE,debugMode=0,...)
 }
 
 \arguments{
-\item{population}{ An object of class \code{\link{population}}. See \code{\link{createPopulation}} for details. }
+\item{population}{ An object of class \code{\link{population}}. See \code{\link{create.population}} for details. }
  \item{use}{ Which method should be used for selecting differentially expressed probes:
   \itemize{
     \item{ttest}{ - student t-test.}
@@ -46,17 +46,17 @@
 
 \examples{
 	data(yeastPopulation)
-	yeastPopulation <- findDiffExpressed(yeastPopulation)
+	yeastPopulation <- find.diff.expressed(yeastPopulation)
 
 }
 
 \seealso{
 	\itemize{
     \item{\code{\link[RankProd]{RP}}}{ - Perform rank product method to identify differentially expressed genes.}
-    \item{\code{\link{readFiles}}}{ - Load genotype, phenotype, genetic map data files into R environment into a population object.}
+    \item{\code{\link{read.population}}}{ - Load genotype, phenotype, genetic map data files into R environment into a population object.}
     \item{\code{\link{generateBiomarkers}}}{ - Creating genotypes from children phenotypes.}
-    \item{\code{\link{showRPpval}}}{- Printing out p-values calculated by the findDiffExpressed function.}
-    \item{\code{\link{plotRPpval}}}{ - Plotting p-values calculated by the findDiffExpressed function.}
+    \item{\code{\link{show.RPpval}}}{- Printing out p-values calculated by the find.diff.expressed function.}
+    \item{\code{\link{plot.RPpval}}}{ - Plotting p-values calculated by the find.diff.expressed function.}
   }
 }
 

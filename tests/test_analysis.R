@@ -4,10 +4,10 @@ parents <- read.csv(file="parental_phenotypes.csv",header=TRUE,row.names=1)
 genotypes <- read.csv(file="genotypes.csv",header=TRUE,row.names=1)
 map <- read.csv(file="map.csv",header=TRUE,row.names=1)
 
-population <- createPopulation(children,parents,c(0,0,0,0,0,0,1,1,1,1,1,1),genotypes,maps_physical=map)
-population <- findDiffExpressed(population)
-population <- generateBiomarkers(population, threshold=0.1,verbose=T,debug=2)
-population <- scanQTLs(population,map="physical",verbose=T)
+population <- create.population(children,parents,c(0,0,0,0,0,0,1,1,1,1,1,1),genotypes,maps_physical=map)
+population <- find.diff.expressed(population)
+population <- generate.biomarkers(population, threshold=0.1,verbose=T,debug=2)
+population <- scan.qtls(population,map="physical",verbose=T)
 
 ####THREE WAYS TO ASSIGN CHROMOSOMES
 set.seed(101010)
@@ -16,10 +16,10 @@ cross_newmap <- cross.denovo(population,n.chr=16,map="physical",comparisonMethod
 #cross_newmap <- cross.denovo(population, n.chr=16,map="physical",comparisonMethod=majorityCorrelation,reOrder=TRUE,verbose=TRUE,debugMode=2)
 #set.seed(101010)
 #cross_newmap <- cross.denovo(population, n.chr=16,map="physical",comparisonMethod=meanCorrelation,reOrder=TRUE,verbose=TRUE,debugMode=2)
-cross_newmap <- smoothGeno(cross_newmap,3)
+cross_newmap <- smooth.geno(cross_newmap,3)
 
 cross_saturated <- cross.saturate(population,map="physical",verbose=TRUE,debugMode=2)
-cross_saturated <- smoothGeno(cross_saturated,3)
+cross_saturated <- smooth.geno(cross_saturated,3)
 
 
 #To output folder

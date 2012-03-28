@@ -1,5 +1,5 @@
-\name{fakePopulation}
-\alias{fakePopulation}
+\name{fake.population}
+\alias{fake.population}
 
 
 \title{Faking population object.}
@@ -9,7 +9,7 @@
 }
 
 \usage{
-  fakePopulation(n.founders = 4, n.offspring = 100, n.markers=100,n.chromosomes=10, type = c("riself", "f2", "bc", "risib"), n.mixups=0, verbose=FALSE,...)
+  fake.population(n.founders = 4, n.offspring = 100, n.markers=100,n.chromosomes=10, type = c("riself", "f2", "bc", "risib"), n.mixups=0, verbose=FALSE,...)
 }
 
 \arguments{
@@ -31,7 +31,7 @@
 }
 
 \value{
-  An object of class \code{\link{population}}. See \code{\link{createPopulation}} for details.
+  An object of class \code{\link{population}}. See \code{\link{create.population}} for details.
 }
 
 \details{
@@ -44,7 +44,7 @@
 }
 
 \examples{
-	population <- fakePopulation()
+	population <- fake.population()
 }
 
 \references{
@@ -69,10 +69,10 @@
 
 \seealso{
   \itemize{
-    \item{\code{\link{readFiles}}}{ - Load genotype, phenotype, genetic map data files into R environment into a population object.}
-    \item{\code{\link{intoPopulation}}}{ - Add data to existing population object.}
+    \item{\code{\link{read.population}}}{ - Load genotype, phenotype, genetic map data files into R environment into a population object.}
+    \item{\code{\link{add.to.population}}}{ - Add data to existing population object.}
     \item{\code{\link[qtl]{sim.cross}}}{ - Function from R/qtl package used to simulate genotypic data.}
-    \item{\code{\link{createPopulation}}}{ - Create object of class population from data already in R environment.}
+    \item{\code{\link{create.population}}}{ - Create object of class population from data already in R environment.}
   }
 }
 

@@ -31,7 +31,7 @@ markerPlacementPlot <- function(population, placeUsing=c("qtl","correlation"),th
   placeUsing <- checkParameters.internal(placeUsing,c("qtl","correlation"),"placeUsing")
   check.population(population)
   if(is.null(population$offspring$genotypes$real)){
-    stop("No original genotypes in population$offspring$genotypes$real, load them in using intoPopulation\n")
+    stop("No original genotypes in population$offspring$genotypes$real, load them in using add.to.population\n")
   }
   if(placeUsing=="correlation"){
     if(missing(cross)){
@@ -49,7 +49,7 @@ markerPlacementPlot <- function(population, placeUsing=c("qtl","correlation"),th
     }
   plot(p,s,type='o',main="Number of markers placed",xlab="corThreshold",ylab="# of markers")
   }else{
-    if(is.null(population$offspring$genotypes$qtl)) stop("No qtl data in population$offspring$genotypes$qtl, run scanQTLs function first.")
+    if(is.null(population$offspring$genotypes$qtl)) stop("No qtl data in population$offspring$genotypes$qtl, run scan.qtls function first.")
     singleqtl <- NULL
     noqtl <- NULL
     multipleqtl <- NULL

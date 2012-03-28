@@ -23,7 +23,7 @@
 #     A copy of the GNU General Public License, version 3, is available
 #     at http://www.r-project.org/Licenses/GPL-3
 #
-# Contains: findBiomarkers, getBiomarkers
+# Contains: findBiomarkers, pull.biomarkers
 #           selectTopMarker.internal, scoreMarker.internal, convertfindBiomarkers.internal, splitPheno.internal, 
 #           selectMarkersUsingMap.internal, filterGenotypes.internal, filterRow.internal, splitRowSubEM.internal
 #
@@ -53,16 +53,16 @@
 #	an object of class cross
 #
 ############################################################################################################
-generateBiomarkers <- function(population, threshold=0.05, overlapInd = 10, proportion = c(50,50), margin = 15, verbose=FALSE, debugMode=0){
+generate.biomarkers <- function(population, threshold=0.05, overlapInd = 10, proportion = c(50,50), margin = 15, verbose=FALSE, debugMode=0){
 	#*******CHECKS*******
 	check.population(population)
 	s<-proc.time()
 	if(any(proportion < 1) || sum(proportion) != 100) stop("Wrong proportion paramete\n")
 	if(any(!(is.numeric(population$founders$phenotypes)))){
-		population <- intoPopulation(population, population$founders$phenotypes, "founders")
+		population <- add.to.population(population, population$founders$phenotypes, "founders")
 	}
 	if(any(!(is.numeric(population$offspring$phenotypes)))){
-		population <- intoPopulation(population, population$offspring$phenotypes, "offspring$phenotypes")
+		population <- add.to.population(population, population$offspring$phenotypes, "offspring$phenotypes")
 	}
 	if(overlapInd < 0 || overlapInd > ncol(population$offspring$phenotypes)) stop("overlapInd is a number (0,lenght of the row).")
 	if(verbose && debugMode==1) cat("findBiomarkers starting withour errors in checkpoint.\n")
@@ -80,7 +80,7 @@ generateBiomarkers <- function(population, threshold=0.05, overlapInd = 10, prop
 }
 
 ############################################################################################################
-#									*** getBiomarkers ***
+#									*** pull.biomarkers ***
 #
 # DESCRIPTION:
 #	function returning all biomarkers or top marker matching given pattern
@@ -94,7 +94,7 @@ generateBiomarkers <- function(population, threshold=0.05, overlapInd = 10, prop
 #	vector/matrix
 #
 ############################################################################################################
-getBiomarkers <- function(population,pattern,verbose=FALSE){
+pull.biomarkers <- function(population,pattern,verbose=FALSE){
   if(missing(population)) stop("No population object provided.\n")
   if(is.null(population$offspring$genotypes$simulated)) stop("Population object doesn't contain de novo genotypes, run findBiomarkers.\n")
   markers <- population$offspring$genotypes$simulated

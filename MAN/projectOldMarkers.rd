@@ -13,7 +13,7 @@
 
 \arguments{
 \item{cross}{ An object of class \code{cross}. See \code{\link[qtl]{read.cross}} for details. }
-\item{population}{ An object of class \code{\link{population}}. See \code{\link{createPopulation}} for details. }
+\item{population}{ An object of class \code{\link{population}}. See \code{\link{create.population}} for details. }
  \item{map}{ Which map (from ones stored in population$maps) should be used fo assigning chromosomes on the created map}
  \item{label}{ How old markers should be labeled on the plot, with their positions, their names or none.}
  \item{...}{Parameters passed to \code{\link[qtl]{plot.qtl}}.}

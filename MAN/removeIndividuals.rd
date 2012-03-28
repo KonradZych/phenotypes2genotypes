@@ -1,5 +1,5 @@
-\name{removeIndividuals}
-\alias{removeIndividuals}
+\name{remove.individuals}
+\alias{remove.individuals}
 
 
 \title{Removing individuals.}
@@ -9,17 +9,17 @@
 }
 
 \usage{
-	removeIndividuals(population,individuals,verbose)
+	remove.individuals(population,individuals,verbose)
 }
 
 \arguments{
-\item{population}{ An object of class \code{\link{population}}. See \code{\link{createPopulation}} for details. }
+\item{population}{ An object of class \code{\link{population}}. See \code{\link{create.population}} for details. }
  \item{individuals}{ individuals to be romved specified by their names}
   \item{verbose}{ Be verbose}
 }
 
 \value{
-  An object of class \code{\link{population}}. See \code{\link{createPopulation}} for details.
+  An object of class \code{\link{population}}. See \code{\link{create.population}} for details.
 }
 
 \details{
@@ -34,14 +34,14 @@
 \examples{
 	### simulating data
 	data(yeastPopulation)
-	yeastPopulation <- removeIndividuals(yeastPopulation,"V87",TRUE)
+	yeastPopulation <- remove.individuals(yeastPopulation,"V87",TRUE)
 
 }
 
 \seealso{
   \itemize{
-    \item{\code{\link{readFiles}}}{ - Load genotype, phenotype, genetic map data files into R environment into a population object.}
-    \item{\code{\link{intoPopulation}}}{ - Adding data to existing population object.}
+    \item{\code{\link{read.population}}}{ - Load genotype, phenotype, genetic map data files into R environment into a population object.}
+    \item{\code{\link{add.to.population}}}{ - Adding data to existing population object.}
   }
 }
 

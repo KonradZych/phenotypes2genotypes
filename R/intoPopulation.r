@@ -1,6 +1,6 @@
 ############################################################################################################
 #
-# intoPopulation.R
+# add.to.population.R
 #
 # Copyright (c) 2011, Konrad Zych
 #
@@ -23,12 +23,12 @@
 #     A copy of the GNU General Public License, version 3, is available
 #     at http://www.r-project.org/Licenses/GPL-3
 #
-# Contains: createPopulation, intoPopulation, intoPopulationSub.internal, intoPopulationSubPheno.internal, intoPopulationSubGeno.internal, intoPopulationSubMap.internal   
+# Contains: create.population, add.to.population, add.to.populationSub.internal, add.to.populationSubPheno.internal, add.to.populationSubGeno.internal, add.to.populationSubMap.internal   
 #
 ############################################################################################################
 
 ############################################################################################################
-#									*** createPopulation ***
+#									*** create.population ***
 #
 # DESCRIPTION:
 #	creating an object of class population using data supplied by user
@@ -45,15 +45,15 @@
 #	an object of class population
 #
 ############################################################################################################
-createPopulation <- function(offspring_phenotypes, founders, founders_groups, offspring_genotypes, maps_genetic, maps_physical, populationType=c("riself", "f2", "bc", "risib"), no.warn=FALSE, verbose=FALSE,debugMode=0){
-	if(verbose && debugMode==1) cat("createPopulation starting.\n")
+create.population <- function(offspring_phenotypes, founders, founders_groups, offspring_genotypes, maps_genetic, maps_physical, populationType=c("riself", "f2", "bc", "risib"), no.warn=FALSE, verbose=FALSE,debugMode=0){
+	if(verbose && debugMode==1) cat("create.population starting.\n")
 	s <- proc.time()
 	population <- NULL
 	populationType <- checkParameters.internal(populationType,c("riself", "f2", "bc", "risib"),"populationType")
 	if(missing(offspring_phenotypes)){
 		stop("No offspring phenotype data provided!\n")
 	}else{
-		population <- intoPopulationSub.internal(population, offspring_phenotypes, "offspring$phenotypes", verbose, debugMode)
+		population <- add.to.populationSub.internal(population, offspring_phenotypes, "offspring$phenotypes", verbose, debugMode)
 	}
 	if(missing(founders)){
 		stop("No founders phenotype data provided!\n")
@@ -65,31 +65,31 @@ createPopulation <- function(offspring_phenotypes, founders, founders_groups, of
       warning(n.childrenNotInParental,"markers from founders file are not present in offspring data and will be removed.\n")
       founders <- founders[which((rownames(founders)%in%rownames(population$offspring$phenotypes))),]
     }
-		population <- intoPopulationSub.internal(population, founders, "founders", verbose, debugMode)
+		population <- add.to.populationSub.internal(population, founders, "founders", verbose, debugMode)
 	}
 	if(missing(founders_groups)){
 		stop("No information about founders groups provided!\n")
 	}else{
 		if(length(founders_groups)==ncol(population$founders$phenotypes)){
-			population <- intoPopulationSub.internal(population, founders_groups, "founders$groups", verbose, debugMode)
+			population <- add.to.populationSub.internal(population, founders_groups, "founders$groups", verbose, debugMode)
 		}else{
 			stop("founders_group parameter should have length equall to number of columns in founders phenotype data!\n")
 		}
 	}
 	if(missing(offspring_genotypes)){
-		if(verbose && !(no.warn))cat("No offspring genotypic data provided. You can supply it later using intoPopulation.\n")
+		if(verbose && !(no.warn))cat("No offspring genotypic data provided. You can supply it later using add.to.population.\n")
 	}else{
-		population <- intoPopulationSub.internal(population, offspring_genotypes, "offspring$genotypes", verbose, debugMode)
+		population <- add.to.populationSub.internal(population, offspring_genotypes, "offspring$genotypes", verbose, debugMode)
 	}
 	if(missing(maps_genetic)){
-		if(verbose && !(no.warn))cat("No genotic map provided. You can supply it later using intoPopulation.\n")
+		if(verbose && !(no.warn))cat("No genotic map provided. You can supply it later using add.to.population.\n")
 	}else{
-		population <- intoPopulationSub.internal(population, maps_genetic, "maps$genetic", verbose, debugMode)
+		population <- add.to.populationSub.internal(population, maps_genetic, "maps$genetic", verbose, debugMode)
 	}
 	if(missing(maps_physical)){
-		if(verbose && !(no.warn))cat("No physical map provided.  You can supply it later using intoPopulation.\n")
+		if(verbose && !(no.warn))cat("No physical map provided.  You can supply it later using add.to.population.\n")
 	}else{
-		population <- intoPopulationSub.internal(population, maps_physical, "maps$physical", verbose, debugMode)
+		population <- add.to.populationSub.internal(population, maps_physical, "maps$physical", verbose, debugMode)
 	}
 	if(is.null(population)) stop("No data provided!\n")
 	class(population) <- c("population", populationType)
@@ -97,19 +97,19 @@ createPopulation <- function(offspring_phenotypes, founders, founders_groups, of
 	check.population(population)
 	if(verbose){
 		if(debugMode==2){
-			cat("createPopulation done in:",(e-s)[3],"seconds.\n")
+			cat("create.population done in:",(e-s)[3],"seconds.\n")
 		}else{
-			cat("createPopulation finished\n")
+			cat("create.population finished\n")
 		}
 	}
 	invisible(population)
 }
 
 ############################################################################################################
-#									*** intoPopulation ***
+#									*** add.to.population ***
 #
 # DESCRIPTION:
-#	putting data into existing population object (using intoPopulationSub.internal)
+#	putting data into existing population object (using add.to.populationSub.internal)
 # 
 # PARAMETERS:
 # 	population - object of class population, data should be put into
@@ -127,20 +127,20 @@ createPopulation <- function(offspring_phenotypes, founders, founders_groups, of
 #	an object of class population
 #
 ############################################################################################################
-intoPopulation <- function(population, dataObject, dataType=c("founders","offspring$phenotypes","founders$group","offspring$genotypes","maps$genetic","maps$physical"),verbose=FALSE,debugMode=0){
+add.to.population <- function(population, dataObject, dataType=c("founders","offspring$phenotypes","founders$group","offspring$genotypes","maps$genetic","maps$physical"),verbose=FALSE,debugMode=0){
 	### checks
 	check.population(population)
 	inListCheck.internal(dataType,"dataType",c("founders","offspring$phenotypes","offspring$genotypes","maps$genetic","maps$physical"))
-	if(verbose && debugMode==1) cat("intoPopulation starting without errors in checkpoints.\n")
+	if(verbose && debugMode==1) cat("add.to.population starting without errors in checkpoints.\n")
 	if(length(dataType)>1){
 		if(class(dataObject)!="list") stop("Multiple dataObjects should be provided as list.\n")
 		if(length(dataObject)!=length(dataType)) stop("Support dataType for every element of dataObject.\n")
 		if(length(dataType)!=length(unique(dataType))) stop("Every element of dataType must be unique!\n")
 		for(i in 1:length(dataObject)){
-			population <- intoPopulationSub.internal(population,dataObject[[i]],dataType[i], verbose, debugMode)
+			population <- add.to.populationSub.internal(population,dataObject[[i]],dataType[i], verbose, debugMode)
 		}
 	}else if(length(dataType)==1){
-		population <- intoPopulationSub.internal(population,dataObject,dataType, verbose, debugMode)
+		population <- add.to.populationSub.internal(population,dataObject,dataType, verbose, debugMode)
 	}
 
 	if(is.null(population)) stop("No data provided!\n")
@@ -148,10 +148,10 @@ intoPopulation <- function(population, dataObject, dataType=c("founders","offspr
 }
 
 ############################################################################################################
-#									*** intoPopulationSub.internal ***
+#									*** add.to.populationSub.internal ***
 #
 # DESCRIPTION:
-#	subfunction of intoPopulation, using subfunctions to add a single data object to the object of class
+#	subfunction of add.to.population, using subfunctions to add a single data object to the object of class
 #	population
 # 
 # PARAMETERS:
@@ -170,7 +170,7 @@ intoPopulation <- function(population, dataObject, dataType=c("founders","offspr
 #	an object of class population
 #
 ############################################################################################################
-intoPopulationSub.internal <- function(population, dataObject, dataType=c("founders","offspring$phenotypes","founders$groups","offspring$genotypes","maps$genetic","maps$physical"),verbose=FALSE,debugMode=0){
+add.to.populationSub.internal <- function(population, dataObject, dataType=c("founders","offspring$phenotypes","founders$groups","offspring$genotypes","maps$genetic","maps$physical"),verbose=FALSE,debugMode=0){
 	if(dataType!="founders$groups"){
 		if(class(dataObject)=="data.frame"){
 			dataObject <- as.matrix(dataObject)
@@ -179,11 +179,11 @@ intoPopulationSub.internal <- function(population, dataObject, dataType=c("found
 		}
 	}
 	if(dataType=="founders" || dataType=="offspring$phenotypes"){
-		population <- intoPopulationSubPheno.internal(population,dataObject,dataType, verbose, debugMode)
+		population <- add.to.populationSubPheno.internal(population,dataObject,dataType, verbose, debugMode)
 	}else if(dataType=="offspring$genotypes"){
 		if(!(is.null(dataObject))&&!is.null(dim(dataObject))){	
 			#Checking whether rows are numeric/convertable to numeric
-			rows <- unlist(lapply(c(1:nrow(dataObject)),intoPopulationSubGenoSub.internal,dataObject,verbose))
+			rows <- unlist(lapply(c(1:nrow(dataObject)),add.to.populationSubGenoSub.internal,dataObject,verbose))
 			#Removes faulty rows
 			if(!(is.null(rows))){
 				if(verbose)cat("Following  rows are not numeric and cannot be converted into numeric:",rows," so will be removed.\n")
@@ -215,7 +215,7 @@ intoPopulationSub.internal <- function(population, dataObject, dataType=c("found
 			stop("No data provided for offspring$genotypes !\n")
 		}
 	}else if(dataType=="maps$genetic"||dataType=="maps$physical"){
-		population <- intoPopulationSubMap.internal(population,dataObject, dataType, verbose, debugMode)
+		population <- add.to.populationSubMap.internal(population,dataObject, dataType, verbose, debugMode)
 	}else if(dataType=="founders$groups"){
 		population$founders$groups <- dataObject
 	}
@@ -223,10 +223,10 @@ intoPopulationSub.internal <- function(population, dataObject, dataType=c("found
 }
 
 ############################################################################################################
-#									*** intoPopulationSubPheno.internal ***
+#									*** add.to.populationSubPheno.internal ***
 #
 # DESCRIPTION:
-#	subfunction of intoPopulationSub.internal, adding a single phenotype object to the object of class 
+#	subfunction of add.to.populationSub.internal, adding a single phenotype object to the object of class 
 #	population
 # 
 # PARAMETERS:
@@ -242,12 +242,12 @@ intoPopulationSub.internal <- function(population, dataObject, dataType=c("found
 #	an object of class population
 #
 ############################################################################################################
-intoPopulationSubPheno.internal <- function(population, dataObject, dataType=c("founders","offspring$phenotypes"),verbose=FALSE,debugMode=0){
-	if(verbose && debugMode==1) cat("intoPopulationSub.internal starting.\n")
+add.to.populationSubPheno.internal <- function(population, dataObject, dataType=c("founders","offspring$phenotypes"),verbose=FALSE,debugMode=0){
+	if(verbose && debugMode==1) cat("add.to.populationSub.internal starting.\n")
 	s <- proc.time()
 	if(!(is.null(dataObject))&&!is.null(dim(dataObject))){
     #Check whether rows are numeric/convertable to numeric
-		rows <- unlist(lapply(c(1:nrow(dataObject)),intoPopulationSubPhenoSub.internal,dataObject,verbose))		
+		rows <- unlist(lapply(c(1:nrow(dataObject)),add.to.populationSubPhenoSub.internal,dataObject,verbose))		
 		#Removing faulty rows
 		if(!(is.null(rows))){
 			if(verbose)cat("Following  rows are not numeric and cannot be converted into numeric:",rows," so will be removed.\n")
@@ -282,15 +282,15 @@ intoPopulationSubPheno.internal <- function(population, dataObject, dataType=c("
 		stop("No data provided for ",dataType,"!\n")
 	}
 	e <- proc.time()
-	if(verbose&&debugMode==2)cat("intoPopulation for",dataType,"done in:",(e-s)[3],"seconds.\n")
+	if(verbose&&debugMode==2)cat("add.to.population for",dataType,"done in:",(e-s)[3],"seconds.\n")
 	invisible(population)
 }
 
 ############################################################################################################
-#									*** intoPopulationSubPhenoSub.internal ***
+#									*** add.to.populationSubPhenoSub.internal ***
 #
 # DESCRIPTION:
-#	subfunction of intoPopulationSubPheno.internal, checking if a single row of dataObject is formatted
+#	subfunction of add.to.populationSubPheno.internal, checking if a single row of dataObject is formatted
 #	correctly
 # 
 # PARAMETERS:	
@@ -302,7 +302,7 @@ intoPopulationSubPheno.internal <- function(population, dataObject, dataType=c("
 #	number or NULL
 #
 ############################################################################################################
-intoPopulationSubPhenoSub.internal <- function(curRow,dataObject,verbose){
+add.to.populationSubPhenoSub.internal <- function(curRow,dataObject,verbose){
 	if(verbose&&curRow%%1000==0) cat("Processing row:",curRow,"\n")
 	if(!(numericCheck.internal(dataObject[curRow,],allow.na=TRUE))){
 		return(curRow)
@@ -312,10 +312,10 @@ intoPopulationSubPhenoSub.internal <- function(curRow,dataObject,verbose){
 }
 
 ############################################################################################################
-#									*** intoPopulationSubGenoSub.internal ***
+#									*** add.to.populationSubGenoSub.internal ***
 #
 # DESCRIPTION:
-#	subfunction of intoPopulationSubGeno.internal, checking if a single row of dataObject is formatted
+#	subfunction of add.to.populationSubGeno.internal, checking if a single row of dataObject is formatted
 #	correctly
 # 
 # PARAMETERS:	
@@ -327,7 +327,7 @@ intoPopulationSubPhenoSub.internal <- function(curRow,dataObject,verbose){
 #	number or NULL
 #
 ############################################################################################################
-intoPopulationSubGenoSub.internal <- function(curRow,dataObject,verbose){
+add.to.populationSubGenoSub.internal <- function(curRow,dataObject,verbose){
 	if(verbose&&curRow%%1000==0) cat("Processing row:",curRow,"\n")
 	if(!(numericCheck.internal(dataObject[curRow,],allow.na=TRUE))){
 		return(curRow)
@@ -337,10 +337,10 @@ intoPopulationSubGenoSub.internal <- function(curRow,dataObject,verbose){
 }
 
 ############################################################################################################
-#									*** intoPopulationSubMap.internal ***
+#									*** add.to.populationSubMap.internal ***
 #
 # DESCRIPTION:
-#	subfunction of intoPopulationSub.internal, adding a single map object to the object of class population
+#	subfunction of add.to.populationSub.internal, adding a single map object to the object of class population
 # 
 # PARAMETERS:	
 #	population - object of class population, data should be put into
@@ -355,8 +355,8 @@ intoPopulationSubGenoSub.internal <- function(curRow,dataObject,verbose){
 #	an object of class population
 #
 ############################################################################################################
-intoPopulationSubMap.internal <- function(population, dataObject, dataType=c("maps$genetic","maps$physical"),verbose=FALSE, debugMode=0){
-	if(verbose && debugMode==1) cat("intoPopulationSub.internal starting.\n")
+add.to.populationSubMap.internal <- function(population, dataObject, dataType=c("maps$genetic","maps$physical"),verbose=FALSE, debugMode=0){
+	if(verbose && debugMode==1) cat("add.to.populationSub.internal starting.\n")
 	s <- proc.time()
 	if(!(is.null(dataObject))&&!(is.null(dim(dataObject)))&&class(dataObject)=="matrix"){
 		if(ncol(dataObject)!=2) stop ("This is not a correct map object.\n")
@@ -371,6 +371,6 @@ intoPopulationSubMap.internal <- function(population, dataObject, dataType=c("ma
 		stop("No data provided for ",dataType,"!\n")
 	}
 	e <- proc.time()
-	if(verbose&&debugMode==2)cat("intoPopulation for",dataType,"done in:",(e-s)[3],"seconds.\n")
+	if(verbose&&debugMode==2)cat("add.to.population for",dataType,"done in:",(e-s)[3],"seconds.\n")
 	invisible(population)
 }

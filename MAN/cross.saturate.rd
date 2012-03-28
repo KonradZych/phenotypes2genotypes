@@ -14,7 +14,7 @@ cross.saturate(population, cross, map=c("genetic","physical"), placeUsing=c("qtl
 }
 
 \arguments{
-\item{population}{ An object of class \code{\link{population}}. See \code{\link{createPopulation}} for details. }
+\item{population}{ An object of class \code{\link{population}}. See \code{\link{create.population}} for details. }
 \item{cross}{ An object of class \code{cross}. See \code{\link[qtl]{read.cross}} for details. If not supported, it will be created using data stored in population}
   \item{map}{ 
   Which map should be used for comparison:
@@ -37,7 +37,7 @@ cross.saturate(population, cross, map=c("genetic","physical"), placeUsing=c("qtl
 }
 
 \value{
-  An object of class \code{\link{population}}. See \code{\link{createPopulation}} for details.
+  An object of class \code{\link{population}}. See \code{\link{create.population}} for details.
 }
 
 \details{
@@ -54,7 +54,7 @@ being placed on the map.
 \examples{
 	data(yeastPopulation)
 	###
-	yeastPopulation <- scanQTLs(yeastPopulation,verbose=TRUE,map="physical",step=2)
+	yeastPopulation <- scan.qtls(yeastPopulation,verbose=TRUE,map="physical",step=2)
 	cross <- cross.saturate(yeastPopulation,map="physical",verbose=TRUE,debugMode=2)
 }
 

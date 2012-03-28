@@ -21,7 +21,7 @@ assignFunction=c(assignMaximumNoConflicts,assignMaximum), reOrder=TRUE, use.orde
 }
 
 \arguments{
-\item{population}{ An object of class \code{\link{population}}. See \code{\link{createPopulation}} for details. }
+\item{population}{ An object of class \code{\link{population}}. See \code{\link{create.population}} for details. }
  \item{n.chr}{ Number of chromosomes expected on the map.}
  \item{orderUsingMap}{ Shall markers in the result cross be ordered using one of the maps in population object.}
  \item{map}{ Which map ( from ones stored in population$maps) should be used for assigning chromosomes on the created map.}

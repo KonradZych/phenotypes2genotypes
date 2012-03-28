@@ -31,9 +31,9 @@
 \alias{splitPhenoRowEM.internal}
 \alias{splitPhenoRow.internal}
 \alias{print.population}
-\alias{intoPopulationSubPheno.internal}
-\alias{intoPopulationSubGeno.internal}
-\alias{intoPopulationSubMap.internal}
+\alias{add.to.populationSubPheno.internal}
+\alias{add.to.populationSubGeno.internal}
+\alias{add.to.populationSubMap.internal}
 \alias{fakeMixUps.internal}
 \alias{getChrOffsets.internal}
 \alias{getMarkerOffsetsFromMap}
@@ -58,12 +58,12 @@
 
 \alias{checkBeforeOrdering}
 \alias{findUsingTTest.internal}
-\alias{intoPopulationSubGenoSub.internal}
-\alias{intoPopulationSubPhenoSub.internal}
+\alias{add.to.populationSubGenoSub.internal}
+\alias{add.to.populationSubPhenoSub.internal}
 \alias{projectOldMarkers.internal}
 \alias{recalculateMap.internal}
-\alias{smoothGenoRow.internal}
-\alias{smoothGenoSub.internal}
+\alias{smooth.genoRow.internal}
+\alias{smooth.genoSub.internal}
 
 \alias{cross.denovo.internal}
 \alias{rearrangeMarkers}

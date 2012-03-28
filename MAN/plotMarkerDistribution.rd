@@ -14,7 +14,7 @@
 }
 
 \arguments{
-\item{population}{ An object of class \code{\link{population}}. See \code{\link{createPopulation}} for details. }
+\item{population}{ An object of class \code{\link{population}}. See \code{\link{create.population}} for details. }
  \item{marker}{ Number or name of the marker to be printed.}
  \item{nrDistributions}{ Number of normal distributions to be fitted.}
  \item{logarithmic}{ TRUE - log(data) is used instead of raw data.}

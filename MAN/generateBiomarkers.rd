@@ -1,5 +1,5 @@
-\name{generateBiomarkers}
-\alias{generateBiomarkers}
+\name{generate.biomarkers}
+\alias{generate.biomarkers}
 \alias{use}
 \alias{threshold}
 \alias{overlapInd}
@@ -15,12 +15,12 @@
 }
 
 \usage{
-  generateBiomarkers(population, threshold=0.05, overlapInd = 10, proportion = c(50,50), margin = 15, verbose=FALSE, debugMode=0)
+  generate.biomarkers(population, threshold=0.05, overlapInd = 10, proportion = c(50,50), margin = 15, verbose=FALSE, debugMode=0)
 }
 
 \arguments{
-  \item{population}{ An object of class \code{\link{population}}. See \code{\link{createPopulation}} for details. }
-  \item{threshold}{ If pval for gene (see \code{\link{findDiffExpressed}}) is lower that this value, we assume it is being diff. expressed.}
+  \item{population}{ An object of class \code{\link{population}}. See \code{\link{create.population}} for details. }
+  \item{threshold}{ If pval for gene (see \code{\link{find.diff.expressed}}) is lower that this value, we assume it is being diff. expressed.}
   \item{overlapInd}{ Number of individuals that are allowed to overlap between genotypes.}
   \item{proportion}{ Proportion of individuals expected to carrying a certain genotype.}
   \item{margin}{ Proportion is allowed to varry between this margin (2 sided).}
@@ -44,30 +44,30 @@
 \examples{
 	#Example for F2 population
 	set.seed(102)
-	population <- fakePopulation(type="f2")
-	population <- findDiffExpressed(population)
-	population <- generateBiomarkers(population,proportion=c(25,50,25),threshold=0.01)
+	population <- fake.population(type="f2")
+	population <- find.diff.expressed(population)
+	population <- generate.biomarkers(population,proportion=c(25,50,25),threshold=0.01)
 	\dontrun{
 	#Example for BC population
 	set.seed(102)
-	population <- fakePopulation(type="bc")
-	population <- findDiffExpressed(population)
-	population <- generateBiomarkers(population,proportion=c(25,75),threshold=0.01)
+	population <- fake.population(type="bc")
+	population <- find.diff.expressed(population)
+	population <- generate.biomarkers(population,proportion=c(25,75),threshold=0.01)
 
 	#Example for BC population
 	set.seed(102)
-	population <- fakePopulation(type="riself")
-	population <- findDiffExpressed(population)
-	population <- generateBiomarkers(population,proportion=c(50,50),threshold=0.01)
+	population <- fake.population(type="riself")
+	population <- find.diff.expressed(population)
+	population <- generate.biomarkers(population,proportion=c(50,50),threshold=0.01)
 	}
 }
 
 \seealso{
   \itemize{
-    \item{\code{\link{readFiles}}}{ - Load genotype, phenotype, genetic map data files into R environment into a population object.}
+    \item{\code{\link{read.population}}}{ - Load genotype, phenotype, genetic map data files into R environment into a population object.}
     \item{\code{\link{cross.denovo}}}{ - Create de novo genetic map or vector showing how chromosomes should be assigned.}
     \item{\code{\link{cross.saturate}}}{ - Saturate existing map.}
-    \item{\code{\link{findDiffExpressed}}}{ - Using Rank Product or student t-test analysis to select differentially expressed genes.}
+    \item{\code{\link{find.diff.expressed}}}{ - Using Rank Product or student t-test analysis to select differentially expressed genes.}
   }
 }
 

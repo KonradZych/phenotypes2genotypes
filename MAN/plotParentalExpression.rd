@@ -12,7 +12,7 @@
 }
 
 \arguments{
-\item{population}{ An object of class \code{\link{population}}. See \code{\link{createPopulation}} for details. }
+\item{population}{ An object of class \code{\link{population}}. See \code{\link{create.population}} for details. }
  \item{markers}{ Numbers of markers to be plotted. }
  \item{groupLabels}{ Specify which column of parental data belongs to group 0 and which to group 1.}
 }

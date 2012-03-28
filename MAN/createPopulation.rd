@@ -1,5 +1,5 @@
-\name{createPopulation}
-\alias{createPopulation}
+\name{create.population}
+\alias{create.population}
 \alias{population}
 
 \title{Create a new population object}
@@ -9,7 +9,7 @@
 }
 
 \usage{
-	createPopulation(offspring_phenotypes, founders, founders_groups, offspring_genotypes, maps_genetic, maps_physical, populationType=c("riself", "f2", "bc", "risib"), no.warn=FALSE, verbose=FALSE,debugMode=0)
+	create.population(offspring_phenotypes, founders, founders_groups, offspring_genotypes, maps_genetic, maps_physical, populationType=c("riself", "f2", "bc", "risib"), no.warn=FALSE, verbose=FALSE,debugMode=0)
 }
 
 \arguments{
@@ -51,7 +51,7 @@
       \itemize{
         \item{$phenotypes}{ - founders gene expression (phenotype) data - numeric matrix, rows - markers, cols - individuals.}
         \item{$groups}{ - vector of 0s and 1s, specifying which column in founders phenotype data belongs to which group.}
-        \item{$RP}{ - results of t.test or RankProd analysis of founders phenotype data made by \code{\link{findDiffExpressed}.}
+        \item{$RP}{ - results of t.test or RankProd analysis of founders phenotype data made by \code{\link{find.diff.expressed}.}
       }
     }
     }
@@ -75,17 +75,17 @@
 
 \examples{
 	### simulating data
-	population <- fakePopulation()
+	population <- fake.population()
 	offspring <- population$offspring$phenotypes
 	founders <- population$founders$phenotypes
 	founders_groups <- population$founders$groups
-	population <- createPopulation(offspring,founders,founders_groups)
+	population <- create.population(offspring,founders,founders_groups)
 }
 
 \seealso{
   \itemize{
-    \item{\code{\link{readFiles}}}{ - Loads genotype, phenotype, genetic map data files into R environment into a population object.}
-    \item{\code{\link{intoPopulation}}}{ - Adding data to existing population object.}
+    \item{\code{\link{read.population}}}{ - Loads genotype, phenotype, genetic map data files into R environment into a population object.}
+    \item{\code{\link{add.to.population}}}{ - Adding data to existing population object.}
   }
 }
 
