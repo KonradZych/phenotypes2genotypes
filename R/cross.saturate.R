@@ -55,6 +55,23 @@ cross.saturate <- function(population, cross, map=c("genetic","physical"), place
   }
   map <- checkParameters.internal(map,c("genetic","physical"),"map")
   placeUsing <- checkParameters.internal(placeUsing,c("qtl","correlation"),"placeUsing")
+  if(missing(cross)){
+    if(is.null(population$offspring$genotypes$simulated)){
+      stop("No genotype data in population$offspring$genotypes$simulated, run generate.biomarkers first\n")
+    }else{
+      #*******SAVING CROSS OBJECT*******
+      s1 <- proc.time()
+      aa <- tempfile()
+      sink(aa)
+      cross <- genotypesToCross.internal(population,"simulated",verbose=verbose,debugMode=debugMode)
+      sink()
+      file.remove(aa)
+      e1 <- proc.time()
+      if(verbose && debugMode==2)cat("Saving data into cross object done in:",(e1-s1)[3],"seconds.\n")
+    }
+  }else{
+    population <- pull.geno.from.cross(cross,population,map)
+  }
  if(map=="genetic"){
     matchingMarkers <- which(rownames(population$offspring$genotypes$real)%in%rownames(population$maps$genetic))
     if(length(matchingMarkers)<=0) stop("Marker names on the map and in the genotypes doesn't match!\n")
@@ -73,28 +90,6 @@ cross.saturate <- function(population, cross, map=c("genetic","physical"), place
       if(verbose) cat(nrow(population$offspring$genotypes$real)-length(matchingMarkers),"markers were removed due to name mismatch\n")
     }
     cur_map <- population$maps$physical
-  }
-  if(missing(cross)){
-    if(is.null(population$offspring$genotypes$simulated)){
-      stop("No genotype data in population$offspring$genotypes$simulated, run generate.biomarkers first\n")
-    }else{
-      cat("No cross object provided, creating one using population object\n")
-      	#*******SAVING CROSS OBJECT*******
-      s1 <- proc.time()
-      aa <- tempfile()
-      sink(aa)
-      cross <- genotypesToCross.internal(population,"simulated",verbose=verbose,debugMode=debugMode)
-      sink()
-      file.remove(aa)
-      e1 <- proc.time()
-      if(verbose && debugMode==2)cat("Saving data into cross object done in:",(e1-s1)[3],"seconds.\n")
-    }
-  }else{
-    if(!(all(rownames(population$offspring$genotypes$simulated)%in%markernames(cross)))){
-      stop("Marker names from the cross object don't match those from population$offspring$genotypes$simulated!\n")
-    }else if(!(all(markernames(cross)%in%rownames(population$offspring$genotypes$simulated)))){
-      stop("Marker names from the cross object don't match those from population$offspring$genotypes$simulated!\n")
-  }
   }
  
   #*******ENRICHING ORIGINAL MAP*******

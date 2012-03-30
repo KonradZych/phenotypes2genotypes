@@ -264,4 +264,26 @@ assignChrToMarkers <- function(assignment,cross){
     }
     invisible(ordering)
 }
-    
+
+############################################################################################################
+#                                          ** pull.geno.from.cross***
+#
+# DESCRIPTION:
+#   Pulling genotypes with a map from cross and putting into population object
+# OUTPUT:
+#  An object of class population
+#
+############################################################################################################
+pull.geno.from.cross <- function(cross,population,map=c("genetic","physical")){
+  map <- checkParameters.internal(map,c("genetic","physical"),"map")
+  if(missing(population)) stop("Please provide a population object\n")
+  if(missing(cross)) stop("Please provide a cross object\n")
+  check.population(population)
+  population$offspring$genotypes$real <- t(pull.geno(cross))
+  if(map=="genetic"){
+    population$maps$genetic <- convertMap.internal(pull.map(cross))
+  }else{
+    population$maps$physical <- convertMap.internal(pull.map(cross))
+  }
+  invisible(population)
+}
