@@ -98,7 +98,7 @@ cross.saturate <- function(population, cross, map=c("genetic","physical"), place
   }else{
     availableChr = unique(cur_map[,1])
     if(any(!(chr%in%availableChr))) stop("Incorrect chr parameter!\n")
-    if(verbose) cat("Saturating chromosomes:\n",paste(chrA,",",sep=""),"\n")
+    if(verbose) cat("Saturating chromosomes:\n",paste(availableChr,",",sep=""),"\n")
   }
   #*******ENRICHING ORIGINAL MAP*******
 	s1 <- proc.time()
