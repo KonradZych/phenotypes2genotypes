@@ -1,5 +1,5 @@
-\name{pull.geno.from.cross}
-\alias{pull.geno.from.cross}
+\name{set.geno.from.cross}
+\alias{set.geno.from.cross}
 
 
 \title{Pull genotype from an object of class cross.}
@@ -9,7 +9,7 @@
 }
 
 \usage{
-pull.geno.from.cross(cross,population,map=c("genetic","physical"))
+set.geno.from.cross(cross,population,map=c("genetic","physical"))
 	
 }
 
@@ -30,7 +30,8 @@ pull.geno.from.cross(cross,population,map=c("genetic","physical"))
 }
 
 \details{
-This function pull genotypes with a map from the cross object and puts them into provided population object.
+This function pull genotypes with a map from the cross object and puts them into provided population object. This is useful if the same cross is saturated and smoothed
+(using \code{\link{smooth.geno}}) multiple times to fix the markers that were already smoothed.
 }
 
 \author{
@@ -41,16 +42,16 @@ This function pull genotypes with a map from the cross object and puts them into
 \examples{
 	data(yeastPopulation)
 	data(yeastCross)
-	yeastPopulation <- pull.geno.from.cross(yeastCross,yeastPopulation)
+	yeastPopulation <- set.geno.from.cross(yeastCross,yeastPopulation)
 }
 
 \seealso{
   \itemize{
+    \item{\code{\link{smooth.geno}}}{ - Remove genotyping errors by smoothing.}
     \item{\code{\link{reorganizeMarkersWithin}}}{ - Apply new ordering on the cross object usign ordering vector.}
     \item{\code{\link{assignChrToMarkers}}}{ - Create ordering vector from chromosome assignment vector.}
     \item{\code{\link{cross.denovo}}}{ - Create de novo genetic map or chromosome assignment vector.}
     \item{\code{\link{reduceChromosomesNumber}}}{ - Number of routines to reduce number of chromosomes of cross object.}
-    \item{\code{\link{markerPlacementPlot}}}{ - Plot showing how many markers will be selected for map saturation with different thresholds.}
   }
 }
 

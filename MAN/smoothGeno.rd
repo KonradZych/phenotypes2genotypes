@@ -30,7 +30,9 @@ This function is usefull while creating new map (also a bit while saturating exi
 of markers bordering those selected. If border values at both sides are the same and they are different from value of selected markers, then selected markers are given value of
 border ones. Then the windows slides by one marker and another group is checked.
 
-If there are some markers on the map that shall be treated special (this will be a case while smoothing a cross containing a saturated map and one doesn't want to modify original markers), an object of class population shall be provided. Original markers from population$offspring$genotypes$real are matched with ones in the cross object by names. They are not modified and their position is obtained from the map specified by user.
+If there are some markers on the map that shall be treated special (this will be a case while smoothing a cross containing a saturated map and one doesn't want to modify original markers), 
+an object of class population shall be provided. Original markers from population$offspring$genotypes$real are matched with ones in the cross object by names. These are not modified. If cross
+needs to be saturated multiple times, \code{\link{set.geno.from.cross}} function should be use before every smoothing to fix the markers that were already smoothed.
 }
 
 \author{
@@ -48,6 +50,7 @@ If there are some markers on the map that shall be treated special (this will be
 
 \seealso{
   \itemize{
+    \item{\code{\link{set.geno.from.cross}}}{ - Pulling genotypes with a map from cross and putting into population object.}
     \item{\code{\link{cross.denovo}}}{ -  Creating de novo genetic map or chromosome assignment vector.}
     \item{\code{\link{cross.saturate}}}{ - Saturate existing map.}
   }
