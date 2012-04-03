@@ -36,7 +36,7 @@
 # OUTPUT:
 #	object of class cross
 ############################################################################################################
-cross.saturate <- function(population, cross, map=c("genetic","physical"), placeUsing=c("qtl","correlation"), threshold=3, use.orderMarkers=FALSE, verbose=FALSE, debugMode=0){
+cross.saturate <- function(population, cross, map=c("genetic","physical"), placeUsing=c("qtl","correlation"), threshold=3, chr, use.orderMarkers=FALSE, verbose=FALSE, debugMode=0){
   if(missing(population)) stop("Please provide a population object\n")
   if(is.null(population$offspring$genotypes$real)){
     stop("No original genotypes in population$offspring$genotypes$real, load them in using add.to.population\n")
@@ -70,7 +70,7 @@ cross.saturate <- function(population, cross, map=c("genetic","physical"), place
       if(verbose && debugMode==2)cat("Saving data into cross object done in:",(e1-s1)[3],"seconds.\n")
     }
   }else{
-    population <- pull.geno.from.cross(cross,population,map)
+    population <- set.geno.from.cross(cross,population,map)
   }
  if(map=="genetic"){
     matchingMarkers <- which(rownames(population$offspring$genotypes$real)%in%rownames(population$maps$genetic))
@@ -91,10 +91,18 @@ cross.saturate <- function(population, cross, map=c("genetic","physical"), place
     }
     cur_map <- population$maps$physical
   }
- 
+  ### saturating only a subset of chromosomes
+  if(missing(chr)){
+    if(verbose) cat("Saturating all the chromosomes in the set\n")
+    chr = unique(cur_map[,1])
+  }else{
+    availableChr = unique(cur_map[,1])
+    if(any(!(chr%in%availableChr))) stop("Incorrect chr parameter!\n")
+    if(verbose) cat("Saturating chromosomes:\n",paste(chrA,",",sep=""),"\n")
+  }
   #*******ENRICHING ORIGINAL MAP*******
 	s1 <- proc.time()
-	cross <- rearrangeMarkers(cross,population,cur_map,threshold,placeUsing,addMarkers=TRUE,verbose=verbose)
+	cross <- rearrangeMarkers(cross,population,cur_map,threshold,placeUsing,addMarkers=TRUE,chr,verbose=verbose)
 	e1 <- proc.time()
 	if(verbose && debugMode==2)cat("Enrichment of original map done in:",(e1-s1)[3],"seconds.\n")
   
@@ -122,7 +130,7 @@ cross.saturate <- function(population, cross, map=c("genetic","physical"), place
 # OUTPUT:
 #	object of class cross
 ############################################################################################################
-rearrangeMarkers <- function(cross, population, cur_map, threshold=3, placeUsing,addMarkers=FALSE, verbose=FALSE){
+rearrangeMarkers <- function(cross, population, cur_map, threshold=3, placeUsing,addMarkers=FALSE, chr, verbose=FALSE){
   if(verbose) cat("old map contains",max(cur_map[,1]),"chromosomes\n")
   if(placeUsing=="qtl"){
     markersNewPostions <- bestQTL.internal(cross,population,threshold,verbose)
@@ -138,7 +146,7 @@ rearrangeMarkers <- function(cross, population, cur_map, threshold=3, placeUsing
 	returncross$geno <- vector(max(cur_map[,1]), mode="list")
 	returncross$pheno <- pull.pheno(cross)
 	if(verbose) cat("Reordering markers \n")  
-	for(x in unique(cur_map[,1])){
+	for(x in chr){
 		if(verbose) cat("- chr ",x," -\n")    
 		oldnames <- rownames(cur_map)[which(cur_map[,1]==x)]
     oldpositions <- cur_map[oldnames,2]

@@ -9,7 +9,7 @@
 }
 
 \usage{
-cross.saturate(population, cross, map=c("genetic","physical"), placeUsing=c("qtl","correlation"), threshold=3, use.orderMarkers=FALSE, verbose=FALSE, debugMode=0)
+cross.saturate(population, cross, map=c("genetic","physical"), placeUsing=c("qtl","correlation"), threshold=3, chr, use.orderMarkers=FALSE, verbose=FALSE, debugMode=0)
 	
 }
 
@@ -31,6 +31,7 @@ cross.saturate(population, cross, map=c("genetic","physical"), placeUsing=c("qtl
   }
   }
  \item{threshold}{ Specifies threshold for selecting/rejecting markers (see \link{markerPlacementPlot}).}
+ \item{chr}{ Specifies a subset of chromosomes analysis will be carried on. If none, all the chromosomes will be saturated.}
  \item{use.orderMarkers}{Should markers on the newly created map be ordered using\code{\link[qtl]{orderMarkers}} function.}
  \item{debugMode}{ 1: Print out checks, 2: print additional time information.}
  \item{verbose}{ Be verbose.}
