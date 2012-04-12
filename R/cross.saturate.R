@@ -48,11 +48,6 @@ cross.saturate <- function(population, cross, map=c("genetic","physical"), place
   }else if(threshold>=5){
     cat("WARNING: threshold too high, few new markers will be selected\n")
   }
-  if(!(all(rownames(population$offspring$genotypes$simulated)%in%rownames(population$offspring$genotypes$qtl$lod)))){
-    stop("QTL scan results don't match with simulated genotypes, please, run scan.qtls function\n")
-  }else if(!(all(rownames(population$offspring$genotypes$qtl$lod)%in%rownames(population$offspring$genotypes$simulated)))){
-    stop("QTL scan results don't match with simulated genotypes, please, run scan.qtls function\n")
-  }
   map <- checkParameters.internal(map,c("genetic","physical"),"map")
   placeUsing <- checkParameters.internal(placeUsing,c("qtl","correlation"),"placeUsing")
   if(missing(cross)){
@@ -71,6 +66,18 @@ cross.saturate <- function(population, cross, map=c("genetic","physical"), place
     }
   }else{
     population <- set.geno.from.cross(cross,population,map)
+    population <- scan.qtls(population)
+      aa <- tempfile()
+      sink(aa)
+      cross <- genotypesToCross.internal(population,"simulated",verbose=verbose,debugMode=debugMode)
+      sink()
+      file.remove(aa)
+      e1 <- proc.time()
+  }
+  if(!(all(rownames(population$offspring$genotypes$simulated)%in%rownames(population$offspring$genotypes$qtl$lod)))){
+    stop("QTL scan results don't match with simulated genotypes, please, run scan.qtls function\n")
+  }else if(!(all(rownames(population$offspring$genotypes$qtl$lod)%in%rownames(population$offspring$genotypes$simulated)))){
+    stop("QTL scan results don't match with simulated genotypes, please, run scan.qtls function\n")
   }
  if(map=="genetic"){
     matchingMarkers <- which(rownames(population$offspring$genotypes$real)%in%rownames(population$maps$genetic))
@@ -98,7 +105,7 @@ cross.saturate <- function(population, cross, map=c("genetic","physical"), place
   }else{
     availableChr = unique(cur_map[,1])
     if(any(!(chr%in%availableChr))) stop("Incorrect chr parameter!\n")
-    if(verbose) cat("Saturating chromosomes:\n",paste(availableChr,",",sep=""),"\n")
+    if(verbose) cat("Saturating chromosomes:\n",paste(chr,",",sep=""),"\n")
   }
   #*******ENRICHING ORIGINAL MAP*******
 	s1 <- proc.time()
@@ -143,15 +150,23 @@ rearrangeMarkers <- function(cross, population, cur_map, threshold=3, placeUsing
     cat("selected",nrow(markersNewPostions),"markers for further analysis\n")
   }
 	returncross <- cross
-	returncross$geno <- vector(max(cur_map[,1]), mode="list")
+	returncross$geno <- vector(length(unique(cur_map[,1])), mode="list")
 	returncross$pheno <- pull.pheno(cross)
 	if(verbose) cat("Reordering markers \n")  
-	for(x in chr){
+	for(x in 1:length(returncross$geno)){
 		if(verbose) cat("- chr ",x," -\n")    
 		oldnames <- rownames(cur_map)[which(cur_map[,1]==x)]
     oldpositions <- cur_map[oldnames,2]
-    newnames <- rownames(markersNewPostions)[which(markersNewPostions[,1]==x)]
-    newpositions <- markersNewPostions[newnames,2]
+    if(x %in% chr){
+		newnames <- rownames(markersNewPostions)[which(markersNewPostions[,1]==x)]
+		if(any(newnames%in%oldnames)){
+			newnames <- newnames[-which(newnames%in%oldnames)]
+		}
+		newpositions <- markersNewPostions[newnames,2]
+	}else{
+		newnames <- NULL
+		newpositions <- NULL
+	}
     toRmv <- NULL
     if(length(newnames)>0){
       for(i in 1:length(newpositions)){
@@ -164,7 +179,7 @@ rearrangeMarkers <- function(cross, population, cur_map, threshold=3, placeUsing
         newpositions <- newpositions[-toRmv]
         }
     }
-    if(verbose) cat("Selected:",length(newnames),"new and",length(oldnames),"original markers,",length(toRmv),"markers were removed\n") 
+     if(x %in% chr) if(verbose) cat("Selected:",length(newnames),"new and",length(oldnames),"original markers,",length(toRmv),"markers were removed\n") 
 		if(addMarkers){
 			returncross$geno[[x]]$data <- cbind(pull.geno(cross)[,newnames],t(population$offspring$genotypes$real[oldnames,]))
 			newmap <- c(as.numeric(newpositions),oldpositions)
