@@ -98,6 +98,7 @@ cross.saturate <- function(population, cross, map=c("genetic","physical"), place
     }
     cur_map <- population$maps$physical
   }
+  n.originalM <- nrow(population$offspring$genotypes$real)
   ### saturating only a subset of chromosomes
   if(missing(chr)){
     if(verbose) cat("Saturating all the chromosomes in the set\n")
@@ -125,6 +126,9 @@ cross.saturate <- function(population, cross, map=c("genetic","physical"), place
     e1 <- proc.time()
     if(verbose && debugMode==2)cat("Saving data into cross object done in:",(e1-s1)[3],"seconds.\n")
    }
+   n.newM <- sum(nmar(cross))-  n.originalM
+   percentageSat <-  (n.newM/n.originalM)*100
+   if(verbose) cat("\ncross.saturate statistics:\n # original markers:",n.originalM,"\n # inserted markers: ",n.newM,"\n saturation (% of markers added): ",percentageSat,"\n")
 	invisible(cross)
 }
 
