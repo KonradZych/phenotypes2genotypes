@@ -9,7 +9,7 @@
 }
 
 \usage{
-	smooth.geno(cross,windowSize=1,chr,population,map=c("genetic","physical"),verbose=FALSE)
+	smooth.geno(cross,windowSize=1,chr,population,map=c("genetic","physical"),fix.positions=FALSE,verbose=FALSE,...)
 }
 
 \arguments{
@@ -18,7 +18,9 @@
  \item{chr}{ Specifies subset of chromosomes to be processed.}
  \item{population}{ An object of class \code{\link{population}}. See \code{\link{create.population}} for details. }
  \item{map}{ Which map (from ones stored in population$maps) should be used fo assigning chromosomes on the created map}
+  \item{fix.positions}{ Shall the positions of the original markers be fixed.}
   \item{verbose}{ Be verbose.}
+  \item{...}{ Passed to \code{\link[qtl]{est.map}}} function directly.
 }
 
 \value{
@@ -53,6 +55,7 @@ needs to be saturated multiple times, \code{\link{set.geno.from.cross}} function
     \item{\code{\link{set.geno.from.cross}}}{ - Pulling genotypes with a map from cross and putting into population object.}
     \item{\code{\link{cross.denovo}}}{ -  Creating de novo genetic map or chromosome assignment vector.}
     \item{\code{\link{cross.saturate}}}{ - Saturate existing map.}
+    \code{\link[qtl]{est.map}}}{ - Uses the Lander-Green algorithm (i.e., the hidden Markov model technology) to re-estimate the genetic map for an experimental cross..}
   }
 }
 
