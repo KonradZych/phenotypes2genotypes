@@ -1,7 +1,7 @@
 #
 # checks.R
 #
-# copyright (c) 2010-2012 GBIC: Danny Arends, Konrad Zych and Ritsert C. Jansen
+# Copyright (c) 2010-2012 GBIC: Danny Arends, Konrad Zych and Ritsert C. Jansen
 # last modified May, 2012
 # first written Dec, 2011
 # Contains: numericCheck.internal, genotypeCheck.internal, inRangeCheck.internal 
