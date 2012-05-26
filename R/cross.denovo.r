@@ -12,9 +12,9 @@
 # cross.denovo
 #
 # DESCRIPTION:
-#  ordering chromosomes using genetic/physical map and majority rule
+#  Ordering chromosomes using genetic/physical map and majority rule
 # OUTPUT:
-#  an object of class cross
+#  An object of class cross
 #
 cross.denovo <- function(population, n.chr, orderUsingMap=FALSE, map=c("none","genetic","physical"), comparisonMethod = c(sumMajorityCorrelation,majorityCorrelation,meanCorrelation,majorityOfMarkers), 
 assignFunction=c(assignMaximumNoConflicts,assignMaximum), reOrder=TRUE, use.orderMarkers=FALSE, cross, verbose=FALSE, debugMode=0){
