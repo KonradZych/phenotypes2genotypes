@@ -1,48 +1,25 @@
-############################################################################################################
 #
 # postprocessing.R
 #
-# Copyright (c) 2011, Konrad Zych
-#
-# Modified by Danny Arends
-# 
-# first written March 2011
-# last modified November 2011
-# last modified in version: 0.9.1
-# in current version: active, in main workflow
-#
-#     This program is free software; you can redistribute it and/or
-#     modify it under the terms of the GNU General Public License,
-#     version 3, as published by the Free Software Foundation.
-#
-#     This program is distributed in the hope that it will be useful
-#     but without any warranty; without even the implied warranty of
-#     merchantability or fitness for a particular purpose.  See the GNU
-#     General Public License, version 3, for more details.
-#
-#     A copy of the GNU General Public License, version 3, is available
-#     at http://www.r-project.org/Licenses/GPL-3
-#
+# Copyright (c) 2010-2012 GBIC: Danny Arends, Konrad Zych and Ritsert C. Jansen
+# last modified May, 2012
+# first written Nov, 2011
 # Contains: orderChromosomes, majorityRule.internal, mergeChromosomes.internal,
-#			switchChromosomes.internal, removeChromosomes.internal, removeChromosomesSub.internal,
+#           switchChromosomes.internal, removeChromosomes.internal
+#           removeChromosomesSub.internal
 #
-############################################################################################################
 
-############################################################################################################
-#									*** mergeChromosomes.internal ***
+# mergeChromosomes.internal
 #
 # DESCRIPTION:
-#	subfunction of segragateChromosomes.internal, merging multiple chromosomes into one
-# 
+#  Subfunction of segragateChromosomes.internal, merging multiple chromosomes into one
 # PARAMETERS:
-# 	cross - object of class cross
-# 	chromosomes - chromosomes to be merged
-# 	name - name of merged chromosome
-# 
+#   - cross - object of class cross
+#   - chromosomes - chromosomes to be merged
+#   - name - name of merged chromosome 
 # OUTPUT:
-#	object of class cross
+#  An object of class cross
 #
-############################################################################################################
 mergeChromosomes.internal <- function(cross, chromosomes, name, verbose=FALSE){
 	if(verbose)cat("Merging chromosomes",chromosomes,"to form chromosome",name,"names:",names(cross$geno),"\n")
 	geno <- cross$geno

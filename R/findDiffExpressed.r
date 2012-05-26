@@ -1,49 +1,24 @@
-#################################################################################
 #
 # find.diff.expressed.R
 #
-# Copyright (c) 2011, Konrad Zych
+# Copyright (c) 2010-2012 GBIC: Danny Arends, Konrad Zych and Ritsert C. Jansen
+# last modified May, 2012
+# first written Mar, 2011
+# Contains: find.diff.expressed, fake.population, plotRPpval
 #
-# Modified by Danny Arends
-# 
-# first written March 2011
-# last modified November 2011
-# last modified in version: 0.9.1
-# in current version: active, in main workflow
-#
-#     This program is free software; you can redistribute it and/or
-#     modify it under the terms of the GNU General Public License,
-#     version 3, as published by the Free Software Foundation.
-#
-#     This program is distributed in the hope that it will be useful,
-#     but without any warranty; without even the implied warranty of
-#     merchantability or fitness for a particular purpose.  See the GNU
-#     General Public License, version 3, for more details.
-#
-#     A copy of the GNU General Public License, version 3, is available
-#     at http://www.r-project.org/Licenses/GPL-3
-#
-# Contains: find.diff.expressed
-#				fake.population, plotRPpval
-#
-#################################################################################
 
-############################################################################################################
-#									*** find.diff.expressed ***
+# find.diff.expressed
 #
 # DESCRIPTION:
-#	Using Rank Product or student t-test analysis to select differentially expressed genes.
-# 
+#  Using Rank Product or student t-test analysis to select differentially expressed genes.
 # PARAMETERS:
-# 	population - Object of class population , must contain founders phenotypic data.
-# 	verbose - Be verbose
-# 	debugMode - 1: Print our checks, 2: print additional time information
-# 	... - parameters send to RP function
-# 
+#   - population - Object of class population , must contain founders phenotypic data.
+#   - verbose - Be verbose
+#   - debugMode - 1: Print our checks, 2: print additional time information
+#   - ... - parameters send to RP function
 # OUTPUT:
-#	object of class population containing object of class RP in $founders$RP
+#  An object of class population containing object of class RP in $founders$RP
 #
-############################################################################################################
 find.diff.expressed <- function(population,use=c("ttest","rankprod"),verbose=FALSE,debugMode=0,...){
   #checks
   if(missing(population)) stop("provide population object\n")

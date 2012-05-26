@@ -1,41 +1,20 @@
-############################################################################################################
 #
 # assignLinkageGroups.R
 #
-# Copyright (c) 2011, Danny Arends
-#
-# Modified by Konrad Zych
-# 
-# first written October 2011
-# last modified December 2011
-# last modified in version: 0.9.1-0
-# in current version: active, in main workflow
-#
-#     This program is free software; you can redistribute it and/or
-#     modify it under the terms of the GNU General Public License,
-#     version 3, as published by the Free Software Foundation.
-#
-#     This program is distributed in the hope that it will be useful
-#     but without any warranty; without even the implied warranty of
-#     merchantability or fitness for a particular purpose.  See the GNU
-#     General Public License, version 3, for more details.
-#
-#     A copy of the GNU General Public License, version 3, is available
-#     at http://www.r-project.org/Licenses/GPL-3
-#
+# Copyright (c) 2010-2012 GBIC: Danny Arends, Konrad Zych and Ritsert C. Jansen
+# last modified May, 2012
+# first written Oct, 2011
 # Contains: assignLinkageGroups, regorganizeMarkersWithin
 #
-############################################################################################################
 
-############################################################################################################
-#                                        *** assignLinkageGroups ***
+# assignLinkageGroups
 #
 # DESCRIPTION:
 #  Assign linkage groups based on a user supplied known number of chromosomes
 #  we can use the genetic map of a cross, or the rf matrix
 # OUTPUT:
 #  an object of class cross
-############################################################################################################
+#
 assignLinkageGroups <- function(cross, n.chr, use=c("geno","rf"), ...){
   inListCheck.internal(use,"use",c("rf","geno"))
   geno <- t(pull.geno(cross))
@@ -46,14 +25,13 @@ assignLinkageGroups <- function(cross, n.chr, use=c("geno","rf"), ...){
   reorganizeMarkersWithin(cross, clustering$cluster)
 }
 
-############################################################################################################
-#                                     *** regorganizeMarkersWithin ***
+# reorganizeMarkersWithin
 #
 # DESCRIPTION:
 #  Function to quickly rearrange all the markers in a cross based on any ordering vector
 # OUTPUT:
 #  an object of class cross
-############################################################################################################
+#
 reorganizeMarkersWithin <- function(cross, ordering){
   cross <- clean(cross)
   n.markers <- nmar(cross)

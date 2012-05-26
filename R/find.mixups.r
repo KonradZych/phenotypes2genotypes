@@ -1,41 +1,20 @@
-############################################################################################################
 #
 # find.mixups.R
 #
-# Copyright (c) 2012, Konrad Zych
+# Copyright (c) 2010-2012 GBIC: Danny Arends, Konrad Zych and Ritsert C. Jansen
+# last modified May, 2012
+# first written Jan, 2012
+# Contains: cross.saturate, rearrangeMarkers, bestCorelated.internal, map2mapImage
+#           map2mapCorrelationMatrix.internal 
 #
-# Modified by Danny Arends
-# 
-# first written January 2012
-# last modified January 2012
-# last modified in version: 1.0.0
-# in current version: active, in main workflow
-#
-#     This program is free software; you can redistribute it and/or
-#     modify it under the terms of the GNU General Public License,
-#     version 3, as published by the Free Software Foundation.
-#
-#     This program is distributed in the hope that it will be useful
-#     but without any warranty; without even the implied warranty of
-#     merchantability or fitness for a particular purpose.  See the GNU
-#     General Public License, version 3, for more details.
-#
-#     A copy of the GNU General Public License, version 3, is available
-#     at http://www.r-project.org/Licenses/GPL-3
-#
-# Contains: cross.saturate, rearrangeMarkers,
-#             bestCorelated.internal, map2mapCorrelationMatrix.internal, map2mapImage
-#
-############################################################################################################
 
-###########################################################################################################
-#                                    *** find.mixups ***
+# find.mixups
 #
 # DESCRIPTION:
-# 	saturate existing genetic map adding markers derived from gene expression
+#  Saturate existing genetic map adding markers derived from gene expression
 # OUTPUT:
-#	object of class cross
-############################################################################################################
+#  An object of class cross
+#
 find.mixups <- function(population,map=c("genetic","physical"),n.qtls=50,threshold=15,verbose=FALSE){
   s <- proc.time()
   if(missing(population)) stop("Please provide a population object\n")
