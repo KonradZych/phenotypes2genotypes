@@ -1,50 +1,26 @@
-#############################################################################################
 #
 # genotypesToCross.R
 #
-# Copyright (c) 2011, Konrad Zych
+# Copyright (c) 2010-2012 GBIC: Danny Arends, Konrad Zych and Ritsert C. Jansen
+# last modified May, 2012
+# first written Mar, 2011
+# Contains: genotypesToCross.internal, writePhenotypes.internal, 
+#           writeGenotypes.internal, cleanNames.internal
 #
-# Modified by Danny Arends
-# 
-# first written March 2011
-# last modified November 2011
-# last modified in version: 0.9.1
-# in current version: active, internal in main workflow
-#
-#     This program is free software; you can redistribute it and/or
-#     modify it under the terms of the GNU General Public License,
-#     version 3, as published by the Free Software Foundation.
-#
-#     This program is distributed in the hope that it will be useful,
-#     but without any warranty; without even the implied warranty of
-#     merchantability or fitness for a particular purpose.  See the GNU
-#     General Public License, version 3, for more details.
-#
-#     A copy of the GNU General Public License, version 3, is available
-#     at http://www.r-project.org/Licenses/GPL-3
-#
-# Contains: genotypesToCross.internal 
-#        writePhenotypes.internal, writeGenotypes.internal, cleanNames.internal
-#
-#############################################################################################
 
-############################################################################################################
-#                  *** genotypesToCross.internal ***
+# genotypesToCross.internal
 #
 # DESCRIPTION:
-#  produces from genotypic matrix file containing object of type cross, reads it into R a returns
-# 
+#  Produces from genotypic matrix file containing object of type cross, reads it into R a returns
 # PARAMETERS:
-#   population - population type object, must contain founders phenotypic data.
-#   use - save "real" gentypes, "simulated" genotypes otr simulated genotypes ordered using "map" from gff file
-#   outputFile - file where object of type cross is being saved
-#   verbose - Be verbose
-#   debugMode - 1: Print our checks, 2: print additional time information
-#
+#   - population - population type object, must contain founders phenotypic data.
+#   - use - save "real" gentypes, "simulated" genotypes otr simulated genotypes ordered using "map" from gff file
+#   - outputFile - file where object of type cross is being saved
+#   - verbose - Be verbose
+#   - debugMode - 1: Print our checks, 2: print additional time information
 # OUTPUT:
-#  object of class cross
+#  An object of class cross
 #
-############################################################################################################
 genotypesToCross.internal <- function(population, genotype=c("simulated","real"), orderUsing=c("none","map_genetic","map_physical"), outputFile="mycross.csv", verbose=FALSE, debugMode=0){
   #checks
   if(missing(population)) stop("No population object provided.\n") 

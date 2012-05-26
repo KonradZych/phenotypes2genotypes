@@ -3,31 +3,9 @@
 This file is intended to contain a list of many of the additions and
 revisions that are planned for the package.  
 ----------------------------------------------------------------------
-TOMORROW:
 
-	o map together Wilco's data and simulated one
-	o continue check and rebuild of package
-	o removal function
-	o remove warnings
-	o save/load population functions
-	o verbose mode in rmv individuals
-	o check for verbose modes in all functions
+- Add a plot that shows multiple maps (3 or more) in comparison
 
-----------------------------------------------------------------------
-THIS WEEK:
 
-	o finish rebuild to 0.8.1 - hopefully last before 1.0.0
-	o manual - section 3 to be finished, 4 to be started
-	o article - do sth
-	o rewriting examples
-
-----------------------------------------------------------------------
-UNTIL END OF JULY:
-
-	o presentation for team meeting
-	o manual
-	o paper
-	o code nice and shiny with tests and examples
-  
 ----------------------------------------------------------------------
 end of TODO.txt

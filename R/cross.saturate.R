@@ -1,41 +1,20 @@
-############################################################################################################
 #
 # cross.saturate.R
 #
-# Copyright (c) 2011, Konrad Zych
+# Copyright (c) 2010-2012 GBIC: Danny Arends, Konrad Zych and Ritsert C. Jansen
+# last modified May, 2012
+# first written Mar, 2011
+# Contains: cross.saturate, rearrangeMarkers, bestCorelated.internal
+#           map2mapCorrelationMatrix.internal, map2mapImage
 #
-# Modified by Danny Arends
-# 
-# first written March 2011
-# last modified January 2012
-# last modified in version: 1.0.0
-# in current version: active, in main workflow
-#
-#     This program is free software; you can redistribute it and/or
-#     modify it under the terms of the GNU General Public License,
-#     version 3, as published by the Free Software Foundation.
-#
-#     This program is distributed in the hope that it will be useful
-#     but without any warranty; without even the implied warranty of
-#     merchantability or fitness for a particular purpose.  See the GNU
-#     General Public License, version 3, for more details.
-#
-#     A copy of the GNU General Public License, version 3, is available
-#     at http://www.r-project.org/Licenses/GPL-3
-#
-# Contains: cross.saturate, rearrangeMarkers,
-#             bestCorelated.internal, map2mapCorrelationMatrix.internal, map2mapImage
-#
-############################################################################################################
 
-###########################################################################################################
-#                                    *** cross.saturate ***
+# cross.saturate
 #
 # DESCRIPTION:
-# 	saturate existing genetic map adding markers derived from gene expression
+#  Saturate an existing genetic map by adding markers derived from expression
 # OUTPUT:
-#	object of class cross
-############################################################################################################
+#  An object of class cross
+#
 cross.saturate <- function(population, cross, map=c("genetic","physical"), placeUsing=c("qtl","correlation"), threshold=3, chr, use.orderMarkers=FALSE, verbose=FALSE, debugMode=0){
   if(missing(population)) stop("Please provide a population object\n")
   if(is.null(population$offspring$genotypes$real)){

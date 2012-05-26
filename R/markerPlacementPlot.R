@@ -1,30 +1,11 @@
-############################################################################################################
 #
 # markerPlacementPlot.R
 #
-# Copyright (c) 2011, Danny Arends
-#
-# Modified by Konrad Zych
-# 
-# first written November 2011
-# last modified January 2012
-# last modified in version: 1.0.0
-#
-#     This program is free software; you can redistribute it and/or
-#     modify it under the terms of the GNU General Public License,
-#     version 3, as published by the Free Software Foundation.
-#
-#     This program is distributed in the hope that it will be useful
-#     but without any warranty; without even the implied warranty of
-#     merchantability or fitness for a particular purpose.  See the GNU
-#     General Public License, version 3, for more details.
-#
-#     A copy of the GNU General Public License, version 3, is available
-#     at http://www.r-project.org/Licenses/GPL-3
-#
+# Copyright (c) 2010-2012 GBIC: Danny Arends, Konrad Zych and Ritsert C. Jansen
+# last modified May, 2012
+# first written Nov, 2011
 # Contains: markerPlacementPlot
 #
-############################################################################################################
 
 markerPlacementPlot <- function(population, placeUsing=c("qtl","correlation"),thrRange=c(1,5,1),cross,verbose=FALSE){
   if(missing(population)) stop("Please provide a population object\n")
