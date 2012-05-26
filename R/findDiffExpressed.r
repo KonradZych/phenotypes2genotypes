@@ -25,32 +25,32 @@ find.diff.expressed <- function(population,use=c("ttest","rankprod"),verbose=FAL
   check.population(population)
   use <- checkParameters.internal(use,c("ttest","rankprod"),"use")
   if(verbose && debugMode==1) cat("find.diff.expressed starting withour errors in checkpoints.\n")
-	
-	s<-proc.time()
-	if(use=="rankprod"){
-		tryCatch(require(RankProd), error = stop("Install RankProd package to use Rank Product analysis!\n"))
-		rankProdRes <- RP(population$founders$phenotypes,population$founders$groups,gene.names=rownames(population$founders$phenotypes),...)
-		population$founders$RP <- rankProdRes
-	}else{
-		population$founders$RP$pval<- t(rbind(apply(population$founders$phenotypes,1,findUsingTTest.internal,population$founders$groups)))
-	}
-	e<-proc.time()
-	if(verbose && debugMode==2)cat("Differentially expressed genes found in:",(e-s)[3],"seconds.\n")
-	invisible(population)
+  
+  s<-proc.time()
+  if(use=="rankprod"){
+    tryCatch(require(RankProd), error = stop("Install RankProd package to use Rank Product analysis!\n"))
+    rankProdRes <- RP(population$founders$phenotypes,population$founders$groups,gene.names=rownames(population$founders$phenotypes),...)
+    population$founders$RP <- rankProdRes
+  }else{
+    population$founders$RP$pval<- t(rbind(apply(population$founders$phenotypes,1,findUsingTTest.internal,population$founders$groups)))
+  }
+  e<-proc.time()
+  if(verbose && debugMode==2)cat("Differentially expressed genes found in:",(e-s)[3],"seconds.\n")
+  invisible(population)
 }
 
 ############################################################################################################
-#									*** findUsingTTest.internal ***
+#                  *** findUsingTTest.internal ***
 #
 # DESCRIPTION:
-#	subfunction of find.diff.expressed using t-test to assess whether gene is differentially expressed
+#  subfunction of find.diff.expressed using t-test to assess whether gene is differentially expressed
 # 
 # PARAMETERS:
-# 	phenoRow - single row of founders phenotype data
-# 	groupLabels - Specify which column of founders data belongs to group 0 and which to group 1.
+#   phenoRow - single row of founders phenotype data
+#   groupLabels - Specify which column of founders data belongs to group 0 and which to group 1.
 #
 # OUTPUT:
-#	two p-values - for gene being up- and downregulated
+#  two p-values - for gene being up- and downregulated
 #
 ############################################################################################################
 findUsingTTest.internal <- function(phenoRow,groupLabels){
@@ -66,51 +66,51 @@ findUsingTTest.internal <- function(phenoRow,groupLabels){
 }
 
 ############################################################################################################
-#									*** showRPpval ***
+#                  *** showRPpval ***
 #
 # DESCRIPTION:
-#	showing pvals of RP for selected markers
+#  showing pvals of RP for selected markers
 # 
 # PARAMETERS:
-# 	population - Object of class population , must contain founders phenotypic data.
-# 	markers - markers (specified by number) to be shown
+#   population - Object of class population , must contain founders phenotypic data.
+#   markers - markers (specified by number) to be shown
 # 
 # OUTPUT:
-#	none
+#  none
 #
 ############################################################################################################
 showRPpval <- function(population,markers=1:10){
-	#checks
+  #checks
   if(missing(population)) stop("provide population object\n")
   check.population(population)
   if(is.null(population$founders$RP$pval)) stop("Population object does not contain results of RP analysis run find.diff.expressed first.\n")
   inRangeCheck.internal(markers,"markers",1,nrow(population$founders$phenotypes))
   
-	toPrint <- matrix(0,length(markers),2)
-	toPrint[,1] <- population$founders$RP$pval[markers,1]
-	toPrint[,2] <- population$founders$RP$pval[markers,2]
-	rownames(toPrint) <- rownames(population$founders$phenotypes)[markers]
-	colnames(toPrint) <- c("up","down")
-	print(toPrint)
+  toPrint <- matrix(0,length(markers),2)
+  toPrint[,1] <- population$founders$RP$pval[markers,1]
+  toPrint[,2] <- population$founders$RP$pval[markers,2]
+  rownames(toPrint) <- rownames(population$founders$phenotypes)[markers]
+  colnames(toPrint) <- c("up","down")
+  print(toPrint)
 }
 
 ############################################################################################################
-#									*** plotRPpval ***
+#                  *** plotRPpval ***
 #
 # DESCRIPTION:
-#	ploting pvals of RP for selected markers
+#  ploting pvals of RP for selected markers
 # 
 # PARAMETERS:
-# 	population - Object of class population , must contain founders phenotypic data.
-# 	markers - markers (specified by number) to be shown
-#	treshold - treshold value, on which line is plotted (by default - 0.01)
+#   population - Object of class population , must contain founders phenotypic data.
+#   markers - markers (specified by number) to be shown
+#  treshold - treshold value, on which line is plotted (by default - 0.01)
 # 
 # OUTPUT:
-#	none
+#  none
 #
 ############################################################################################################
 plotRPpval <- function(population,thresholdRange=c(0.01,0.1,0.01)){
-	#checks
+  #checks
   if(missing(population)) stop("provide population object\n")
   check.population(population)
   if(is.null(population$founders$RP$pval)) stop("Population object does not contain results of RP analysis run find.diff.expressed first.\n")
@@ -123,7 +123,7 @@ plotRPpval <- function(population,thresholdRange=c(0.01,0.1,0.01)){
     n.upSelected <- c(n.upSelected,length(which(upNotNull < threshold)))
     n.downSelected <- c(n.downSelected,length(which(downNotNull < threshold)))
   }
-	plot(thrRange,n.upSelected ,main="RP analysis p-values",xlab="p-value",ylab="# markers selected",xlim=c(thresholdRange[1],thresholdRange[2]),ylim=c(min(min(n.upSelected),min(n.downSelected )),max(max(n.upSelected),max(n.downSelected))),type="o")
+  plot(thrRange,n.upSelected ,main="RP analysis p-values",xlab="p-value",ylab="# markers selected",xlim=c(thresholdRange[1],thresholdRange[2]),ylim=c(min(min(n.upSelected),min(n.downSelected )),max(max(n.upSelected),max(n.downSelected))),type="o")
   points(thrRange,n.downSelected,col="red",type="o")
   legend(x="topleft",legend=c("up regulated","down regulated"),col=c("black","red"),cex=0.8,pch=21,lwd=2,bg="white")
 }

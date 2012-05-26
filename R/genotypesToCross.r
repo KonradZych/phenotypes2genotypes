@@ -88,14 +88,14 @@ genotypesToCross.internal <- function(population, genotype=c("simulated","real")
 }
 
 convertType.internal <- function(cross,populationType){
-	if(populationType == "riself"){
-		cross <- convert2riself(cross)
-	}else if(populationType == "risib"){
-		cross <- convert2risib(cross)
-	}else{
-		class(cross)[1] <- populationType
-	}
-	return(cross)
+  if(populationType == "riself"){
+    cross <- convert2riself(cross)
+  }else if(populationType == "risib"){
+    cross <- convert2risib(cross)
+  }else{
+    class(cross)[1] <- populationType
+  }
+  return(cross)
 }
 
 ############################################################################################################

@@ -88,10 +88,10 @@ cross.saturate <- function(population, cross, map=c("genetic","physical"), place
     if(verbose) cat("Saturating chromosomes:\n",paste(chr,",",sep=""),"\n")
   }
   #*******ENRICHING ORIGINAL MAP*******
-	s1 <- proc.time()
-	cross <- rearrangeMarkers(cross,population,cur_map,threshold,placeUsing,addMarkers=TRUE,chr,verbose=verbose)
-	e1 <- proc.time()
-	if(verbose && debugMode==2)cat("Enrichment of original map done in:",(e1-s1)[3],"seconds.\n")
+  s1 <- proc.time()
+  cross <- rearrangeMarkers(cross,population,cur_map,threshold,placeUsing,addMarkers=TRUE,chr,verbose=verbose)
+  e1 <- proc.time()
+  if(verbose && debugMode==2)cat("Enrichment of original map done in:",(e1-s1)[3],"seconds.\n")
   
   #*******ORDERING NEW MAP*******
   if(use.orderMarkers){
@@ -108,7 +108,7 @@ cross.saturate <- function(population, cross, map=c("genetic","physical"), place
    n.newM <- sum(nmar(cross))-  n.originalM
    percentageSat <-  (n.newM/n.originalM)*100
    if(verbose) cat("\ncross.saturate statistics:\n # original markers:",n.originalM,"\n # inserted markers: ",n.newM,"\n saturation (% of markers added): ",percentageSat,"\n")
-	invisible(cross)
+  invisible(cross)
 }
 
 
@@ -116,9 +116,9 @@ cross.saturate <- function(population, cross, map=c("genetic","physical"), place
 #                                    *** rearrangeMarkers ***
 #
 # DESCRIPTION:
-# 	ordering chromosomes using genetic/physical map and corelation rule
+#   ordering chromosomes using genetic/physical map and corelation rule
 # OUTPUT:
-#	object of class cross
+#  object of class cross
 ############################################################################################################
 rearrangeMarkers <- function(cross, population, cur_map, threshold=3, placeUsing,addMarkers=FALSE, chr, verbose=FALSE){
   if(verbose) cat("old map contains",max(cur_map[,1]),"chromosomes\n")
@@ -132,24 +132,24 @@ rearrangeMarkers <- function(cross, population, cur_map, threshold=3, placeUsing
   }else if(verbose){
     cat("selected",nrow(markersNewPostions),"markers for further analysis\n")
   }
-	returncross <- cross
-	returncross$geno <- vector(length(unique(cur_map[,1])), mode="list")
-	returncross$pheno <- pull.pheno(cross)
-	if(verbose) cat("Reordering markers \n")  
-	for(x in 1:length(returncross$geno)){
-		if(verbose) cat("- chr ",x," -\n")    
-		oldnames <- rownames(cur_map)[which(cur_map[,1]==x)]
+  returncross <- cross
+  returncross$geno <- vector(length(unique(cur_map[,1])), mode="list")
+  returncross$pheno <- pull.pheno(cross)
+  if(verbose) cat("Reordering markers \n")  
+  for(x in 1:length(returncross$geno)){
+    if(verbose) cat("- chr ",x," -\n")    
+    oldnames <- rownames(cur_map)[which(cur_map[,1]==x)]
     oldpositions <- cur_map[oldnames,2]
     if(x %in% chr){
-		newnames <- rownames(markersNewPostions)[which(markersNewPostions[,1]==x)]
-		if(any(newnames%in%oldnames)){
-			newnames <- newnames[-which(newnames%in%oldnames)]
-		}
-		newpositions <- markersNewPostions[newnames,2]
-	}else{
-		newnames <- NULL
-		newpositions <- NULL
-	}
+    newnames <- rownames(markersNewPostions)[which(markersNewPostions[,1]==x)]
+    if(any(newnames%in%oldnames)){
+      newnames <- newnames[-which(newnames%in%oldnames)]
+    }
+    newpositions <- markersNewPostions[newnames,2]
+  }else{
+    newnames <- NULL
+    newpositions <- NULL
+  }
     toRmv <- NULL
     if(length(newnames)>0){
       for(i in 1:length(newpositions)){
@@ -163,28 +163,28 @@ rearrangeMarkers <- function(cross, population, cur_map, threshold=3, placeUsing
         }
     }
      if(x %in% chr) if(verbose) cat("Selected:",length(newnames),"new and",length(oldnames),"original markers,",length(toRmv),"markers were removed\n") 
-		if(addMarkers){
-			returncross$geno[[x]]$data <- cbind(pull.geno(cross)[,newnames],t(population$offspring$genotypes$real[oldnames,]))
-			newmap <- c(as.numeric(newpositions),oldpositions)
-			names(newmap) <- c(newnames,oldnames)
+    if(addMarkers){
+      returncross$geno[[x]]$data <- cbind(pull.geno(cross)[,newnames],t(population$offspring$genotypes$real[oldnames,]))
+      newmap <- c(as.numeric(newpositions),oldpositions)
+      names(newmap) <- c(newnames,oldnames)
       newmap <- sort(newmap)
       colnames(returncross$geno[[x]]$data) <- c(newnames,oldnames)
       returncross$geno[[x]]$data <- returncross$geno[[x]]$data[,names(newmap)]
-		}else{
-			returncross$geno[[x]]$data <- pull.geno(cross)[,newnames]
-			newmap <- as.numeric(newpositions)
-			names(newmap) <- newnames
+    }else{
+      returncross$geno[[x]]$data <- pull.geno(cross)[,newnames]
+      newmap <- as.numeric(newpositions)
+      names(newmap) <- newnames
       newmap <- sort(newmap)
       colnames(returncross$geno[[x]]$data) <- newnames
       returncross$geno[[x]]$data <- returncross$geno[[x]]$data[,names(newmap)]
-		}
-		returncross$geno[[x]]$map <- c(newmap)
-	}
-	names(returncross$geno) <- 1:length(returncross$geno)
-	for(i in 1:length(returncross$geno)){
-		class(returncross$geno[[i]]) <- "A"
-	}
-	invisible(returncross)
+    }
+    returncross$geno[[x]]$map <- c(newmap)
+  }
+  names(returncross$geno) <- 1:length(returncross$geno)
+  for(i in 1:length(returncross$geno)){
+    class(returncross$geno[[i]]) <- "A"
+  }
+  invisible(returncross)
 }
 
 
@@ -192,10 +192,10 @@ rearrangeMarkers <- function(cross, population, cur_map, threshold=3, placeUsing
 #                                    *** bestCorelated.internal ***
 #
 # DESCRIPTION:
-# 	subfunction of segragateChromosomes.internal, returns matrix showing for every reco map chromosome from 
-#	which physicall map chromosome majority of markers comes
+#   subfunction of segragateChromosomes.internal, returns matrix showing for every reco map chromosome from 
+#  which physicall map chromosome majority of markers comes
 # OUTPUT:
-#	vector with new ordering of chromosomes inside cross object
+#  vector with new ordering of chromosomes inside cross object
 ############################################################################################################
 bestCorelated.internal <- function(cross,population, cur_map,corSDTreshold,verbose=FALSE){
   cormatrix <- map2mapCorrelationMatrix(cross,population,verbose)
@@ -223,10 +223,10 @@ bestCorelatedSub.internal <- function(bestCorMarkersRow,cur_map){
 #                                    *** bestQTL.internal ***
 #
 # DESCRIPTION:
-# 	subfunction of segragateChromosomes.internal, returns matrix showing for every reco map chromosome from 
-#	which physicall map chromosome majority of markers comes
+#   subfunction of segragateChromosomes.internal, returns matrix showing for every reco map chromosome from 
+#  which physicall map chromosome majority of markers comes
 # OUTPUT:
-#	vector with new ordering of chromosomes inside cross object
+#  vector with new ordering of chromosomes inside cross object
 ############################################################################################################
 bestQTL.internal <- function(cross, population, treshold,verbose=FALSE){
   genotypes <- population$offspring$genotypes$real
@@ -263,7 +263,7 @@ bestQTL.internal <- function(cross, population, treshold,verbose=FALSE){
 # DESCRIPTION:
 # subfunction by Danny Arends to map QLTs modfied to work on a single phenotype
 # OUTPUT:
-#	vector with new ordering of chromosomes inside cross object
+#  vector with new ordering of chromosomes inside cross object
 ############################################################################################################
 scan.qtls <- function(population,map=c("genetic","physical"),step=0.1,verbose=FALSE){
   if(missing(population)) stop("Please provide a population object\n")
@@ -349,7 +349,7 @@ scan.qtls <- function(population,map=c("genetic","physical"),step=0.1,verbose=FA
 # DESCRIPTION:
 # subfunction by Danny Arends to map QLTs modfied to work on a single phenotype
 # OUTPUT:
-#	vector with new ordering of chromosomes inside cross object
+#  vector with new ordering of chromosomes inside cross object
 ############################################################################################################
 getpeaks.internal <- function(qtlprofiles, cutoff = 4.0){
   if(!any(qtlprofiles==Inf)) qtlprofiles[which(qtlprofiles==Inf)] <- 1000
@@ -402,7 +402,7 @@ getpeaks.internal <- function(qtlprofiles, cutoff = 4.0){
 #                                    *** map2mapCorrelationMatrix.internal ***
 #
 # DESCRIPTION:
-# 	calculating correlation matrix between genotypes inside cross object and ones from population
+#   calculating correlation matrix between genotypes inside cross object and ones from population
 # OUTPUT:
 #   matrix of correlations
 ############################################################################################################
@@ -426,10 +426,10 @@ map2mapCorrelationMatrix<- function(cross,population,verbose=FALSE){
 #                                           *** map2mapImage ***
 #
 # DESCRIPTION:
-# 	subfunction of segragateChromosomes.internal, returns matrix showing for every reco map chromosome from 
-#	which physicall map chromosome majority of markers comes# 
+#   subfunction of segragateChromosomes.internal, returns matrix showing for every reco map chromosome from 
+#  which physicall map chromosome majority of markers comes# 
 # OUTPUT:
-#	vector with new ordering of chromosomes inside cross object
+#  vector with new ordering of chromosomes inside cross object
 ############################################################################################################
 map2mapImage <- function(genotypesCorelationMatrix,population,cross,corThreshold=0.5,verbose=FALSE){
   if(missing(genotypesCorelationMatrix)){
