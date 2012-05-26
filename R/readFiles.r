@@ -1,56 +1,30 @@
-#############################################################################################
 #
-# read.population.R
+# readFiles.r
 #
-# Copyright (c) 2011, Konrad Zych
+# Copyright (c) 2010-2012 GBIC: Danny Arends, Konrad Zych and Ritsert C. Jansen
+# last modified May, 2012
+# first written Nov, 2011
+# Contains: read.population mapMarkers.internal, gffParser, correctRowLoc.internal
+#           probesLocation.internal, orrectRowGff.internal
 #
-# Modified by Danny Arends
-# 
-# first written March 2011
-# last modified July 2011
-# last modified in version: 0.8.5
-# in current version: active, in main workflow
-#
-#     This program is free software; you can redistribute it and/or
-#     modify it under the terms of the GNU General Public License,
-#     version 3, as published by the Free Software Foundation.
-#
-#     This program is distributed in the hope that it will be useful,
-#     but without any warranty; without even the implied warranty of
-#     merchantability or fitness for a particular purpose.  See the GNU
-#     General Public License, version 3, for more details.
-#
-#     A copy of the GNU General Public License, version 3, is available
-#     at http://www.r-project.org/Licenses/GPL-3
-#
-# Contains: read.population 
-# 				mapMarkers.internal, gffParser, probesLocation.internal
-#				correctRowGff.internal, correctRowLoc.internal
-#
-#############################################################################################
 
-############################################################################################################
-#									*** read.population ***
+#  read.population
 #
 # DESCRIPTION:
-#	reads geno/phenotypic files into R environment into special object.
-# 
+#  Reads geno/phenotypic files into R environment into special object.
 # PARAMETERS:
-# 	offspring - Core used to specify names of children phenotypic ("offspring_phenotypes.txt") and genotypic ("offspring_genotypes.txt") files.
-# 	founders - Core used to specify names of founders phenotypic ("founders_phenotypes.txt") file.
-# 	map - Core used to specify names of genetic ("map_genetic.txt") and physical ("map_physical.txt") map files.
-#	founders_groups - specify founders groups
-# 	verbose - Be verbose
-# 	debugMode - 1: Print our checks, 2: print additional time information
-#
+#   - offspring - Core used to specify names of children phenotypic ("offspring_phenotypes.txt") and genotypic ("offspring_genotypes.txt") files.
+#   - founders - Core used to specify names of founders phenotypic ("founders_phenotypes.txt") file.
+#   - map - Core used to specify names of genetic ("map_genetic.txt") and physical ("map_physical.txt") map files.
+#   - founders_groups - specify founders groups
+#   - verbose - Be verbose
+#   - debugMode - 1: Print our checks, 2: print additional time information
 # OUTPUT:
-#	object of class population 
+#   An object of class population 
 #
-############################################################################################################
 read.population <- function(offspring="offspring",founders="founders",map="maps",founders_groups,populationType=c("riself", "f2", "bc", "risib"),verbose=FALSE,debugMode=0){
-	#**********INITIALIZING FUNCTION*************
-	s <- proc.time()
-	if(verbose && debugMode==1) cat("read.population starting.\n")
+  s <- proc.time()
+  if(verbose && debugMode==1) cat("read.population starting.\n")
 	population <- NULL
 	if(missing(founders_groups)){ 
 		stop("Specify founders_groups!\n")
