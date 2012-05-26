@@ -1,53 +1,26 @@
-##################################################################################################
 #
 # plottingRoutines.R
 #
-# Copyright (c) 2011, Konrad Zych
-#
-# Modified by Danny Arends
-# 
-# first written March 2011
-# last modified November 2011
-# last modified in version: 0.9.1
-# in current version: active, not in main workflow
-#
-#     This program is free software; you can redistribute it and/or
-#     modify it under the terms of the GNU General Public License,
-#     version 3, as published by the Free Software Foundation.
-#
-#     This program is distributed in the hope that it will be useful,
-#     but without any warranty; without even the implied warranty of
-#     merchantability or fitness for a particular purpose.  See the GNU
-#     General Public License, version 3, for more details.
-#
-#     A copy of the GNU General Public License, version 3, is available
-#     at http://www.r-project.org/Licenses/GPL-3
-#
-# Contains: plotParentalExpression, plotChildrenExpression, plotMarkerDistribution, 
+# Copyright (c) 2010-2012 GBIC: Danny Arends, Konrad Zych and Ritsert C. Jansen
+# last modified May, 2012
+# first written Nov, 2011
+# Contains: plotParentalExpression, plotChildrenExpression, plotMarkerDistribution
 #           projectOldMarkers
 #
-##################################################################################################
 
-############################################################################################################
-#									*** plotParentalExpression ***
+# plotParentalExpression
 #
 # DESCRIPTION:
-#	plot red points for expression values for parent of type 0, blue for parent 1 and green lines for means
-#	of rows
-# 
+#  plot red points for expression values for parent of type 0, blue for parent 1 and green lines for means of rows
 # PARAMETERS:
-# 	population - Ril type object, must contain founders phenotypic data.
-# 	markers - markers to be printed numbers or names 
-# 	groupLabels - Specify which column of founders data belongs to group 0 and which to group 1
-# 
+#   - population - Ril type object, must contain founders phenotypic data.
+#   - markers - markers to be printed numbers or names 
+#   - groupLabels - Specify which column of founders data belongs to group 0 and which to group 1
 # OUTPUT:
-#	plot
+#  Plot
 #
-############################################################################################################
 plotParentalExpression <- function(population, markers=1:100, groupLabels=c(0,0,1,1)){
-	#*******checks*******
-	check.population(population)
-	
+  check.population(population) # Check
 	#*******remove too short chromosomes*******
 	if(nrow(population$founders$phenotypes)<length(markers)){
 		cat("WARNING: There are only",nrow(population$founders$phenotypes),"markers in population$founders$phenotypes, function will plot them all.\n")
