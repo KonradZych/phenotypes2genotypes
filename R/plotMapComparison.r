@@ -1,52 +1,28 @@
-##################################################################################################
 #
 # plotMapComparison.R
 #
-# Copyright (c) 2011, Konrad Zych
+# Copyright (c) 2010-2012 GBIC: Danny Arends, Konrad Zych and Ritsert C. Jansen
+# last modified May, 2012
+# first written Nov, 2011
+# Contains: plotMapComparison, getChromosome.internal, getYLocs.internal
+#           makeChromPal.internal, chromosomesLengths.internal
 #
-# Modified by Danny Arends
-# 
-# first written March 2011
-# last modified November 2011
-# last modified in version: 0.9.1
-# in current version: active, not in main workflow
-#
-#     This program is free software; you can redistribute it and/or
-#     modify it under the terms of the GNU General Public License,
-#     version 3, as published by the Free Software Foundation.
-#
-#     This program is distributed in the hope that it will be useful,
-#     but without any warranty; without even the implied warranty of
-#     merchantability or fitness for a particular purpose.  See the GNU
-#     General Public License, version 3, for more details.
-#
-#     A copy of the GNU General Public License, version 3, is available
-#     at http://www.r-project.org/Licenses/GPL-3
-#
-# Contains: plotMapComparison, getChromosome.internal, getYLocs.internal, makeChromPal.internal
-#           chromosomesLengths.internal
-#
-##################################################################################################
 
-############################################################################################################
-#									*** plotMapComparison ***
+# plotMapComparison
 #
 # DESCRIPTION:
-#	boxplot of data for selected markers + points of founders mean for each marker
-# 
+#  Boxplot of data for selected markers + points of founders mean for each marker
 # PARAMETERS:
-# 	cross - object of R/qtl cross type
-# 	coloringMode - 1 - rainbow colors 2 - black for cis and red for trans located markers
-# 	map - which map should be used for comparison:
-#			- genetic - genetic map from cross$maps$genetic
-#			- physical - physical map from cross$maps$physical
-# 
+#   - cross - object of R/qtl cross type
+#   - coloringMode - 1 - rainbow colors 2 - black for cis and red for trans located markers
+#   - map - which map should be used for comparison:
+#     - genetic - genetic map from cross$maps$genetic
+#     - physical - physical map from cross$maps$physical
 # OUTPUT:
-#	plot
+#  Plot
 #
-############################################################################################################
 plotMapComparison <- function(cross, population, map=c("genetic","physical"), chr){
-	#*******objects containing all information needen for function execution*******
+  #*******objects containing all information needen for function execution*******
   map <- defaultCheck.internal(map,"map",2,"genetic")
 	if(map=="genetic"){
 		cur_map <- population$maps$genetic
