@@ -4,7 +4,7 @@
 # Copyright (c) 2010-2012 GBIC: Danny Arends, Konrad Zych and Ritsert C. Jansen
 # last modified May, 2012
 # first written Nov, 2011
-# Contains: print.population, remove.individuals, doCleanUp.internal
+# Contains: smooth.geno
 #
 
 # smooth.geno
