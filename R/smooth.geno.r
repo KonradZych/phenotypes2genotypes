@@ -1,18 +1,23 @@
-############################################################################################################
-#									*** smooth.geno ***
+#
+# smooth.geno.r
+#
+# Copyright (c) 2010-2012 GBIC: Danny Arends, Konrad Zych and Ritsert C. Jansen
+# last modified May, 2012
+# first written Nov, 2011
+# Contains: smooth.geno
+#
+
+# smooth.geno
 #
 # DESCRIPTION:
-#	checking if fitted normal distributions do not overlap
-# 
+#  Checking if fitted normal distributions do not overlap
 # PARAMETERS:
-# 	offspring - currently processed row
-# 	EM - output of normalmixEM function
-# 	overlapInd - how many individuals are allowed to be overlapping between distributions
-# 
+#  - offspring - currently processed row
+#  - EM - output of normalmixEM function
+#  - overlapInd - how many individuals are allowed to be overlapping between distributions
 # OUTPUT:
-#	boolean
+#  Boolean
 #
-############################################################################################################
 smooth.geno <- function(cross,windowSize=1,chr,population,map=c("genetic","physical"),fix.positions=FALSE,verbose=FALSE,...){
   if(!any(class(cross) == "cross")) stop("Input should have class \"cross\".")
   if(!(missing(population))){ 

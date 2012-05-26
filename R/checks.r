@@ -1,41 +1,21 @@
-############################################################################################################
 #
 # checks.R
 #
-# Copyright (c) 2011, Konrad Zych
+# Copyright (c) 2010-2012 GBIC: Danny Arends, Konrad Zych and Ritsert C. Jansen
+# last modified May, 2012
+# first written Dec, 2011
+# Contains: numericCheck.internal, genotypeCheck.internal, inRangeCheck.internal 
+#           inListCheck.internal, check.population, crossContainsMap.internal 
+#           defaultCheck.internal
 #
-# 
-# first written June 2011
-# last modified December 2011
-# last modified in version: 0.9.1
-# in current version: active, in main workflow
-#
-#     This program is free software; you can redistribute it and/or
-#     modify it under the terms of the GNU General Public License,
-#     version 3, as published by the Free Software Foundation.
-#
-#     This program is distributed in the hope that it will be useful,
-#     but without any warranty; without even the implied warranty of
-#     merchantability or fitness for a particular purpose.  See the GNU
-#     General Public License, version 3, for more details.
-#
-#     A copy of the GNU General Public License, version 3, is available
-#     at http://www.r-project.org/Licenses/GPL-3
-#
-# CONTAINS:
-#  numericCheck.internal, genotypeCheck.internal, inRangeCheck.internal, inListCheck.internal, check.population
-# crossContainsMap.internal, defaultCheck.internal
-#
-############################################################################################################
 
-############################################################################################################
-#                                    *** numericCheck.internal ***
+# numericCheck.internal
 #
 # DESCRIPTION:
-#  checking if given object is numeric or could be converted to numeric
+#  Checking if given object is numeric or could be converted to numeric
 # OUTPUT:
 #  boolean
-############################################################################################################
+#
 numericCheck.internal <- function(objectToBeChecked, allow.na=FALSE){
   if(any(is.na(as.numeric(objectToBeChecked)))){
     ### if object converted to numeric contains NAs it's either not-convertable or cointained NAs
@@ -55,14 +35,13 @@ numericCheck.internal <- function(objectToBeChecked, allow.na=FALSE){
   return(TRUE)
 }
 
-############################################################################################################
-#                                    **** genotypeCheck.internal ***
+# genotypeCheck.internal
 #
 # DESCRIPTION:
 #  checking if given object is containing only 0,1 and NAs
 # OUTPUT:
 #  boolean
-############################################################################################################
+#
 genotypeCheck.internal <- function(objectToBeChecked, allow.na=FALSE){
   converted <- as.numeric(as.matrix(objectToBeChecked))
   if(any(is.na(converted))){

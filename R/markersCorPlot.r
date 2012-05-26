@@ -1,55 +1,30 @@
-############################################################################################################
 #
 # markersCorPlot.R
 #
-# Copyright (c) 2011, Konrad Zych
+# Copyright (c) 2010-2012 GBIC: Danny Arends, Konrad Zych and Ritsert C. Jansen
+# last modified May, 2012
+# first written Mar, 2011
+# Contains: markersCorPlot, ascendingMaptoJigSawMap, getChrOffsets.internal
+#           getMarkerOffsets, getMarkerOffsetsFromMap, chromCorMatrix
+#           getPopulationOffsets.internal 
 #
-# Modified by Danny Arends
-# 
-# first written March 2011
-# last modified January 2012
-# last modified in version: 1.0.0
-#
-#     This program is free software; you can redistribute it and/or
-#     modify it under the terms of the GNU General Public License,
-#     version 3, as published by the Free Software Foundation.
-#
-#     This program is distributed in the hope that it will be useful
-#     but without any warranty; without even the implied warranty of
-#     merchantability or fitness for a particular purpose.  See the GNU
-#     General Public License, version 3, for more details.
-#
-#     A copy of the GNU General Public License, version 3, is available
-#     at http://www.r-project.org/Licenses/GPL-3
-#
-# Contains: markersCorPlot, ascendingMaptoJigSawMap
-#               getChrOffsets.internal, getMarkerOffsets, getMarkerOffsetsFromMap, 
-#               getPopulationOffsets.internal, chromCorMatrix
-#
-############################################################################################################
 
-############################################################################################################
-#									*** markersCorPlot ***
+# markersCorPlot
 #
 # DESCRIPTION:
-# 	function to create new map and save it in cross object
-# 
+#  function to create new map and save it in cross object
 # PARAMETERS:
-# 	population - object of class population
-# 	orde - object of class population
-# 	n.chr - expected number of linkage groups
-# 	use - expected number of linkage groups
-#	verbose - be verbose
-#
+#   - population - object of class population
+#   - orde - object of class population
+#   - n.chr - expected number of linkage groups
+#   - use - expected number of linkage groups
+#   - verbose - be verbose
 # OUTPUT:
-#	an object of class cross
+#  An object of class cross
 #
-#
-############################################################################################################
 markersCorPlot <- function(cross, population, map=c("genetic","physical"), cmBetween=25, comparisonMethod = c(sumMajorityCorrelation,majorityCorrelation,meanCorrelation,majorityOfMarkers), chr, show.legend=FALSE, verbose=TRUE){
-  ### checks
-  map <- checkParameters.internal(map,c("genetic","physical"),"map")
-	if(map=="genetic"){
+  map <- checkParameters.internal(map,c("genetic","physical"),"map")  # Check
+  if(map=="genetic"){
     originalMap <- population$maps$genetic
   }else{
     originalMap <- population$maps$physical

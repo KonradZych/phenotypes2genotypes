@@ -1,61 +1,37 @@
-############################################################################################################
 #
 # findBiomarkers.R
 #
-# Copyright (c) 2011, Konrad Zych
+# Copyright (c) 2010-2012 GBIC: Danny Arends, Konrad Zych and Ritsert C. Jansen
+# last modified May, 2012
+# first written Mar, 2011
+# Contains: findBiomarkers, pull.biomarkers, selectTopMarker.internal
+#           scoreMarker.internal, convertfindBiomarkers.internal
+#           splitPheno.internal, selectMarkersUsingMap.internal, 
+#           filterGenotypes.internal, filterRow.internal, splitRowSubEM.internal
 #
-# Modified by Danny Arends
-# 
-# first written March 2011
-# last modified November 2011
-# last modified in version: 0.9.1
-# in current version: active, in main workflow
-#
-#     This program is free software; you can redistribute it and/or
-#     modify it under the terms of the GNU General Public License,
-#     version 3, as published by the Free Software Foundation.
-#
-#     This program is distributed in the hope that it will be useful,
-#     but without any warranty; without even the implied warranty of
-#     merchantability or fitness for a particular purpose.  See the GNU
-#     General Public License, version 3, for more details.
-#
-#     A copy of the GNU General Public License, version 3, is available
-#     at http://www.r-project.org/Licenses/GPL-3
-#
-# Contains: findBiomarkers, pull.biomarkers
-#           selectTopMarker.internal, scoreMarker.internal, convertfindBiomarkers.internal, splitPheno.internal, 
-#           selectMarkersUsingMap.internal, filterGenotypes.internal, filterRow.internal, splitRowSubEM.internal
-#
-############################################################################################################
 
-############################################################################################################
-#									*** findBiomarkers ***
+# findBiomarkers
 #
 # DESCRIPTION:
-#	function that chooses from the matrix only appropriate markers with specified rules
-# 
+#  Function that chooses from the matrix only appropriate markers with specified rules
 # PARAMETERS:
-# 	population - Ril type object, must contain founders phenotypic data.
-# 	orderUsing- which map should be used to order markers (default - none)
-# 		- map_genetic - genetic map
-#		- map_physical - physical map
-# 	treshold - If Rank Product pval for gene is lower that this value, we assume it is being diff. expressed.
-# 	overlapInd - Number of individuals that are allowed in the overlap
-# 	proportion - Proportion of individuals expected to carrying a certain genotype 
-# 	margin - Proportion is allowed to varry between this margin (2 sided)
-# 	minChrLength -if maximal distance between the markers in the chromosome is lower than this value,
-#		whole chromosome will be dropped
-# 	verbose - Be verbose
-# 	debugMode - 1: Print our checks, 2: print additional time information
-# 
+#   - population - Ril type object, must contain founders phenotypic data.
+#   - orderUsing- which map should be used to order markers (default - none)
+#     - map_genetic - genetic map
+#     - map_physical - physical map
+#   - treshold - If Rank Product pval for gene is lower that this value, we assume it is being diff. expressed.
+#   - overlapInd - Number of individuals that are allowed in the overlap
+#   - proportion - Proportion of individuals expected to carrying a certain genotype 
+#   - margin - Proportion is allowed to varry between this margin (2 sided)
+#   - minChrLength - if maximal distance between the markers in the chromosome is lower than this value, whole chromosome will be dropped
+#   - verbose - Be verbose
+#   - debugMode - 1: Print our checks, 2: print additional time information
 # OUTPUT:
-#	an object of class cross
+#  An object of class cross
 #
-############################################################################################################
 generate.biomarkers <- function(population, threshold=0.05, overlapInd = 10, proportion = c(50,50), margin = 15, verbose=FALSE, debugMode=0){
-	#*******CHECKS*******
-	check.population(population)
+
+	check.population(population) # CHECK
 	s<-proc.time()
 	if(any(proportion < 1) || sum(proportion) != 100) stop("Wrong proportion paramete\n")
 	if(any(!(is.numeric(population$founders$phenotypes)))){

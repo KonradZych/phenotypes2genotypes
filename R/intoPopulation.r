@@ -1,50 +1,28 @@
-############################################################################################################
 #
 # add.to.population.R
 #
-# Copyright (c) 2011, Konrad Zych
+# Copyright (c) 2010-2012 GBIC: Danny Arends, Konrad Zych and Ritsert C. Jansen
+# last modified May, 2012
+# first written Mar, 2011
+# Contains: create.population, add.to.population, add.to.populationSub.internal
+#           add.to.populationSubPheno.internal, add.to.populationSubGeno.internal
+#           add.to.populationSubMap.internal   
 #
-# Modified by Danny Arends
-# 
-# first written March 2011
-# last modified November 2011
-# last modified in version: 0.9.1
-# in current version: active, not in main workflow
-#
-#     This program is free software; you can redistribute it and/or
-#     modify it under the terms of the GNU General Public License,
-#     version 3, as published by the Free Software Foundation.
-#
-#     This program is distributed in the hope that it will be useful,
-#     but without any warranty; without even the implied warranty of
-#     merchantability or fitness for a particular purpose.  See the GNU
-#     General Public License, version 3, for more details.
-#
-#     A copy of the GNU General Public License, version 3, is available
-#     at http://www.r-project.org/Licenses/GPL-3
-#
-# Contains: create.population, add.to.population, add.to.populationSub.internal, add.to.populationSubPheno.internal, add.to.populationSubGeno.internal, add.to.populationSubMap.internal   
-#
-############################################################################################################
 
-############################################################################################################
-#									*** create.population ***
+#  create.population
 #
 # DESCRIPTION:
-#	creating an object of class population using data supplied by user
-# 
+#  Creating an object of class population using data supplied by user
 # PARAMETERS:
-# 	offspring$phenotypes - matrix containing offspring phenotype data (have to be supported, if not - function
-#		quits with error
-# 	founders - matrix containing founders phenotype data (optional)
-# 	offspring$genotypes - matrix containing offspring genotype data (optional)
-# 	maps$genetic - matrix containing genetic map (optional)
-# 	maps$physical - matrix containing physical map (optional)
-#
+#   - offspring$phenotypes - matrix containing offspring phenotype data (have to be supported, if not - function
+#   - quits with error
+#   - founders - matrix containing founders phenotype data (optional)
+#   - offspring$genotypes - matrix containing offspring genotype data (optional)
+#   - maps$genetic - matrix containing genetic map (optional)
+#   - maps$physical - matrix containing physical map (optional)
 # OUTPUT:
-#	an object of class population
+#  An object of class population
 #
-############################################################################################################
 create.population <- function(offspring_phenotypes, founders, founders_groups, offspring_genotypes, maps_genetic, maps_physical, populationType=c("riself", "f2", "bc", "risib"), no.warn=FALSE, verbose=FALSE,debugMode=0){
 	if(verbose && debugMode==1) cat("create.population starting.\n")
 	s <- proc.time()
