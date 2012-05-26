@@ -1,43 +1,20 @@
-############################################################################################################
 #
 # fake.population.R
 #
-# Copyright (c) 2011, Konrad Zych
+# Copyright (c) 2010-2012 GBIC: Danny Arends, Konrad Zych and Ritsert C. Jansen
+# last modified May, 2012
+# first written Mar, 2011
+# Contains: fake.population, fakePheno.internal, fakeFounders.internal, simBC.internal
+#           fakePhysicalMap.internal, convertMap.internal, fakeMixUps
 #
-# Modified by Danny Arends
-# 
-# first written March 2011
-# last modified November 2011
-# last modified in version: 0.9.1
-# in current version: active, not in main workflow
-#
-#     This program is free software; you can redistribute it and/or
-#     modify it under the terms of the GNU General Public License,
-#     version 3, as published by the Free Software Foundation.
-#
-#     This program is distributed in the hope that it will be useful,
-#     but without any warranty; without even the implied warranty of
-#     merchantability or fitness for a particular purpose.  See the GNU
-#     General Public License, version 3, for more details.
-#
-#     A copy of the GNU General Public License, version 3, is available
-#     at http://www.r-project.org/Licenses/GPL-3
-#
-# Contains: fake.population,
-#             fakePheno.internal, fakeFounders.internal, fakePhysicalMap.internal, convertMap.internal, 
-#             simBC.internal, fakeMixUps
-#
-############################################################################################################
 
-
-############################################################################################################
-#                                          *** fake.population ***
+# fake.population
 #
 # DESCRIPTION:
-#	simulating object of class population 
+#  Simulating object of class population 
 # OUTPUT:
-#	object of class population
-############################################################################################################
+#  An object of class population
+#
 fake.population <- function(n.founders = 4, n.offspring = 100, n.markers=100,n.chromosomes=10, type = c("riself", "f2", "bc", "risib"), n.mixups=0, verbose=FALSE,...){
   type <- match.arg(type)
   if(!(is.numeric(n.founders))) stop("n.founders should be numeric\n")
