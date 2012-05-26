@@ -1,12 +1,9 @@
 #
 # assignLinkageGroups.R
 #
-# copyright (c) 2010 Danny Arends, Konrad Zych and Ritsert C. Jansen
+# copyright (c) 2010-2012 GBIC: Danny Arends, Konrad Zych and Ritsert C. Jansen
 # last modified May, 2012
 # first written Oct, 2011
-#
-# Modified by Konrad Zych
-# in current version: active, in main workflow
 # Contains: assignLinkageGroups, regorganizeMarkersWithin
 #
 
