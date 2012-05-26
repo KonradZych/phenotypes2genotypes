@@ -1,46 +1,22 @@
-############################################################################################################
 #
-# utilities.R
+# utilities.r
 #
-# Copyright (c) 2011, Konrad Zych
-#
-# Modified by Danny Arends
-# 
-# first written March 2011
-# last modified November 2011
-# last modified in version: 0.9.1
-# in current version: active, not in main workflow
-#
-#     This program is free software; you can redistribute it and/or
-#     modify it under the terms of the GNU General Public License,
-#     version 3, as published by the Free Software Foundation.
-#
-#     This program is distributed in the hope that it will be useful,
-#     but without any warranty; without even the implied warranty of
-#     merchantability or fitness for a particular purpose.  See the GNU
-#     General Public License, version 3, for more details.
-#
-#     A copy of the GNU General Public License, version 3, is available
-#     at http://www.r-project.org/Licenses/GPL-3
-#
+# Copyright (c) 2010-2012 GBIC: Danny Arends, Konrad Zych and Ritsert C. Jansen
+# last modified May, 2012
+# first written Nov, 2011
 # Contains: print.population, remove.individuals, doCleanUp.internal
 #
-############################################################################################################
 
-############################################################################################################
-#									*** print.population ***
+# print.population
 #
 # DESCRIPTION:
-#	overwrites the print function for objects of class "population"
-# 
+#  Overwrites the print function for objects of class "population"
 # PARAMETERS:
-# 	x - object of class population
-# 	... - passed to cats
-# 
+#  x - object of class population
+#  ... - passed to cats
 # OUTPUT:
-#	none
+#  None
 #
-############################################################################################################
 print.population <- function(x, ...){
 	if(missing(x)) stop("Please, provide an object of class population.\n")
 	if(!(any(names(x)=="offspring"))){  stop("This is not correct population object.\n") }
