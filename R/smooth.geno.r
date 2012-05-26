@@ -69,22 +69,22 @@ smooth.geno <- function(cross,windowSize=1,chr,population,map=c("genetic","physi
             print(cross$geno[[i]]$map[toBeFixed])
         }
     }
-	invisible(cross)
+  invisible(cross)
 }
 
 ############################################################################################################
-#									*** smooth.genoSub.internal ***
+#                  *** smooth.genoSub.internal ***
 #
 # DESCRIPTION:
-#	checking if fitted normal distributions do not overlap
+#  checking if fitted normal distributions do not overlap
 # 
 # PARAMETERS:
-# 	offspring - currently processed row
-# 	EM - output of normalmixEM function
-# 	overlapInd - how many individuals are allowed to be overlapping between distributions
+#   offspring - currently processed row
+#   EM - output of normalmixEM function
+#   overlapInd - how many individuals are allowed to be overlapping between distributions
 # 
 # OUTPUT:
-#	boolean
+#  boolean
 #
 ############################################################################################################
 smooth.genoSub.internal <- function(geno,windowSize,oldMarkers,verbose){
@@ -105,22 +105,22 @@ smooth.genoSub.internal <- function(geno,windowSize,oldMarkers,verbose){
     geno$data <- genotype
     }
   }
-	invisible(geno)
+  invisible(geno)
 }
 
 ############################################################################################################
-#									*** smooth.genoRow.internal ***
+#                  *** smooth.genoRow.internal ***
 #
 # DESCRIPTION:
-#	checking if fitted normal distributions do not overlap
+#  checking if fitted normal distributions do not overlap
 # 
 # PARAMETERS:
-# 	offspring - currently processed row
-# 	EM - output of normalmixEM function
-# 	overlapInd - how many individuals are allowed to be overlapping between distributions
+#   offspring - currently processed row
+#   EM - output of normalmixEM function
+#   overlapInd - how many individuals are allowed to be overlapping between distributions
 # 
 # OUTPUT:
-#	boolean
+#  boolean
 #
 ############################################################################################################
 smooth.genoRow.internal <- function(genoRow,windowSize){
@@ -147,7 +147,7 @@ smooth.genoRow.internal <- function(genoRow,windowSize){
 }
 
 recalculateMap.internal <- function(cross,...){
-	newmap <- est.map(cross,offset=0,...)
-	cross2 <- replace.map(cross, newmap)
-	invisible(cross2)
+  newmap <- est.map(cross,offset=0,...)
+  cross2 <- replace.map(cross, newmap)
+  invisible(cross2)
 }
