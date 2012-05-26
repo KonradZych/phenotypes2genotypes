@@ -1,7 +1,7 @@
 #
 # plot.multimap.R
 #
-# copyright (c) 2010 Danny Arends, konrad Zych and Ritsert C. Jansen
+# copyright (c) 2010 Danny Arends, Konrad Zych and Ritsert C. Jansen
 # last modified May, 2012
 # first written May, 2012
 # 
