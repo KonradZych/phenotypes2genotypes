@@ -1,42 +1,21 @@
-############################################################################################################
 #
 # cross.denovo.R
 #
-# Copyright (c) 2011, Konrad Zych
+# Copyright (c) 2010-2012 GBIC: Danny Arends, Konrad Zych and Ritsert C. Jansen
+# last modified May, 2012
+# first written Mar, 2011
+# Contains: orderChromosomes, majorityRule.internal, mergeChromosomes.internal
+#           switchChromosomes.internal, removeChromosomes.internal 
+#           removeChromosomesSub.internal
 #
-# Modified by Danny Arends
-# 
-# first written March 2011
-# last modified December 2011
-# last modified in version: 0.9.1
-# in current version: active, in main workflow
-#
-#     This program is free software; you can redistribute it and/or
-#     modify it under the terms of the GNU General Public License,
-#     version 3, as published by the Free Software Foundation.
-#
-#     This program is distributed in the hope that it will be useful
-#     but without any warranty; without even the implied warranty of
-#     merchantability or fitness for a particular purpose.  See the GNU
-#     General Public License, version 3, for more details.
-#
-#     A copy of the GNU General Public License, version 3, is available
-#     at http://www.r-project.org/Licenses/GPL-3
-#
-# Contains: orderChromosomes, majorityRule.internal, mergeChromosomes.internal,
-#      switchChromosomes.internal, removeChromosomes.internal, removeChromosomesSub.internal,
-#
-############################################################################################################
 
-
-############################################################################################################
-#                                            *** cross.denovo ***
+# cross.denovo
 #
 # DESCRIPTION:
 #  ordering chromosomes using genetic/physical map and majority rule
 # OUTPUT:
 #  an object of class cross
-############################################################################################################
+#
 cross.denovo <- function(population, n.chr, orderUsingMap=FALSE, map=c("none","genetic","physical"), comparisonMethod = c(sumMajorityCorrelation,majorityCorrelation,meanCorrelation,majorityOfMarkers), 
 assignFunction=c(assignMaximumNoConflicts,assignMaximum), reOrder=TRUE, use.orderMarkers=FALSE, cross, verbose=FALSE, debugMode=0){
   #checks
