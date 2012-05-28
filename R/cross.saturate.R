@@ -164,7 +164,7 @@ rearrangeMarkers <- function(cross, population, cur_map, threshold=3, placeUsing
     }
      if(x %in% chr) if(verbose) cat("Selected:",length(newnames),"new and",length(oldnames),"original markers,",length(toRmv),"markers were removed\n") 
     if(addMarkers){
-      returncross$geno[[x]]$data <- cbind(pull.geno(cross)[,newnames],t(population$offspring$genotypes$real[oldnames,]))
+      returncross$geno[[x]]$data <- insertMarkers.internal(pull.geno(cross)[,newnames],newpositions,t(population$offspring$genotypes$real[oldnames,]),oldpositions)
       newmap <- c(as.numeric(newpositions),oldpositions)
       names(newmap) <- c(newnames,oldnames)
       newmap <- sort(newmap)
@@ -187,6 +187,31 @@ rearrangeMarkers <- function(cross, population, cur_map, threshold=3, placeUsing
   invisible(returncross)
 }
 
+insertMarkers.internal <- function(newgeno,newpositions,oldgeno,oldpositions){
+  toRmv <- NULL
+  toInv <- NULL
+  if(is.null(dim(newgeno))){
+    newgeno <- as.matrix(newgeno)
+  }
+  if(is.null(dim(oldgeno))){
+    oldgeno <- as.matrix(oldgeno)
+  }
+  for(i in 1:length(newpositions)){
+    distance <- oldpositions-newpositions[i]
+    curCor <- cor(newgeno[,i],oldgeno[,which.min(distance)])
+    if(curCor<0.5 && curCor>-0.5){
+      toRmv <- c(toRmv,i)
+    }else if(curCor<-0.5){
+      toInv <- c(toInv,i)
+    }
+  }
+  if(!is.null(toRmv)){
+    newgeno <- newgeno[,-toRmv]
+  }
+  ### very primitive inversion in here!
+  newgeno[,toInv] <- max(oldgeno) - newgeno[,toInv]
+  return(cbind(newgeno,oldgeno))
+}
 
 ###########################################################################################################
 #                                    *** bestCorelated.internal ***
