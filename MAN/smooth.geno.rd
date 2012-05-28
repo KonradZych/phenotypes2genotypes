@@ -55,7 +55,7 @@ needs to be saturated multiple times, \code{\link{set.geno.from.cross}} function
     \item{\code{\link{set.geno.from.cross}}}{ - Pulling genotypes with a map from cross and putting into population object.}
     \item{\code{\link{cross.denovo}}}{ -  Creating de novo genetic map or chromosome assignment vector.}
     \item{\code{\link{cross.saturate}}}{ - Saturate existing map.}
-    \code{\link[qtl]{est.map}}}{ - Uses the Lander-Green algorithm (i.e., the hidden Markov model technology) to re-estimate the genetic map for an experimental cross..}
+    \code{\link[qtl]{est.map}}{ - Uses the Lander-Green algorithm (i.e., the hidden Markov model technology) to re-estimate the genetic map for an experimental cross..}
   }
 }
 
