@@ -197,19 +197,23 @@ insertMarkers.internal <- function(newgeno,newpositions,oldgeno,oldpositions){
     oldgeno <- as.matrix(oldgeno)
   }
   for(i in 1:length(newpositions)){
-    distance <- oldpositions-newpositions[i]
-    curCor <- cor(newgeno[,i],oldgeno[,which.min(distance)])
-    if(curCor<0.5 && curCor>-0.5){
+    distance <- abs(oldpositions-newpositions[i])
+    curCor <- cor(newgeno[,i],oldgeno[,which.min(distance)],use="pair")
+    #print(curCor)
+    #print(toInv)
+    cat(i,":",which.min(distance),":",curCor,"\n")
+    if(curCor<0.5 && curCor>(-0.3)){
       toRmv <- c(toRmv,i)
-    }else if(curCor<-0.5){
+    }else if(curCor<(-0.3)){
       toInv <- c(toInv,i)
     }
   }
-  if(!is.null(toRmv)){
-    newgeno <- newgeno[,-toRmv]
-  }
+  #if(!is.null(toRmv)){
+  #  newgeno <- newgeno[,-toRmv]
+  #}
+  print(toInv)
   ### very primitive inversion in here!
-  newgeno[,toInv] <- max(oldgeno) - newgeno[,toInv]
+  newgeno[,toInv] <- 3 - newgeno[,toInv]
   return(cbind(newgeno,oldgeno))
 }
 
