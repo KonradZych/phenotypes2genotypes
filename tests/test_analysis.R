@@ -4,7 +4,7 @@ parents <- read.csv(file="parental_phenotypes.csv",header=TRUE,row.names=1)
 genotypes <- read.csv(file="genotypes.csv",header=TRUE,row.names=1)
 map <- read.csv(file="map.csv",header=TRUE,row.names=1)
 
-population <- create.population(children,parents,c(0,0,0,0,0,0,1,1,1,1,1,1),genotypes,maps_physical=map)
+population <- create.population(children,parents,c(0,0,0,0,0,0,1,1,1,1,1,1),genotypes,maps_physical=map,verbose=TRUE)
 population <- find.diff.expressed(population)
 population <- generate.biomarkers(population, threshold=0.1,verbose=T,debug=2)
 population <- scan.qtls(population,map="physical",verbose=T)

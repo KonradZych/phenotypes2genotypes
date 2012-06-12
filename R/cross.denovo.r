@@ -78,7 +78,7 @@ assignFunction=c(assignMaximumNoConflicts,assignMaximum), reOrder=TRUE, use.orde
     nmarkersPerChr <- nmar(cross2)
     nChr <- length(nmarkersPerChr)
     for(i in 1:nChr){
-      cross <- orderMarkers(cross2,use.ripple=F,chr=i,verb=T)
+      cross <- orderMarkers(cross2,use.ripple=FALSE,chr=i,verbose=TRUE)
       e1 <- proc.time()
       if(i<nChr) te <- ((e1-s0)[3]/sum(nmarkersPerChr[1:i]))*sum(nmarkersPerChr[(i+1):nChr])
       else te <- 0

@@ -100,7 +100,7 @@ cross.saturate <- function(population, cross, map=c("genetic","physical"), place
     s1 <- proc.time()
     aa <- tempfile()
     sink(aa)
-    cross <- orderMarkers(cross,use.ripple=F,verb=T)
+    cross <- orderMarkers(cross,use.ripple=FALSE,verbose=TRUE)
     sink()
     file.remove(aa)
     e1 <- proc.time()
@@ -189,6 +189,9 @@ rearrangeMarkers <- function(cross, population, populationType, cur_map, thresho
 }
 
 insertMarkers.internal <- function(newgeno,newpositions,oldgeno,oldpositions,populationType){
+  if(length(newgeno)<1){
+    return(oldgeno)
+  }
   toRmv <- NULL
   toInv <- NULL
   if(is.null(dim(newgeno))){

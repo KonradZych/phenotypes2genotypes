@@ -163,7 +163,7 @@ add.to.populationSub.internal <- function(population, populationType=c("riself",
     population <- add.to.populationSubPheno.internal(population,dataObject,dataType, verbose, debugMode)
   }else if(dataType=="offspring$genotypes"){
     if(!(is.null(dataObject))&&!is.null(dim(dataObject))){  
-      population$offspring$genotypes <- add.to.populationSubGeno.internal(population,dataObject,populationType,verbose)
+      population$offspring$genotypes$real <- add.to.populationSubGeno.internal(population,dataObject,populationType,verbose)
     }else{
       stop("No data provided for offspring$genotypes !\n")
     }
@@ -313,13 +313,13 @@ add.to.populationSubGeno.internal <- function(population,dataObject,populationTy
         rownames(cur) <- 1:nrow(cur)
       }
       if(verbose){
-        for(x in unique(cur)){
+        for(x in as.numeric(names(table(cur)))){
           cat(x,": ",round(sum(cur==x,na.rm=T)/length(cur)*100,2),"%\n",sep="")
         }
         cat("NA: ",round(sum(is.na(cur))/length(cur)*100,2),"%\n",sep="")
       }
       #Adding data to population
-      population$offspring$genotypes$real <- cur
+      return(cur)
 }
 
 add.to.populationSubGenoSub.internal <- function(curRow,dataObject,genotypes,verbose=FALSE){
