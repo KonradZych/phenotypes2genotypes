@@ -27,7 +27,7 @@ create.population <- function(offspring_phenotypes, founders, founders_groups, o
   if(verbose && debugMode==1) cat("create.population starting.\n")
   s <- proc.time()
   population <- NULL
-  populationType <- checkParameters.internal(populationType,c("riself", "f2", "bc", "risib"),"populationType")
+  populationType <- match.arg(populationType)
   if(missing(offspring_phenotypes)){
     stop("No offspring phenotype data provided!\n")
   }else{
@@ -109,7 +109,7 @@ add.to.population <- function(population, dataObject, dataType=c("founders","off
   ### checks
   check.population(population)
   populationType <- class(population)[2]
-  inListCheck.internal(dataType,"dataType",c("founders","offspring$phenotypes","offspring$genotypes","maps$genetic","maps$physical"))
+  dataType <- match.arg(dataType)
   if(verbose && debugMode==1) cat("add.to.population starting without errors in checkpoints.\n")
   if(length(dataType)>1){
     if(class(dataObject)!="list") stop("Multiple dataObjects should be provided as list.\n")
@@ -149,12 +149,14 @@ add.to.population <- function(population, dataObject, dataType=c("founders","off
 #  an object of class population
 #
 ############################################################################################################
-add.to.populationSub.internal <- function(population, populationType, dataObject, dataType=c("founders","offspring$phenotypes","founders$groups","offspring$genotypes","maps$genetic","maps$physical"),verbose=FALSE,debugMode=0){
+add.to.populationSub.internal <- function(population, populationType=c("riself", "f2", "bc", "risib"), dataObject, dataType=c("founders","offspring$phenotypes","founders$groups","offspring$genotypes","maps$genetic","maps$physical"),verbose=FALSE,debugMode=0){
+  dataType <- match.arg(dataType)
+  populationType <- match.arg(populationType)
   if(dataType!="founders$groups"){
     if(class(dataObject)=="data.frame"){
       dataObject <- as.matrix(dataObject)
     }else if(class(dataObject)!="matrix"){
-      stop("dataObject should be either matrix or data frame")
+      stop("dataObject should be either a matrix or a date frame")
     }
   }
   if(dataType=="founders" || dataType=="offspring$phenotypes"){
@@ -278,7 +280,8 @@ add.to.populationSubPhenoSub.internal <- function(curRow,dataObject,verbose){
 #  number or NULL
 #
 ############################################################################################################
-add.to.populationSubGeno.internal <- function(dataObject,populationType,verbose){
+add.to.populationSubGeno.internal <- function(dataObject,populationType=c("riself", "f2", "bc", "risib"),verbose){
+  populationType <- match.arg(populationType)
     #Checking whether rows are numeric/convertable to numeric
       rows <- unlist(lapply(c(1:nrow(dataObject)),add.to.populationSubGenoSub.internal,dataObject,verbose))
       #Removes faulty rows
@@ -304,13 +307,20 @@ add.to.populationSubGeno.internal <- function(dataObject,populationType,verbose)
       }else{
         rownames(cur) <- 1:nrow(cur)
       }
-    
+      if(verbose){
+        printSummary(dataObject,populationType=c("riself", "f2", "bc", "risib"),cur)
+      }
       #Adding data to population
       population$offspring$genotypes$real <- cur
 }
+
+printSummary <- function(dataObject,populationType=c("riself", "f2", "bc", "risib"),cur){
+  
+}
+
 add.to.populationSubGenoSub.internal <- function(curRow,dataObject,populationType,verbose){
   if(verbose&&curRow%%1000==0) cat("Processing row:",curRow,"\n")
-  if(!(numericCheck.internal(dataObject[curRow,],populationType,allow.na=TRUE))){
+  if(!(genotypeCheck.internal(dataObject[curRow,],populationType,allow.na=TRUE))){
     return(curRow)
   }else{
     return(NULL)
