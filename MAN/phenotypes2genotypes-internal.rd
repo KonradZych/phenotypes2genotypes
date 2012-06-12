@@ -81,6 +81,9 @@
 \alias{generate.biomarkers.internal}
 \alias{convertType.internal}
 
+\alias{insertMarkers.internal}
+\alias{printGeno.internal}
+
 \title{Internal pheno2geno functions}
 
 \description{

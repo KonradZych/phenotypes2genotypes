@@ -21,7 +21,7 @@ assignFunction=c(assignMaximumNoConflicts,assignMaximum), reOrder=TRUE, use.orde
   #checks
   if(missing(population)) stop("provide population object\n")
   check.population(population)
-  map <- checkParameters.internal(map,c("none","genetic","physical"),"map")
+  map <- match.arg(map)
   comparisonMethod <- defaultCheck.internal(comparisonMethod,"comparisonMethod",4,sumMajorityCorrelation)
   assignFunction <- defaultCheck.internal(assignFunction,"assignFunction",2,assignMaximumNoConflicts)
   if(orderUsingMap==TRUE){

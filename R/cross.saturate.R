@@ -17,6 +17,7 @@
 #
 cross.saturate <- function(population, cross, map=c("genetic","physical"), placeUsing=c("qtl","correlation"), threshold=3, chr, use.orderMarkers=FALSE, verbose=FALSE, debugMode=0){
   if(missing(population)) stop("Please provide a population object\n")
+  populationType <- class(population)[2]
   if(is.null(population$offspring$genotypes$real)){
     stop("No original genotypes in population$offspring$genotypes$real, load them in using add.to.population\n")
   }
@@ -89,7 +90,7 @@ cross.saturate <- function(population, cross, map=c("genetic","physical"), place
   }
   #*******ENRICHING ORIGINAL MAP*******
   s1 <- proc.time()
-  cross <- rearrangeMarkers(cross,population,cur_map,threshold,placeUsing,addMarkers=TRUE,chr,verbose=verbose)
+  cross <- rearrangeMarkers(cross, population, populationType, cur_map,threshold,placeUsing,addMarkers=TRUE,chr,verbose=verbose)
   e1 <- proc.time()
   if(verbose && debugMode==2)cat("Enrichment of original map done in:",(e1-s1)[3],"seconds.\n")
   
@@ -120,7 +121,7 @@ cross.saturate <- function(population, cross, map=c("genetic","physical"), place
 # OUTPUT:
 #  object of class cross
 ############################################################################################################
-rearrangeMarkers <- function(cross, population, cur_map, threshold=3, placeUsing,addMarkers=FALSE, chr, verbose=FALSE){
+rearrangeMarkers <- function(cross, population, populationType, cur_map, threshold=3, placeUsing, addMarkers=FALSE, chr, verbose=FALSE){
   if(verbose) cat("old map contains",max(cur_map[,1]),"chromosomes\n")
   if(placeUsing=="qtl"){
     markersNewPostions <- bestQTL.internal(cross,population,threshold,verbose)
@@ -164,7 +165,7 @@ rearrangeMarkers <- function(cross, population, cur_map, threshold=3, placeUsing
     }
      if(x %in% chr) if(verbose) cat("Selected:",length(newnames),"new and",length(oldnames),"original markers,",length(toRmv),"markers were removed\n") 
     if(addMarkers){
-      returncross$geno[[x]]$data <- insertMarkers.internal(pull.geno(cross)[,newnames],newpositions,t(population$offspring$genotypes$real[oldnames,]),oldpositions)
+      returncross$geno[[x]]$data <- insertMarkers.internal(pull.geno(cross)[,newnames],newpositions,t(population$offspring$genotypes$real[oldnames,]),oldpositions,  populationType)
       newmap <- c(as.numeric(newpositions),oldpositions)
       names(newmap) <- c(newnames,oldnames)
       newmap <- sort(newmap)
@@ -187,7 +188,7 @@ rearrangeMarkers <- function(cross, population, cur_map, threshold=3, placeUsing
   invisible(returncross)
 }
 
-insertMarkers.internal <- function(newgeno,newpositions,oldgeno,oldpositions){
+insertMarkers.internal <- function(newgeno,newpositions,oldgeno,oldpositions,populationType){
   toRmv <- NULL
   toInv <- NULL
   if(is.null(dim(newgeno))){
@@ -211,9 +212,18 @@ insertMarkers.internal <- function(newgeno,newpositions,oldgeno,oldpositions){
   #if(!is.null(toRmv)){
   #  newgeno <- newgeno[,-toRmv]
   #}
-  print(toInv)
+  #print(toInv)
   ### very primitive inversion in here!
-  newgeno[,toInv] <- 3 - newgeno[,toInv]
+  if(populationType=="f2"){
+    invertM <- newgeno[,toInv]
+    invertM[which(invertM==1)] <- 3
+    invertM[which(invertM==3)] <- 1
+    invertM[which(invertM==5)] <- 4
+    invertM[which(invertM==4)] <- 5
+    newgeno[,toInv] <- invertM
+  }else{
+    newgeno[,toInv] <- 3 - newgeno[,toInv]
+  }
   return(cbind(newgeno,oldgeno))
 }
 
