@@ -41,11 +41,23 @@ print.population <- function(x, ...){
     }
     if(!(is.null(x$offspring$genotypes$real))){
       cat("\tOriginal genotypes:",ncol(x$offspring$genotypes$real),"individuals",nrow(x$offspring$genotypes$real),"markers\n",...)
+      g <- x$offspring$genotypes$real
+      if(class(x)[2]=="f2"){
+        cat("\t   AA:",printGeno.internal(g,1),"%, AB:",printGeno.internal(g,2),"%, BB:",printGeno.internal(g,3),"%, not BB:",printGeno.internal(g,4),"%, not AA:",printGeno.internal(g,5),"%, NA: ",round(sum(is.na(x$offspring$genotypes$real))/length(x$offspring$genotypes$real)*100,1),"%\n",sep="")
+      }else{
+        cat("\t   AA:",printGeno.internal(g,1),"%, BB:",printGeno.internal(g,2),"%, NA: ",round(sum(is.na(x$offspring$genotypes$real))/length(x$offspring$genotypes$real)*100,1),"%\n",sep="")
+      }
     }else{
       cat("\tOriginal genotypes: None\n",...)
     }
     if(!(is.null(x$offspring$genotypes$simulated))){
+      g <- x$offspring$genotypes$simulated
       cat("\tSimulated genotypes:",ncol(x$offspring$genotypes$simulated),"individuals",nrow(x$offspring$genotypes$simulated),"markers\n",...)
+      if(class(x)[2]=="f2"){
+        cat("\t   AA:",printGeno.internal(g,1),"%, AB:",printGeno.internal(g,2),"%, BB:",printGeno.internal(g,3),"%, not BB:",printGeno.internal(g,4),"%, not AA:",printGeno.internal(g,5),"%, NA: ",round(sum(is.na(x$offspring$genotypes$real))/length(x$offspring$genotypes$real)*100,1),"%\n",sep="")
+      }else{
+        cat("\t   AA:",printGeno.internal(g,1),"%, BB:",printGeno.internal(g,2),"%, NA: ",round(sum(is.na(x$offspring$genotypes$real))/length(x$offspring$genotypes$real)*100,1),"%\n",sep="")
+      }
     }else{
       cat("\tSimulated genotypes: None\n",...)
     }
@@ -88,6 +100,10 @@ print.population <- function(x, ...){
   }else{
     stop("No phenotype data for founders, this is not a valid population object\n")
   }
+}
+
+printGeno.internal <- function(x,n){
+  return(round(sum(x==n,na.rm=T)/length(x)*100,1))
 }
 
 ############################################################################################################

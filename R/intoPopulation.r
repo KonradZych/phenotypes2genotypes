@@ -163,7 +163,7 @@ add.to.populationSub.internal <- function(population, populationType=c("riself",
     population <- add.to.populationSubPheno.internal(population,dataObject,dataType, verbose, debugMode)
   }else if(dataType=="offspring$genotypes"){
     if(!(is.null(dataObject))&&!is.null(dim(dataObject))){  
-      population$offspring$genotypes <- add.to.populationSubGeno.internal(dataObject,populationType,verbose)
+      population$offspring$genotypes <- add.to.populationSubGeno.internal(population,dataObject,populationType,verbose)
     }else{
       stop("No data provided for offspring$genotypes !\n")
     }
@@ -280,10 +280,15 @@ add.to.populationSubPhenoSub.internal <- function(curRow,dataObject,verbose){
 #  number or NULL
 #
 ############################################################################################################
-add.to.populationSubGeno.internal <- function(dataObject,populationType=c("riself", "f2", "bc", "risib"),verbose){
+add.to.populationSubGeno.internal <- function(population,dataObject,populationType=c("riself", "f2", "bc", "risib"),verbose=FALSE){
   populationType <- match.arg(populationType)
     #Checking whether rows are numeric/convertable to numeric
-      rows <- unlist(lapply(c(1:nrow(dataObject)),add.to.populationSubGenoSub.internal,dataObject,verbose))
+      if(populationType == "f2"){
+        genotypes <- c(1:5)
+      }else{
+        genotypes <- c(1,2)
+      }
+      rows <- unlist(lapply(c(1:nrow(dataObject)),add.to.populationSubGenoSub.internal,dataObject,genotypes,verbose))
       #Removes faulty rows
       if(!(is.null(rows))){
         if(verbose)cat("Following  rows are not numeric and cannot be converted into numeric:",rows," so will be removed.\n")
@@ -308,19 +313,18 @@ add.to.populationSubGeno.internal <- function(dataObject,populationType=c("risel
         rownames(cur) <- 1:nrow(cur)
       }
       if(verbose){
-        printSummary(dataObject,populationType=c("riself", "f2", "bc", "risib"),cur)
+        for(x in unique(cur)){
+          cat(x,": ",round(sum(cur==x,na.rm=T)/length(cur)*100,2),"%\n",sep="")
+        }
+        cat("NA: ",round(sum(is.na(cur))/length(cur)*100,2),"%\n",sep="")
       }
       #Adding data to population
       population$offspring$genotypes$real <- cur
 }
 
-printSummary <- function(dataObject,populationType=c("riself", "f2", "bc", "risib"),cur){
-  
-}
-
-add.to.populationSubGenoSub.internal <- function(curRow,dataObject,populationType,verbose){
+add.to.populationSubGenoSub.internal <- function(curRow,dataObject,genotypes,verbose=FALSE){
   if(verbose&&curRow%%1000==0) cat("Processing row:",curRow,"\n")
-  if(!(genotypeCheck.internal(dataObject[curRow,],populationType,allow.na=TRUE))){
+  if(!(genotypeCheck.internal(dataObject[curRow,],genotypes,allow.na=TRUE))){
     return(curRow)
   }else{
     return(NULL)

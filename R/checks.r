@@ -42,14 +42,17 @@ numericCheck.internal <- function(objectToBeChecked, allow.na=FALSE){
 # OUTPUT:
 #  boolean
 #
-genotypeCheck.internal <- function(objectToBeChecked, allow.na=FALSE){
+genotypeCheck.internal <- function(objectToBeChecked, genotypes, allow.na=FALSE){
   converted <- as.numeric(as.matrix(objectToBeChecked))
   if(any(is.na(converted))){
     if(!(allow.na)){
       return(FALSE)
     }else{
       if(sum(is.na(converted))==sum(is.na(objectToBeChecked))){
-        nrOfCorrect <- (sum(is.na(converted)) + sum(converted==1,na.rm=TRUE) + sum(converted==0,na.rm=TRUE))
+        nrOfCorrect <- sum(is.na(converted))
+        for(genotype in genotypes){
+          nrOfCorrect <- nrOfCorrect + sum(converted==genotype,na.rm=TRUE)
+        }
         if(nrOfCorrect==length(converted)){
           return(TRUE)
         }else{
