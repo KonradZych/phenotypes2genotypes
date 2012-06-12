@@ -25,8 +25,8 @@ genotypesToCross.internal <- function(population, genotype=c("simulated","real")
   #checks
   if(missing(population)) stop("No population object provided.\n") 
   check.population(population)
-  orderUsing <- checkParameters.internal(orderUsing,c("none","map_genetic","map_physical"),"orderUsing")
-  comparisonMethod <- checkParameters.internal(genotype,c("simulated","real"),"genotype")
+  orderUsing <- match.arg(orderUsing)
+  genotype <- match.arg(genotype)
   if(orderUsing=="map_physical"&&is.null(population$maps$physical)) stop("There is no map in population$maps$physical\n")
   if(orderUsing=="map_genetic"&&is.null(population$maps$genetic)) stop("There is no map in population$maps$genetic\n")
   if(verbose && debugMode==1) cat("genotypesToCross starting without errors in checkpotins.\n")
@@ -80,8 +80,13 @@ genotypesToCross.internal <- function(population, genotype=c("simulated","real")
   }  
 
   #READING CROSS FILE INTO R
-  cross <- invisible(read.cross("csvr",file=outputFile, genotypes=genotypes))
-  cross <- convertType.internal(cross,class(population)[2])
+  populationType <- class(population)[2]
+  if(populationType=="f2"){
+    cross <- invisible(read.cross("csvr",file=outputFile, genotypes=c(1:5)))
+  }else{
+    cross <- invisible(read.cross("csvr",file=outputFile, genotypes=c(1:2)))
+  }
+  cross <- convertType.internal(cross,)
   e <- proc.time()
   if(verbose) cat("genotypesToCross done in",(e-s)[3],"seconds.\n")
   invisible(cross)

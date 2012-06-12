@@ -264,9 +264,9 @@ splitPhenoRowEM.internal <- function(x, offspring, founders, overlapInd, proport
       for(i in (1:length(offspring[1,]))){
         if(any(EM$posterior[i,]>0.8)){
           result[i] <- genotypes[which.max(EM$posterior[i,])]
-        }else if(){
+        }else if((EM$posterior[i,1]+EM$posterior[i,2])>0.8){
           result[i] <- genotypes[4]
-        }else if(){
+        }else if((EM$posterior[i,2]+EM$posterior[i,3])>0.8){
           result[i] <- genotypes[5]
         }else{
           result[i] <- NA
