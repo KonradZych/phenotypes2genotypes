@@ -19,6 +19,7 @@
 #
 print.population <- function(x, ...){
   if(missing(x)) stop("Please, provide an object of class population.\n")
+  check.population(x)
   if(!(any(names(x)=="offspring"))){  stop("This is not correct population object.\n") }
   if(!(any(names(x)=="founders"))){  stop("This is not correct population object.\n") }
   cat("This is object of class \"population\"\n  It is too complex to print, so we provide just this summary.\n\n")

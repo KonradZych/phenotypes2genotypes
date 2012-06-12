@@ -108,6 +108,7 @@ create.population <- function(offspring_phenotypes, founders, founders_groups, o
 add.to.population <- function(population, dataObject, dataType=c("founders","offspring$phenotypes","founders$group","offspring$genotypes","maps$genetic","maps$physical"),verbose=FALSE,debugMode=0){
   ### checks
   check.population(population)
+  populationType <- class(population)[2]
   inListCheck.internal(dataType,"dataType",c("founders","offspring$phenotypes","offspring$genotypes","maps$genetic","maps$physical"))
   if(verbose && debugMode==1) cat("add.to.population starting without errors in checkpoints.\n")
   if(length(dataType)>1){
@@ -115,10 +116,10 @@ add.to.population <- function(population, dataObject, dataType=c("founders","off
     if(length(dataObject)!=length(dataType)) stop("Support dataType for every element of dataObject.\n")
     if(length(dataType)!=length(unique(dataType))) stop("Every element of dataType must be unique!\n")
     for(i in 1:length(dataObject)){
-      population <- add.to.populationSub.internal(population,dataObject[[i]],dataType[i], verbose, debugMode)
+      population <- add.to.populationSub.internal(population,populationType,dataObject[[i]],dataType[i], verbose, debugMode)
     }
   }else if(length(dataType)==1){
-    population <- add.to.populationSub.internal(population,dataObject,dataType, verbose, debugMode)
+    population <- add.to.populationSub.internal(population,populationType,dataObject,dataType, verbose, debugMode)
   }
 
   if(is.null(population)) stop("No data provided!\n")
@@ -148,7 +149,7 @@ add.to.population <- function(population, dataObject, dataType=c("founders","off
 #  an object of class population
 #
 ############################################################################################################
-add.to.populationSub.internal <- function(population, dataObject, dataType=c("founders","offspring$phenotypes","founders$groups","offspring$genotypes","maps$genetic","maps$physical"),verbose=FALSE,debugMode=0){
+add.to.populationSub.internal <- function(population, populationType, dataObject, dataType=c("founders","offspring$phenotypes","founders$groups","offspring$genotypes","maps$genetic","maps$physical"),verbose=FALSE,debugMode=0){
   if(dataType!="founders$groups"){
     if(class(dataObject)=="data.frame"){
       dataObject <- as.matrix(dataObject)
@@ -160,35 +161,7 @@ add.to.populationSub.internal <- function(population, dataObject, dataType=c("fo
     population <- add.to.populationSubPheno.internal(population,dataObject,dataType, verbose, debugMode)
   }else if(dataType=="offspring$genotypes"){
     if(!(is.null(dataObject))&&!is.null(dim(dataObject))){  
-      #Checking whether rows are numeric/convertable to numeric
-      rows <- unlist(lapply(c(1:nrow(dataObject)),add.to.populationSubGenoSub.internal,dataObject,verbose))
-      #Removes faulty rows
-      if(!(is.null(rows))){
-        if(verbose)cat("Following  rows are not numeric and cannot be converted into numeric:",rows," so will be removed.\n")
-        dataObject <- dataObject[-rows,]
-      }
-    
-      if(is.null(dim(dataObject))) stop("Not enough data to continue.\n")
-    
-      cur<- matrix(as.numeric(as.matrix(dataObject)),nrow(dataObject),ncol(dataObject))
-    
-      #Keep colnames
-      if(!is.null(colnames(dataObject))){
-        colnames(cur) <- colnames(dataObject)
-      }else{
-        colnames(cur) <- 1:ncol(cur)
-      }
-    
-      #Keep rownames
-      if(!is.null(rownames(dataObject))){
-        rownames(cur) <- rownames(dataObject)
-      }else{
-        rownames(cur) <- 1:nrow(cur)
-      }
-    
-      #Adding data to population
-      population$offspring$genotypes$real <- cur
-    
+      population$offspring$genotypes <- add.to.populationSubGeno.internal(dataObject,populationType,verbose)
     }else{
       stop("No data provided for offspring$genotypes !\n")
     }
@@ -305,9 +278,39 @@ add.to.populationSubPhenoSub.internal <- function(curRow,dataObject,verbose){
 #  number or NULL
 #
 ############################################################################################################
-add.to.populationSubGenoSub.internal <- function(curRow,dataObject,verbose){
+add.to.populationSubGeno.internal <- function(dataObject,populationType,verbose){
+    #Checking whether rows are numeric/convertable to numeric
+      rows <- unlist(lapply(c(1:nrow(dataObject)),add.to.populationSubGenoSub.internal,dataObject,verbose))
+      #Removes faulty rows
+      if(!(is.null(rows))){
+        if(verbose)cat("Following  rows are not numeric and cannot be converted into numeric:",rows," so will be removed.\n")
+        dataObject <- dataObject[-rows,]
+      }
+    
+      if(is.null(dim(dataObject))) stop("Not enough data to continue.\n")
+    
+      cur<- matrix(as.numeric(as.matrix(dataObject)),nrow(dataObject),ncol(dataObject))
+    
+      #Keep colnames
+      if(!is.null(colnames(dataObject))){
+        colnames(cur) <- colnames(dataObject)
+      }else{
+        colnames(cur) <- 1:ncol(cur)
+      }
+    
+      #Keep rownames
+      if(!is.null(rownames(dataObject))){
+        rownames(cur) <- rownames(dataObject)
+      }else{
+        rownames(cur) <- 1:nrow(cur)
+      }
+    
+      #Adding data to population
+      population$offspring$genotypes$real <- cur
+}
+add.to.populationSubGenoSub.internal <- function(curRow,dataObject,populationType,verbose){
   if(verbose&&curRow%%1000==0) cat("Processing row:",curRow,"\n")
-  if(!(numericCheck.internal(dataObject[curRow,],allow.na=TRUE))){
+  if(!(numericCheck.internal(dataObject[curRow,],populationType,allow.na=TRUE))){
     return(curRow)
   }else{
     return(NULL)

@@ -29,7 +29,7 @@ read.population <- function(offspring="offspring",founders="founders",map="maps"
   if(missing(founders_groups)){ 
     stop("Specify founders_groups!\n")
   }
-  populationType <- checkParameters.internal(populationType,c("riself", "f2", "bc", "risib"),"populationType")
+  populationType <- match.arg(populationType)
   #**********READING CHILDREN PHENOTYPIC DATA*************
   filename <- paste(offspring,"_phenotypes.txt",sep="")
   if(file.exists(filename)){
