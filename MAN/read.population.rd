@@ -45,14 +45,16 @@
 "marker4"        \tab 6.04480152688572     \tab 7.85859536346299    \tab 6.04480152688572      \tab 8.84494695336781      \tab 7.85859536346299    \cr
 "marker5"               \tab 7.72431126650435    \tab 7.72431126650435    \tab 17.85859536346299    \tab 7.85859536346299   \tab 7.85859536346299    \cr
 }
-Genotype file should be basically the same as phenotype file, but, apart from row/colnames, only three values are possible: 0,1 or NA. Example of genotype file structure:
+Genotype file should have basically the same structure as the phenotype file. The genotypes codes are exactly the same as in r/qtl - for F2 populations:
+AA - 1, AB - 2, BB - 3, not BB - 4, not AA - 5, missing - NA and for BC and RILs: AA - 1, BB - 2, missing - NA (see \code{\link[qtl]{read.cross}} for details.) 
+Example of genotype file structure:
   \tabular{lrrrrr}{
                       \tab "individual1"   \tab "individual2"   \tab "individual3"     \tab "individual4"     \tab "individual5"   \cr
-"marker"                    \tab 1    \tab 1      \tab 0      \tab 1    \tab 0    \cr
-"marker2"                   \tab NA      \tab 1    \tab 0      \tab 1      \tab 0    \cr
-"marker3"             \tab 1      \tab 1    \tab 1      \tab 1      \tab 0    \cr
-"marker4"        \tab 1      \tab NA    \tab 1      \tab 1      \tab 0    \cr
-"marker5"               \tab NA    \tab 1    \tab 1    \tab 1    \tab 0    \cr
+"marker"                    \tab 1    \tab 1      \tab 2      \tab 1    \tab 2    \cr
+"marker2"                   \tab NA      \tab 1    \tab 2      \tab 1      \tab 2    \cr
+"marker3"             \tab 1      \tab 1    \tab 1      \tab 1      \tab 2    \cr
+"marker4"        \tab 1      \tab NA    \tab 1      \tab 1      \tab 2    \cr
+"marker5"               \tab NA    \tab 1    \tab 1    \tab 1    \tab 2    \cr
 }
 Map files should have really simple structure, always three columns, no header. First column contains rownames, second - chromosome number and third - position on chromosome (in cM for genetic or Mbp for physical map).
 Secodn and third column can contain only numbers (any NA, Inf, etc, will cause dropping of file). Rownames should match either ones from genotype file or ones from phenotype file, depending which one you want to use 
