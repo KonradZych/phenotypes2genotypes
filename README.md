@@ -7,28 +7,29 @@ master branch can be installed into R, development branches may contain errors.
 
 Dependencies
 ------------
-R software environment from [www.r-project.org](http://www.r-project.org/ "www.r-project.org"), qtl package from [www.rqtl.org](http://www.rqtl.org, "www.rqtl.org") and RankProd 
-package from [www.bioconductor.org](http://www.bioconductor.org/packages/release/bioc/html/RankProd.html "www.bioconductor.org")
++ R software environment from [www.r-project.org](http://www.r-project.org/ "www.r-project.org")
++ qtl package from [www.rqtl.org](http://www.rqtl.org, "www.rqtl.org") also available on [CRAN](http://cran.r-project.org/web/packages/qtl/index.html "http://cran.r-project.org/web/packages/qtl/index.html")
++ mixtools package available on [CRAN](http://cran.r-project.org/web/packages/mixtools/index.html "http://cran.r-project.org/web/packages/mixtools/index.html")
+
+Optional:
+RankProd package from [www.bioconductor.org](http://www.bioconductor.org/packages/release/bioc/html/RankProd.html "www.bioconductor.org")
 
 Installation
 ------------
-Prepare your environment by following these two steps:
+1. Prepare your environment by following these two steps:
+  - Download and Install the R environment
+  - Install the qtl and RankProd packages into the R environment
 
-- Download and Install the R environment
-- Install the qtl and RankProd packages into the R environment
-
-Then install into R by using (from a terminal / commandline):
-
+2. Clone our repository...
 ```
-    $ git clone git://github.com/KonradZych/phenotypes2genotypes.git  # Download the repository
-    $ R CMD INSTALL phenotypes2genotypes                            # Install the package
+    git clone git://github.com/KonradZych/phenotypes2genotypes.git  
 ```
 
-However, then you will install current version, that could be under development. If you want the error and warning free version, click "Files to download", selected latest
-version (currently 0.4.4), download and unpack zip file and then install it:
+3. ... or download one of the file archives provided and unzip it.
 
+4. Install into R (from a terminal / commandline):
 ```
-    $ R CMD INSTALL phenotypes2genotypes
+    R CMD INSTALL phenotypes2genotypes                            
 ```
 
 Starting
@@ -36,33 +37,29 @@ Starting
 Load the library in the R interface by the following command (in R):
 
 ```R
-    $ > library(pheno2geno)                                   # Load the library
-    $ > ?pheno2geno                                           # Show the help
+    > library(pheno2geno)
 ```
 
-To read in data files, use the readFiles function:
+You can always access the help files of the package by typing:
+```R
+    > ?pheno2geno
+	> ?function.name
+```
+
+Or:
+```R
+    > help(pheno2geno)
+	> help(function.name)
+```
+
+To read in data files, use the read.population function:
 
 ```R    
-    $ > population <- readFiles(founders_groups=c(0,0,1,1))
+    > population <- read.population(founders_groups=c(0,0,1,1))
 ```
 
-We start by finding differentialy expressed phenotypes, by using wither RankProd 
-or a T-test:
-
-```R
-    $ > population <- findDiffExpressed(population)
-```
-
-Data files
---------
-Our workflow is based on assumption that data files provided to our software have 
-certain names (can be modified by user) and format (unmodifiable). To be sure your 
-analysis runs smoothly please acknowledge data format specification included in 
-readFiles help file in DETAILS section, you can access by:
-
-```R
-    $ > ?readFiles
-```
+In the help file of this function there is a description of expected file format. For further
+information see manual (to be finished).
 
 TODO
 ----
@@ -76,31 +73,31 @@ Want to contribute? Great!
 
 a) Clone it:
 
-```
-    $ git clone git://github.com/KonradZych/phenotypes2genotypes.git 
+```shell
+    git clone git://github.com/KonradZych/phenotypes2genotypes.git 
 ```
 
 b) Install it:
 
-```
-    $ R CMD INSTALL phenotypes2genotypes
+```shell
+    R CMD INSTALL phenotypes2genotypes
 ```
 
 c) Run it:
 
 ```R
-    $ > library(pheno2geno)
+    > library(pheno2geno)
 ```
 
 d) Modify some code. (Search -> 'TODO')
 
 e) Check it:
 
-```
-    $ R CMD check phenotypes2genotypes
+```shell
+    R CMD check phenotypes2genotypes
 ```
 
-f) If it's warning-free, go back to b) or submit a patch.
+f) If it's warning-free, go back to b) or submit a push request!
 
 You can also just post comments on code / commits.
 
