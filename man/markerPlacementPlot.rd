@@ -43,7 +43,6 @@ be selected with different threshold values.
 \examples{
 	data(yeastCross)
 	data(yeastPopulation)
-	yeastPopulation <- scan.qtls(yeastPopulation,verbose=TRUE,map="physical",step=2)
 	markerPlacementPlot(yeastPopulation,placeUsing="qtl",cross=yeastCross)
 	markerPlacementPlot(yeastPopulation,placeUsing="correlation",cross=yeastCross)
 }
