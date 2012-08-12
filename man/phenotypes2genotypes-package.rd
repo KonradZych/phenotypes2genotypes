@@ -2,14 +2,18 @@
 \alias{pheno2geno}
 \docType{package}
 \title{
-	Tools for the construction of genetic maps from phentype data
+	Pheno2geno - generating genetic markers and maps from molecular phenotypes.
 }
 \description{
-	Includes the following functionality:
+Pheno2geno is an R package to generate genetic markers and maps out of phenotype expression data. 
+Currently supported breeding schemes are: Recombinant Inbred Lines (RIL), F2 and 
+backcross (BC). 
+
+The most important functions:
 	\itemize{
-        \item \code{\link{read.population}} - Reading geno/phenotypoc files into R.
-		\item \code{\link{find.diff.expressed}} - Using Rank Prod to select differentially expressed genes.
-		\item \code{\link{generate.biomarkers}} - Convert a phenotypematrix into suitable genotypes and save it into R/qtl cross object.
+        \item \code{\link{read.population}} - Reads geno/phenotypic files into R.
+		\item \code{\link{find.diff.expressed}} - Uses Student t-test to select differentially expressed genes.
+		\item \code{\link{generate.biomarkers}} - Converts continous gene expression measurments into discrete genetic markers.
 		}
 }
 \details{
