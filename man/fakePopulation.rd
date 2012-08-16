@@ -34,7 +34,7 @@
 }
 
 \details{
-  This function fakes population object that can be used for further analysis. 
+  This function simulates a population object that can be used for further analysis.
 }
 
 \author{
