@@ -1,11 +1,10 @@
 \name{fake.population}
 \alias{fake.population}
 
-
-\title{Faking population object.}
+\title{Simulate a population object.}
 
 \description{
-  Simulates basic population object for use in examples.
+  Simulates a basic population object for use in examples.
 }
 
 \usage{
