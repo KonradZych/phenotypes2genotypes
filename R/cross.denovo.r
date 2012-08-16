@@ -78,17 +78,19 @@ assignFunction=c(assignMaximumNoConflicts,assignMaximum), reOrder=TRUE, use.orde
     nmarkersPerChr <- nmar(cross2)
     nChr <- length(nmarkersPerChr)
     for(i in 1:nChr){
-      cross <- orderMarkers(cross2,use.ripple=FALSE,chr=i,verbose=TRUE)
+      cross2 <- orderMarkers(cross2,use.ripple=TRUE,chr=i,verbose=TRUE)
       e1 <- proc.time()
       if(i<nChr) te <- ((e1-s0)[3]/sum(nmarkersPerChr[1:i]))*sum(nmarkersPerChr[(i+1):nChr])
       else te <- 0
       if(verbose) cat("Done ordering chromosome",i,"/",nChr,"Time remaining:",te,"seconds.\n")
     }
     e0 <- proc.time()
+    cross <- cross2
     if(verbose && debugMode==2)cat("Ordering markers inside the cross object done in:",(e0-s0)[3],"seconds.\n")
   }else{
     cross <- cross2
   }
+    cross <- est.map(cross)
     invisible(cross)
   }
 }
@@ -314,7 +316,7 @@ cross.denovo.internal<- function(population,  n.chr,  use=c("rf","geno"), verbos
   
   #*******CREATING NEW MAP*******
   s1 <- proc.time()
-  cross <- assignLinkageGroups(cross,n.chr)
+  cross <- assignLinkageGroups(cross,n.chr,use="rf")
   e1 <- proc.time()
   if(verbose && debugMode==2)cat("New map created in:",(e1-s1)[3],"seconds.\n")
   

@@ -23,7 +23,9 @@
 #  An object of class cross
 #
 markersCorPlot <- function(cross, population, map=c("genetic","physical"), cmBetween=25, comparisonMethod = c(sumMajorityCorrelation,majorityCorrelation,meanCorrelation,majorityOfMarkers), chr, show.legend=FALSE, verbose=TRUE){
-  map <- checkParameters.internal(map,c("genetic","physical"),"map")  # Check
+  if(missing(cross)) print("No cross object provided.")
+  if(missing(population)) print("No population object provided.")
+  map <- match.arg(map)  # Check
   if(map=="genetic"){
     originalMap <- population$maps$genetic
   }else{

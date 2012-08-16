@@ -35,7 +35,7 @@ generate.biomarkers <- function(population, threshold=0.05, overlapInd = 10, pro
   s<-proc.time()
   if(any(proportion < 1) || sum(proportion) != 100) stop("Wrong proportion paramete\n")
   if(overlapInd < 0 || overlapInd > ncol(population$offspring$phenotypes)) stop("overlapInd is a number (0,lenght of the row).")
-  if(verbose && debugMode==1) cat("findBiomarkers starting withour errors in checkpoint.\n")
+  if(verbose && debugMode==1) cat("generate.biomarkers starting withour errors in checkpoint.\n")
   
   #*******CONVERTING CHILDREN PHENOTYPIC DATA TO GENOTYPES*******
   s1 <- proc.time()
@@ -45,7 +45,7 @@ generate.biomarkers <- function(population, threshold=0.05, overlapInd = 10, pro
   
   #*******RETURNING CROSS OBJECT*******
   e<-proc.time()
-  if(verbose) cat("findBiomarkers done in",(e-s)[3],"seconds\n")
+  if(verbose) cat("generate.biomarkers done in",(e-s)[3],"seconds\n")
   invisible(population)
 }
 
