@@ -1,22 +1,24 @@
 \name{cross.denovo}
 \alias{cross.denovo}
-\alias{assignMaximumNoConflicts}
-\alias{assignMaximum}
-\alias{sumMajorityCorrelation}
-\alias{majorityCorrelation}
-\alias{meanCorrelation}
-\alias{majorityOfMarkers}
 
-
-\title{Creating de novo genetic map.}
+\title{Create a de novo genetic map from a population object.}
 
 \description{
-  Creating de novo genetic map form gene expression data.
+  Create a de novo genetic map from offspring phenotype data stored in a population object
 }
 
 \usage{
-cross.denovo(population, n.chr, orderUsingMap=FALSE, map=c("none","genetic","physical"), comparisonMethod = c(sumMajorityCorrelation,majorityCorrelation,meanCorrelation,majorityOfMarkers), 
-assignFunction=c(assignMaximumNoConflicts,assignMaximum), reOrder=TRUE, use.orderMarkers=FALSE, cross, verbose=FALSE, debugMode=0)
+cross.denovo(population, 
+             n.chr, 
+             orderUsingMap=FALSE, 
+             map=c("none", "genetic", "physical"), 
+             comparisonMethod = c(sumMajorityCorrelation, majorityCorrelation, meanCorrelation, majorityOfMarkers),
+             assignFunction=c(assignMaximumNoConflicts, assignMaximum), 
+             reOrder=TRUE, 
+             use.orderMarkers=FALSE, 
+             cross, 
+             verbose=FALSE, 
+             debugMode=0)
 	
 }
 
@@ -54,11 +56,12 @@ assignFunction=c(assignMaximumNoConflicts,assignMaximum), reOrder=TRUE, use.orde
 }
 
 \value{
-  An object of class \code{cross} or vector showing how chromosomes should be assigned, to be used with \code{\link{assignChrToMarkers}}
+  When reordering this will produce an object of class \code{cross}, otherwise (reOrder=FALSE) 
+  a chromosomes assignment vector (See \code{\link{assignChrToMarkers}} ) is produced which can be used to manual reorder the markers.
 }
 
 \details{
-cross.denovo function creates new genetic map using genotypes simulated by generate.biomarkers function. Then it uses information provided by user to
+cross.denovo function creates new genetic map using genotypes simulated by \code{\link{generate.biomarkers}} function. Then it uses information provided by user to
 assign number to newly created chromosomes.
 }
 \author{
