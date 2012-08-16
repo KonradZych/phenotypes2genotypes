@@ -1,10 +1,10 @@
 \name{assignChrToMarkers}
 \alias{assignChrToMarkers}
 
-\title{Create an ordering vector to assign markers to chromosomes}
+\title{Function that assigns a chromosome label to a genetic marker}
 
 \description{
- Creates an ordering vector out of the chromosome assignment vector.
+  This functions returns an ordering vector of markers for each marker it shows which chromosome the marker belongs to.
 }
 
 \usage{
@@ -21,10 +21,10 @@
 }
 
 \details{
-When using \link{cross.denovo} function with reOrder = FALSE, an chromosome assignment vector is created. 
-This vector shows how chromosomes from the created map are assigned to chromosomes from the original map. 
-This function transforms this vector and creates an ordering vector, that can be used by the
-\code{\link{reorganizeMarkersWithin}} function to reorder markers inside the cross object.
+  When using the \link{cross.denovo} function with the parameter reOrder = FALSE, its return value will be a chromosome assignment vector. 
+  This chromosome assignment vector shows how chromosomes from the created map are assigned to chromosomes from the original map. By using 
+  the assignChrToMarkers function the chromosome assignment vector is transformed into a marker ordering vector, which is used by
+  \code{\link{reorganizeMarkersWithin}} to reorder markers inside the cross object.
 }
 
 \author{
@@ -36,7 +36,7 @@ This function transforms this vector and creates an ordering vector, that can be
 	data(yeastCross)
 	data(yeastPopulation)
 	assignment <- cross.denovo(yeastPopulation,n.chr=16,verbose=TRUE,map="physical",comparisonMethod=sumMajorityCorrelation, use.orderMarkers=FALSE,reOrder=FALSE, cross=yeastCross)
-  assignment #boring,but expected
+  assignment
   ordering <- assignChrToMarkers(assignment,yeastCross)
 }
 
