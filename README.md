@@ -72,19 +72,19 @@ Contributing
 
 Want to contribute? Great!
 
-a) Clone it:
+a) Clone a local version of the Github repository to your own hard disk:
 
 ```shell
     git clone git://github.com/KonradZych/phenotypes2genotypes.git 
 ```
 
-b) Install it:
+b) Install it from the commandline by using the following command:
 
 ```shell
     R CMD INSTALL phenotypes2genotypes
 ```
 
-c) Run it:
+c) Then start R and load the library to make the functions available:
 
 ```R
     > library(pheno2geno)
@@ -92,7 +92,7 @@ c) Run it:
 
 d) Modify some code. (Search -> 'TODO')
 
-e) Check it:
+e) To check if the package is able to install in R:
 
 ```shell
     R CMD check phenotypes2genotypes
