@@ -2,10 +2,10 @@
 \alias{showRPpval}
 \alias{plotRPpval}
 
-\title{RP p-values visualisation}
+\title{Visualize the outcome of a Rank product analysis}
 
 \description{
-  Printing out/plotting p-values calculated by the find.diff.expressed function.
+  Visualize the outcome of a Rank product analysis, this function will print/plot p-values calculated by the find.diff.expressed function.
 }
 
 \usage{
@@ -14,9 +14,9 @@
 }
 
 \arguments{
-\item{population}{ An object of class \code{\link{population}}. See \code{\link{create.population}} for details. }
- \item{markers}{ Numbers of markers to be printed}
- \item{thresholdRange}{ Specifies in which range threshold will be checked (start, stop, step).}
+  \item{population}{ An object of class \code{\link{population}}. See \code{\link{create.population}} for details. }
+  \item{markers}{ Numbers of markers to be printed}
+  \item{thresholdRange}{ Specifies in which range threshold will be checked (start, stop, step).}
 }
 
 \value{
@@ -34,7 +34,6 @@
 }
 
 \examples{
-
 	data(yeastPopulation)
 	showRPpval(yeastPopulation)
 	plotRPpval(yeastPopulation)

@@ -1,10 +1,10 @@
 \name{write.population}
 \alias{write.population}
 
-\title{Saving population object to file.}
+\title{Writes a population object to file.}
 
 \description{
-  Saving object of class population to text file.
+  Writes a population object to file, for easy loading of intermediate data later.
 }
 
 \usage{
@@ -12,9 +12,9 @@
 }
 
 \arguments{
- \item{population}{ An object of class \code{population}. See \code{\link{create.population}} for details.}
- \item{outputFile}{ Name of the output file.}
- \item{verbose}{ Be verbose.}
+ \item{population}{ An object of class \code{population}. See \code{\link{create.population}} for details. }
+ \item{outputFile}{ Name of the output file. }
+ \item{verbose}{ Be verbose. }
 }
 
 \value{
@@ -22,7 +22,7 @@
 }
 
 \details{
-  This function is saving an object of class \code{population} into a file.
+  This function writes an object of class \code{population} into a file.
 }
 
 \author{
