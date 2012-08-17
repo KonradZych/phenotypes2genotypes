@@ -1,30 +1,30 @@
 \name{pull.biomarkers}
 \alias{pull.biomarkers}
 
-\title{Pull biomarkers.}
+\title{ Extract the detected biomarkers from a population object.}
 
 \description{
-  Pulling biomarkers from an object of class population.
+  Extract the detected biomarkers from a population object, or select biomarkers that best match a certain pattern.
 }
 
 \usage{
-  pull.biomarkers(population,pattern,verbose=FALSE)
+  pull.biomarkers(population, pattern, verbose=FALSE)
 }
 
 \arguments{
-\item{population}{ An object of class \code{\link{population}}. See \code{\link{create.population}} for details. }
- \item{pattern}{ Vector containg pattern to be matched in markers.}
- \item{verbose}{ Be verbose.}
+  \item{population}{ An object of class \code{\link{population}}. See \code{\link{create.population}} for details. }
+  \item{pattern}{ Vector containg pattern to be matched in markers.}
+  \item{verbose}{ Be verbose.}
 }
 
 \value{
-  Matrix of all markers/ vector with markers matching best pattern.
+  Matrix of all markers / vector with markers best matching the specified pattern.
 }
 
 \details{
 	After running \code{\link{generate.biomarkers}} function, biomarkers are stored inside \code{\link{population}} class object.
-  To get them out, one can use pull.biomarkers function. It will return matrix will all the markers or, if pattern is given,
-  vector with marker matching best.
+  Use the pull.biomarkers function to extract them from the popuklation object into a matrix. This will return a matrix will 
+  all the markers or when pattern is specified a vector with biomarkers best matching the pattern.
 }
 
 \author{
