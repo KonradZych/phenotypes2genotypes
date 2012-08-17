@@ -1,11 +1,10 @@
 \name{reorganizeMarkersWithin}
 \alias{reorganizeMarkersWithin}
 
-
 \title{Reorganize markers within cross object.}
 
 \description{
-  Reorder markers within cross object using supplied ordering vector.
+  Reorder markers within cross object using supplied marker ordering vector.
 }
 
 \usage{
@@ -14,7 +13,7 @@
 
 \arguments{
  \item{cross}{ An object of class \code{cross}. See \code{\link[qtl]{read.cross}} for details. }
- \item{ordering}{ Ordering vector - for every marker in the cross object (names) specifies chromosome, this marker shall be moved to.}
+ \item{ordering}{ Ordering vector specifying for every marker in the cross object (by name) which new chromosome this marker will be moved to.}
 }
 
 \value{
@@ -22,7 +21,8 @@
 }
 
 \details{
-  Functions reorders an object of class \code{cross} using supplied vector containing, for each of the markers, chromosome number this marker shall be moved to.
+  Functions reorders an object of class \code{cross} using the supplied marker ordering vector. This vector contains for each 
+  marker the chromosome number that this marker will be moved to.
 }
 
 \author{
@@ -42,9 +42,9 @@
 
 \seealso{
   \itemize{
-    \item{\code{\link{cross.denovo}}}{ -  Creating de novo genetic map or chromosome assignment vector.}
-    \item{\code{\link{cross.saturate}}}{ - Saturate existing map.}
-    \item{\code{\link{assignChrToMarkers}}}{ - Create ordering vector from chromosome assignment vector.}
+    \item{\code{\link{cross.denovo}}}{ -  Creating a de novo genetic map or a chromosome assignment vector. }
+    \item{\code{\link{cross.saturate}}}{ - Saturate an existing genetic map by using phenotype markers. }
+    \item{\code{\link{assignChrToMarkers}}}{ - Create ordering vector from chromosome assignment vector. }
   }
 }
 
