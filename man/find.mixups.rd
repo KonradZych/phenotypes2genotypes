@@ -13,20 +13,20 @@
 
 \arguments{
   \item{population}{ An object of class \code{\link{population}}. See \code{\link{create.population}} for details.}
-   \item{map}{ Which map ( from ones stored in population$maps) contains information about positions of original markers.}
- \item{n.qtls}{ Number of qtls that should be scanned.}
- \item{threshold}{ How big percentage of being flagged must be for the individual to be considered as a mix-up.}
- \item{verbose}{ Be verbose.}
+  \item{map}{ Which map should be used to determine the ordering / positions of original markers.}
+  \item{n.qtls}{ Number of qtls that we use for scanning for mix-ups. }
+  \item{threshold}{ When an individual is not matching the expected genotype more the x % of the time. The individual should be considered as being a mix-up. }
+  \item{verbose}{ Be verbose.}
 }
 
 \value{
-  An vactor with scores for each of the individuals. 
+  An vector with for each individual a percentage that shows how many times an individual didn't match the expected genotype.
 }
 
 \details{
-	This function scans data, looking for qtls. When requested number of qtls are found, they are being checked for outliers. If a value for an
-  individual is not in the range (mean - 3*sd, mean+3*sd) of its group, it's being flagged. For each of the markers, percentage of being flagged is returned.
-  Additionally, individuals crossing threshold set by the user are being printed out with the warning about possible mix-up.
+	After scanning for the requested number of QTLs, each individual is checked if their genotype is matching the expected genotype. If an 
+  individuals expression value is not in the range of the expected genotype (mean - 3*sd, mean+3*sd), it's receives a penaltie.
+  After which the individuals above the threshold are being printed with a warning about possible mix-up.
 }
 
 \author{

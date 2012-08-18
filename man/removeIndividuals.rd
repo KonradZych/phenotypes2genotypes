@@ -2,20 +2,20 @@
 \alias{remove.individuals}
 
 
-\title{Removing individuals.}
+\title{Remove individuals from a population object.}
 
 \description{
-  Removing individuals from population object.
+  Remove individuals from a population object.
 }
 
 \usage{
-	remove.individuals(population,individuals,verbose)
+	remove.individuals(population, individuals,verbose)
 }
 
 \arguments{
-\item{population}{ An object of class \code{\link{population}}. See \code{\link{create.population}} for details. }
- \item{individuals}{ individuals to be romved specified by their names}
-  \item{verbose}{ Be verbose}
+  \item{population}{ An object of class \code{\link{population}}. See \code{\link{create.population}} for details. }
+  \item{individuals}{ individuals to be removed specified by name }
+  \item{verbose}{ Be verbose. }
 }
 
 \value{
@@ -23,7 +23,7 @@
 }
 
 \details{
-  Function removes specified individuals from population object.
+  This function removes the specified individuals from a population object.
 }
 
 \author{
@@ -34,8 +34,7 @@
 \examples{
 	### simulating data
 	data(yeastPopulation)
-	yeastPopulation <- remove.individuals(yeastPopulation,"V87",TRUE)
-
+	yeastPopulation <- remove.individuals(yeastPopulation, "V87", TRUE)
 }
 
 \seealso{

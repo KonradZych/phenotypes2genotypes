@@ -4,11 +4,10 @@
 \alias{dataObject}
 \alias{dataType}
 
-
-\title{Adding data to population object}
+\title{Add additional data to a population object}
 
 \description{
-  Adding data to existing population object. Overwriting of existing data is permitted and will be executed with warning.
+  Add additional data to an existing population object. When adding data already present in the population objects the function will issue a warning.
 }
 
 \usage{
@@ -17,9 +16,9 @@
 
 \arguments{
  \item{population}{ An object of class \code{\link{population}}. See \code{\link{create.population}} for details. }
- \item{dataObject}{ A matrix of data to be put into ril object or a list of matrices (then dataType should be a list as well).}
+ \item{dataObject}{ A matrix of data to be put into the population objects, or a list of matrices.}
  \item{dataType}{ 
-	Specifies what kind of data dataObject contains:
+	Specifies what kind of data dataObject contains, if dataObject is a list of matrices to add, dataType should be a list of the same length:
 	\itemize{
 		\item{founders}{ - Founders phenotype.}
 		\item{offspring$phenotypes }{ - Offspring phenotype.}
@@ -30,7 +29,7 @@
 	}
  }
  \item{verbose}{ Be verbose.}
- \item{debugMode}{ 1: Print out checks, 2: print additional time information.}
+ \item{debugMode}{ Either use 1 or 2, this will modify the amount of information returned to the user. 1) Print out checks, 2) Print additional time information.}
 }
 
 \value{

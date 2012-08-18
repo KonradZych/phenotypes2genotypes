@@ -31,17 +31,17 @@
 There are three functions in pheno2geno to allow the user to manually reduce number of resulting chromosomes. 
 
 \emph{reduceChromosomesNumber}
-first of three functions is removing all but certain number of chromosomes. It depends only on ordering 
-of chromosomes, not on naming. 
+This functions removes all chromosomes from the cross object excluding chromosome 1 to numberOfChromosomes. It depends on the ordering 
+of chromosomes inside the cross object (which is based on the length of the chromosomes). 
 
 \emph{ removeChromosomes}
-In opposite to previous one, this function operates only on names of chromosomes to be removed, not 
-depending at all on the ordering.
+This function removes chromosomes from the cross object by name. Because of this it does not depend on the 
+ordering of the chromosomes inside the cross object.
 
 \emph{ removeTooSmallChromosomes}
-After using the formLinkageGroups function, the cross object often contains artifacts - linkage groups 
-containing only a few markers. Those linkage groups consist of markers with poor quality and should be 
-removed from the cross object, for this pheno2geno provides the removeTooSmallChromosomes function.
+This function is used to clean a cross object after using \code{\link{formLinkageGroups}}. FormLinkageGroups can 
+introduce small chromosomes as artifacts. These linkage groups consist of only a few markers with poor quality 
+and should be removed from the cross object.
 }
 
 \author{

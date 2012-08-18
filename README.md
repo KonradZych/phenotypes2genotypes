@@ -40,16 +40,18 @@ Load the library in the R interface by the following command (in R):
     > library(pheno2geno)
 ```
 
-You can always access the help files of the package by typing:
+You can always access the help files of the package or for any function by typing:
+
 ```R
     > ?pheno2geno
-	> ?function.name
+	  > ?function.name
 ```
 
 Or:
+
 ```R
     > help(pheno2geno)
-	> help(function.name)
+	  > help(function.name)
 ```
 
 To read in data files, use the read.population function:
@@ -58,8 +60,7 @@ To read in data files, use the read.population function:
     > population <- read.population(founders_groups=c(0,0,1,1))
 ```
 
-In the help file of this function there is a description of expected file format. For further
-information see manual (to be finished).
+In the help file of this function there is a description of the expected file formats. For more information see the manual.
 
 TODO
 ----
@@ -71,19 +72,19 @@ Contributing
 
 Want to contribute? Great!
 
-a) Clone it:
+a) Clone a local version of the Github repository to your own hard disk:
 
 ```shell
     git clone git://github.com/KonradZych/phenotypes2genotypes.git 
 ```
 
-b) Install it:
+b) Install it from the commandline by using the following command:
 
 ```shell
     R CMD INSTALL phenotypes2genotypes
 ```
 
-c) Run it:
+c) Then start R and load the library to make the functions available:
 
 ```R
     > library(pheno2geno)
@@ -91,7 +92,7 @@ c) Run it:
 
 d) Modify some code. (Search -> 'TODO')
 
-e) Check it:
+e) To check if the package is able to install in R:
 
 ```shell
     R CMD check phenotypes2genotypes

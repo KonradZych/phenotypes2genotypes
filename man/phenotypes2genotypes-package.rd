@@ -2,7 +2,7 @@
 \alias{pheno2geno}
 \docType{package}
 \title{
-	Pheno2geno - generating genetic markers and maps from molecular phenotypes.
+	Pheno2geno - Generating genetic markers and maps from molecular phenotypes.
 }
 \description{
 Pheno2geno is an R package to generate genetic markers and maps out of phenotype expression data. 
@@ -11,10 +11,12 @@ backcross (BC).
 
 The most important functions:
 	\itemize{
-        \item \code{\link{read.population}} - Reads geno/phenotypic files into R.
+    \item \code{\link{read.population}} - Reads geno/phenotypic files into R.
 		\item \code{\link{find.diff.expressed}} - Uses Student t-test to select differentially expressed genes.
 		\item \code{\link{generate.biomarkers}} - Converts continous gene expression measurments into discrete genetic markers.
-		}
+    \item \code{\link{cross.denovo}} - Create de novo genetic map or vector showing how chromosomes should be assigned.
+    \item \code{\link{cross.saturate}} - Saturate an existing genetic map by using phenotype markers.
+  }
 }
 \details{
 TODO
