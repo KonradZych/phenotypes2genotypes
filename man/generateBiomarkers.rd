@@ -8,7 +8,7 @@
 \alias{splitMethod}
 \alias{numberOfChromosomes}
 
-\title{Creating genotypes from children phenotypes}
+\title{Generate discrete biomarkers from the continuous phenotypes}
 
 \description{
   Creating genotype markers  out of gene expression data.
@@ -20,12 +20,13 @@
 
 \arguments{
   \item{population}{ An object of class \code{\link{population}}. See \code{\link{create.population}} for details. }
-  \item{threshold}{ If pval for gene (see \code{\link{find.diff.expressed}}) is lower that this value, we assume it is being diff. expressed.}
-  \item{overlapInd}{ Number of individuals that are allowed to overlap between genotypes.}
-  \item{proportion}{ Proportion of individuals expected to carrying a certain genotype.}
-  \item{margin}{ Proportion is allowed to varry between this margin (2 sided).}
-  \item{verbose}{ Be verbose.}
-  \item{debugMode}{ 1: Print out checks, 2: print additional time information.}
+  \item{threshold}{ If the pvalue for differential expression of this phenotype (see \code{\link{find.diff.expressed}}) is 
+  lower that the set threshold, the phenotype is kept in the analysis as being differentially expressed.}
+  \item{overlapInd}{ The number of individuals that are allowed in the overlap (undecided region) when assigning genotype encodings.}
+  \item{proportion}{ The expected proportion of individuals expected to carrying a certain genotype (e.g. c(50,50) in a recombinant inbred line).}
+  \item{margin}{ This specifies how much deviation from the expected proportion is allowed (2 sided). }
+  \item{verbose}{ Be verbose. }
+  \item{debugMode}{ Either use 1 or 2, this will modify the amount of information returned to the user. 1) Print out checks, 2) Print additional time information.}
 }
 
 \value{
@@ -33,7 +34,8 @@
 }
 
 \details{
-	This function, using Mixture Models splits offspring gene expression data into genotype markers, based on founders gene expression data.
+	This function, using the results from mixture modeling splits the continuous offspring phenotype data into discrete genotype markers, infering the 
+  direction from the founders expression data.
 }
 
 \author{
