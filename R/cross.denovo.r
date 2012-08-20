@@ -19,6 +19,7 @@
 cross.denovo <- function(population, n.chr, orderUsingMap=FALSE, map=c("none","genetic","physical"), comparisonMethod = c(sumMajorityCorrelation,majorityCorrelation,meanCorrelation,majorityOfMarkers), 
 assignFunction=c(assignMaximumNoConflicts,assignMaximum), reOrder=TRUE, use.orderMarkers=FALSE, cross, verbose=FALSE, debugMode=0){
   #checks
+  print("Correct version 1")
   if(missing(population)) stop("provide population object\n")
   check.population(population)
   map <- match.arg(map)
@@ -44,7 +45,14 @@ assignFunction=c(assignMaximumNoConflicts,assignMaximum), reOrder=TRUE, use.orde
 
   if(map=="none"){
     if(reOrder){
-      return(cross)
+        print(nmar(cross))
+        cross <- formLinkageGroups(cross,reorgMarkers=TRUE,max.rf=0.23)
+        print(nmar(cross))
+        cross <- reduceChromosomesNumber(cross, n.chr)
+        if(use.orderMarkers){
+          cross <- orderMarkers(cross,use.ripple=TRUE,verbose=TRUE)
+        }
+        return(cross)
     }else{
       assignment <- names(cross$geno)
       names(assignment) <- names(cross$geno)
@@ -65,41 +73,32 @@ assignFunction=c(assignMaximumNoConflicts,assignMaximum), reOrder=TRUE, use.orde
   
   assignment <- assignFunction(chromToChromArray)
   
-  if(!reOrder){
+  if(reOrder==FALSE){
     if(verbose)cat("Returning new ordering vector.\n")
     invisible(assignment)
   }else{
     ordering <- assignChrToMarkers(assignment,cross)
     if(verbose)cat("Applying new ordering to the cross object.\n")
-  if(use.orderMarkers){
-    if(verbose)cat("Ordering markers inside the cross object\n")
-    s0 <- proc.time()
-    nmarkersPerChr <- nmar(cross)
-    nChr <- length(nmarkersPerChr)
-    for(i in 1:nChr){
-      cross <- orderMarkers(cross,use.ripple=TRUE,chr=i,verbose=TRUE)
-      e1 <- proc.time()
-      if(i<nChr) te <- ((e1-s0)[3]/sum(nmarkersPerChr[1:i]))*sum(nmarkersPerChr[(i+1):nChr])
-      else te <- 0
-      if(verbose) cat("Done ordering chromosome",i,"/",nChr,"Time remaining:",te,"seconds.\n")
+    if(use.orderMarkers){
+        if(verbose)cat("Ordering markers inside the cross object\n")
+        s0 <- proc.time()
+        nmarkersPerChr <- nmar(cross)
+        nChr <- length(nmarkersPerChr)
+        e0 <- proc.time()
+        cross <- reorganizeMarkersWithin(cross,ordering)
+        for(i in 1:nChr){
+          cross <- orderMarkers(cross,use.ripple=TRUE,chr=i,verbose=TRUE)
+          e1 <- proc.time()
+          if(i<nChr) te <- ((e1-s0)[3]/sum(nmarkersPerChr[1:i]))*sum(nmarkersPerChr[(i+1):nChr])
+          else te <- 0
+          if(verbose) cat("Done ordering chromosome",i,"/",nChr,"Time remaining:",te,"seconds.\n")
+        }
+        if(verbose && debugMode==2)cat("Ordering markers inside the cross object done in:",(e0-s0)[3],"seconds.\n")
+    }else{
+      cross <- reorganizeMarkersWithin(cross,ordering)
     }
-    e0 <- proc.time()
-    cross <- reorganizeMarkersWithin(cross,ordering)
-    for(i in 1:nChr){
-      cross <- orderMarkers(cross,use.ripple=TRUE,chr=i,verbose=TRUE)
-      e1 <- proc.time()
-      if(i<nChr) te <- ((e1-s0)[3]/sum(nmarkersPerChr[1:i]))*sum(nmarkersPerChr[(i+1):nChr])
-      else te <- 0
-      if(verbose) cat("Done ordering chromosome",i,"/",nChr,"Time remaining:",te,"seconds.\n")
-    }
-    if(verbose && debugMode==2)cat("Ordering markers inside the cross object done in:",(e0-s0)[3],"seconds.\n")
-  }else{
-    cross <- reorganizeMarkersWithin(cross,ordering)
-  }
-    cross <- est.map(cross)
-    cross <- formLinkageGroups(cross,reorgMarkers=TRUE)
-    cross <- reduceChromosomesNumber(cross, n.chr)
-    invisible(cross)
+  cross <- est.map(cross)
+  invisible(cross)
   }
 }
 

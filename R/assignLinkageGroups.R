@@ -47,7 +47,6 @@ lowerTrng.internal <- function(dataRf){
       dataRf[j,i] <- dataRf[i,j]
     }
   }
-  print(dataRf[1:10,1:10])
   invisible(dataRf)
 }
 

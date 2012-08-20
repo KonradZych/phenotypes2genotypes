@@ -15,7 +15,7 @@
   \item{population}{ An object of class \code{\link{population}}. See \code{\link{create.population}} for details.}
   \item{map}{ Which map should be used to determine the ordering / positions of original markers.}
   \item{n.qtls}{ Number of qtls that we use for scanning for mix-ups. }
-  \item{threshold}{ When an individual is not matching the expected genotype more the x % of the time. The individual should be considered as being a mix-up. }
+  \item{threshold}{ When an individual is not matching the expected genotype more the x \% of the time. The individual should be considered as being a mix-up. }
   \item{verbose}{ Be verbose.}
 }
 
