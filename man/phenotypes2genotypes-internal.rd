@@ -41,6 +41,7 @@
 \alias{getPopulationOffsets.internal}
 \alias{check.population}
 \alias{fakePhysicalMap.internal}
+\alias{cleanRfs.internal }
 
 
 \alias{inRangeCheck.internal}

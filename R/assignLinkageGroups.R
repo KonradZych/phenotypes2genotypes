@@ -16,13 +16,39 @@
 #  an object of class cross
 #
 assignLinkageGroups <- function(cross, n.chr, use=c("geno","rf"), ...){
-  inListCheck.internal(use,"use",c("rf","geno"))
+  use <- match.arg(use)
   geno <- t(pull.geno(cross))
   inplaceOfNA <- min(geno,na.rm=T)-1
   geno[which(is.na(geno))] <- inplaceOfNA
   if(use=="geno") clustering <- kmeans(geno, n.chr, nstart=100, ...)
-  if(use=="rf") clustering <- kmeans(est.rf(cross)$rf, n.chr, nstart=100, ...)
+  if(use=="rf"){
+    cross <- cleanRfs.internal(cross)
+    clustering <- kmeans(lowerTrng.internal(est.rf(cross)$rf), n.chr, nstart=100, ...)
+  }
   reorganizeMarkersWithin(cross, clustering$cluster)
+}
+
+cleanRfs.internal <- function(cross){
+  dataRf <- est.rf(cross)$rf
+  dataRf <- lowerTrng.internal(dataRf)
+  minis <- apply(dataRf,1,min)
+  for(i in 1:nrow(dataRf)){
+    if(minis[i]>0.5){
+      cat("dropping",rownames(dataRf)[i],"min:",minis[i])
+      cross <- drop.markers(cross, rownames(dataRf)[i])
+    }
+  }
+  invisible(cross)
+}
+
+lowerTrng.internal <- function(dataRf){
+  for(i in 1:nrow(dataRf)){
+    for(j in 1:i){
+      dataRf[j,i] <- dataRf[i,j]
+    }
+  }
+  print(dataRf[1:10,1:10])
+  invisible(dataRf)
 }
 
 # reorganizeMarkersWithin
