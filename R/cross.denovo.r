@@ -16,27 +16,16 @@
 # OUTPUT:
 #  An object of class cross
 #
-cross.denovo <- function(population, n.chr, orderUsingMap=FALSE, map=c("none","genetic","physical"), comparisonMethod = c(sumMajorityCorrelation,majorityCorrelation,meanCorrelation,majorityOfMarkers), 
-assignFunction=c(assignMaximumNoConflicts,assignMaximum), reOrder=TRUE, use.orderMarkers=FALSE, cross, verbose=FALSE, debugMode=0){
+cross.denovo <- function(population, n.chr, map=c("none","genetic","physical"), comparisonMethod = c(sumMajorityCorrelation,majorityCorrelation,meanCorrelation,majorityOfMarkers), 
+assignFunction=c(assignMaximumNoConflicts,assignMaximum), reOrder=TRUE, use.orderMarkers=FALSE, verbose=FALSE, debugMode=0){
   #checks
-  print("Correct version 1")
   if(missing(population)) stop("provide population object\n")
   check.population(population)
   map <- match.arg(map)
   comparisonMethod <- defaultCheck.internal(comparisonMethod,"comparisonMethod",4,sumMajorityCorrelation)
   assignFunction <- defaultCheck.internal(assignFunction,"assignFunction",2,assignMaximumNoConflicts)
-  if(orderUsingMap==TRUE){
-    if(map=="none"){
-      stop("OrderUsingMap chosen but no map specified! Use map parameter to specify which map should be used!\n")
-    }else if(map=="genetic"){
-      cross <- genotypesToCross.internal(population,"simulated","map_genetic")
-      invisible(cross)
-    }else if(map=="physical"){
-      cross <- genotypesToCross.internal(population,"simulated","map_physical")
-      invisible(cross)
-    }
-  }
-  if(missing(cross)) cross <- cross.denovo.internal(population,n.chr,verbose=TRUE,debugMode=2)
+  cross <- cross.denovo.internal(population,n.chr,verbose=TRUE,debugMode=2)
+
   if(length(cross$geno)<=1){
     cat("Selected cross object contains too little chromosomes to assign them, returning it.")
     return(cross)
@@ -45,9 +34,7 @@ assignFunction=c(assignMaximumNoConflicts,assignMaximum), reOrder=TRUE, use.orde
 
   if(map=="none"){
     if(reOrder){
-        print(nmar(cross))
         cross <- formLinkageGroups(cross,reorgMarkers=TRUE,max.rf=0.23)
-        print(nmar(cross))
         cross <- reduceChromosomesNumber(cross, n.chr)
         if(use.orderMarkers){
           cross <- orderMarkers(cross,use.ripple=TRUE,verbose=TRUE)
@@ -59,7 +46,6 @@ assignFunction=c(assignMaximumNoConflicts,assignMaximum), reOrder=TRUE, use.orde
       return(assignment)
     }
   }
-  
   s1 <- proc.time()
   if(map=="genetic"){
     originalMap <- population$maps$genetic
@@ -69,10 +55,8 @@ assignFunction=c(assignMaximumNoConflicts,assignMaximum), reOrder=TRUE, use.orde
   }
   chromToChromArray <- comparisonMethod(cross, originalMap, population)
   e1 <- proc.time()
-  if(verbose)cat("Calculating correlation matrix done in:",(e1-s1)[3],"seconds.\n")
-  
+  if(verbose){cat("Calculating correlation matrix done in:",(e1-s1)[3],"seconds.\n")}
   assignment <- assignFunction(chromToChromArray)
-  
   if(reOrder==FALSE){
     if(verbose)cat("Returning new ordering vector.\n")
     invisible(assignment)
@@ -97,7 +81,8 @@ assignFunction=c(assignMaximumNoConflicts,assignMaximum), reOrder=TRUE, use.orde
     }else{
       cross <- reorganizeMarkersWithin(cross,ordering)
     }
-  cross <- est.map(cross)
+  cross <- replace.map(cross,est.map(cross))
+  print(nchr(cross))
   invisible(cross)
   }
 }

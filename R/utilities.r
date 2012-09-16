@@ -277,7 +277,7 @@ set.geno.from.cross <- function(cross,population,map=c("genetic","physical")){
   colnames(population$offspring$genotypes$real) = colnames(population$offspring$phenotypes)
   if(map=="genetic"){
     population$maps$genetic <- convertMap.internal(pull.map(cross))
-  }else{
+  }else if(map=="physical"){
     population$maps$physical <- convertMap.internal(pull.map(cross))
   }
   invisible(population)

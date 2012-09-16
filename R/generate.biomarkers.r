@@ -207,7 +207,7 @@ splitPheno.internal <- function(offspring, founders, overlapInd, proportion, mar
       markerNames <- c(markerNames,rownames(offspring)[x])
     }
     if(verbose){
-      if(x%%100==0){
+      if((done+x)%%100==0){
         e <- proc.time()
         te <- ((e-s)[3]/x)*(nrow(offspring)-x+left)
         cat("Done with marker",done+x,"/",nrow(offspring)+left+done,". Time remaining:",te,"s\n")

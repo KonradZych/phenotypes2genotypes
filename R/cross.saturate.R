@@ -25,7 +25,9 @@ cross.saturate <- function(population, cross, map=c("genetic","physical"), place
   if(!is.numeric(threshold)||is.na(threshold)) stop("Please provide correct threshold")
   if(threshold<=0){
     cat("WARNING: threshold too low, all possible markers will be selected\n")
-  }else if(threshold>=5){
+  }else if(placeUsing=="correlation" && threshold>=5){
+    cat("WARNING: threshold too high, few new markers will be selected\n")
+  }else if(placeUsing=="qtl" && threshold>=20){
     cat("WARNING: threshold too high, few new markers will be selected\n")
   }
   map <- match.arg(map)
@@ -46,7 +48,7 @@ cross.saturate <- function(population, cross, map=c("genetic","physical"), place
     }
   }else{
     population <- set.geno.from.cross(cross,population,map)
-    population <- scan.qtls(population)
+    population <- scan.qtls(population,map)
       aa <- tempfile()
       sink(aa)
       cross <- genotypesToCross.internal(population,"simulated",verbose=verbose,debugMode=debugMode)
@@ -138,7 +140,7 @@ rearrangeMarkers <- function(cross, population, populationType, cur_map, thresho
   returncross$pheno <- pull.pheno(cross)
   if(verbose) cat("Reordering markers \n")  
   for(x in 1:length(returncross$geno)){
-    if(verbose) cat("- chr ",x," -\n")    
+    #if(verbose) cat("- chr ",x," -\n")    
     oldnames <- rownames(cur_map)[which(cur_map[,1]==x)]
     oldpositions <- cur_map[oldnames,2]
     if(x %in% chr){
@@ -205,7 +207,7 @@ insertMarkers.internal <- function(newgeno,newpositions,oldgeno,oldpositions,pop
     curCor <- cor(newgeno[,i],oldgeno[,which.min(distance)],use="pair")
     #print(curCor)
     #print(toInv)
-    cat(i,":",which.min(distance),":",curCor,"\n")
+    #cat(i,":",which.min(distance),":",curCor,"\n")
     if(curCor<0.5 && curCor>(-0.3)){
       toRmv <- c(toRmv,i)
     }else if(curCor<(-0.3)){
@@ -316,7 +318,7 @@ scan.qtls <- function(population,map=c("genetic","physical"),step=0.1,verbose=FA
   if(is.null(population$offspring$genotypes$simulated)){
     stop("No simulated genotypes in population$offspring$genotypes$simulated, run generate.biomarkers first\n")
   }
-  map <- checkParameters.internal(map,c("genetic","physical"),"map")
+  map <- match.arg(map)
   if(map=="genetic"){
     matchingMarkers <- which(rownames(population$offspring$genotypes$real)%in%rownames(population$maps$genetic))
     if(length(matchingMarkers)<=0) stop("Marker names on the map and in the genotypes doesn't match!\n")

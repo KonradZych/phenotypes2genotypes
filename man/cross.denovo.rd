@@ -1,5 +1,11 @@
 \name{cross.denovo}
 \alias{cross.denovo}
+\alias{assignMaximum}
+\alias{assignMaximumNoConflicts}
+\alias{majorityCorrelation}
+\alias{majorityOfMarkers}
+\alias{meanCorrelation}
+\alias{sumMajorityCorrelation}
 
 \title{Create a de novo genetic map from a population object.}
 
@@ -10,13 +16,11 @@
 \usage{
 cross.denovo(population, 
              n.chr, 
-             orderUsingMap=FALSE, 
              map=c("none", "genetic", "physical"), 
              comparisonMethod = c(sumMajorityCorrelation, majorityCorrelation, meanCorrelation, majorityOfMarkers),
              assignFunction=c(assignMaximumNoConflicts, assignMaximum), 
              reOrder=TRUE, 
              use.orderMarkers=FALSE, 
-             cross, 
              verbose=FALSE, 
              debugMode=0)
 	
@@ -25,8 +29,7 @@ cross.denovo(population,
 \arguments{
 \item{population}{ An object of class \code{\link{population}}. See \code{\link{create.population}} for details. }
  \item{n.chr}{ Number of chromosomes expected on the map.}
- \item{orderUsingMap}{ Shall markers in the result cross be ordered using one of the maps in population object.}
- \item{map}{ Which map ( from ones stored in population$maps) should be used for assigning chromosomes on the created map.}
+ \item{map}{ Which map ( from ones stored in population$maps) should be used for assigning chromosomes on the created map. If none is selected - assigning is not performed.}
  \item{comparisonMethod}{ Method used to compare chromosomes from the new map to the original ones while assigning:
    \itemize{
     \item{sumMajorityCorrelation}{ - For each chromosome in cross for every marker checks the marker it is
@@ -50,7 +53,6 @@ cross.denovo(population,
  }
  \item{reOrder}{ if TRUE, cross object is returned, FALSE - vector showing how chromosomes should be assigned}
  \item{use.orderMarkers}{should markers on the newly created map be ordered using R/qtl orderMarkers funtion}
- \item{cross}{ An object of class \code{cross}. See \code{\link[qtl]{read.cross}} for details. }
  \item{verbose}{ be verbose}
  \item{debugMode}{ 1: Print our checks, 2: print additional time information }
 }

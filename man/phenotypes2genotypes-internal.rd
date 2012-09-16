@@ -5,6 +5,7 @@
 
 \alias{genotypesToCross.internal}
 \alias{writePhenotypes.internal}
+\alias{lowerTrng.internal}
 \alias{writeGenotypes.internal}
 \alias{writeGenotypesMap.internal}
 \alias{cleanNames.internal}
