@@ -133,7 +133,7 @@ generate.biomarkers.internal <- function(population, treshold, overlapInd, propo
   upBelowTreshold <- which(population$founders$RP$pval[,1] < treshold)
   upSelected <- upBelowTreshold[which(upBelowTreshold%in%upNotNull)]
   upParental <- population$founders$phenotypes[upSelected,]
-  rownamesUp <- rownames(downParental)
+  rownamesUp <- rownames(upParental)
   if(any(rownamesUp == "")) rownamesUp <- rownamesUp[-which(rownamesUp == "")]
   upRils <- population$offspring$phenotypes[rownamesUp,]
   ### down-regulated
