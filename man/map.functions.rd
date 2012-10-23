@@ -22,7 +22,7 @@
 }
 
 \author{
-	Danny Arends \email{Danny.Arends@gmail.com}, Konrad Zych \email{konrad.zych@uj.edu.pl}
+	Danny Arends \email{Danny.Arends@gmail.com}, Konrad Zych \email{k.zych@rug.nl}
 	Maintainer: Danny Arends \email{Danny.Arends@gmail.com}
 }
 

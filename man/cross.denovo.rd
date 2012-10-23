@@ -67,8 +67,8 @@ cross.denovo function creates new genetic map using genotypes simulated by \code
 assign number to newly created chromosomes.
 }
 \author{
-	Konrad Zych \email{konrad.zych@uj.edu.pl}, Danny Arends \email{Danny.Arends@gmail.com}
-	Maintainer: Konrad Zych \email{konrad.zych@uj.edu.pl}
+	Konrad Zych \email{k.zych@rug.nl}, Danny Arends \email{Danny.Arends@gmail.com}
+	Maintainer: Konrad Zych \email{k.zych@rug.nl}
 }
 
 \examples{

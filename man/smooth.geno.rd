@@ -38,8 +38,8 @@ needs to be saturated multiple times, \code{\link{set.geno.from.cross}} function
 }
 
 \author{
-	Konrad Zych \email{konrad.zych@uj.edu.pl}, Danny Arends \email{Danny.Arends@gmail.com}
-	Maintainer: Konrad Zych \email{konrad.zych@uj.edu.pl}
+	Konrad Zych \email{k.zych@rug.nl}, Danny Arends \email{Danny.Arends@gmail.com}
+	Maintainer: Konrad Zych \email{k.zych@rug.nl}
 }
 
 \examples{

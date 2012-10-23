@@ -71,8 +71,8 @@ Founders groups should be c(0,1,0,1,0,1) then. Always use only 0 and 1 to specif
 }
 
 \author{
-	Konrad Zych \email{konrad.zych@uj.edu.pl}, Danny Arends \email{Danny.Arends@gmail.com}
-	Maintainer: Konrad Zych \email{konrad.zych@uj.edu.pl}
+	Konrad Zych \email{k.zych@rug.nl}, Danny Arends \email{Danny.Arends@gmail.com}
+	Maintainer: Konrad Zych \email{k.zych@rug.nl}
 }
 
 \examples{

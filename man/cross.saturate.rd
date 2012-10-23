@@ -46,8 +46,8 @@ A correlation matrix between those two sets of markers is made, and new markers 
 }
 
 \author{
-	Konrad Zych \email{konrad.zych@uj.edu.pl}, Danny Arends \email{Danny.Arends@gmail.com}
-	Maintainer: Konrad Zych \email{konrad.zych@uj.edu.pl}
+	Konrad Zych \email{k.zych@rug.nl}, Danny Arends \email{Danny.Arends@gmail.com}
+	Maintainer: Konrad Zych \email{k.zych@rug.nl}
 }
 
 \examples{

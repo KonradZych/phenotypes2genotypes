@@ -44,8 +44,8 @@ Plots markers from moth old and new map as points and in the background - compar
 }
 
 \author{
-	Konrad Zych \email{konrad.zych@uj.edu.pl}, Danny Arends \email{Danny.Arends@gmail.com}
-	Maintainer: Konrad Zych \email{konrad.zych@uj.edu.pl}
+	Konrad Zych \email{k.zych@rug.nl}, Danny Arends \email{Danny.Arends@gmail.com}
+	Maintainer: Konrad Zych \email{k.zych@rug.nl}
 }
 
 \examples{
