@@ -80,7 +80,7 @@ print.population <- function(x, ...){
     stop("No phenotype data for offspring, this is not a valid population object\n")
   }
 
-  if(!(is.null(x$founders))){
+  if(!(x$flags=="noParents")){
     cat("Founders (",ncol(x$founders$phenotypes),"):\n",sep="",...)
     if(!(is.null(x$founders$phenotypes))){
       cat("\tPhenotypes:",nrow(x$founders$phenotypes),"\n",...)
@@ -98,7 +98,7 @@ print.population <- function(x, ...){
       stop("No information about founders groups\n",...)
     }
   }else{
-    stop("No phenotype data for founders, this is not a valid population object\n")
+    cat("No phenotype data for founders, it will be simulated.")
   }
 }
 

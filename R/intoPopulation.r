@@ -34,7 +34,13 @@ create.population <- function(offspring_phenotypes, founders, founders_groups, o
     population <- add.to.populationSub.internal(population, populationType, offspring_phenotypes, "offspring$phenotypes", verbose, debugMode)
   }
   if(missing(founders)){
-    stop("No founders phenotype data provided!\n")
+    cat("No founders phenotype data provided, it will be simulated!\n")
+    offsprings <- population$offspring$phenotypes
+    population$founders$phenotypes <- t(apply(offsprings,1,function(x){c(mean(sort(x)[1:(ncol(offsprings)/2)]),mean(sort(x)[2:(ncol(offsprings)/2)+1]),
+    mean(sort(x)[3:(ncol(offsprings)/2)+2]),mean(sort(x)[(ncol(offsprings)/2)+1:ncol(offsprings)]),mean(sort(x)[(ncol(offsprings)/2):ncol(offsprings)-1]),
+    mean(sort(x)[(ncol(offsprings)/2)-1:ncol(offsprings)-2]))}))
+    population$flags <- "noParents"
+    population <- add.to.populationSub.internal(population, populationType,founders, "founders", verbose, debugMode)
   }else{
     n.childrenNotInParental <- sum(!(rownames(founders)%in%rownames(population$offspring$phenotypes)))
     if(n.childrenNotInParental==nrow(founders)){

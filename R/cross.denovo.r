@@ -24,6 +24,7 @@ assignFunction=c(assignMaximumNoConflicts,assignMaximum), reOrder=TRUE, use.orde
   map <- match.arg(map)
   comparisonMethod <- defaultCheck.internal(comparisonMethod,"comparisonMethod",4,sumMajorityCorrelation)
   assignFunction <- defaultCheck.internal(assignFunction,"assignFunction",2,assignMaximumNoConflicts)
+  if(population$flags=="noParents") n.chr <- n.chr*2
   cross <- cross.denovo.internal(population,n.chr,verbose=TRUE,debugMode=2)
 
   if(length(cross$geno)<=1){
@@ -36,6 +37,7 @@ assignFunction=c(assignMaximumNoConflicts,assignMaximum), reOrder=TRUE, use.orde
     if(reOrder){
         cross <- formLinkageGroups(cross,reorgMarkers=TRUE,max.rf=0.23)
         cross <- reduceChromosomesNumber(cross, n.chr)
+        if(population$flags=="noParents") cross <- merge.inverted(cross)
         if(use.orderMarkers){
           cross <- orderMarkers(cross,use.ripple=TRUE,verbose=TRUE)
         }
@@ -124,6 +126,21 @@ assignMaximumNoConflicts <- function(x, use=2){
       }
     }
   invisible(assignment)
+}
+
+merge.inverted <- function(cross){
+  chr.correlations <- matrix(0,nchr(cross),nchr(cross))
+  mar.correlations <- cor(pull.geno(cross),use="pair")
+  rownames(mar.correlations) <- markernames(cross)
+  colnames(mar.correlations) <- markernames(cross)
+  for(chr in 1:nchr(cross)){
+    markers1 <- colnames(cross$geno[[chr]]$data)
+    for(chr2 in 1:nchr(cross)){
+      markers2 <- colnames(cross$geno[[chr2]]$data)
+      chr.correlations[chr,chr2] <- mean(mar.correlations[markers1,markers2],na.rm=TRUE)
+    }
+  }
+  invisible(cross)
 }
 
 ############################################################################################################
