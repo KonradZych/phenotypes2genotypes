@@ -33,8 +33,10 @@
 }
 
 \examples{
-	data(yeastPopulation)
-	yeastPopulation <- scan.qtls(yeastPopulation,verbose=TRUE,map="physical",step=2)
+  \donttest{
+  data(yeastPopulation)
+  yeastPopulation <- scan.qtls(yeastPopulation,verbose=TRUE,map="physical",step=0)
+  }
 }
 
 \seealso{
