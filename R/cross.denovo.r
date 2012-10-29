@@ -140,6 +140,15 @@ merge.inverted <- function(cross){
       chr.correlations[chr,chr2] <- mean(mar.correlations[markers1,markers2],na.rm=TRUE)
     }
   }
+  ordering <- vector(mode="numeric",length=sum(nmar(cross)))
+  names(ordering) <- markernames(cross)
+  for(chr in 1:nchr(cross)/2){
+    chr2 <- which.min(chr.correlations[chr,])
+    markers <- colnames(cross$geno[[chr]]$data)
+    markers <- c(markers,colnames(cross$geno[[chr2]]$data))
+    ordering[markers] <- chr
+  }
+  cross <- reorganizeMarkersWithin(cross, ordering)
   invisible(cross)
 }
 

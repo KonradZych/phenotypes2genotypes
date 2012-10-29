@@ -36,11 +36,13 @@ create.population <- function(offspring_phenotypes, founders, founders_groups, o
   if(missing(founders)){
     cat("No founders phenotype data provided, it will be simulated!\n")
     offsprings <- population$offspring$phenotypes
-    population$founders$phenotypes <- t(apply(offsprings,1,function(x){c(mean(sort(x)[1:(ncol(offsprings)/2)]),mean(sort(x)[2:(ncol(offsprings)/2)+1]),
-    mean(sort(x)[3:(ncol(offsprings)/2)+2]),mean(sort(x)[(ncol(offsprings)/2)+1:ncol(offsprings)]),mean(sort(x)[(ncol(offsprings)/2):ncol(offsprings)-1]),
-    mean(sort(x)[(ncol(offsprings)/2)-1:ncol(offsprings)-2]))}))
+    half <-floor(ncol(offsprings)/2)
+    founders <- t(apply(offsprings,1,function(x){c(mean(sort(x)[1:half]),mean(sort(x)[2:(half+1)]),
+    mean(sort(x)[3:(half+2)]),mean(sort(x)[(half+1):ncol(offsprings)]),mean(sort(x)[(half):ncol(offsprings)-1]),
+    mean(sort(x)[(half-1):ncol(offsprings)-2]))}))
     population$flags <- "noParents"
-    population <- add.to.populationSub.internal(population, populationType,founders, "founders", verbose, debugMode)
+    founders_groups <- c(0,0,0,1,1,1)
+    population <- add.to.populationSub.internal(population, populationType, founders, "founders", verbose, debugMode)
   }else{
     n.childrenNotInParental <- sum(!(rownames(founders)%in%rownames(population$offspring$phenotypes)))
     if(n.childrenNotInParental==nrow(founders)){
@@ -158,6 +160,7 @@ add.to.population <- function(population, dataObject, dataType=c("founders","off
 add.to.populationSub.internal <- function(population, populationType=c("riself", "f2", "bc", "risib"), dataObject, dataType=c("founders","offspring$phenotypes","founders$groups","offspring$genotypes","maps$genetic","maps$physical"),verbose=FALSE,debugMode=0){
   dataType <- match.arg(dataType)
   populationType <- match.arg(populationType)
+  if(missing(dataObject)) stop("dataObject is missing\n")
   if(dataType!="founders$groups"){
     if(class(dataObject)=="data.frame"){
       dataObject <- as.matrix(dataObject)
