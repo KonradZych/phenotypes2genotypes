@@ -1,10 +1,10 @@
 Package: pheno2geno
-Version: 1.1.0
-Date: Oct 2012
+Version: 1.0.0
+Date: Sep 2012
 Title: Pheno2Geno - Generating genetic markers and maps from molecular phenotypes
-Author: Konrad Zych <k.zych@rug.nl> and Danny Arends <danny.arends@gmail.com> 
-Maintainer: Konrad Zych <k.zych@rug.nl>
+Author: Konrad Zych <konradzych2@gmail.com> and Danny Arends <danny.arends@gmail.com> 
+Maintainer: Konrad Zych <konradzych2@gmail.com>
 Description: Pheno2Geno is an R package for the computational generation genetic markers and maps from molecular phenotypes
-Depends: R (>= 2.10.1), graphics, stats, utils, qtl, mixtools
+Depends: R (>= 2.14.1), graphics, stats, utils, qtl, VGAM, mixtools
 Suggests: RankProd
 License: GPL-3
