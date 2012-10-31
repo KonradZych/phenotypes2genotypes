@@ -17,7 +17,7 @@ mlogit    <- function(x, ...){ require(VGAM); invisible(return(logit(x, ...))) }
 transform <- function(matrix, transformations=c("nothing","log","sqrt","reciprocal","probit","logit"), ... , verbose=TRUE){
   options <- c("nothing","log","sqrt","reciprocal","probit","logit")
   chosen  <- pmatch(transformations, options)
-  methods <- c(donothing,msqrt,mlog,reciproce,mprobit,mlogit)
+  methods <- c(donothing, mlog, msqrt, reciproce, mprobit, mlogit)
 
   res <- vector("list",length(methods))
   idx <- 1
