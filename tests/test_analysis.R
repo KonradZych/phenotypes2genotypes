@@ -11,10 +11,10 @@ population <- generate.biomarkers(population, threshold=0.1, verbose=T, debug=2)
 population <- scan.qtls(population,map="physical",verbose=T,step=2)
 
 #with parental data
-populationNoParental <- create.population(children,offspring_genotypes=genotypes,maps_physical=map,verbose=TRUE)
-populationNoParental <- find.diff.expressed(populationNoParental)
-populationNoParental <- generate.biomarkers(populationNoParental, threshold=0.1, verbose=T, debug=2)
-populationNoParental <- scan.qtls(populationNoParental,map="physical",verbose=T,step=2)
+#populationNoParental <- create.population(children,offspring_genotypes=genotypes,maps_physical=map,verbose=TRUE)
+#populationNoParental <- find.diff.expressed(populationNoParental)
+#populationNoParental <- generate.biomarkers(populationNoParental, threshold=0.1, verbose=T, debug=2)
+#populationNoParental <- scan.qtls(populationNoParental,map="physical",verbose=T,step=2)
 
 ####THREE WAYS TO ASSIGN CHROMOSOMES
 set.seed(101010)
