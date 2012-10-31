@@ -98,7 +98,7 @@ print.population <- function(x, ...){
       stop("No information about founders groups\n",...)
     }
   }else{
-    cat("No phenotype data for founders, it will be simulated.")
+    cat("Data for founders was simulated.\n")
   }
 }
 
