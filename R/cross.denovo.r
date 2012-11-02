@@ -17,14 +17,15 @@
 #  An object of class cross
 #
 cross.denovo <- function(population, n.chr, map=c("none","genetic","physical"), comparisonMethod = c(sumMajorityCorrelation,majorityCorrelation,meanCorrelation,majorityOfMarkers), 
-assignFunction=c(assignMaximumNoConflicts,assignMaximum), reOrder=TRUE, use.orderMarkers=FALSE, verbose=FALSE, debugMode=0){
+assignFunction=c(assignMaximumNoConflicts,assignMaximum), reOrder=TRUE, use.orderMarkers=FALSE, verbose=FALSE, debugMode=0, ...){
   #checks
   if(missing(population)) stop("provide population object\n")
   check.population(population)
   map <- match.arg(map)
   comparisonMethod <- defaultCheck.internal(comparisonMethod,"comparisonMethod",4,sumMajorityCorrelation)
   assignFunction <- defaultCheck.internal(assignFunction,"assignFunction",2,assignMaximumNoConflicts)
-  if(population$flags=="noParents") n.chr <- n.chr*2
+  if("noParents" %in% population$flag) n.chr <- n.chr*2 
+  #print(n.chr)
   cross <- cross.denovo.internal(population,n.chr,verbose=TRUE,debugMode=2)
 
   if(length(cross$geno)<=1){
@@ -35,9 +36,11 @@ assignFunction=c(assignMaximumNoConflicts,assignMaximum), reOrder=TRUE, use.orde
 
   if(map=="none"){
     if(reOrder){
-        cross <- formLinkageGroups(cross,reorgMarkers=TRUE,max.rf=0.23)
+        cross <- formLinkageGroups(cross,reorgMarkers=TRUE,...)
         cross <- reduceChromosomesNumber(cross, n.chr)
-        if(population$flags=="noParents") cross <- merge.inverted(cross)
+        if("noParents" %in% population$flags){
+          cross <- mergeInverted(cross)
+        }
         if(use.orderMarkers){
           cross <- orderMarkers(cross,use.ripple=TRUE,verbose=TRUE)
         }
@@ -50,9 +53,11 @@ assignFunction=c(assignMaximumNoConflicts,assignMaximum), reOrder=TRUE, use.orde
   }
   s1 <- proc.time()
   if(map=="genetic"){
+    if(is.null(population$maps$genetic==NULL)) stop("No genetic map provided in population$maps$genetic\n")
     originalMap <- population$maps$genetic
   }
   if(map=="physical"){
+    if(is.null(population$maps$physical)) stop("No physical map provided in population$maps$physical\n")
     originalMap <- population$maps$physical
   }
   chromToChromArray <- comparisonMethod(cross, originalMap, population)
@@ -128,7 +133,7 @@ assignMaximumNoConflicts <- function(x, use=2){
   invisible(assignment)
 }
 
-merge.inverted <- function(cross){
+mergeInverted <- function(cross){
   chr.correlations <- matrix(0,nchr(cross),nchr(cross))
   mar.correlations <- cor(pull.geno(cross),use="pair")
   rownames(mar.correlations) <- markernames(cross)
@@ -142,7 +147,7 @@ merge.inverted <- function(cross){
   }
   ordering <- vector(mode="numeric",length=sum(nmar(cross)))
   names(ordering) <- markernames(cross)
-  for(chr in 1:nchr(cross)/2){
+  for(chr in 1:floor(nchr(cross)/2)){
     chr2 <- which.min(chr.correlations[chr,])
     markers <- colnames(cross$geno[[chr]]$data)
     markers <- c(markers,colnames(cross$geno[[chr2]]$data))

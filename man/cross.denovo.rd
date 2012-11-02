@@ -22,8 +22,8 @@ cross.denovo(population,
              reOrder=TRUE, 
              use.orderMarkers=FALSE, 
              verbose=FALSE, 
-             debugMode=0)
-	
+             debugMode=0,
+            ...)
 }
 
 \arguments{
@@ -55,6 +55,7 @@ cross.denovo(population,
  \item{use.orderMarkers}{should markers on the newly created map be ordered using R/qtl orderMarkers funtion}
  \item{verbose}{ be verbose}
  \item{debugMode}{ 1: Print our checks, 2: print additional time information }
+ \item{...}{ parameters passed directly to the \code{\link[qtl]{formLinkageGroups}} function}
 }
 
 \value{
