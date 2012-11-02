@@ -18,9 +18,6 @@
 cross.saturate <- function(population, cross, map=c("genetic","physical"), placeUsing=c("qtl","correlation"), threshold=3, chr, use.orderMarkers=FALSE, verbose=FALSE, debugMode=0){
   if(missing(population)) stop("Please provide a population object\n")
   populationType <- class(population)[2]
-  if(is.null(population$offspring$genotypes$real)){
-    stop("No original genotypes in population$offspring$genotypes$real, load them in using add.to.population\n")
-  }
   check.population(population)
   if(!is.numeric(threshold)||is.na(threshold)) stop("Please provide correct threshold")
   if(threshold<=0){
@@ -33,6 +30,9 @@ cross.saturate <- function(population, cross, map=c("genetic","physical"), place
   map <- match.arg(map)
   placeUsing <- checkParameters.internal(placeUsing,c("qtl","correlation"),"placeUsing")
   if(missing(cross)){
+    if(is.null(population$offspring$genotypes$real)){
+      stop("No original genotypes in population$offspring$genotypes$real, load them in using add.to.population\n")
+    }
     if(is.null(population$offspring$genotypes$simulated)){
       stop("No genotype data in population$offspring$genotypes$simulated, run generate.biomarkers first\n")
     }else{

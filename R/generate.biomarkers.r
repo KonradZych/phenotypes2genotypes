@@ -124,7 +124,7 @@ selectTopMarker.internal <- function(markers,pattern,verbose){
 generate.biomarkers.internal <- function(population, treshold, overlapInd, proportion, margin, verbose=FALSE, debugMode=0){
   ### initialization
   populationType <- class(population)[2]
-  if(verbose && debugMode==1) cat("convertfindBiomarkers starting.\n")
+  if(verbose && debugMode==1) cat("generate.biomarkers.internal starting.\n")
   output <- NULL
   markerNames <- NULL 
   ### selection step
@@ -132,6 +132,7 @@ generate.biomarkers.internal <- function(population, treshold, overlapInd, propo
   upNotNull <- which(population$founders$RP$pval[,1] > 0)
   upBelowTreshold <- which(population$founders$RP$pval[,1] < treshold)
   upSelected <- upBelowTreshold[which(upBelowTreshold%in%upNotNull)]
+  print(length(upSelected))
   upParental <- population$founders$phenotypes[upSelected,]
   rownamesUp <- rownames(upParental)
   if(any(rownamesUp == "")) rownamesUp <- rownamesUp[-which(rownamesUp == "")]
@@ -140,6 +141,7 @@ generate.biomarkers.internal <- function(population, treshold, overlapInd, propo
   downNotNull <- which(population$founders$RP$pval[,2] > 0)
   downBelowTreshold <- which(population$founders$RP$pval[,2] < treshold)
   downSelected <- downBelowTreshold[which(downBelowTreshold%in%downNotNull)]
+  print(length(downSelected))
   downParental <- population$founders$phenotypes[downSelected,]
   rownamesDown <- rownames(downParental)
   if(any(rownamesDown == "")) rownamesDown <- rownamesDown[-which(rownamesDown == "")]
