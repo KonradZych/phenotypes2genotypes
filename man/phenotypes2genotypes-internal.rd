@@ -86,6 +86,14 @@
 \alias{insertMarkers.internal}
 \alias{printGeno.internal}
 
+\alias{mergeInverted}
+\alias{donothing}
+\alias{msqrt}
+\alias{mlog}
+\alias{reciproce}
+\alias{mprobit}
+\alias{mlogit}
+
 \title{Internal pheno2geno functions}
 
 \description{
