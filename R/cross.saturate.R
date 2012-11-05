@@ -15,7 +15,7 @@
 # OUTPUT:
 #  An object of class cross
 #
-cross.saturate <- function(population, cross, map=c("genetic","physical"), placeUsing=c("qtl","correlation"), threshold=3, chr, use.orderMarkers=FALSE, verbose=FALSE, debugMode=0){
+cross.saturate <- function(population, cross, map=c("genetic","physical"), placeUsing=c("qtl","correlation"), threshold=3, chr, use.orderMarkers=FALSE, saveGff, verbose=FALSE, debugMode=0){
   if(missing(population)) stop("Please provide a population object\n")
   populationType <- class(population)[2]
   check.population(population)
