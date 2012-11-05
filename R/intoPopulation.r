@@ -2,7 +2,7 @@
 # add.to.population.R
 #
 # Copyright (c) 2010-2012 GBIC: Danny Arends, Konrad Zych and Ritsert C. Jansen
-# last modified May, 2012
+# last modified Nov, 2012
 # first written Mar, 2011
 # Contains: create.population, add.to.population, add.to.populationSub.internal
 #           add.to.populationSubPheno.internal, add.to.populationSubGeno.internal
@@ -23,7 +23,8 @@
 # OUTPUT:
 #  An object of class population
 #
-create.population <- function(offspring_phenotypes, founders, founders_groups, offspring_genotypes, maps_genetic, maps_physical, populationType=c("riself", "f2", "bc", "risib"), no.warn=FALSE, verbose=FALSE,debugMode=0){
+create.population <- function(offspring_phenotypes, founders, founders_groups, offspring_genotypes, maps_genetic, maps_physical,
+  populationType=c("riself", "f2", "bc", "risib"), no.warn=FALSE, markerPosistions=FALSE, verbose=FALSE, debugMode=0){
   if(verbose && debugMode==1) cat("create.population starting.\n")
   s <- proc.time()
   population <- NULL
@@ -40,7 +41,7 @@ create.population <- function(offspring_phenotypes, founders, founders_groups, o
     founders <- t(apply(offsprings,1,function(x){c(mean(sort(x)[1:half]),mean(sort(x)[2:(half+1)]),
     mean(sort(x)[3:(half+2)]),mean(sort(x)[(half+1):ncol(offsprings)]),mean(sort(x)[(half):ncol(offsprings)-1]),
     mean(sort(x)[(half-1):ncol(offsprings)-2]))}))
-    population$flags <- "noParents"
+    population$flags <- c(population$flags,"noParents")
     founders_groups <- c(0,0,0,1,1,1)
     population <- add.to.populationSub.internal(population, populationType, founders, "founders", verbose, debugMode)
   }else{
@@ -81,6 +82,13 @@ create.population <- function(offspring_phenotypes, founders, founders_groups, o
   class(population) <- c("population", populationType)
   e <- proc.time()
   check.population(population)
+  if(markerPosistions){
+    if(!(any(rownames(population$offspring$phenotypes)%in%rownames(population$maps$physical)))){
+      warning("markerPosistions set to TRUE but postion is not provided for any of the markers - they won't be used!\n")
+    }else{
+      population$flags <- c(population$flags,"markerPosistions")
+    }
+  }
   if(verbose){
     if(debugMode==2){
       cat("create.population done in:",(e-s)[3],"seconds.\n")

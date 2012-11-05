@@ -2,9 +2,9 @@
 # readFiles.r
 #
 # Copyright (c) 2010-2012 GBIC: Danny Arends, Konrad Zych and Ritsert C. Jansen
-# last modified May, 2012
+# last modified Nov, 2012
 # first written Nov, 2011
-# Contains: read.population mapMarkers.internal, gffParser, correctRowLoc.internal
+# Contains: read.population mapMarkers.internal, correctRowLoc.internal
 #           probesLocation.internal, orrectRowGff.internal
 #
 
@@ -22,13 +22,10 @@
 # OUTPUT:
 #   An object of class population 
 #
-read.population <- function(offspring="offspring",founders="founders",map="maps",founders_groups,populationType=c("riself", "f2", "bc", "risib"),verbose=FALSE,debugMode=0){
+read.population <- function(offspring="offspring",founders="founders",map="maps",founders_groups,populationType=c("riself", "f2", "bc", "risib"), markerPosistions=FALSE,verbose=FALSE,debugMode=0){
   s <- proc.time()
   if(verbose && debugMode==1) cat("read.population starting.\n")
   population <- NULL
-  if(missing(founders_groups)){ 
-    stop("Specify founders_groups!\n")
-  }
   populationType <- match.arg(populationType)
   #**********READING CHILDREN PHENOTYPIC DATA*************
   filename <- paste(offspring,"_phenotypes.txt",sep="")
@@ -44,7 +41,17 @@ read.population <- function(offspring="offspring",founders="founders",map="maps"
   
   #**********READING PARENTAL PHENOTYPIC DATA*************
   filename <- paste(founders,"_phenotypes.txt",sep="")
-  if(file.exists(filename)){
+  if(missing(founders)){
+    cat("No founders phenotype data provided, it will be simulated!\n")
+    offsprings <- population$offspring$phenotypes
+    half <-floor(ncol(offsprings)/2)
+    founders <- t(apply(offsprings,1,function(x){c(mean(sort(x)[1:half]),mean(sort(x)[2:(half+1)]),
+    mean(sort(x)[3:(half+2)]),mean(sort(x)[(half+1):ncol(offsprings)]),mean(sort(x)[(half):ncol(offsprings)-1]),
+    mean(sort(x)[(half-1):ncol(offsprings)-2]))}))
+    population$flags <- c(population$flags,"noParents")
+    population <- add.to.populationSub.internal(population, founders, "founders")
+    founders_groups <- c(0,0,0,1,1,1)
+  }else if(file.exists(filename)){
     if(verbose) cat("Found phenotypic file for parents:",filename,"and will store it in population$founders$phenotypes\n")
     founders <- read.table(filename,sep="\t",header=TRUE)
     founders <- as.matrix(founders)
@@ -53,9 +60,12 @@ read.population <- function(offspring="offspring",founders="founders",map="maps"
     population$founders$phenotypes <- mapMarkers.internal(population$founders$phenotypes,population$offspring$phenotypes, mapMode=1, verbose=verbose)
     doCleanUp.internal()
   }else{
-    stop("No phenotype file for parents: ",filename," this file is essentiall, you have to provide it\n")
+    stop("No phenotype file for parents at location: ",filename," \n")
   }
-    
+  
+  if(missing(founders_groups)){ 
+    stop("Specify founders_groups!\n")
+  }
   #**********FOUNDERS GROUPS*************
   if(length(founders_groups)!=ncol(population$founders$phenotypes)){
     stop("Length of founders_groups should be equal to the number of columns in founder phenotype file.")
@@ -100,7 +110,13 @@ read.population <- function(offspring="offspring",founders="founders",map="maps"
   }else{
     if(verbose)cat("No physical map file:",filename,".\n")
   }
-  
+  if(markerPosistions){
+    if(!(any(rownames(population$offspring$phenotypes)%in%rownames(population$maps$physical)))){
+      warning("markerPosistions set to TRUE but postion is not provided for any of the markers - they won't be used!\n")
+    }else{
+      population$flags <- c(population$flags,"markerPosistions")
+    }
+  }
   #**********FINALIZING FUNCTION*************
   e <- proc.time()
   if(verbose) cat("read.population done in",(e-s)[3],"seconds.\n")
