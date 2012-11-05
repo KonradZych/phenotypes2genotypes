@@ -15,7 +15,7 @@
 # OUTPUT:
 #  An object of class cross
 #
-cross.saturate <- function(population, cross, map=c("genetic","physical"), placeUsing=c("qtl","correlation"), threshold=3, chr, use.orderMarkers=FALSE, saveGff, verbose=FALSE, debugMode=0){
+cross.saturate <- function(population, cross, map=c("genetic","physical"), placeUsing=c("qtl","correlation"), threshold=3, chr, use.orderMarkers=FALSE, gffFile, verbose=FALSE, debugMode=0){
   if(missing(population)) stop("Please provide a population object\n")
   populationType <- class(population)[2]
   check.population(population)
@@ -92,7 +92,7 @@ cross.saturate <- function(population, cross, map=c("genetic","physical"), place
   }
   #*******ENRICHING ORIGINAL MAP*******
   s1 <- proc.time()
-  cross <- rearrangeMarkers(cross, population, populationType, cur_map,threshold,placeUsing,addMarkers=TRUE,chr,verbose=verbose)
+  cross <- rearrangeMarkers(cross, population, populationType, cur_map, threshold, placeUsing, addMarkers=TRUE, chr, gffFile, verbose=verbose)
   e1 <- proc.time()
   if(verbose && debugMode==2)cat("Enrichment of original map done in:",(e1-s1)[3],"seconds.\n")
   
@@ -123,7 +123,7 @@ cross.saturate <- function(population, cross, map=c("genetic","physical"), place
 # OUTPUT:
 #  object of class cross
 ############################################################################################################
-rearrangeMarkers <- function(cross, population, populationType, cur_map, threshold=3, placeUsing, addMarkers=FALSE, chr, verbose=FALSE){
+rearrangeMarkers <- function(cross, population, populationType, cur_map, threshold=3, placeUsing, addMarkers=FALSE, chr, gffFile, verbose=FALSE){
   if(verbose) cat("old map contains",max(cur_map[,1]),"chromosomes\n")
   if(placeUsing=="qtl"){
     markersNewPostions <- bestQTL.internal(cross,population,threshold,verbose)
@@ -138,17 +138,18 @@ rearrangeMarkers <- function(cross, population, populationType, cur_map, thresho
   returncross <- cross
   returncross$geno <- vector(length(unique(cur_map[,1])), mode="list")
   returncross$pheno <- pull.pheno(cross)
+  oldnames_ <- rownames(cur_map)[which(rownames(cur_map) %in% rownames(population$offspring$genotypes$real))]
   if(verbose) cat("Reordering markers \n")  
   for(x in 1:length(returncross$geno)){
     #if(verbose) cat("- chr ",x," -\n")    
-    oldnames <- rownames(cur_map)[which(cur_map[,1]==x)]
+    oldnames <- oldnames_[rownames(cur_map)[which(cur_map[,1]==x)],]
     oldpositions <- cur_map[oldnames,2]
     if(x %in% chr){
     newnames <- rownames(markersNewPostions)[which(markersNewPostions[,1]==x)]
     if(any(newnames%in%oldnames)){
       newnames <- newnames[-which(newnames%in%oldnames)]
     }
-    newpositions <- markersNewPostions[newnames,2]
+    newpositions_ <- markersNewPostions[newnames,2]
   }else{
     newnames <- NULL
     newpositions <- NULL
@@ -187,7 +188,40 @@ rearrangeMarkers <- function(cross, population, populationType, cur_map, thresho
   for(i in 1:length(returncross$geno)){
     class(returncross$geno[[i]]) <- "A"
   }
+  if(!missing(gffFile)){
+    if(!(markerPosistions %in% population$flags)){
+      warning("population object doesn't contain information about positions of the markers, gff file won't be saved\n")
+    }else{
+      newnames <- rownames(markersNewPostions)
+      if(!(any(newnames %in% rownames(population$maps$physical)))){
+        if(!(any(oldnames_%in% rownames(population$maps$physical)))){
+          warning("population object doesn't contain information about positions of the markers, gff file won't be saved\n")
+        }else{
+          chrL <- chromosomesLengths.internal(population$maps$physical)
+          markers <- population$offspring$genotypes$real[oldnames_,]
+          positions <- population$maps$physical[oldnames_,2] + chrL[population$maps$physical[oldnames_,1]]
+        }
+      }else if(!(any(oldnames_%in% rownames(population$maps$physical)))){
+        chrL <- chromosomesLengths.internal(population$maps$physical)
+        markers <- t(pull.geno(cross)[,newnames])
+        positions <- population$maps$physical[newnames,2] + chrL[population$maps$physical[newnames,1]]
+      }else{
+        chrL <- chromosomesLengths.internal(population$maps$physical)
+        markers <- rbind(t(pull.geno(cross)[,newnames]),population$offspring$genotypes$real[oldnames_,])
+        positions <- population$maps$physical[rownames(markers),2] + chrL[population$maps$physical[rownames(markers),1]]
+      }
+      saveGff.internal(gffFile,markers,positions)
+    }
+  }
   invisible(returncross)
+}
+
+###
+saveGff.internal <- function(gffFile="population.gff", markers, positions){
+  cat("##gff-version 3\n",file=gffFile,append=FALSE)
+  for(marker in rownames(markers)){
+    cat(marker,"\t.\tmarker\t",positions[marker,],"\t",positions[marker,],"\t.\t+\t.\tID=",marker,"\n",file=gffFile,append=TRUE)
+  }
 }
 
 insertMarkers.internal <- function(newgeno,newpositions,oldgeno,oldpositions,populationType){

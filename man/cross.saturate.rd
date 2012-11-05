@@ -8,7 +8,7 @@
 }
 
 \usage{
-cross.saturate(population, cross, map=c("genetic","physical"), placeUsing=c("qtl","correlation"), threshold=3, chr, use.orderMarkers=FALSE, saveGff, verbose=FALSE, debugMode=0)
+cross.saturate(population, cross, map=c("genetic","physical"), placeUsing=c("qtl","correlation"), threshold=3, chr, use.orderMarkers=FALSE, gffFile, verbose=FALSE, debugMode=0)
 	
 }
 
@@ -32,7 +32,7 @@ cross.saturate(population, cross, map=c("genetic","physical"), placeUsing=c("qtl
  \item{threshold}{ Specifies a threshold for the selection of new phenotype markers (see \link{markerPlacementPlot}).}
  \item{chr}{ When specified the algorithm only saturates a subset of chromosomes. If not specified, all the chromosomes will be saturated. }
  \item{use.orderMarkers}{ If true the algorithm (after initial saturation) performs an \code{\link[qtl]{orderMarkers}} on the newly created map.}
- \item{saveGff}{Name of the gff file where a physical location of the markers is stored for use in genome viewers. To be used only if physical location of original
+ \item{gffFile}{Name of the gff file where a physical location of the markers is stored for use in genome viewers. To be used only if physical location of original
  genotypes and/or gene expression probes is stored in population$maps$physical. If left empty no gff file will be saved.}
  \item{debugMode}{ Either use 1 or 2, this will modify the amount of information returned to the user. 1) Print out checks, 2) Print additional time information.}
  \item{verbose}{ Be verbose.}
