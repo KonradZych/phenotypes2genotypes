@@ -8,19 +8,22 @@
 }
 
 \usage{
-  transform <- function(x, transformations=c("nothing","log","sqrt","reciprocal","probit","logit"), ..., verbose=TRUE)
+  transform(x, transformations=c("nothing","log","sqrt","reciprocal","probit","logit"), ..., verbose=TRUE)
 }
 
 \arguments{
   \item{x}{ data matrix with measurements, Rows: Traits/Phenotypes columns: Individuals. }
-  \item{transformations}{ which function should be used to transform the data:   \itemize{
-    \item{nothing}{ - no data transformation performed.}
-    \item{\code{\link[base]{log}}}{ - log(data)}
-    \item{\code{\link[base]{sqrt}}}{ - sqrt(data)}
-    \item{reciprocal}{ - 1/(data)}
-    \item{\code{\link[VGAM]{probit}}}{ - probit transformation}
-    \item{\code{\link[VGAM]{logit}}}{ -  logit transformation}
-  } }
+  \item{transformations}{
+    which function should be used to transform the data:
+    \itemize{
+      \item{nothing}{ - no data transformation performed.}
+      \item{\code{\link[base]{log}}}{ - log(data)}
+      \item{\code{\link[base]{sqrt}}}{ - sqrt(data)}
+      \item{reciprocal}{ - 1/(data)}
+      \item{\code{\link[VGAM]{probit}}}{ - probit transformation}
+      \item{\code{\link[VGAM]{logit}}}{ -  logit transformation}
+    }
+  }
   \item{...}{ Passed to the underlying test function. }
   \item{verbose}{ Be verbose.}
 }

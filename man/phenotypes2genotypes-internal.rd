@@ -93,6 +93,7 @@
 \alias{reciproce}
 \alias{mprobit}
 \alias{mlogit}
+\alias{saveGff.internal}
 
 \title{Internal pheno2geno functions}
 
