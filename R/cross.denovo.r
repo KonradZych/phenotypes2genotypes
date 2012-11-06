@@ -20,6 +20,7 @@ cross.denovo <- function(population, n.chr, map=c("none","genetic","physical"), 
 assignFunction=c(assignMaximumNoConflicts,assignMaximum), reOrder=TRUE, use.orderMarkers=FALSE, verbose=FALSE, debugMode=0, ...){
   #checks
   if(missing(population)) stop("provide population object\n")
+  if(missing(n.chr)) stop("provide number of expected chromosomes\n")
   check.population(population)
   map <- match.arg(map)
   comparisonMethod <- defaultCheck.internal(comparisonMethod,"comparisonMethod",4,sumMajorityCorrelation)
