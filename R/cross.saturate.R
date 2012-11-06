@@ -142,14 +142,15 @@ rearrangeMarkers <- function(cross, population, populationType, cur_map, thresho
   if(verbose) cat("Reordering markers \n")  
   for(x in 1:length(returncross$geno)){
     #if(verbose) cat("- chr ",x," -\n")    
-    oldnames <- oldnames_[rownames(cur_map)[which(cur_map[,1]==x)],]
+    oldnamesChr <- rownames(cur_map)[which(cur_map[,1]==x)]
+    oldnames <- oldnamesChr[which(oldnamesChr %in% oldnames_)]
     oldpositions <- cur_map[oldnames,2]
     if(x %in% chr){
     newnames <- rownames(markersNewPostions)[which(markersNewPostions[,1]==x)]
     if(any(newnames%in%oldnames)){
       newnames <- newnames[-which(newnames%in%oldnames)]
     }
-    newpositions_ <- markersNewPostions[newnames,2]
+    newpositions <- markersNewPostions[newnames,2]
   }else{
     newnames <- NULL
     newpositions <- NULL
@@ -189,7 +190,7 @@ rearrangeMarkers <- function(cross, population, populationType, cur_map, thresho
     class(returncross$geno[[i]]) <- "A"
   }
   if(!missing(gffFile)){
-    if(!(markerPosistions %in% population$flags)){
+    if(!("markerPosistions" %in% population$flags)){
       warning("population object doesn't contain information about positions of the markers, gff file won't be saved\n")
     }else{
       newnames <- rownames(markersNewPostions)
