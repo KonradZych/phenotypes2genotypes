@@ -9,7 +9,8 @@
 }
 
 \usage{
-	create.population(offspring_phenotypes, founders, founders_groups, offspring_genotypes, maps_genetic, maps_physical, populationType=c("riself", "f2", "bc", "risib"), no.warn=FALSE, verbose=FALSE, debugMode=0)
+	create.population(offspring_phenotypes, founders, founders_groups, offspring_genotypes, maps_genetic, maps_physical, populationType=c("riself", "f2", "bc", "risib"),
+  no.warn=FALSE, markerPosistions=FALSE, verbose=FALSE, debugMode=0)
 }
 
 \arguments{
@@ -28,6 +29,7 @@
     }
   }
   \item{no.warn}{ If TRUE, no warnings will be produced. }
+  \item{markerPosistions}{ Are the physical positions of the markers (phenotypes) provided? If so they should be privided in maps$physical object}
   \item{verbose}{ Be verbose. }
   \item{debugMode}{ Either use 1 or 2, this will modify the amount of information returned to the user. 1) Print out checks, 2) Print additional time information.}
 }
