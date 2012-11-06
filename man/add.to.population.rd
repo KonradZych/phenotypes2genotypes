@@ -12,7 +12,7 @@
 
 \usage{
 	add.to.population(population, dataObject, dataType=c("founders","offspring$phenotypes","founders$group","offspring$genotypes","maps$genetic","maps$physical"),
-  markerPosistions=FALSE, verbose=FALSE,debugMode=0)
+ verbose=FALSE,debugMode=0)
 }
 
 \arguments{
@@ -29,7 +29,6 @@
 		\item{maps$physical}{ - Physical map.}
 	}
  }
- \item{markerPosistions}{ Are the physical positions of the markers (phenotypes) provided? If so they should be privided in maps$physical object}
  \item{verbose}{ Be verbose.}
  \item{debugMode}{ Either use 1 or 2, this will modify the amount of information returned to the user. 1) Print out checks, 2) Print additional time information.}
 }
