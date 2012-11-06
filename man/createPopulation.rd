@@ -10,7 +10,7 @@
 
 \usage{
 	create.population(offspring_phenotypes, founders, founders_groups, offspring_genotypes, maps_genetic, maps_physical, populationType=c("riself", "f2", "bc", "risib"),
-  no.warn=FALSE, markerPosistions=FALSE, verbose=FALSE, debugMode=0)
+  no.warn=FALSE, markerPositions=FALSE, verbose=FALSE, debugMode=0)
 }
 
 \arguments{

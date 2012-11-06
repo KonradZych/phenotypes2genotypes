@@ -189,29 +189,32 @@ rearrangeMarkers <- function(cross, population, populationType, cur_map, thresho
   for(i in 1:length(returncross$geno)){
     class(returncross$geno[[i]]) <- "A"
   }
-  if(!missing(gffFile)){
-    if(!("markerPosistions" %in% population$flags)){
-      warning("population object doesn't contain information about positions of the markers, gff file won't be saved\n")
+  if(!(missing(gffFile))){
+    cat("Saving gff file.\n")
+    if(!("markerPositions" %in% population$flags)){
+      cat("population object doesn't contain information about positions of the markers or flags wrongly set, gff file won't be saved\n")
     }else{
       newnames <- rownames(markersNewPostions)
       if(!(any(newnames %in% rownames(population$maps$physical)))){
         if(!(any(oldnames_%in% rownames(population$maps$physical)))){
-          warning("population object doesn't contain information about positions of the markers, gff file won't be saved\n")
+          cat("population object doesn't contain information about positions of the markers, gff file won't be saved\n")
         }else{
           chrL <- chromosomesLengths.internal(population$maps$physical)
           markers <- population$offspring$genotypes$real[oldnames_,]
           positions <- population$maps$physical[oldnames_,2] + chrL[population$maps$physical[oldnames_,1]]
+          saveGff.internal(gffFile,markers,positions)
         }
       }else if(!(any(oldnames_%in% rownames(population$maps$physical)))){
         chrL <- chromosomesLengths.internal(population$maps$physical)
         markers <- t(pull.geno(cross)[,newnames])
         positions <- population$maps$physical[newnames,2] + chrL[population$maps$physical[newnames,1]]
+        saveGff.internal(gffFile,markers,positions)
       }else{
         chrL <- chromosomesLengths.internal(population$maps$physical)
         markers <- rbind(t(pull.geno(cross)[,newnames]),population$offspring$genotypes$real[oldnames_,])
         positions <- population$maps$physical[rownames(markers),2] + chrL[population$maps$physical[rownames(markers),1]]
+        saveGff.internal(gffFile,markers,positions)
       }
-      saveGff.internal(gffFile,markers,positions)
     }
   }
   invisible(returncross)
@@ -219,6 +222,7 @@ rearrangeMarkers <- function(cross, population, populationType, cur_map, thresho
 
 ###
 saveGff.internal <- function(gffFile="population.gff", markers, positions){
+ print(dim(markers))
   cat("##gff-version 3\n",file=gffFile,append=FALSE)
   for(marker in rownames(markers)){
     cat(marker,"\t.\tmarker\t",positions[marker,],"\t",positions[marker,],"\t.\t+\t.\tID=",marker,"\n",file=gffFile,append=TRUE)

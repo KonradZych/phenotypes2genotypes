@@ -24,7 +24,7 @@
 #  An object of class population
 #
 create.population <- function(offspring_phenotypes, founders, founders_groups, offspring_genotypes, maps_genetic, maps_physical,
-  populationType=c("riself", "f2", "bc", "risib"), no.warn=FALSE, markerPosistions=FALSE, verbose=FALSE, debugMode=0){
+  populationType=c("riself", "f2", "bc", "risib"), no.warn=FALSE, markerPositions=FALSE, verbose=FALSE, debugMode=0){
   if(verbose && debugMode==1) cat("create.population starting.\n")
   s <- proc.time()
   population <- NULL
@@ -82,11 +82,11 @@ create.population <- function(offspring_phenotypes, founders, founders_groups, o
   class(population) <- c("population", populationType)
   e <- proc.time()
   check.population(population)
-  if(markerPosistions){
+  if(markerPositions){
     if(!(any(rownames(population$offspring$phenotypes)%in%rownames(population$maps$physical)))){
-      warning("markerPosistions set to TRUE but postion is not provided for any of the markers - they won't be used!\n")
+      warning("markerPositions set to TRUE but postion is not provided for any of the markers - they won't be used!\n")
     }else{
-      population$flags <- c(population$flags,"markerPosistions")
+      population$flags <- c(population$flags,"markerPositions")
     }
   }
   if(verbose){
