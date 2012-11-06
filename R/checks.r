@@ -105,16 +105,16 @@ inListCheck.internal <- function(objectToBeChecked,objectName,listOfPossibleElem
 # OUTPUT:
 #  none
 ############################################################################################################
-check.population <- function(objectToBeChecked){
-  if(length(class(objectToBeChecked))!=2) stop("Incorrect class of the object.\n")
-  if(class(objectToBeChecked)[1]!="population") stop("Object is not of a class population.\n")
-  if(!(class(objectToBeChecked)[2]%in%c("riself", "f2", "bc", "risib"))) stop("Type of the population: ",class(objectToBeChecked)[2]," not recognized.\n")
-  if(is.null(objectToBeChecked$offspring$phenotypes)){
+check.population <- function(x){
+  if(length(class(x))!=2) stop("Incorrect class of the object.\n")
+  if(class(x)[1]!="population") stop("Object is not of a class population.\n")
+  if(!(class(x)[2]%in%c("riself", "f2", "bc", "risib"))) stop("Type of the population: ",class(x)[2]," not recognized.\n")
+  if(is.null(x$offspring$phenotypes)){
       if(!("noParents" %in% x$flags)){ stop("No offspring phenotype data found, this is not a valid object of class population.\n")
       }else{ cat("No phenotype data for founders, it will be simulated.")}
     }
-  if(is.null(objectToBeChecked$founders$phenotypes)) stop("No founders phenotype data found, this is not a valid object of class population.\n")
-  if(is.null(objectToBeChecked$founders$groups)) stop("No information about founders groups found, this is not a valid object of class population.\n")
+  if(is.null(x$founders$phenotypes)) stop("No founders phenotype data found, this is not a valid object of class population.\n")
+  if(is.null(x$founders$groups)) stop("No information about founders groups found, this is not a valid object of class population.\n")
 }
 
 ############################################################################################################
