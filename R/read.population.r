@@ -22,7 +22,7 @@
 # OUTPUT:
 #   An object of class population 
 #
-read.population <- function(offspring="offspring",founders="founders",map="maps",founders_groups,populationType=c("riself", "f2", "bc", "risib"), markerPosistions=FALSE,verbose=FALSE,debugMode=0){
+read.population <- function(offspring="offspring",founders="founders",map="maps",founders_groups,populationType=c("riself", "f2", "bc", "risib"), verbose=FALSE,debugMode=0){
   s <- proc.time()
   if(verbose && debugMode==1) cat("read.population starting.\n")
   population <- NULL
@@ -109,13 +109,6 @@ read.population <- function(offspring="offspring",founders="founders",map="maps"
     doCleanUp.internal()
   }else{
     if(verbose)cat("No physical map file:",filename,".\n")
-  }
-  if(markerPosistions){
-    if(!(any(rownames(population$offspring$phenotypes)%in%rownames(population$maps$physical)))){
-      warning("markerPosistions set to TRUE but postion is not provided for any of the markers - they won't be used!\n")
-    }else{
-      population$flags <- c(population$flags,"markerPosistions")
-    }
   }
   #**********FINALIZING FUNCTION*************
   e <- proc.time()

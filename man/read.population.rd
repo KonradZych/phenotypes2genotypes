@@ -9,7 +9,7 @@
 
 \usage{
 	read.population(offspring="offspring",founders="founders",map="maps",founders_groups,populationType=c("riself", "f2", "bc", "risib"),
-  markerPosistions=FALSE, verbose=FALSE,debugMode=0)
+  verbose=FALSE,debugMode=0)
 }
 
 \arguments{
@@ -25,7 +25,6 @@
     \item{risib}{ - RILs by sibling mating.}
   } 
  }
- \item{markerPosistions}{ Are the physical positions of the markers (phenotypes) provided? If so they should be privided in map_physical.txt}
  \item{verbose}{ Be verbose}
  \item{debugMode}{ 1: Print out checks, 2: print additional time information }
 }
