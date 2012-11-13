@@ -364,7 +364,8 @@ add.to.populationSubMap.internal <- function(population, dataObject, dataType=c(
   if(verbose && debugMode==1) cat("add.to.populationSub.internal starting.\n")
   s <- proc.time()
   if(!(is.null(dataObject))&&!(is.null(dim(dataObject)))&&class(dataObject)=="matrix"){
-    if(ncol(dataObject)!=2) stop ("This is not a correct map object.\n")
+    if(dataType=="maps$genetic" && ncol(dataObject)!=2) cat ("This is not a correct map object.\n")
+    if(dataType=="maps$physical" && ncol(dataObject)!=2 && ncol(dataObject)!=3) cat ("This is not a correct map object.\n")
     if(any(!(is.numeric(dataObject)))) stop ("This is not a correct map object.\n")
     ### adding data to population
     if(dataType=="maps$genetic"){
