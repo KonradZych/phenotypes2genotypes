@@ -373,10 +373,10 @@ add.to.populationSubMap.internal <- function(population, dataObject, dataType=c(
     }else if(dataType=="maps$physical"){
       if(ncol(dataObject) == 3){
         population$maps$physical <- dataObject
-        colnames(population$maps$physical) <- c("Chr","Position")
+        colnames(population$maps$physical) <- c("Chr","Start","End")
       }else{
         population$maps$physical <- cbind(dataObject,dataObject[,2])
-        colnames(population$maps$physical) <- c("Chr","Start","End")
+        colnames(population$maps$physical) <- c("Chr","Position")
       }
     }
   }else{
