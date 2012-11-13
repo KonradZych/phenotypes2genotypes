@@ -202,7 +202,7 @@ rearrangeMarkers <- function(cross, population, populationType, cur_map, thresho
         }else{
           markers <- population$offspring$genotypes$real[oldnames_,]
           positions <- population$maps$physical[rownames(markers),]
-          saveGff.internal(gffFile,markers,positions)
+          saveGff.internal(gffFile,markers,positions,markers)
         }
       }else if(!(any(oldnames_%in% rownames(population$maps$physical)))){
         markers <- t(pull.geno(cross)[,newnames])
@@ -210,7 +210,7 @@ rearrangeMarkers <- function(cross, population, populationType, cur_map, thresho
         saveGff.internal(gffFile,markers,positions,nonReduntant)
         markers <- t(pull.geno(cross)[,nonReduntant])
         positions <- population$maps$physical[rownames(markers),]
-        saveGff.internal(filename2,markers,positions)
+        saveGff.internal(filename2,markers,positions,markers)
       }else{
         chrL <- chromosomesLengths.internal(population$maps$physical)
         markers <- rbind(t(pull.geno(cross)[,newnames]),population$offspring$genotypes$real[oldnames_,])
@@ -218,7 +218,7 @@ rearrangeMarkers <- function(cross, population, populationType, cur_map, thresho
         saveGff.internal(gffFile,markers,positions,nonReduntant)
         markers <- rbind(t(pull.geno(cross)[,nonReduntant]),population$offspring$genotypes$real[oldnames_,])
         positions <- population$maps$physical[rownames(markers),]
-        saveGff.internal(filename2,markers,positions)
+        saveGff.internal(filename2,markers,positions,markers)
       }
   }
   invisible(returncross)
