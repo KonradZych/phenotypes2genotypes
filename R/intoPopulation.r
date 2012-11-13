@@ -371,7 +371,13 @@ add.to.populationSubMap.internal <- function(population, dataObject, dataType=c(
     if(dataType=="maps$genetic"){
       population$maps$genetic <- dataObject
     }else if(dataType=="maps$physical"){
-      population$maps$physical <- dataObject
+      if(ncol(dataObject) == 3){
+        population$maps$physical <- dataObject
+        colnames(population$maps$physical) <- c("Chr","Position")
+      }else{
+        population$maps$physical <- cbind(dataObject,dataObject[,2])
+        colnames(population$maps$physical) <- c("Chr","Start","End")
+      }
     }
   }else{
     stop("No data provided for ",dataType,"!\n")
