@@ -207,7 +207,7 @@ rearrangeMarkers <- function(cross, population, populationType, cur_map, thresho
       }else if(!(any(oldnames_%in% rownames(population$maps$physical)))){
         markers <- t(pull.geno(cross)[,newnames])
         positions <- population$maps$physical[rownames(markers),]
-        saveGff.internal(filename1,markers,positions)
+        saveGff.internal(gffFile,markers,positions,nonReduntant)
         markers <- t(pull.geno(cross)[,nonReduntant])
         positions <- population$maps$physical[rownames(markers),]
         saveGff.internal(filename2,markers,positions)
@@ -215,7 +215,7 @@ rearrangeMarkers <- function(cross, population, populationType, cur_map, thresho
         chrL <- chromosomesLengths.internal(population$maps$physical)
         markers <- rbind(t(pull.geno(cross)[,newnames]),population$offspring$genotypes$real[oldnames_,])
         positions <- population$maps$physical[rownames(markers),]
-        saveGff.internal(gffFile,markers,positions)
+        saveGff.internal(gffFile,markers,positions,nonReduntant)
         markers <- rbind(t(pull.geno(cross)[,nonReduntant]),population$offspring$genotypes$real[oldnames_,])
         positions <- population$maps$physical[rownames(markers),]
         saveGff.internal(filename2,markers,positions)
@@ -225,11 +225,13 @@ rearrangeMarkers <- function(cross, population, populationType, cur_map, thresho
 }
 
 ###
-saveGff.internal <- function(gffFile="population.gff", markers, positions){
+saveGff.internal <- function(gffFile="population.gff", markers, positions, nonReduntant){
  print(dim(markers))
   cat("##gff-version 3\n",file=gffFile,append=FALSE)
   for(marker in 1:nrow(markers)-1){
-    cat("Chr",positions[marker,1],"\t.\tbreakpoint\t",(positions[marker,2]+positions[marker+1,2])/2,"\t",(positions[marker,2]+positions[marker+1,2])/2,"\t100\t+\t.\tID=recombination\n",file=gffFile,append=TRUE,sep='')
+    if(marker %in% nonReduntant){cat("Chr",positions[marker,1],"\t.\tmarker\t",positions[marker,2],"\t",positions[marker,3],"\t100\t+\t.\tID=recombination\n",file=gffFile,append=TRUE,sep='')
+    }else{cat("Chr",positions[marker,1],"\t.\tredundantmarker\t",positions[marker,2],"\t",positions[marker,3],"\t100\t+\t.\tID=recombination\n",file=gffFile,append=TRUE,sep='')}
+    #if(marker %in% nonReduntant)cat("Chr",positions[marker,1],"\t.\tnonreduntantmarker\t",(positions[marker,2]+positions[marker+1,2])/2,"\t",(positions[marker,2]+positions[marker+1,2])/2,"\t100\t+\t.\tID=recombination\n",file=gffFile,append=TRUE,sep='')
   }
 }
 
