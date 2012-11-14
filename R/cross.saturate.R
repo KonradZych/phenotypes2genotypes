@@ -15,7 +15,7 @@
 # OUTPUT:
 #  An object of class cross
 #
-cross.saturate <- function(population, cross, map=c("genetic","physical"), placeUsing=c("qtl","correlation"), threshold=3, chr, use.orderMarkers=FALSE, gffFile, verbose=FALSE, debugMode=0){
+cross.saturate <- function(population, cross, map=c("genetic","physical"), placeUsing=c("qtl","correlation"), threshold=3, chr, use.orderMarkers=FALSE, verbose=FALSE, debugMode=0){
   if(missing(population)) stop("Please provide a population object\n")
   populationType <- class(population)[2]
   check.population(population)
@@ -92,7 +92,7 @@ cross.saturate <- function(population, cross, map=c("genetic","physical"), place
   }
   #*******ENRICHING ORIGINAL MAP*******
   s1 <- proc.time()
-  cross <- rearrangeMarkers(cross, population, populationType, cur_map, threshold, placeUsing, addMarkers=TRUE, chr, gffFile, verbose=verbose)
+  cross <- rearrangeMarkers(cross, population, populationType, cur_map, threshold, placeUsing, addMarkers=TRUE, chr, verbose=verbose)
   e1 <- proc.time()
   if(verbose && debugMode==2)cat("Enrichment of original map done in:",(e1-s1)[3],"seconds.\n")
   
@@ -123,9 +123,9 @@ cross.saturate <- function(population, cross, map=c("genetic","physical"), place
 # OUTPUT:
 #  object of class cross
 ############################################################################################################
-rearrangeMarkers <- function(cross, population, populationType, cur_map, threshold=3, placeUsing, addMarkers=FALSE, chr, gffFile, verbose=FALSE){
+rearrangeMarkers <- function(cross, population, populationType, cur_map, threshold=3, placeUsing, addMarkers=FALSE, chr, verbose=FALSE){
   if(verbose) cat("old map contains",max(cur_map[,1]),"chromosomes\n")
-  nonReduntant <- NULL
+  redundant <- NULL
   if(placeUsing=="qtl"){
     markersNewPostions <- bestQTL.internal(cross,population,threshold,verbose)
   }else{
@@ -166,7 +166,7 @@ rearrangeMarkers <- function(cross, population, populationType, cur_map, thresho
       if(length(toRmv)>0){
         newnames <- newnames[-toRmv]
         newpositions <- newpositions[-toRmv]
-        nonReduntant <- c(nonReduntant,newnames)
+        redundant <- c(redundant,newnames[toRmv])
         }
     }
      if(x %in% chr) if(verbose) cat("Selected:",length(newnames),"new and",length(oldnames),"original markers,",length(toRmv),"markers were removed\n") 
@@ -191,48 +191,47 @@ rearrangeMarkers <- function(cross, population, populationType, cur_map, thresho
   for(i in 1:length(returncross$geno)){
     class(returncross$geno[[i]]) <- "A"
   }
-  if(!(missing(gffFile))){
-    cat("Saving gff files.\n")
-    filename1 <- paste(gffFile,"all.gff",sep="")
-    filename2 <- paste(gffFile,"nonRedundant.gff",sep="")
-      newnames <- rownames(markersNewPostions)
-      if(!(any(newnames %in% rownames(population$maps$physical)))){
-        if(!(any(oldnames_%in% rownames(population$maps$physical)))){
-          cat("population object doesn't contain information about positions of the markers, gff file won't be saved\n")
-        }else{
-          markers <- population$offspring$genotypes$real[oldnames_,]
-          positions <- population$maps$physical[rownames(markers),]
-          saveGff.internal(gffFile,markers,positions,markers)
-        }
-      }else if(!(any(oldnames_%in% rownames(population$maps$physical)))){
-        markers <- t(pull.geno(cross)[,newnames])
-        positions <- population$maps$physical[rownames(markers),]
-        saveGff.internal(gffFile,markers,positions,nonReduntant)
-        markers <- t(pull.geno(cross)[,nonReduntant])
-        positions <- population$maps$physical[rownames(markers),]
-        saveGff.internal(filename2,markers,positions,markers)
-      }else{
-        chrL <- chromosomesLengths.internal(population$maps$physical)
-        markers <- rbind(t(pull.geno(cross)[,newnames]),population$offspring$genotypes$real[oldnames_,])
-        positions <- population$maps$physical[rownames(markers),]
-        saveGff.internal(gffFile,markers,positions,nonReduntant)
-        markers <- rbind(t(pull.geno(cross)[,nonReduntant]),population$offspring$genotypes$real[oldnames_,])
-        positions <- population$maps$physical[rownames(markers),]
-        saveGff.internal(filename2,markers,positions,markers)
-      }
-  }
+  returncross$redundant <- redundant
   invisible(returncross)
 }
 
 ###
-saveGff.internal <- function(gffFile="population.gff", markers, positions, nonReduntant){
- print(dim(markers))
-  cat("##gff-version 3\n",file=gffFile,append=FALSE)
-  for(marker in 1:nrow(markers)-1){
-    if(marker %in% nonReduntant){cat("Chr",positions[marker,1],"\t.\tmarker\t",positions[marker,2],"\t",positions[marker,3],"\t100\t+\t.\tID=recombination\n",file=gffFile,append=TRUE,sep='')
-    }else{cat("Chr",positions[marker,1],"\t.\tredundantmarker\t",positions[marker,2],"\t",positions[marker,3],"\t100\t+\t.\tID=recombination\n",file=gffFile,append=TRUE,sep='')}
-    #if(marker %in% nonReduntant)cat("Chr",positions[marker,1],"\t.\tnonreduntantmarker\t",(positions[marker,2]+positions[marker+1,2])/2,"\t",(positions[marker,2]+positions[marker+1,2])/2,"\t100\t+\t.\tID=recombination\n",file=gffFile,append=TRUE,sep='')
+saveGff <- function(cross, population, gffFile="population", verbose=FALSE){
+  if(missing(population)) stop("Please provide a population object\n")
+  populationType <- class(population)[2]
+  if(is.null(population$maps$physical)) stop("No physical map in the population object!\n")
+  check.population(population)
+  markersCross <- markernames(cross)
+  markers <- markersCross[which(markersCross %in% rownames(population$maps$physical))]
+  markers <- c(markers,cross$redundant)
+  if(is.integer0(markers) || is.null(markers)) stop("No physical locations for any of the markers in the cross object!\n")
+  crossNr <- drop.dupmarkers(cross,verbose=FALSE)
+  markersCrossNr <- markernames(crossNr)
+  markersNr <- markersCrossNr[which(markersCrossNr %in% rownames(population$maps$physical))]
+  if(is.integer0(markersNr) || is.null(markersNr)) stop("No physical locations for any of the non redundant markers in the cross object!\n")
+  recombinations <- findrecombinations(markers)
+  recombinationsNr <- findrecombinations(markersNr)
+  filename1 <- paste(gffFile,"_markers_nonRedundant.gff",sep="")
+  filename2 <- paste(gffFile,"_recombinations_nonRedundant.gff",sep="")
+  filename3 <- paste(gffFile,"_markers_all.gff",sep="")
+  filename4 <- paste(gffFile,"_recombinations_all.gff",sep="")
+  cat("##gff-version 3\n",file=filename1)
+  cat("##gff-version 3\n",file=filename2)
+  cat("##gff-version 3\n",file=filename3)
+  cat("##gff-version 3\n",file=filename4)
+  for(marker in markers){
+      if(!(marker %in% markersNr)){
+        cat("Chr",population$maps$physical[marker,1],"\t.\tmarker-red\t",population$maps$physical[marker,2],"\t",population$maps$physical[marker,3],"\t100\t+\t.\tID=",marker,"\n",file=filename3,append=TRUE,sep='')
+      }else{
+        cat("Chr",population$maps$physical[marker,1],"\t.\tmarker-red\t",population$maps$physical[marker,2],"\t",population$maps$physical[marker,3],"\t100\t+\t.\tID=",marker,"\n",file=filename1,append=TRUE,sep='')
+        cat("Chr",population$maps$physical[marker,1],"\t.\tmarker-nonred\t",population$maps$physical[marker,2],"\t",population$maps$physical[marker,3],"\t100\t+\t.\tID=",marker,"\n",file=filename3,append=TRUE,sep='')
+      }
   }
+  if(verbose) cat("Saved ",length(markersNr),"non-redundant and",length(markers)-length(markersNr),"redundant markers. In total:",length(markers),"markers.\n")
+}
+
+findrecombinations <- function(markers){
+  return(markers)
 }
 
 insertMarkers.internal <- function(newgeno,newpositions,oldgeno,oldpositions,populationType){
