@@ -59,7 +59,7 @@ lowerTrng.internal <- function(dataRf){
 #
 reorganizeMarkersWithin <- function(cross, ordering){
   cross <- clean(cross)
-  n.markers <- nmar(cross)
+  n.markers <- sum(nmar(cross))
   chrtype <- rep(sapply(cross$geno, class), n.markers)
   crosstype <- class(cross)[1]
   g <- pull.geno(cross)
