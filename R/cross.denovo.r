@@ -40,7 +40,7 @@ assignFunction=c(assignMaximumNoConflicts,assignMaximum), reOrder=TRUE, use.orde
         cross <- formLinkageGroups(cross,reorgMarkers=TRUE,...)
         cross <- reduceChromosomesNumber(cross, n.chr)
         if("noParents" %in% population$flags){
-          cross <- mergeInverted(cross)
+          cross <- mergeInverted(cross, class(population)[2])
         }
         if(use.orderMarkers){
           cross <- orderMarkers(cross,use.ripple=TRUE,verbose=TRUE)
@@ -134,11 +134,13 @@ assignMaximumNoConflicts <- function(x, use=2){
   invisible(assignment)
 }
 
-mergeInverted <- function(cross){
+mergeInverted <- function(cross,populationType){
   chr.correlations <- matrix(0,nchr(cross),nchr(cross))
   mar.correlations <- cor(pull.geno(cross),use="pair")
   rownames(mar.correlations) <- markernames(cross)
   colnames(mar.correlations) <- markernames(cross)
+  colnames(chr.correlations) <- 1:nchr(cross)
+  rownames(chr.correlations) <- 1:nchr(cross)
   for(chr in 1:nchr(cross)){
     markers1 <- colnames(cross$geno[[chr]]$data)
     for(chr2 in 1:nchr(cross)){
@@ -146,15 +148,82 @@ mergeInverted <- function(cross){
       chr.correlations[chr,chr2] <- mean(mar.correlations[markers1,markers2],na.rm=TRUE)
     }
   }
+  corPairs <- t(apply(chr.correlations,1,function(x){names(sort(x))}))
+  colnames(corPairs) <- 1:nchr(cross)
+  done <- NULL
+  new <- 1:nchr(cross)
+  cur <- 1
   ordering <- vector(mode="numeric",length=sum(nmar(cross)))
   names(ordering) <- markernames(cross)
-  for(chr in 1:floor(nchr(cross)/2)){
-    chr2 <- which.min(chr.correlations[chr,])
-    markers <- colnames(cross$geno[[chr]]$data)
-    markers <- c(markers,colnames(cross$geno[[chr2]]$data))
-    ordering[markers] <- chr
+  for(chr in 1:nchr(cross)){
+    if(!(chr %in% done)){
+      done <- c(done,chr)
+      chr2 <- selectChr(chr,corPairs,done)
+      if(!is.null(chr2)){
+        done <- c(done,chr2)
+        MinVal <- chr.correlations[chr,chr2]
+        if(abs(MinVal)>0){
+            markers <- colnames(cross$geno[[chr]]$data)
+            print(markers)
+            markers <- c(markers,colnames(cross$geno[[chr2]]$data))
+            ordering[markers] <- new[cur]
+            cur <- cur + 1
+            if(MinVal<0){
+              RefVal <- chr.correlations[chr,1]
+              if(RefVal < 0){
+                cross <- invertChromosome.internal(cross,chr,populationType)
+              }else{
+                cross <- invertChromosome.internal(cross,chr2,populationType)
+              }
+            }
+        }else{
+          if(chr.correlations[chr,1] < chr.correlations[chr2,1]){
+            cross <- removeChromosomes(cross,chr)
+          }else{
+            cross <- removeChromosomes(cross,chr)
+          }
+        }
+      }
+    }
   }
   cross <- reorganizeMarkersWithin(cross, ordering)
+  invisible(cross)
+}
+
+selectChr <- function(chr,corPairs,done){
+  for(i in colnames(corPairs)){
+    if(!(corPairs[chr,i] %in% done)){
+      return(corPairs[chr,i])
+    }
+  }
+  return(NULL)
+}
+
+invertChromosome.internal <- function(cross,chr,populationType){
+  cat("--- Inverting chromosome:",chr,"---\n")
+  if(populationType=="f2"){
+    for(i in chr){
+      if(i %in% 1:nchr(cross)){
+        geno_ <- cross$geno[[i]]$data
+        if(any(geno_==5)) cross$geno[[i]]$data[which(geno_==5)] <- 4
+        if(any(geno_==4)) cross$geno[[i]]$data[which(geno_==4)] <- 5
+        if(any(geno_==3)) cross$geno[[i]]$data[which(geno_==3)] <- 1
+        if(any(geno_==1)) cross$geno[[i]]$data[which(geno_==1)] <- 3
+      }else{
+        stop("Chromosome: ",i," is not in the set!\n")
+      }
+    }
+  }else{
+    for(i in chr){
+      if(i %in% 1:nchr(cross)){
+        geno_ <- cross$geno[[i]]$data
+        if(any(geno_==2)) cross$geno[[i]]$data[which(geno_==2)] <- 1
+        if(any(geno_==1)) cross$geno[[i]]$data[which(geno_==1)] <- 2
+      }else{
+        stop("Chromosome: ",i," is not in the set!\n")
+      }
+    }
+  }
   invisible(cross)
 }
 
