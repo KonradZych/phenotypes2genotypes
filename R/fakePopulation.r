@@ -67,7 +67,7 @@ fake.population <- function(n.founders = 4, n.offspring = 100, n.markers=100,n.c
   if(n.mixups>0){
     pheno <- fakeMixUps.internal(pheno,n.mixups)
   }
-  population <- create.population(pheno, founders, foundersGroups, geno, map, physicalMap,verbose=verbose)
+  population <- create.population(pheno, founders, foundersGroups, geno, map, physicalMap, verbose=verbose)
   class(population)[2]<- type
   check.population(population)
   invisible(population)
@@ -125,6 +125,7 @@ fakePhysicalMap.internal <- function(map){
       map[i,1] <- newChrom
     }
   }
+  map <- cbind(map,map[,2]+300)
   invisible(map)
 }
 
