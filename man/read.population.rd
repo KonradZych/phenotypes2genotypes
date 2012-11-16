@@ -8,8 +8,8 @@
 }
 
 \usage{
-	read.population(offspring="offspring",founders="founders",map="maps",founders_groups,populationType=c("riself", "f2", "bc", "risib"),
-  verbose=FALSE,debugMode=0)
+  read.population(offspring="offspring",founders="founders",map="maps",founders_groups,populationType=c("riself", "f2", "bc", "risib"),
+  read_mode=c("normal","HT"), verbose=FALSE,debugMode=0,...)
 }
 
 \arguments{
@@ -25,8 +25,15 @@
     \item{risib}{ - RILs by sibling mating.}
   } 
  }
+ \item{read_mode}{HT, or High-Throughput mode should be used when the very large dataset is processed (at least 10000 probes). Then files are read in chunks intead of at once.
+  To avoid R memory limits, only probes showing differential expression between parent are selected. Size of the chunk and threshold for assesing significance can be specified
+  (see description of ... parameter).}
  \item{verbose}{ Be verbose}
  \item{debugMode}{ 1: Print out checks, 2: print additional time information }
+ \item{...}{ Parameters passed to high-throughtput function:    \itemize{
+    \item{threshold}{ - threshold for assesing probes that are differentially expressed between parents. 0.01 by default.}
+    \item{sliceSize}{ - number of lines to be read at once byt HT function. 5000 by default.}
+  }}
 }
 
 \value{
