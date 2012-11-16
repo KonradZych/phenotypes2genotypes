@@ -93,7 +93,17 @@
 \alias{reciproce}
 \alias{mprobit}
 \alias{mlogit}
-\alias{saveGff.internal}
+\alias{findrecombinations}
+\alias{selectChr}
+\alias{is.integer0}
+\alias{read.populationHT.internal}
+\alias{read.populationNormal.internal}
+\alias{invertChromosome.internal}
+\alias{load_line.internal}
+\alias{load_linebyline.internal}
+\alias{invertChromosome.internal}
+\alias{t_test_line.internal}
+\alias{t_test_linebyline.internal}
 
 \title{Internal pheno2geno functions}
 
