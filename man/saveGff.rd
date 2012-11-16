@@ -1,5 +1,5 @@
-\name{cross.saturate}
-\alias{cross.saturate}
+\name{saveGff}
+\alias{saveGff}
 
 \title{Saving gff files.}
 
@@ -8,15 +8,14 @@
 }
 
 \usage{
-saveGff(cross, population, gffFile="population", verbose=FALSE)
+saveGff(cross, population, gffFileCore="population", verbose=FALSE)
 }
 
 \arguments{
-\item{population}{ An object of class \code{\link{population}}. See \code{\link{create.population}} for details. }
 \item{cross}{ An object of class \code{cross}. See \code{\link[qtl]{read.cross}} for details. If not supplied, it will be created using data from the population object }
+\item{population}{ An object of class \code{\link{population}}. See \code{\link{create.population}} for details. }
 \item{gffFileCore}{Name of the gff files core where a physical location of the markers is stored for use in genome viewers. Four files will be saved - one with only
 non-reduntant markers, one with redundat markers included and two with recombination breakpoints between the all/nonredundant markers.}
- \item{debugMode}{ Either use 1 or 2, this will modify the amount of information returned to the user. 1) Print out checks, 2) Print additional time information.}
  \item{verbose}{ Be verbose.}
 }
 
