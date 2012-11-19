@@ -32,6 +32,7 @@
  \item{debugMode}{ 1: Print out checks, 2: print additional time information }
  \item{...}{ Parameters passed to high-throughtput function:    \itemize{
     \item{threshold}{ - threshold for assesing probes that are differentially expressed between parents. 0.01 by default.}
+    \item{transformations}{ - how should the data be transformed (see \code{\link{transformation}})}
     \item{sliceSize}{ - number of lines to be read at once byt HT function. 5000 by default.}
   }}
 }

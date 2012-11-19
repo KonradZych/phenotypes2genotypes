@@ -14,20 +14,20 @@ reciproce <- function(x, ...){ invisible(return(1/x)) }
 mprobit   <- function(x, ...){ require(VGAM); invisible(return(probit(x, ...))) }
 mlogit    <- function(x, ...){ require(VGAM); invisible(return(logit(x, ...))) }
 
-transform <- function(x, transformations=c("nothing","log","sqrt","reciprocal","probit","logit"), ... , verbose=TRUE){
-  options <- c("nothing","log","sqrt","reciprocal","probit","logit")
-  chosen  <- pmatch(transformations, options)
-  methods <- c(donothing, mlog, msqrt, reciproce, mprobit, mlogit)
+transformation <- function(x, transformations=c("nothing","log","sqrt","reciprocal","probit","logit"), ... , verbose=TRUE){
+  optionsAvailable <- c("nothing","log","sqrt","reciprocal","probit","logit")
+  chosen  <- pmatch(transformations, optionsAvailable)
+  methodsChosen <- c(donothing, mlog, msqrt, reciproce, mprobit, mlogit)
 
-  res <- vector("list",length(methods))
+  res <- vector("list",length(methodsChosen))
   idx <- 1
   for(n in chosen){
-    cat("Applying",n,"a",options[n],"transformation to the data\n")
+    if(verbose)cat("Applying",n,"a",optionsAvailable[n],"transformation to the data\n")
     res[[idx]] <- apply(x,1,function(t){
-      (methods[n][[1]])(t, ...)
+      (methodsChosen[n][[1]])(t, ...)
     })
   idx <- idx+1
   }
-  transformations
+  res
 }
 
