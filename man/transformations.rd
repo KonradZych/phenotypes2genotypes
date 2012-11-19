@@ -1,5 +1,5 @@
-\name{transform}
-\alias{transform}
+\name{transformation}
+\alias{transformation}
 
 \title{Basic functions to do transformation / normalization of phenotypes.}
 
@@ -8,7 +8,7 @@
 }
 
 \usage{
-  transform(x, transformations=c("nothing","log","sqrt","reciprocal","probit","logit"), ..., verbose=TRUE)
+  transformation(x, transformations=c("nothing","log","sqrt","reciprocal","probit","logit"), ..., verbose=TRUE)
 }
 
 \arguments{
@@ -39,8 +39,8 @@
 
 \examples{
 	data <- matrix(runif(1000),10,100)
-  resA <- transform(data, c("log","logit"))
-  resB <- transform(data, c("reciprocal","probit"))
+  resA <- transformation(data, c("log","logit"))
+  resB <- transformation(data, c("reciprocal","probit"))
 }
 
 \seealso{
