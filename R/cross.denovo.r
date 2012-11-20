@@ -61,6 +61,14 @@ assignFunction=c(assignMaximumNoConflicts,assignMaximum), reOrder=TRUE, use.orde
     if(is.null(population$maps$physical)) stop("No physical map provided in population$maps$physical\n")
     originalMap <- population$maps$physical
   }
+  cross <- formLinkageGroups(cross,reorgMarkers=TRUE,...)
+  cross <- reduceChromosomesNumber(cross, n.chr)
+  if("noParents" %in% population$flags){
+    cross <- mergeInverted(cross, class(population)[2])
+  }
+  if(use.orderMarkers){
+      cross <- orderMarkers(cross,use.ripple=TRUE,verbose=TRUE)
+  }
   chromToChromArray <- comparisonMethod(cross, originalMap, population)
   e1 <- proc.time()
   if(verbose){cat("Calculating correlation matrix done in:",(e1-s1)[3],"seconds.\n")}
