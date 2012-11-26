@@ -130,9 +130,9 @@ read.populationNormal.internal <- function(offspring,founders,map,founders_group
   invisible(population)
 }
 
-t_test_line.internal<- function(foundersline,founders_groups,threshold){
-  parentA <- foundersline[which(founders_groups==0)]
-  parentB <- foundersline[which(founders_groups==1)]
+t_test_line.internal<- function(foundersline,founders_groups,threshold,rowNames){
+  parentA <- as.numeric(foundersline[which(founders_groups==0)+1])
+  parentB <- as.numeric(foundersline[which(founders_groups==1)+1])
   res <- t.test(parentA,parentB)
   if(res$p.value < threshold){
     return(foundersline)
@@ -161,13 +161,16 @@ t_test_linebyline.internal <- function(filename,founders_groups,threshold,sliceS
     analysedLines<-readLines(analysedFile,n=sliceSize)
     if(!((length(analysedLines) == 0) && (typeof(analysedLines) == "character"))){
       aa <- t(matrix(unlist(strsplit(analysedLines,"\t")),n.columns,length(analysedLines)))
-      dataUsed <- t(transformation(apply(aa[,-1],c(1,2),as.numeric),transformations)[[length(transformations)]])
+      dataUsed <- t(transformation(apply(aa[,-1],c(1,2),as.numeric),transformations,nothing)[[length(transformations)]])
       #print(dataUsed)
       analysedLines <- NULL
       gc()
+      dataUsed <- cbind(aa[,1],dataUsed)
       selected <- rbind(unlist(apply(dataUsed,1,t_test_line.internal,founders_groups,threshold)))
       selected <- t(matrix(selected,n.columns,length(selected)/n.columns))
-      result <- rbind(result,selected)
+      oldnames <- rownames(result)
+      result <- rbind(result,apply(selected[,-1],c(1,2),as.numeric))
+      rownames(result) <- c(oldnames, selected[,1])
       count <- count + sliceSize
       if(verbose) cat("Processed: ",count,"lines\n")
     }
@@ -176,7 +179,6 @@ t_test_linebyline.internal <- function(filename,founders_groups,threshold,sliceS
     stop("No parental data read in!\n")
   }
   close(analysedFile)
-  rownames(result) <- aa[,1]
   colnames(result) <- header
   invisible(result)
 }
