@@ -1,8 +1,8 @@
 #
 # cross.saturate.R
 #
-# Copyright (c) 2010-2012 GBIC: Danny Arends, Konrad Zych and Ritsert C. Jansen
-# last modified May, 2012
+# Copyright (c) 2010-2013 GBIC: Danny Arends, Konrad Zych and Ritsert C. Jansen
+# last modified January, 2013
 # first written Mar, 2011
 # Contains: cross.saturate, rearrangeMarkers, bestCorelated.internal
 #           map2mapCorrelationMatrix.internal, map2mapImage
@@ -15,7 +15,7 @@
 # OUTPUT:
 #  An object of class cross
 #
-cross.saturate <- function(population, cross, map=c("genetic","physical"), placeUsing=c("qtl","correlation"), threshold=3, chr, use.orderMarkers=FALSE, verbose=FALSE, debugMode=0){
+cross.saturate <- function(population, cross, map=c("genetic","physical"), placeUsing=c("qtl","correlation"), model, threshold=3, chr, use.orderMarkers=FALSE, verbose=FALSE, debugMode=0){
   if(missing(population)) stop("Please provide a population object\n")
   populationType <- class(population)[2]
   check.population(population)
@@ -384,6 +384,9 @@ scan.qtls <- function(population,map=c("genetic","physical"),step=0.1,verbose=FA
       cat("Analysing marker:",i,"\n")
       }
     curScan <- scanone(returncross,pheno.col=i,method="ehk",model="np")
+    if(any(is.infinite(curScan))){
+      stop("scanone results contain Inf values, check your data!")
+    }
     pos <- rbind(pos,curScan[,2])
     res <- rbind(res,curScan[,3])
     chr <- rbind(chr,curScan[,1])
