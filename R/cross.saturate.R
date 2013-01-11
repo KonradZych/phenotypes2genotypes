@@ -384,7 +384,7 @@ scan.qtls <- function(population,map=c("genetic","physical"),step=0.1,verbose=FA
       cat("Analysing marker:",i,"\n")
       }
     curScan <- scanone(returncross,pheno.col=i,method="ehk",model="np")
-    if(any(is.infinite(curScan))){
+    if(any(is.infinite(curScan[,3]))){
       stop("scanone results contain Inf values, check your data!")
     }
     pos <- rbind(pos,curScan[,2])
