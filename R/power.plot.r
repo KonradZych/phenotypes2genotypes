@@ -36,6 +36,12 @@ power.plot <- function(cross1,cross2,qtl.thr=5,n.pheno=500,verbose=FALSE,...){
   if(!is.numeric(n.pheno) || n.pheno<2 || n.pheno>nphe(cross1)){
     stop("n.pheno should be a numeric value between 2 and nphe(cross1).")
   }
+  if(is.null(cross1$geno[[1]]$prob)){
+    cross1 <- calc.genoprob(cross1)
+  }
+  if(is.null(cross2$geno[[1]]$prob)){
+    cross2 <- calc.genoprob(cross2)
+  }
   markers <- sample(1:nphe(cross1),n.pheno)
   res1 <- scanone(cross1,pheno.col=markers,...)
   res2 <- scanone(cross2,pheno.col=markers,...)
@@ -52,5 +58,5 @@ power.plot <- function(cross1,cross2,qtl.thr=5,n.pheno=500,verbose=FALSE,...){
   abline(h=qtl.thr,lty=2,col="grey")
   significant<-which(maxes1>qtl.thr)
   cat(sum(maxes1[significant]<maxes2[significant]),"which is:",sum(maxes1[significant]<maxes2[significant])/length(significant),"% of significant qtls show increase in power\n")
-  invisible(vals)
+  invisible(list(res1,res2))
 }
