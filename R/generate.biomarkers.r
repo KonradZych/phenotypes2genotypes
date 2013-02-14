@@ -126,6 +126,7 @@ generate.biomarkers.internal <- function(population, treshold, overlapInd, propo
   populationType <- class(population)[2]
   if(verbose && debugMode==1) cat("generate.biomarkers.internal starting.\n")
   output <- NULL
+  outputEM <- vector(2,mode="list")
   markerNames <- NULL 
   ### selection step
   ### up-regulated
@@ -158,17 +159,27 @@ generate.biomarkers.internal <- function(population, treshold, overlapInd, propo
         upRils <- upRils[-inupndown,]
       }
       cur <- splitPheno.internal(downRils, downParental, overlapInd, proportion, margin, p.prob, populationType, 0, 0, nrow(upRils),verbose)
-      output <- rbind(output,cur)
+      output <- rbind(output,cur[[1]])
+      outputEM[[1]] <- cur[[2]]
+      names(outputEM[[1]]) <- rownames(downRils)
+      cur <- splitPheno.internal(upRils, upParental, overlapInd, proportion, margin, p.prob, populationType, 1, nrow(downRils), 0, verbose)
+      output <- rbind(output,cur[[1]])
+      outputEM[[2]] <- cur[[2]]
+      names(outputEM[[2]]) <- rownames(upRils)
     }else{
       if(verbose) cat("Selected ",nrow(upRils),"upregulated markers.\n")
     }
-    cur <- splitPheno.internal(upRils, upParental, overlapInd, proportion, margin, p.prob, populationType, 1, nrow(downRils), 0, verbose)
-    output <- rbind(output,cur)
+    cur <- splitPheno.internal(upRils, upParental, overlapInd, proportion, margin, p.prob, populationType, 1, 0, 0, verbose)
+    output <- rbind(output,cur[[1]])
+    outputEM[[2]] <- cur[[2]]
+    names(outputEM[[2]]) <- rownames(upRils)
   }else{
     if(!(is.null(dim(downRils)))&&(nrow(downRils)!=0)){
       if(verbose) cat("Selected ",nrow(downRils),"downregulated markers.\n")
       cur <- splitPheno.internal(downRils, downParental, overlapInd, proportion, margin, p.prob, populationType, 0, 0, 0,verbose)
-      output <- rbind(output,cur)
+      output <- rbind(output,cur[[1]])
+      outputEM[[1]] <- cur[[2]]
+      names(outputEM[[1]]) <- rownames(downRils)
     }else{
       stop("None of the markers was selected using specified treshold: ",treshold,"\n")
     }
@@ -177,7 +188,8 @@ generate.biomarkers.internal <- function(population, treshold, overlapInd, propo
   ### putting results inside population object
   if(is.null(dim(output))) stop("No markers selected.")
   population$offspring$genotypes$simulated <- output
-  colnames(population$offspring$genotypes$simulated) <- colnames(upRils)
+  population$offspring$genotypes$EM <- outputEM
+  #colnames(population$offspring$genotypes$simulated) <- colnames(upRils)
   invisible(population)
 }
 
@@ -204,24 +216,27 @@ generate.biomarkers.internal <- function(population, treshold, overlapInd, propo
 ##K: left, I\'ll try to use apply here instead of for
 splitPheno.internal <- function(offspring, founders, overlapInd, proportion, margin, p.prob=0.8, populationType, up, done=0, left=0, verbose=FALSE){
   output <- NULL
+  outputEM <- vector(nrow(offspring),mode="list")
   markerNames <- NULL
   s <-proc.time()
   for(x in 1:nrow(offspring)){
-    cur <- splitPhenoRowEM.internal(x, offspring, founders, overlapInd, proportion, margin, p.prob, up, populationType, verbose)
-    if(!(is.null(cur))){
-      output <- rbind(output,cur)
+    cur <- splitPhenoRowEM.internal(offspring[x,], overlapInd, proportion, margin, p.prob, up, populationType, verbose)
+    if(!(is.null(cur[[1]]))){
+      output <- rbind(output,cur[[1]])
       markerNames <- c(markerNames,rownames(offspring)[x])
     }
+    outputEM[[x]] <- cur[[2]] 
     if(verbose){
-      if((done+x)%%100==0){
+      perc <- (done+x+left)/(nrow(offspring)+done+left)*100
+      if(perc%%10==0){
         e <- proc.time()
         te <- ((e-s)[3]/x)*(nrow(offspring)-x+left)
-        cat("Done with marker",done+x,"/",nrow(offspring)+left+done,". Time remaining:",te,"s\n")
+        cat("Done with: ",perc,"%. Estimated time remaining:",te,"s\n")
       }
     }
   }
   rownames(output) <- markerNames
-  invisible(output)
+  invisible(list(output,outputEM))
 }
 
 ############################################################################################################
@@ -244,17 +259,16 @@ splitPheno.internal <- function(offspring, founders, overlapInd, proportion, mar
 #  genotype row
 #
 ############################################################################################################
-splitPhenoRowEM.internal <- function(x, offspring, founders, overlapInd, proportion, margin, p.prob=0.8, up=1, populationType, verbose=FALSE){
-  y<-x
-  x<-as.character(rownames(offspring)[x])
+splitPhenoRowEM.internal <- function(x, overlapInd, proportion, margin, p.prob=0.8, up=1, populationType, verbose=FALSE){
+  #cat("post.prob = ",p.prob,"\n")
   aa <- tempfile()
   sink(aa)
   nrDistributions <- length(proportion)
-  result <- rep(0,length(offspring[x,]))
+  result <- rep(0,length(x))
   
   EM <- NULL
   s1<-proc.time()
-  tryCatch(EM <- normalmixEM((offspring[x,]), k=nrDistributions, maxrestarts=0, maxit = 100,fast=FALSE),error = function(x){cat(x[[1]],"\n")})
+  tryCatch(EM <- normalmixEM(x, k=nrDistributions, maxrestarts=0, maxit = 100, fast=FALSE),error = function(x){cat(x[[1]],"\n")})
   e1<-proc.time()
   sink()
   file.remove(aa)
@@ -267,7 +281,7 @@ splitPhenoRowEM.internal <- function(x, offspring, founders, overlapInd, proport
       }else if(up==0){
         genotypes <- c(3,2,1,5,4)
       }
-      for(i in (1:length(offspring[1,]))){
+      for(i in (1:length(x))){
         if(any(EM$posterior[i,]>p.prob)){
           result[i] <- genotypes[which.max(EM$posterior[i,])]
         }else if((EM$posterior[i,1]+EM$posterior[i,2])>p.prob){
@@ -284,8 +298,8 @@ splitPhenoRowEM.internal <- function(x, offspring, founders, overlapInd, proport
       }else if(up==0){
         genotypes <- c(2,1)
       }
-      for(i in (1:length(offspring[1,]))){
-        if(any(EM$posterior[i,]>0.8)){
+      for(i in (1:length(x))){
+        if(any(EM$posterior[i,]>p.prob)){
           result[i] <- genotypes[which.max(EM$posterior[i,])]
         }else{
           result[i] <- NA
@@ -298,7 +312,7 @@ splitPhenoRowEM.internal <- function(x, offspring, founders, overlapInd, proport
   }else{
    result <- NULL
   }
-  invisible(result)
+  invisible(list(result,EM))
 }
 
 
