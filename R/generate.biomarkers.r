@@ -45,7 +45,7 @@ generate.biomarkers <- function(population, threshold=0.05, overlapInd = 10, pro
   
   #*******RETURNING CROSS OBJECT*******
   e<-proc.time()
-  if(verbose) cat("generate.biomarkers done in",(e-s)[3],"seconds\n")
+  if(verbose) cat("generate.biomarkers done in",(e-s)[3],"seconds.\n")
   invisible(population)
 }
 
@@ -133,7 +133,6 @@ generate.biomarkers.internal <- function(population, treshold, overlapInd, propo
   upNotNull <- which(population$founders$RP$pval[,1] > 0)
   upBelowTreshold <- which(population$founders$RP$pval[,1] < treshold)
   upSelected <- upBelowTreshold[which(upBelowTreshold%in%upNotNull)]
-  print(length(upSelected))
   upParental <- population$founders$phenotypes[upSelected,]
   rownamesUp <- rownames(upParental)
   if(any(rownamesUp == "")) rownamesUp <- rownamesUp[-which(rownamesUp == "")]
@@ -142,7 +141,6 @@ generate.biomarkers.internal <- function(population, treshold, overlapInd, propo
   downNotNull <- which(population$founders$RP$pval[,2] > 0)
   downBelowTreshold <- which(population$founders$RP$pval[,2] < treshold)
   downSelected <- downBelowTreshold[which(downBelowTreshold%in%downNotNull)]
-  print(length(downSelected))
   downParental <- population$founders$phenotypes[downSelected,]
   rownamesDown <- rownames(downParental)
   if(any(rownamesDown == "")) rownamesDown <- rownamesDown[-which(rownamesDown == "")]
@@ -152,22 +150,18 @@ generate.biomarkers.internal <- function(population, treshold, overlapInd, propo
   if(!(is.null(dim(upRils)))&&(nrow(upRils)!=0)){
     if(!(is.null(dim(downRils)))&&(nrow(downRils)!=0)){
       # best situation
-      if(verbose) cat("Selected",nrow(downRils),"markers (DOWN), ",nrow(upRils),"markers (UP).\n")
+      if(verbose) cat("Selected",nrow(downRils),"potential markers (downregulated), ",nrow(upRils),"potential markers (upregulated).\n")
       inupndown <- which(rownames(upRils) %in% rownames(downRils))
       if(verbose&&length(inupndown)>0){
-        cat("WARNING: Overlap between UP n DOWN:",length(inupndown),", removing from UP.\n")
+        #cat("WARNING: Overlap between UP n DOWN:",length(inupndown),", removing from UP.\n")
         upRils <- upRils[-inupndown,]
       }
       cur <- splitPheno.internal(downRils, downParental, overlapInd, proportion, margin, p.prob, populationType, 0, 0, nrow(upRils),verbose)
       output <- rbind(output,cur[[1]])
       outputEM[[1]] <- cur[[2]]
       names(outputEM[[1]]) <- rownames(downRils)
-      cur <- splitPheno.internal(upRils, upParental, overlapInd, proportion, margin, p.prob, populationType, 1, nrow(downRils), 0, verbose)
-      output <- rbind(output,cur[[1]])
-      outputEM[[2]] <- cur[[2]]
-      names(outputEM[[2]]) <- rownames(upRils)
     }else{
-      if(verbose) cat("Selected ",nrow(upRils),"upregulated markers.\n")
+      if(verbose) cat("Selected ",nrow(upRils),"upregulated potential markers.\n")
     }
     cur <- splitPheno.internal(upRils, upParental, overlapInd, proportion, margin, p.prob, populationType, 1, 0, 0, verbose)
     output <- rbind(output,cur[[1]])
@@ -175,7 +169,7 @@ generate.biomarkers.internal <- function(population, treshold, overlapInd, propo
     names(outputEM[[2]]) <- rownames(upRils)
   }else{
     if(!(is.null(dim(downRils)))&&(nrow(downRils)!=0)){
-      if(verbose) cat("Selected ",nrow(downRils),"downregulated markers.\n")
+      if(verbose) cat("Selected ",nrow(downRils),"downregulated potential markers.\n")
       cur <- splitPheno.internal(downRils, downParental, overlapInd, proportion, margin, p.prob, populationType, 0, 0, 0,verbose)
       output <- rbind(output,cur[[1]])
       outputEM[[1]] <- cur[[2]]
@@ -184,12 +178,12 @@ generate.biomarkers.internal <- function(population, treshold, overlapInd, propo
       stop("None of the markers was selected using specified treshold: ",treshold,"\n")
     }
   }
-  
+  if(verbose) cat("Generated ",nrow(output),"markers.\n")
   ### putting results inside population object
   if(is.null(dim(output))) stop("No markers selected.")
   population$offspring$genotypes$simulated <- output
   population$offspring$genotypes$EM <- outputEM
-  #colnames(population$offspring$genotypes$simulated) <- colnames(upRils)
+  colnames(population$offspring$genotypes$simulated) <- colnames(upRils)
   invisible(population)
 }
 
@@ -227,7 +221,7 @@ splitPheno.internal <- function(offspring, founders, overlapInd, proportion, mar
     }
     outputEM[[x]] <- cur[[2]] 
     if(verbose){
-      perc <- (done+x+left)/(nrow(offspring)+done+left)*100
+      perc <- round((x+done)*100/nrow(offspring+done+left))
       if(perc%%10==0){
         e <- proc.time()
         te <- ((e-s)[3]/x)*(nrow(offspring)-x+left)
