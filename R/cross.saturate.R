@@ -170,9 +170,7 @@ rearrangeMarkers <- function(cross, population, populationType, cur_map, thresho
       }
       newnames <- NULL
       newpositions <- NULL
-        #print(newnames_)
         positions <- cbind(newnames_,markersNewPostions[newnames_,2],markersNewPostions[newnames_,3])
-        print(positions)
         for(pos in unique(positions[,2])){
           mappingM <- which(positions[,2]==pos)
           newpositions <- c(newpositions,pos)
@@ -182,7 +180,6 @@ rearrangeMarkers <- function(cross, population, populationType, cur_map, thresho
             selM <- positions[mappingM,1]
             #genos <- apply(pull.geno(cross)[,selM],2,function(x){sum(is.na(x))})
             bestM <- which.max(positions[selM,3])
-            #print(bestM)
             left <- left+1
             newnames <- c(newnames,selM[bestM])
           }
@@ -206,7 +203,7 @@ rearrangeMarkers <- function(cross, population, populationType, cur_map, thresho
     }
     if(x %in% chr) if(verbose) cat("Selected:",length(newnames),"new and",length(oldnames),"original markers,",length(toRmv),"markers were removed\n") 
     if(addMarkers){
-      returncross$geno[[x]]$data <- insertMarkers.internal(pull.geno(cross)[,newnames],newpositions,t(population$offspring$genotypes$real[oldnames,]),oldpositions,  populationType)
+      returncross$geno[[x]]$data <- insertMarkers.internal(pull.geno(cross)[,newnames],newpositions,t(population$offspring$genotypes$real[oldnames,]),oldpositions, populationType)
       newmap <- c(as.numeric(newpositions),oldpositions)
       names(newmap) <- c(newnames,oldnames)
       newmap <- sort(newmap)
@@ -222,7 +219,6 @@ rearrangeMarkers <- function(cross, population, populationType, cur_map, thresho
     }
     returncross$geno[[x]]$map <- c(newmap)
   }
-  print(redundant)
   names(returncross$geno) <- 1:length(returncross$geno)
   for(i in 1:length(returncross$geno)){
     class(returncross$geno[[i]]) <- "A"
@@ -249,8 +245,6 @@ insertMarkers.internal <- function(newgeno,newpositions,oldgeno,oldpositions,pop
   for(i in 1:length(newpositions)){
     distance <- abs(oldpositions-as.numeric(newpositions[i]))
     curCor <- cor(newgeno[,i],oldgeno[,which.min(distance)],use="pair")
-    #print(curCor)
-    #print(toInv)
     #cat(i,":",which.min(distance),":",curCor,"\n")
     if(abs(curCor)<0.1){
       toRmv <- c(toRmv,i)
@@ -413,8 +407,9 @@ scan.qtls <- function(population,map=c("genetic","physical"),step=0.1,verbose=FA
   chr <- NULL
   names_ <- NULL
   for(i in 1:nrow(population$offspring$genotypes$simulated)){
-    if(i%%50==0){
-      cat("Analysing marker:",i,"\n")
+    perc <- round(i*100/nrow(population$offspring$genotypes$simulated))
+    if(perc%%10==0){
+      cat("Analysing markers",perc,"% done\n")
       }
     curScan <- scanone(returncross,pheno.col=i,method="ehk",model="np")
     if(any(is.infinite(curScan[,3]))){
