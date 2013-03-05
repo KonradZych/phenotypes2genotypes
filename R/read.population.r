@@ -161,7 +161,7 @@ t_test_linebyline.internal <- function(filename,founders_groups,threshold,sliceS
     analysedLines<-readLines(analysedFile,n=sliceSize)
     if(!((length(analysedLines) == 0) && (typeof(analysedLines) == "character"))){
       aa <- t(matrix(unlist(strsplit(analysedLines,"\t")),n.columns,length(analysedLines)))
-      dataUsed <- t(transformation(apply(aa[,-1],c(1,2),as.numeric),transformations,nothing)[[length(transformations)]])
+      dataUsed <- t(transformation(apply(aa[,-1],c(1,2),as.numeric),transformations)[[length(transformations)]])
       #print(dataUsed)
       analysedLines <- NULL
       gc()
