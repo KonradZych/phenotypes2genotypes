@@ -15,8 +15,10 @@
 # OUTPUT:
 #  An object of class cross
 #
-cross.saturate <- function(population, cross, map=c("genetic","physical"), placeUsing=c("qtl","correlation"), model, threshold=3, chr, keep.redundant=FALSE, use.orderMarkers=FALSE, verbose=FALSE, debugMode=0){
+cross.saturate <- function(population, cross, map=c("genetic","physical"), placeUsing=c("qtl","correlation"), model, threshold=3, chr, env, keep.redundant=FALSE, use.orderMarkers=FALSE, verbose=FALSE, debugMode=0){
   if(missing(population)) stop("Please provide a population object\n")
+  if(missing(env)) env <- rep(1,ncol(population$offspring$phenotypes))
+  if(length(env)!=ncol(population$offspring$phenotypes)) stop("Incorrect environmental vector!\n")
   populationType <- class(population)[2]
   check.population(population)
   if(!is.numeric(threshold)||is.na(threshold)) stop("Please provide correct threshold")
@@ -92,22 +94,22 @@ cross.saturate <- function(population, cross, map=c("genetic","physical"), place
   }
   #*******ENRICHING ORIGINAL MAP*******
   s1 <- proc.time()
-  cross <- rearrangeMarkers(cross, population, populationType, cur_map, threshold, placeUsing, addMarkers=TRUE, keep.redundant, chr, verbose=verbose)
+  cross <- rearrangeMarkers(cross, population, populationType, cur_map, threshold, placeUsing, env, addMarkers=TRUE, keep.redundant, chr, verbose=verbose)
   count <- 1
   while(cross$left>1000){
       count <- count+1
-      cat("Still",cross$left,"markers left to place\n")
-      cat("==== Iteration",count,":",nmar(cross)," ")
+      #cat("Still",cross$left,"markers left to place\n")
+      #cat("==== Iteration",count,":",nmar(cross)," ")
       population <- set.geno.from.cross(cross,population,map)
       population <- scan.qtls(population,map)
-      cat("==== genos:",dim(population$offspring$genotypes$real),"\n")
+      #cat("==== genos:",dim(population$offspring$genotypes$real),"\n")
       aa <- tempfile()
       sink(aa)
       cross <- genotypesToCross.internal(population,"simulated",verbose=verbose,debugMode=debugMode)
       sink()
       file.remove(aa)
       e1 <- proc.time()
-      cross <- rearrangeMarkers(cross, population, populationType, cur_map, threshold, placeUsing, addMarkers=TRUE, keep.redundant, chr, verbose=verbose)
+      cross <- rearrangeMarkers(cross, population, populationType, cur_map, threshold, placeUsing, env, addMarkers=TRUE, keep.redundant, chr, verbose=verbose)
   }
   e1 <- proc.time()
   if(verbose && debugMode==2)cat("Enrichment of original map done in:",(e1-s1)[3],"seconds.\n")
@@ -139,7 +141,7 @@ cross.saturate <- function(population, cross, map=c("genetic","physical"), place
 # OUTPUT:
 #  object of class cross
 ############################################################################################################
-rearrangeMarkers <- function(cross, population, populationType, cur_map, threshold=3, placeUsing, addMarkers=FALSE, keep.redundant=FALSE, chr, verbose=FALSE){
+rearrangeMarkers <- function(cross, population, populationType, cur_map, threshold=3, placeUsing, env, addMarkers=FALSE, keep.redundant=FALSE, chr, verbose=FALSE){
   if(verbose) cat("old map contains",max(cur_map[,1]),"chromosomes\n")
   redundant <- NULL
   if(placeUsing=="qtl"){
@@ -164,6 +166,7 @@ rearrangeMarkers <- function(cross, population, populationType, cur_map, thresho
     oldnames <- oldnamesChr[which(oldnamesChr %in% oldnames_)]
     oldpositions <- cur_map[oldnames,2]
     if(x %in% chr){
+      cat("===here===")
       newnames_ <- rownames(markersNewPostions)[which(markersNewPostions[,1]==x)]
       if(any(newnames_%in%oldnames)){
         newnames_ <- newnames_[-which(newnames_%in%oldnames)]
@@ -178,9 +181,12 @@ rearrangeMarkers <- function(cross, population, populationType, cur_map, thresho
             newnames <- c(newnames,positions[mappingM,1])
           }else{
             selM <- positions[mappingM,1]
+            cat("Selected markers:\n")
             #genos <- apply(pull.geno(cross)[,selM],2,function(x){sum(is.na(x))})
-            bestM <- which.max(positions[selM,3])
+            print(positions[selM,])
+            bestM <- which.max(as.numeric(positions[selM,3]))
             left <- left+1
+            cat("The best:", selM[bestM],"\n")
             newnames <- c(newnames,selM[bestM])
           }
         }
@@ -203,7 +209,7 @@ rearrangeMarkers <- function(cross, population, populationType, cur_map, thresho
     }
     if(x %in% chr) if(verbose) cat("Selected:",length(newnames),"new and",length(oldnames),"original markers,",length(toRmv),"markers were removed\n") 
     if(addMarkers){
-      returncross$geno[[x]]$data <- insertMarkers.internal(pull.geno(cross)[,newnames],newpositions,t(population$offspring$genotypes$real[oldnames,]),oldpositions, populationType)
+      returncross$geno[[x]]$data <- insertMarkers.internal(pull.geno(cross)[,newnames],newpositions,t(population$offspring$genotypes$real[oldnames,]),oldpositions, env, populationType)
       newmap <- c(as.numeric(newpositions),oldpositions)
       names(newmap) <- c(newnames,oldnames)
       newmap <- sort(newmap)
@@ -224,13 +230,13 @@ rearrangeMarkers <- function(cross, population, populationType, cur_map, thresho
     class(returncross$geno[[i]]) <- "A"
   }
   returncross$redundant <- redundant
-  cat("======",left,"======\n")
+  #cat("======",left,"======\n")
   returncross$left <- left
   invisible(returncross)
 }
 
 ###
-insertMarkers.internal <- function(newgeno,newpositions,oldgeno,oldpositions,populationType){
+insertMarkers.internal <- function(newgeno,newpositions,oldgeno,oldpositions,env,populationType){
   if(length(newgeno)<1){
     return(oldgeno)
   }
@@ -264,10 +270,32 @@ insertMarkers.internal <- function(newgeno,newpositions,oldgeno,oldpositions,pop
     invertM[which(invertM==5)] <- 4
     invertM[which(invertM==4)] <- 5
     newgeno[,toInv] <- invertM
+    returnGeno <- cbind(newgeno,oldgeno)
+    #returnGeno <- apply(returnGeno,2,cleanGeno.internal,env,c(1,2,3))
   }else{
     newgeno[,toInv] <- 3 - newgeno[,toInv]
+    returnGeno <- cbind(newgeno,oldgeno)
+    #returnGeno <- apply(returnGeno,2,cleanGeno.internal,env,c(1,2))
   }
-  return(cbind(newgeno,oldgeno))
+  
+  
+  return(returnGeno)
+}
+
+cleanGeno.internal <- function(genoCol,env,genos){
+  for(envVal in unique(env)){
+    incorr <- 0
+    for(geno in genos){
+      if(sum(which(genoCol==geno)%in%which(env==envVal))<4){
+        incorr <- 1
+      }
+    }
+    if(incorr!=0){
+      genoCol[which(env==envVal)] <- NA
+      #cat("We want change!\n")
+    }
+  }
+  invisible(genoCol) 
 }
 
 ###########################################################################################################
@@ -328,9 +356,6 @@ bestQTL.internal <- function(cross, population, treshold,verbose=FALSE){
     if(sum(peaksMatrix[marker,]==2)==1){
       cur_max <- which.max(population$offspring$genotypes$qtl$lod[marker,])
       cur_row <- c(population$offspring$genotypes$qtl$chr[marker,cur_max],population$offspring$genotypes$qtl$pos[marker,cur_max],max(population$offspring$genotypes$qtl$lod[marker,]))
-      if(marker=="7688" || marker=="2502"){
-        cat(marker,cur_row,max(population$offspring$genotypes$qtl$lod[marker,]),"\n")
-      }
       count <- count+1
       output <- rbind(output,cur_row)
     }else{
@@ -412,6 +437,7 @@ scan.qtls <- function(population,map=c("genetic","physical"),step=0.1,verbose=FA
       cat("Analysing markers",perc,"% done\n")
       }
     curScan <- scanone(returncross,pheno.col=i,method="ehk",model="np")
+    #curScan <- fullScan.internal(pull.geno(returncross),pull.pheno(returncross)[,i])
     if(any(is.infinite(curScan[,3]))){
       stop("scanone results contain Inf values, check your data!")
     }
