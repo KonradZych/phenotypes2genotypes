@@ -45,7 +45,7 @@ qtl.comparison.plot <- function(cross, cross2, map.physical1,map.physical2, chr,
       max.lod1 <- max(res1[which(res1[,1]==n),3])
       max.lod2 <- max(res2[which(res2[,1]==n),3])
       max.lod <- max(max.lod1,max.lod2)
-      plot(res1,res2,col=c("orange","grey"),chr=n,main=paste("Chr",n,sep=" "))
+      plot(res1,res2,col=c("black","orange"),chr=n,main="Figure 2 - QTL profiles comparison.")
       values = NULL
       for(x in 1:(min(nchr(cross),nchr(cross2)))){
         values = c(values,max(map.physical1[which(map.physical1[,1]==x),2]))
@@ -57,7 +57,7 @@ qtl.comparison.plot <- function(cross, cross2, map.physical1,map.physical2, chr,
       map.physical_2 <- map.physical2
       for(x in 1:(min(nchr(cross),nchr(cross2)))){
         map.physical_[which(map.physical_[,1]==x),2] = map.physical1[which(map.physical1[,1]==x),2]+valuesS
-        map.physical_2[which(map.physical_2[,1]==x),3] = map.physical2[which(map.physical2[,1]==x),3]+valuesS
+        map.physical_2[which(map.physical_2[,1]==x),2] = map.physical2[which(map.physical2[,1]==x),2]+valuesS
         oldV = valuesS
         valuesS = valuesS+values[x]
         chrPoints = c(chrPoints,(oldV+valuesS)/2)
@@ -73,8 +73,7 @@ qtl.comparison.plot <- function(cross, cross2, map.physical1,map.physical2, chr,
       usefulMChr <- usefulM[names(cross$geno[[n]]$map)[usefulmonNewMAP],]
       usefulMChr2 <- usefulM2[names(cross$geno[[n]]$map)[usefulmonNewMAP2],]
       points(cross$geno[[n]]$map[usefulmonNewMAP],(usefulMChr[,2]/scaler),pch=20)
-      points(cross$geno[[n]]$map[usefulmonNewMAP2],(usefulMChr2[,3]/scaler),pch=20,col="red")
-      print(usefulMChr2[,3]/scaler)
+      points(cross$geno[[n]]$map[usefulmonNewMAP2],(usefulMChr2[,2]/scaler),pch=20,col="orange")
       axis(4,chrPoints[1:(length(chrPoints)-1)]/scaler,paste("Chr",1:(min(nchr(cross),nchr(cross2))),sep=" "))
     }
   }
