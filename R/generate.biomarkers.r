@@ -41,7 +41,11 @@ generate.biomarkers <- function(population, threshold=0.05, overlapInd = 10, pro
   
   #*******CONVERTING CHILDREN PHENOTYPIC DATA TO GENOTYPES*******
   s1 <- proc.time()
-  population <- generate.biomarkers.internal(population, threshold, overlapInd, proportion, margin, p.prob, verbose, debugMode)
+  if("annots" %in% population$flags){
+    population <- generate.biomarkers.onthefly.internal(population, threshold, overlapInd, proportion, margin, p.prob, verbose, debugMode)
+  }else{
+    population <- generate.biomarkers.internal(population, threshold, overlapInd, proportion, margin, p.prob, verbose, debugMode)
+  }
   e1 <- proc.time()
   if(verbose && debugMode==2)cat("Converting phenotypes to genotypes done in:",(e1-s1)[3],"seconds.\n")
   
@@ -195,6 +199,17 @@ generate.biomarkers.internal <- function(population, treshold, overlapInd, propo
   #population$offspring$genotypes$EM <- outputEM
   colnames(population$offspring$genotypes$simulated) <- colnames(upRils)
   invisible(population)
+}
+
+generate.biomarkers.onthefly.internal <- function(population, treshold, overlapInd, proportion, margin, p.prob=0.8, env, verbose=FALSE, debugMode=0){
+  analysedLines <- NULL
+  analysedFile <- population$offspring$phenotypes
+  while(!((length(analysedLines) == 0) && (typeof(analysedLines) == "character"))){
+    analysedLines<-readLines(analysedFile,n=population$sliceSize)
+    if(!((length(analysedLines) == 0) && (typeof(analysedLines) == "character"))){
+      
+    }
+  }
 }
 
 ############################################################################################################
