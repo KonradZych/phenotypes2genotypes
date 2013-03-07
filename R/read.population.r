@@ -225,20 +225,6 @@ load_linebyline.internal <- function(filename,pattern,sliceSize,transformations,
   invisible(result)
 }
 
-simulateParents.internal(population){
-    cat("No founders phenotype data provided, it will be simulated!\n")
-    offsprings <- population$offspring$phenotypes
-    half <-floor(ncol(offsprings)/2)
-    founders <- t(apply(offsprings,1,function(x){c(mean(sort(x)[1:half],na.rm=TRUE),mean(sort(x)[2:(half+1)],na.rm=TRUE),
-    mean(sort(x)[3:(half+2)],na.rm=TRUE),mean(sort(x)[(half+1):ncol(offsprings)],na.rm=TRUE),mean(sort(x)[(half):ncol(offsprings)-1],na.rm=TRUE),
-    mean(sort(x)[(half-1):ncol(offsprings)-2],na.rm=TRUE))}))
-    population$flags <- c(population$flags,"noParents")
-    population <- add.to.populationSub.internal(population, founders, "founders",populationType=populationType)
-    founders_groups <- c(0,0,0,1,1,1)
-    population$founders$groups <- founders_groups
-    invisible(population)
-}
-
 read.populationHT.internal <- function(offspring,founders,map,founders_groups, populationType=c("riself", "f2", "bc", "risib"), threshold=0.01,
   sliceSize=5000, transformations=c("nothing","log","sqrt","reciprocal","probit","logit"), annots, verbose=FALSE, debugMode=0){
   #**********FOUNDERS GROUPS*************
