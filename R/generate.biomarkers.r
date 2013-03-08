@@ -32,16 +32,16 @@
 generate.biomarkers <- function(population, threshold=0.05, overlapInd = 10, proportion = c(50,50), margin = 15, p.prob=0.8, env, verbose=FALSE, debugMode=0){
   if(missing(population)) stop("Population object not found.\n")
   check.population(population) # CHECK
-  if(missing(env)) env <- rep(1,ncol(population$offspring$phenotypes))
-  if(length(env)!=ncol(population$offspring$phenotypes)) stop("Incorrect environmental vector!\n")
+  #if(missing(env)) env <- rep(1,ncol(population$offspring$phenotypes))
+  #if(length(env)!=ncol(population$offspring$phenotypes)) stop("Incorrect environmental vector!\n")
   s<-proc.time()
   if(any(proportion < 1) || sum(proportion) != 100) stop("Wrong proportion paramete\n")
-  if(overlapInd < 0 || overlapInd > ncol(population$offspring$phenotypes)) stop("overlapInd is a number (0,lenght of the row).")
+  #if(overlapInd < 0 || overlapInd > ncol(population$offspring$phenotypes)) stop("overlapInd is a number (0,lenght of the row).")
   if(verbose && debugMode==1) cat("generate.biomarkers starting withour errors in checkpoint.\n")
   
   #*******CONVERTING CHILDREN PHENOTYPIC DATA TO GENOTYPES*******
   s1 <- proc.time()
-  if("annots" %in% population$flags){
+  if(!is.null(population$annots)){
     population <- generate.biomarkers.onthefly.internal(population, threshold, overlapInd, proportion, margin, p.prob, verbose, debugMode)
   }else{
     population <- generate.biomarkers.internal(population, threshold, overlapInd, proportion, margin, p.prob, verbose, debugMode)
@@ -242,7 +242,6 @@ generate.biomarkers.onthefly.internal <- function(population, threshold, overlap
   genoMatrix <- NULL
   phenoMatrix <- NULL
   lineNR <- 0
-  length(unlist(strsplit(a,"")))
   while(!((length(analysedLines) == 0) && (typeof(analysedLines) == "character"))){
     analysedLines <- readLines(analysedFile,n=population$sliceSize)
     analysedLines <- strsplit(analysedLines,"\t")
