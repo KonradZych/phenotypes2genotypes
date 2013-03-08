@@ -246,6 +246,16 @@ generate.biomarkers.onthefly.internal <- function(population, threshold, overlap
     }
   }
   rownames(genoMatrix) <- genoMatrix[,1]
+  rownames(phenoMatrix) <- phenoMatrix[,1]
+  genoMatrix <- mergeEnv.internal(population, genoMatrix)
+  genoMatrix <- genoMatrix[,-1]
+  phenoMatrix <- phenoMatrix[,-1]
+  population$offspring$phenotypes <- phenoMatrix
+  population$offspring$genotypes$simulated <- genoMatrix
+  invisible(population)
+}
+
+mergeEnv.internal <- function(population, genoMatrix){
   ### check if there is anything to merge and if so -> merge
   if(length(unique(population$annots[,3]))<nrow(population$annots)){
     done <- NULL
@@ -275,12 +285,7 @@ generate.biomarkers.onthefly.internal <- function(population, threshold, overlap
       newGeno <- rbind(newGeno,c(probeID,probe_))
     }
   }
-  rownames(phenoMatrix) <- phenoMatrix[,1]
-  genoMatrix <- genoMatrix[,-1]
-  phenoMatrix <- phenoMatrix[,-1]
-  population$offspring$phenotypes <- phenoMatrix
-  population$offspring$genotypes$simulated <- genoMatrix
-  invisible(population)
+  invisible(newGeno)
 }
 
 ############################################################################################################
