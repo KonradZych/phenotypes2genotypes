@@ -211,9 +211,22 @@ t.test_line.internal <- function(dataRow,threshold){
   }
 }
 
+generate.internal <- function(dataRow, pval, threshold, overlapInd, proportion, margin, p.prob, curlineNR, populationType, verbose){
+  cur <- NULL
+  if(pval[1]<threshold && pval[1]!=0){
+    cur <- splitPhenoRowEM.internal(dataRow, overlapInd, proportion, margin, p.prob, 0, populationType, verbose)[[1]]
+  }else if(pval[2]<threshold && pval[2]!=0){
+    cur <- splitPhenoRowEM.internal(dataRow, overlapInd, proportion, margin, p.prob, 1, populationType, verbose)[[1]]
+  }
+  if(!is.null(cur)){
+    cur <- c(curlineNR,cur)
+  }
+  invisible(cur)
+}
+
 check.and.generate.internal <- function(dataRow, threshold, overlapInd, proportion, margin, p.prob, curlineNR, populationType, verbose){
   cur <- NULL
-  if(t.test_line.internal){
+  if(t.test_line.internal(dataRow,threshold)){
      cur <- splitPhenoRowEM.internal(dataRow, overlapInd, proportion, margin, p.prob, 1, populationType, verbose)[[1]]
      if(!is.null(cur)){
        cur <- c(curlineNR,cur)
@@ -236,7 +249,12 @@ generate.biomarkers.onthefly.internal <- function(population, threshold, overlap
     if(!((length(analysedLines) == 0) && (typeof(analysedLines) == "character"))){
       for(analysedLineNR in 1:length(analysedLines)){
         curlineNR <- analysedLineNR + lineNR
-        genoLine <- check.and.generate.internal(analysedLines[[analysedLineNR]], threshold, overlapInd, proportion, margin, p.prob, curlineNR, populationType, verbose)
+        probeID <- population$annots[analysedLines[[analysedLineNR]][1],1]
+        if(is.null(population$founders$RP$pval[curlineNR,])){
+          genoLine <- generate.internal(analysedLines[[analysedLineNR]], population$founders$RP$pval[probeID,], threshold, overlapInd, proportion, margin, p.prob, curlineNR, populationType, verbose)
+        }else{
+          genoLine <- check.and.generate.internal(analysedLines[[analysedLineNR]], threshold, overlapInd, proportion, margin, p.prob, curlineNR, populationType, verbose)
+        }
         if(!is.na(genoLine)){
           genoMatrix <- rbind(genoMatrix,genoLine)
           phenoMatrix <- rbind(phenoMatrix,c(analysedLineNR,analysedLines[[analysedLineNR]]))
@@ -262,6 +280,7 @@ mergeEnv.internal <- function(population, genoMatrix){
     newGeno <- NULL
     for(probe in genoMatrix){
       probeID <- population$annots[probe[1],2]
+      probeName <- population$annots[probe[1],1]
       probe_ <- probe[-1]
       if(!(probeID %in% done)){
         done <- c(done,probeID)
@@ -282,7 +301,7 @@ mergeEnv.internal <- function(population, genoMatrix){
           }
         }
       }
-      newGeno <- rbind(newGeno,c(probeID,probe_))
+      newGeno <- rbind(newGeno,c(probeName,probe_))
     }
   }
   invisible(newGeno)
