@@ -202,8 +202,10 @@ generate.biomarkers.internal <- function(population, treshold, overlapInd, propo
 }
 
 t.test_line.internal <- function(dataRow,threshold){
-  half <- floor(length(dataRow)/2)
-  res <- t.test(sort(dataRow)[1:half],sort(dataRow)[half:length(dataRow)])
+  idx <- which(!is.na(dataRow))
+  y <- dataRow[idx]
+  half <- floor(length(y)/2)
+  res <- t.test(sort(y)[1:half],sort(y)[half:length(y)])
   if(res$p.value<threshold){
     invisible(TRUE)
   }else{
@@ -213,6 +215,7 @@ t.test_line.internal <- function(dataRow,threshold){
 
 generate.internal <- function(dataRow, pval, threshold, overlapInd, proportion, margin, p.prob, curlineNR, populationType, verbose){
   cur <- NULL
+  dataRow <- as.numeric(dataRow)
   if(pval[1]<threshold && pval[1]!=0){
     cur <- splitPhenoRowEM.internal(dataRow, overlapInd, proportion, margin, p.prob, 0, populationType, verbose)[[1]]
   }else if(pval[2]<threshold && pval[2]!=0){
@@ -226,6 +229,7 @@ generate.internal <- function(dataRow, pval, threshold, overlapInd, proportion, 
 
 check.and.generate.internal <- function(dataRow, threshold, overlapInd, proportion, margin, p.prob, curlineNR, populationType, verbose){
   cur <- NULL
+  dataRow <- as.numeric(dataRow)
   if(t.test_line.internal(dataRow,threshold)){
      cur <- splitPhenoRowEM.internal(dataRow, overlapInd, proportion, margin, p.prob, 1, populationType, verbose)[[1]]
      if(!is.null(cur)){
@@ -237,24 +241,30 @@ check.and.generate.internal <- function(dataRow, threshold, overlapInd, proporti
 
 generate.biomarkers.onthefly.internal <- function(population, threshold, overlapInd, proportion, margin, p.prob=0.8, env, verbose=FALSE, debugMode=0){
   analysedLines <- NULL
-  analysedFile <- population$offspring$phenotypes
+  analysedFile <- file(population$offspring$phenotypes,"r")
   header <- unlist(strsplit(readLines(analysedFile,n=1),"\t"))
   genoMatrix <- NULL
   phenoMatrix <- NULL
   lineNR <- 0
+  populationType <- class(population)[2]
   while(!((length(analysedLines) == 0) && (typeof(analysedLines) == "character"))){
     analysedLines <- readLines(analysedFile,n=population$sliceSize)
     analysedLines <- strsplit(analysedLines,"\t")
+    eo <- proc.time()
     if(!((length(analysedLines) == 0) && (typeof(analysedLines) == "character"))){
       for(analysedLineNR in 1:length(analysedLines)){
         curlineNR <- analysedLineNR + lineNR
-        probeID <- population$annots[analysedLines[[analysedLineNR]][1],1]
-        if(is.null(population$founders$RP$pval[curlineNR,])){
+        if(curlineNR %% 500 == 0){
+          en <- proc.time()
+          cat("Analysing phenotype:",curlineNR,"time:",(en-eo)[3],"s\n")
+        }
+        probeID <- as.character(population$annots[curlineNR,1])
+        if(!(is.null(population$founders$RP$pval[probeID,]))){
           genoLine <- generate.internal(analysedLines[[analysedLineNR]], population$founders$RP$pval[probeID,], threshold, overlapInd, proportion, margin, p.prob, curlineNR, populationType, verbose)
         }else{
           genoLine <- check.and.generate.internal(analysedLines[[analysedLineNR]], threshold, overlapInd, proportion, margin, p.prob, curlineNR, populationType, verbose)
         }
-        if(!is.na(genoLine)){
+        if(!is.null(genoLine)){
           genoMatrix <- rbind(genoMatrix,genoLine)
           phenoMatrix <- rbind(phenoMatrix,c(analysedLineNR,analysedLines[[analysedLineNR]]))
         }
@@ -385,6 +395,7 @@ splitPhenoRowEM.internal <- function(x, overlapInd, proportion, margin, p.prob=0
   idw <- length(which((is.na(x))))
   y <- x[idx]
   s1<-proc.time()
+  print(tryCatch)
   tryCatch(EM <- normalmixEM(y, k=nrDistributions, lambda= proportion, maxrestarts=1, maxit = 300, fast=FALSE),error = function(x){cat(x[[1]],"\n")})
   e1<-proc.time()
   sink()
