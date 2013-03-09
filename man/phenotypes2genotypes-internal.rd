@@ -1,5 +1,9 @@
 \name{phenotypes2genotypes-internal}
 
+\alias{createMix}
+\alias{plot4Nmixture}
+\alias{createMix.test}
+
 \alias{mapMarkers.internal}
 \alias{ascendingMaptoJigSawMap}
 
