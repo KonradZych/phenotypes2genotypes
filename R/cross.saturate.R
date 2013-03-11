@@ -167,7 +167,6 @@ rearrangeMarkers <- function(cross, population, populationType, cur_map, thresho
     oldnames <- oldnamesChr[which(oldnamesChr %in% oldnames_)]
     oldpositions <- cur_map[oldnames,2]
     if(x %in% chr){
-      cat("===here===")
       newnames_ <- rownames(markersNewPostions)[which(markersNewPostions[,1]==x)]
       if(any(newnames_%in%oldnames)){
         newnames_ <- newnames_[-which(newnames_%in%oldnames)]
@@ -358,7 +357,7 @@ bestQTL.internal <- function(cross, population, threshold, flagged, verbose=FALS
   rownames(peaksMatrix) <- markers
   for(marker in markers){
     if(sum(peaksMatrix[marker,]==2)==1){
-      if(any(population$offspring$genotypes$flags[marker,]>(threshold/2))){
+      if(any(population$offspring$genotypes$qtl$flags[marker,]>(threshold/2))){
         if(flagged=="remove"){
           cat("Marker:",marker,"shows significant association with environent and will be removed.\n")
           output <- rbind(output,c(NA,NA,NA))
@@ -366,9 +365,11 @@ bestQTL.internal <- function(cross, population, threshold, flagged, verbose=FALS
           cat("Marker:",marker,"shows significant association with environent.\n")
           output <- rbind(output,bestQTLSub.internal(population$offspring$genotypes$qtl,marker))
         }else{
+          #cat("Marker:",marker,"shows significant association with environent.\n")
           output <- rbind(output,bestQTLSub.internal(population$offspring$genotypes$qtl,marker))
         }
       }else{
+         #cat("Marker:",marker,"shows NO significant association with environent.\n")
         output <- rbind(output,bestQTLSub.internal(population$offspring$genotypes$qtl,marker))
       }
     }else{
