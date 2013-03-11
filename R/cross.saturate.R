@@ -146,7 +146,7 @@ rearrangeMarkers <- function(cross, population, populationType, cur_map, thresho
   if(verbose) cat("old map contains",max(cur_map[,1]),"chromosomes\n")
   redundant <- NULL
   if(placeUsing=="qtl"){
-    markersNewPostions <- bestQTL.internal(cross,population,flagged,threshold,verbose)
+    markersNewPostions <- bestQTL.internal(cross,population,threshold,flagged,verbose)
   }else{
     markersNewPostions <- bestCorelated.internal(cross,population,cur_map,threshold,verbose)
   }
@@ -331,6 +331,14 @@ bestCorelatedSub.internal <- function(bestCorMarkersRow,cur_map){
   invisible(c(chr,pos,bestCorMarkersRow[3]))
 }
 
+bestQTLSub.internal <- function(qtls,marker){
+  cur_max <- which.max(qtls$lod[marker,])
+  cur_row <- c(qtls$chr[marker,cur_max], qtls$pos[marker,cur_max], max(qtls$lod[marker,]))
+  count <- count+1
+  output <- rbind(output,cur_row)
+  invisible(output)
+}
+
 ###########################################################################################################
 #                                    *** bestQTL.internal ***
 #
@@ -340,8 +348,9 @@ bestCorelatedSub.internal <- function(bestCorMarkersRow,cur_map){
 # OUTPUT:
 #  vector with new ordering of chromosomes inside cross object
 ############################################################################################################
-bestQTL.internal <- function(cross, population, treshold,verbose=FALSE){
+bestQTL.internal <- function(cross, population, threshold, flagged, verbose=FALSE){
   genotypes <- population$offspring$genotypes$real
+  if(is.null(population$offspring$genotypes$flags)) stop("Old version of the QTL scan detected. Re-run scan.qtls!")
   markers <- markernames(cross)
   phenotypes <- pull.geno(cross)[,markers]
   output <- NULL
@@ -349,17 +358,25 @@ bestQTL.internal <- function(cross, population, treshold,verbose=FALSE){
   if(verbose) cat("Starting qtl analysis.\n")
   s<- proc.time()
   if(is.null(population$offspring$genotypes$qtl)) stop("No qtl data in population$offspring$genotypes$qtl, run scan.qtls function first.")
-  peaksMatrix <- getpeaks.internal(abs(population$offspring$genotypes$qtl$lod),treshold)
+  peaksMatrix <- getpeaks.internal(abs(population$offspring$genotypes$qtl$lod),threshold)
   e<- proc.time()
   if(verbose) cat("Qtl analysis done in:",(e-s)[3],"seconds\n")
   rownames(peaksMatrix) <- markers
   for(marker in markers){
     if(sum(peaksMatrix[marker,]==2)==1){
-      if()
-      cur_max <- which.max(population$offspring$genotypes$qtl$lod[marker,])
-      cur_row <- c(population$offspring$genotypes$qtl$chr[marker,cur_max],population$offspring$genotypes$qtl$pos[marker,cur_max],max(population$offspring$genotypes$qtl$lod[marker,]))
-      count <- count+1
-      output <- rbind(output,cur_row)
+      if(any(population$offspring$genotypes$flags[marker,]>(threshold/2))){
+        if(flagged=="remove"){
+          cat("Marker:",marker,"shows significant association with environent and will be removed.\n")
+          output <- rbind(output,c(NA,NA,NA))
+        }else if(flagged=="warn"){
+          cat("Marker:",marker,"shows significant association with environent.\n")
+          output <- bestQTLSub.internal(population$offspring$genotypes$qtl,marker)
+        }else{
+          output <- bestQTLSub.internal(population$offspring$genotypes$qtl,marker)
+        }
+      }else{
+        output <- bestQTLSub.internal(population$offspring$genotypes$qtl,marker)
+      }
     }else{
       count <- count+1
       output <- rbind(output,c(NA,NA,NA))
@@ -438,14 +455,19 @@ scan.qtls <- function(population,map=c("genetic","physical"), env, step=0.1,verb
   pos <- NULL
   chr <- NULL
   names_ <- NULL
+  done <- 0
   for(i in 1:nrow(population$offspring$genotypes$simulated)){
     perc <- round(i*100/nrow(population$offspring$genotypes$simulated))
     if(perc%%10==0){
-      cat("Analysing markers",perc,"% done\n")
+      if(!(perc%in%done)){
+        e <- proc.time()
+        cat("Analysing markers",perc,"% done, estimated time remaining:",(e-s)[3]/perc*100,"s\n")
+        done <- c(done,perc)
+      }
       }
     
     flag <- t(apply(pull.geno(returncross),2,fullScanRow.internal,pull.pheno(returncross)[,i],env))
-    curScan <- scanone(returncross,pheno.col=i,method="ehk",model="np")
+    curScan <- scanone(returncross,pheno.col=i,model="np")
     #if(any(is.infinite(curScan[,3]))){
     #  stop("scanone results contain Inf values, check your data!")
     #}
