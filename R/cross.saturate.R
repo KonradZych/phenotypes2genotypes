@@ -50,7 +50,7 @@ cross.saturate <- function(population, cross, map=c("genetic","physical"), place
     }
   }else{
     population <- set.geno.from.cross(cross,population,map)
-    population <- scan.qtls(population,map)
+    population <- scan.qtls(population,map,env=env)
       aa <- tempfile()
       sink(aa)
       cross <- genotypesToCross.internal(population,"simulated",verbose=verbose,debugMode=debugMode)
