@@ -334,9 +334,7 @@ bestCorelatedSub.internal <- function(bestCorMarkersRow,cur_map){
 bestQTLSub.internal <- function(qtls,marker){
   cur_max <- which.max(qtls$lod[marker,])
   cur_row <- c(qtls$chr[marker,cur_max], qtls$pos[marker,cur_max], max(qtls$lod[marker,]))
-  count <- count+1
-  output <- rbind(output,cur_row)
-  invisible(output)
+  invisible(cur_row)
 }
 
 ###########################################################################################################
@@ -451,9 +449,10 @@ scan.qtls <- function(population,map=c("genetic","physical"), env, step=0.1,verb
   returncross <- calc.genoprob(returncross,step=step)
   if(verbose) cat("Starting qtl scan, this may take a long time to finish!\n")
   s <- proc.time()
-  res <- NULL
+  lod <- NULL
   pos <- NULL
   chr <- NULL
+  flags <- NULL
   names_ <- NULL
   done <- 0
   for(i in 1:nrow(population$offspring$genotypes$simulated)){
@@ -473,14 +472,14 @@ scan.qtls <- function(population,map=c("genetic","physical"), env, step=0.1,verb
     #}
     chr <- rbind(chr,curScan[,1])
     pos <- rbind(pos,curScan[,2])
-    qtl <- rbind(res,curScan[,3])
-    flags <- rbind(res,c(max(flag[,1]),max(flag[,3])))
+    lod <- rbind(lod,curScan[,3])
+    flags <- rbind(flags,c(max(flag[,1]),max(flag[,3])))
     names_ <- c(names_,colnames(returncross$pheno)[i])
   }
   #population$offspring$genotypes$qtl <- t(matrix(unlist(lapply(markers,QTLscan.internal,phenotypes,genotypes)),nrow(genotypes),length(markers)))
   e <- proc.time()
   if(verbose) cat("Qtl scan done in",(e-s)[3],"s\n")
-  population$offspring$genotypes$qtl$lod <- res
+  population$offspring$genotypes$qtl$lod <- lod
   population$offspring$genotypes$qtl$pos <- pos
   population$offspring$genotypes$qtl$chr <- chr
   population$offspring$genotypes$qtl$flags <- flags
