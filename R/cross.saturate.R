@@ -95,7 +95,7 @@ cross.saturate <- function(population, cross, map=c("genetic","physical"), place
   }
   #*******ENRICHING ORIGINAL MAP*******
   s1 <- proc.time()
-  cross <- rearrangeMarkers(cross, population, populationType, cur_map, threshold, placeUsing, env, addMarkers=TRUE, keep.redundant, chr, verbose=verbose)
+  cross <- rearrangeMarkers(cross, population, populationType, cur_map, threshold, placeUsing, flagged, env, addMarkers=TRUE, keep.redundant, chr, verbose=verbose)
   count <- 1
   while(cross$left>1000){
       count <- count+1
@@ -348,7 +348,7 @@ bestQTLSub.internal <- function(qtls,marker){
 ############################################################################################################
 bestQTL.internal <- function(cross, population, threshold, flagged, verbose=FALSE){
   genotypes <- population$offspring$genotypes$real
-  if(is.null(population$offspring$genotypes$flags)) stop("Old version of the QTL scan detected. Re-run scan.qtls!")
+  if(is.null(population$offspring$genotypes$qtl$flags)) stop("Old version of the QTL scan detected. Re-run scan.qtls!")
   markers <- markernames(cross)
   phenotypes <- pull.geno(cross)[,markers]
   output <- NULL
