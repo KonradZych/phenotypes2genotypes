@@ -461,7 +461,7 @@ scan.qtls <- function(population,map=c("genetic","physical"), env, step=0.1,verb
     if(perc%%10==0){
       if(!(perc%in%done)){
         e <- proc.time()
-        cat("Analysing markers",perc,"% done, estimated time remaining:",(e-s)[3]/perc*100,"s\n")
+        cat("Analysing markers",perc,"% done, estimated time remaining:",(e-s)[3]/perc*(100-perc),"s\n")
         done <- c(done,perc)
       }
       }
