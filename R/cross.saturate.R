@@ -182,12 +182,8 @@ rearrangeMarkers <- function(cross, population, populationType, cur_map, thresho
             newnames <- c(newnames,positions[mappingM,1])
           }else{
             selM <- positions[mappingM,1]
-            cat("Selected markers:\n")
-            #genos <- apply(pull.geno(cross)[,selM],2,function(x){sum(is.na(x))})
-            print(positions[selM,])
             bestM <- which.max(as.numeric(positions[selM,3]))
             left <- left+1
-            cat("The best:", selM[bestM],"\n")
             newnames <- c(newnames,selM[bestM])
           }
         }
