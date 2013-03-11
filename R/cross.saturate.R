@@ -370,8 +370,9 @@ bestQTL.internal <- function(cross, population, treshold,verbose=FALSE){
   invisible(output)
 }
 
-fullScan.internal<- function(genoMatrix,phenoRow,env){
-  model <- lm(m[,"p"] ~ as.factor(m[,"c"]) + m[,"g"] + as.factor(m[,"c"]):m[,"g"])
+fullScanRow.internal <- function(genoRow,phenoRow,env){
+  model <- lm(phenoRow ~ env + genoRow + env:genoRow)
+  return(-log10(model[[5]]))
 }
 
 ###########################################################################################################
@@ -441,10 +442,10 @@ scan.qtls <- function(population,map=c("genetic","physical"),env,step=0.1,verbos
       cat("Analysing markers",perc,"% done\n")
       }
     #curScan <- scanone(returncross,pheno.col=i,method="ehk",model="np")
-    curScan <- fullScan.internal(pull.geno(returncross),pull.pheno(returncross)[,i],env)
-    if(any(is.infinite(curScan[,3]))){
-      stop("scanone results contain Inf values, check your data!")
-    }
+    curScan <- t(apply(pull.geno(returncross),1,fullScanRow.internal,pull.pheno(returncross)[,i],env))
+    #if(any(is.infinite(curScan[,3]))){
+    #  stop("scanone results contain Inf values, check your data!")
+    #}
     chr <- rbind(chr,curScan[,1])
     pos <- rbind(pos,curScan[,2])
     qtl <- rbind(res,curScan[,3])
@@ -458,6 +459,8 @@ scan.qtls <- function(population,map=c("genetic","physical"),env,step=0.1,verbos
   population$offspring$genotypes$qtl$lod <- res
   population$offspring$genotypes$qtl$pos <- pos
   population$offspring$genotypes$qtl$chr <- chr
+  population$offspring$genotypes$qtl$env <- env
+  population$offspring$genotypes$qtl$int <- int
   population$offspring$genotypes$qtl$names <- names_
   rownames(population$offspring$genotypes$qtl$lod) <- names_
   colnames(population$offspring$genotypes$qtl$lod) <- rownames(curScan)   
@@ -465,6 +468,10 @@ scan.qtls <- function(population,map=c("genetic","physical"),env,step=0.1,verbos
   colnames(population$offspring$genotypes$qtl$chr) <- rownames(curScan)  
   rownames(population$offspring$genotypes$qtl$pos) <- names_
   colnames(population$offspring$genotypes$qtl$pos) <- rownames(curScan)
+  rownames(population$offspring$genotypes$qtl$env) <- names_
+  colnames(population$offspring$genotypes$qtl$env) <- rownames(curScan)
+  rownames(population$offspring$genotypes$qtl$int) <- names_
+  colnames(population$offspring$genotypes$qtl$int) <- rownames(curScan)
   invisible(population)
 }
 
