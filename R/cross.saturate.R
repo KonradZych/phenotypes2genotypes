@@ -15,8 +15,9 @@
 # OUTPUT:
 #  An object of class cross
 #
-cross.saturate <- function(population, cross, map=c("genetic","physical"), placeUsing=c("qtl","correlation"), model, threshold=3, chr, env, keep.redundant=FALSE, use.orderMarkers=FALSE, verbose=FALSE, debugMode=0){
+cross.saturate <- function(population, cross, map=c("genetic","physical"), placeUsing=c("qtl","correlation"), flagged = c("remove","warn","ignore"), model, threshold=3, chr, env, keep.redundant=FALSE, use.orderMarkers=FALSE, verbose=FALSE, debugMode=0){
   if(missing(population)) stop("Please provide a population object\n")
+  flagged <- match.arg(flagged)
   if(missing(env)) env <- rep(1,ncol(population$offspring$phenotypes))
   if(length(env)!=ncol(population$offspring$phenotypes)) stop("Incorrect environmental vector!\n")
   populationType <- class(population)[2]
@@ -109,7 +110,7 @@ cross.saturate <- function(population, cross, map=c("genetic","physical"), place
       sink()
       file.remove(aa)
       e1 <- proc.time()
-      cross <- rearrangeMarkers(cross, population, populationType, cur_map, threshold, placeUsing, env, addMarkers=TRUE, keep.redundant, chr, verbose=verbose)
+      cross <- rearrangeMarkers(cross, population, populationType, cur_map, threshold, placeUsing, flagged, env, addMarkers=TRUE, keep.redundant, chr, verbose=verbose)
   }
   e1 <- proc.time()
   if(verbose && debugMode==2)cat("Enrichment of original map done in:",(e1-s1)[3],"seconds.\n")
@@ -141,11 +142,11 @@ cross.saturate <- function(population, cross, map=c("genetic","physical"), place
 # OUTPUT:
 #  object of class cross
 ############################################################################################################
-rearrangeMarkers <- function(cross, population, populationType, cur_map, threshold=3, placeUsing, env, addMarkers=FALSE, keep.redundant=FALSE, chr, verbose=FALSE){
+rearrangeMarkers <- function(cross, population, populationType, cur_map, threshold=3, placeUsing, flagged, env, addMarkers=FALSE, keep.redundant=FALSE, chr, verbose=FALSE){
   if(verbose) cat("old map contains",max(cur_map[,1]),"chromosomes\n")
   redundant <- NULL
   if(placeUsing=="qtl"){
-    markersNewPostions <- bestQTL.internal(cross,population,threshold,verbose)
+    markersNewPostions <- bestQTL.internal(cross,population,flagged,threshold,verbose)
   }else{
     markersNewPostions <- bestCorelated.internal(cross,population,cur_map,threshold,verbose)
   }
@@ -354,6 +355,7 @@ bestQTL.internal <- function(cross, population, treshold,verbose=FALSE){
   rownames(peaksMatrix) <- markers
   for(marker in markers){
     if(sum(peaksMatrix[marker,]==2)==1){
+      if()
       cur_max <- which.max(population$offspring$genotypes$qtl$lod[marker,])
       cur_row <- c(population$offspring$genotypes$qtl$chr[marker,cur_max],population$offspring$genotypes$qtl$pos[marker,cur_max],max(population$offspring$genotypes$qtl$lod[marker,]))
       count <- count+1
@@ -371,8 +373,8 @@ bestQTL.internal <- function(cross, population, treshold,verbose=FALSE){
 }
 
 fullScanRow.internal <- function(genoRow,phenoRow,env){
-  model <- lm(phenoRow ~ env + genoRow + env:genoRow)
-  return(-log10(model[[5]]))
+  model <- anova(lm(phenoRow ~ env + genoRow + env:genoRow))
+  return(-log10(model[[5]])[1:3])
 }
 
 ###########################################################################################################
@@ -383,7 +385,7 @@ fullScanRow.internal <- function(genoRow,phenoRow,env){
 # OUTPUT:
 #  vector with new ordering of chromosomes inside cross object
 ############################################################################################################
-scan.qtls <- function(population,map=c("genetic","physical"),env,step=0.1,verbose=FALSE){
+scan.qtls <- function(population,map=c("genetic","physical"), env, step=0.1,verbose=FALSE){
   if(missing(population)) stop("Please provide a population object\n")
   check.population(population)
   if(is.null(population$offspring$genotypes$real)){
@@ -441,16 +443,16 @@ scan.qtls <- function(population,map=c("genetic","physical"),env,step=0.1,verbos
     if(perc%%10==0){
       cat("Analysing markers",perc,"% done\n")
       }
-    #curScan <- scanone(returncross,pheno.col=i,method="ehk",model="np")
-    curScan <- t(apply(pull.geno(returncross),1,fullScanRow.internal,pull.pheno(returncross)[,i],env))
+    
+    flag <- t(apply(pull.geno(returncross),2,fullScanRow.internal,pull.pheno(returncross)[,i],env))
+    curScan <- scanone(returncross,pheno.col=i,method="ehk",model="np")
     #if(any(is.infinite(curScan[,3]))){
     #  stop("scanone results contain Inf values, check your data!")
     #}
     chr <- rbind(chr,curScan[,1])
     pos <- rbind(pos,curScan[,2])
     qtl <- rbind(res,curScan[,3])
-    env <- rbind(res,curScan[,4])
-    int <- rbind(res,curScan[,5])
+    flags <- rbind(res,c(max(flag[,1]),max(flag[,3])))
     names_ <- c(names_,colnames(returncross$pheno)[i])
   }
   #population$offspring$genotypes$qtl <- t(matrix(unlist(lapply(markers,QTLscan.internal,phenotypes,genotypes)),nrow(genotypes),length(markers)))
@@ -459,8 +461,7 @@ scan.qtls <- function(population,map=c("genetic","physical"),env,step=0.1,verbos
   population$offspring$genotypes$qtl$lod <- res
   population$offspring$genotypes$qtl$pos <- pos
   population$offspring$genotypes$qtl$chr <- chr
-  population$offspring$genotypes$qtl$env <- env
-  population$offspring$genotypes$qtl$int <- int
+  population$offspring$genotypes$qtl$flags <- flags
   population$offspring$genotypes$qtl$names <- names_
   rownames(population$offspring$genotypes$qtl$lod) <- names_
   colnames(population$offspring$genotypes$qtl$lod) <- rownames(curScan)   
@@ -468,10 +469,7 @@ scan.qtls <- function(population,map=c("genetic","physical"),env,step=0.1,verbos
   colnames(population$offspring$genotypes$qtl$chr) <- rownames(curScan)  
   rownames(population$offspring$genotypes$qtl$pos) <- names_
   colnames(population$offspring$genotypes$qtl$pos) <- rownames(curScan)
-  rownames(population$offspring$genotypes$qtl$env) <- names_
-  colnames(population$offspring$genotypes$qtl$env) <- rownames(curScan)
-  rownames(population$offspring$genotypes$qtl$int) <- names_
-  colnames(population$offspring$genotypes$qtl$int) <- rownames(curScan)
+  names(population$offspring$genotypes$qtl$flags) <- names_
   invisible(population)
 }
 
