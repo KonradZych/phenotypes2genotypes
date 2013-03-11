@@ -370,6 +370,9 @@ bestQTL.internal <- function(cross, population, treshold,verbose=FALSE){
   invisible(output)
 }
 
+fullScan.internal<- function(genoMatrix,phenoRow,env){
+  model <- lm(m[,"p"] ~ as.factor(m[,"c"]) + m[,"g"] + as.factor(m[,"c"]):m[,"g"])
+}
 
 ###########################################################################################################
 #                                    *** QTLscan.internal ***
@@ -379,7 +382,7 @@ bestQTL.internal <- function(cross, population, treshold,verbose=FALSE){
 # OUTPUT:
 #  vector with new ordering of chromosomes inside cross object
 ############################################################################################################
-scan.qtls <- function(population,map=c("genetic","physical"),step=0.1,verbose=FALSE){
+scan.qtls <- function(population,map=c("genetic","physical"),env,step=0.1,verbose=FALSE){
   if(missing(population)) stop("Please provide a population object\n")
   check.population(population)
   if(is.null(population$offspring$genotypes$real)){
@@ -388,6 +391,7 @@ scan.qtls <- function(population,map=c("genetic","physical"),step=0.1,verbose=FA
   if(is.null(population$offspring$genotypes$simulated)){
     stop("No simulated genotypes in population$offspring$genotypes$simulated, run generate.biomarkers first\n")
   }
+  if(missing(env)) env <- rep(1,ncol(population$offspring$phenotypes))
   map <- match.arg(map)
   if(map=="genetic"){
     matchingMarkers <- which(rownames(population$offspring$genotypes$real)%in%rownames(population$maps$genetic))
@@ -436,14 +440,16 @@ scan.qtls <- function(population,map=c("genetic","physical"),step=0.1,verbose=FA
     if(perc%%10==0){
       cat("Analysing markers",perc,"% done\n")
       }
-    curScan <- scanone(returncross,pheno.col=i,method="ehk",model="np")
-    #curScan <- fullScan.internal(pull.geno(returncross),pull.pheno(returncross)[,i])
+    #curScan <- scanone(returncross,pheno.col=i,method="ehk",model="np")
+    curScan <- fullScan.internal(pull.geno(returncross),pull.pheno(returncross)[,i],env)
     if(any(is.infinite(curScan[,3]))){
       stop("scanone results contain Inf values, check your data!")
     }
-    pos <- rbind(pos,curScan[,2])
-    res <- rbind(res,curScan[,3])
     chr <- rbind(chr,curScan[,1])
+    pos <- rbind(pos,curScan[,2])
+    qtl <- rbind(res,curScan[,3])
+    env <- rbind(res,curScan[,4])
+    int <- rbind(res,curScan[,5])
     names_ <- c(names_,colnames(returncross$pheno)[i])
   }
   #population$offspring$genotypes$qtl <- t(matrix(unlist(lapply(markers,QTLscan.internal,phenotypes,genotypes)),nrow(genotypes),length(markers)))
