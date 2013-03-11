@@ -370,12 +370,12 @@ bestQTL.internal <- function(cross, population, threshold, flagged, verbose=FALS
           output <- rbind(output,c(NA,NA,NA))
         }else if(flagged=="warn"){
           cat("Marker:",marker,"shows significant association with environent.\n")
-          output <- bestQTLSub.internal(population$offspring$genotypes$qtl,marker)
+          output <- rbind(output,bestQTLSub.internal(population$offspring$genotypes$qtl,marker))
         }else{
-          output <- bestQTLSub.internal(population$offspring$genotypes$qtl,marker)
+          output <- rbind(output,bestQTLSub.internal(population$offspring$genotypes$qtl,marker))
         }
       }else{
-        output <- bestQTLSub.internal(population$offspring$genotypes$qtl,marker)
+        output <- rbind(output,bestQTLSub.internal(population$offspring$genotypes$qtl,marker))
       }
     }else{
       count <- count+1
