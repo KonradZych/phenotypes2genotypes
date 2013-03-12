@@ -493,7 +493,12 @@ scan.qtls <- function(population,map=c("genetic","physical"), env, step=0.1,verb
       flags <- rbind(flags,c(0,0))
     }
     curScan <- scanone(returncross,pheno.col=i,model="np")
+    aa <- tempfile()
+    sink(aa)
     curScantwo <- scantwo(returncrosstwo,pheno.col=i)
+    sink()
+    file.remove(aa)
+    
     #if(any(is.infinite(curScan[,3]))){
     #  stop("scanone results contain Inf values, check your data!")
     #}
