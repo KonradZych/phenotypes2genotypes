@@ -353,11 +353,14 @@ bestQTL.internal <- function(cross, population, threshold, flagged, verbose=FALS
   if(is.null(population$offspring$genotypes$qtl)) stop("No qtl data in population$offspring$genotypes$qtl, run scan.qtls function first.")
   peaksMatrix <- getpeaks.internal(abs(population$offspring$genotypes$qtl$lod),threshold)
   e<- proc.time()
+  envInf <- 0
+  epiInf <- 0
   if(verbose) cat("Qtl analysis done in:",(e-s)[3],"seconds\n")
   rownames(peaksMatrix) <- markers
   for(marker in markers){
     if(sum(peaksMatrix[marker,]==2)==1){
       if(any(population$offspring$genotypes$qtl$flags[marker,]>(threshold/2))){
+        envInf <- envInf + 1
         if(flagged=="remove"){
           cat("Marker:",marker,"shows significant association with environent and will be removed.\n")
           output <- rbind(output,c(NA,NA,NA))
@@ -368,8 +371,19 @@ bestQTL.internal <- function(cross, population, threshold, flagged, verbose=FALS
           #cat("Marker:",marker,"shows significant association with environent.\n")
           output <- rbind(output,bestQTLSub.internal(population$offspring$genotypes$qtl,marker))
         }
+      }else if(population$offspring$genotypes$qtl$scan2[marker,]>max(population$offspring$genotypes$qtl[marker,])){
+        epiInf < epiInf + 1
+        if(flagged=="remove"){
+          cat("Marker:",marker,"is influenced by an epistatic interaction and will be removed.\n")
+          output <- rbind(output,c(NA,NA,NA))
+        }else if(flagged=="warn"){
+          cat("Marker:",marker,"is influenced by an epistatic interaction.\n")
+          output <- rbind(output,bestQTLSub.internal(population$offspring$genotypes$qtl,marker))
+        }else{
+          #cat("Marker:",marker,"shows significant association with environent.\n")
+          output <- rbind(output,bestQTLSub.internal(population$offspring$genotypes$qtl,marker))
+        }
       }else{
-         #cat("Marker:",marker,"shows NO significant association with environent.\n")
         output <- rbind(output,bestQTLSub.internal(population$offspring$genotypes$qtl,marker))
       }
     }else{
@@ -378,6 +392,13 @@ bestQTL.internal <- function(cross, population, threshold, flagged, verbose=FALS
     }
   }
   #to have same format of the output as in bestcorrelated
+  if(verbose && flagged=="remove"){
+    cat("Removed:",envInf,"markers showing significant association with environent.\n")
+    cat("Removed:",epiInf,"markers influenced by an epistatic interaction.\n")
+  }else if(verbose){
+    cat(envInf,"markers show significant association with environent.\n")
+    cat(epiInf,"markers are influenced by an epistatic interaction.\n")
+  }
   rownames(output) <- markers
   if(any(is.na(output[,1]))) output <- output[-which(is.na(output[,1])),]
   if(any(is.na(output[,2]))) output <- output[-which(is.na(output[,2])),]
@@ -444,6 +465,7 @@ scan.qtls <- function(population,map=c("genetic","physical"), env, step=0.1,verb
   }
   returncross$pheno <- t(population$offspring$genotypes$simulated)
   returncross <- calc.genoprob(returncross,step=step)
+  returncrosstwo <- calc.genoprob(returncross,step=0)
   if(verbose) cat("Starting qtl scan, this may take a long time to finish!\n")
   s <- proc.time()
   lod <- NULL
@@ -451,7 +473,10 @@ scan.qtls <- function(population,map=c("genetic","physical"), env, step=0.1,verb
   chr <- NULL
   flags <- NULL
   names_ <- NULL
+  scan2 <- NULL
   done <- 0
+  useEnv <- TRUE
+  if(!(length(unique(env))>1)) useEnv <- FALSE
   for(i in 1:nrow(population$offspring$genotypes$simulated)){
     perc <- round(i*100/nrow(population$offspring$genotypes$simulated))
     if(perc%%10==0){
@@ -461,16 +486,21 @@ scan.qtls <- function(population,map=c("genetic","physical"), env, step=0.1,verb
         done <- c(done,perc)
       }
       }
-    
-    flag <- t(apply(pull.geno(returncross),2,fullScanRow.internal,pull.pheno(returncross)[,i],env))
+    if(useEnv){
+      flag <- t(apply(pull.geno(returncross),2,fullScanRow.internal,pull.pheno(returncross)[,i],env))
+      flags <- rbind(flags,c(max(flag[,1]),max(flag[,3])))
+    }else{
+      flags <- rbind(flags,c(0,0))
+    }
     curScan <- scanone(returncross,pheno.col=i,model="np")
+    curScantwo <- scantwo(returncrosstwo,pheno.col=i)
     #if(any(is.infinite(curScan[,3]))){
     #  stop("scanone results contain Inf values, check your data!")
     #}
     chr <- rbind(chr,curScan[,1])
     pos <- rbind(pos,curScan[,2])
     lod <- rbind(lod,curScan[,3])
-    flags <- rbind(flags,c(max(flag[,1]),max(flag[,3])))
+    scan2 <- rbind(scan2,max(summary(curScantwo)[,6]))
     names_ <- c(names_,colnames(returncross$pheno)[i])
   }
   #population$offspring$genotypes$qtl <- t(matrix(unlist(lapply(markers,QTLscan.internal,phenotypes,genotypes)),nrow(genotypes),length(markers)))
@@ -480,6 +510,7 @@ scan.qtls <- function(population,map=c("genetic","physical"), env, step=0.1,verb
   population$offspring$genotypes$qtl$pos <- pos
   population$offspring$genotypes$qtl$chr <- chr
   population$offspring$genotypes$qtl$flags <- flags
+  population$offspring$genotypes$qtl$scan2 <- scan2
   population$offspring$genotypes$qtl$names <- names_
   rownames(population$offspring$genotypes$qtl$lod) <- names_
   colnames(population$offspring$genotypes$qtl$lod) <- rownames(curScan)   
@@ -487,7 +518,8 @@ scan.qtls <- function(population,map=c("genetic","physical"), env, step=0.1,verb
   colnames(population$offspring$genotypes$qtl$chr) <- rownames(curScan)  
   rownames(population$offspring$genotypes$qtl$pos) <- names_
   colnames(population$offspring$genotypes$qtl$pos) <- rownames(curScan)
-  names(population$offspring$genotypes$qtl$flags) <- names_
+  rownames(population$offspring$genotypes$qtl$scan2) <- names_
+  rownames(population$offspring$genotypes$qtl$flags) <- names_
   invisible(population)
 }
 
