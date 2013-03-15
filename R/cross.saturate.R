@@ -406,8 +406,10 @@ bestQTL.internal <- function(cross, population, threshold, flagged, verbose=FALS
 }
 
 fullScanRow.internal <- function(genoRow,phenoRow,env){
-  model <- anova(lm(phenoRow ~ env + genoRow + env:genoRow))
-  return(-log10(model[[5]])[1:3])
+  model <- lm(phenoRow ~ env + genoRow + env:genoRow)
+  anov <- anova(model)
+  loglikeli <- logLik(model)
+  return(c(-log10(model[[5]])[1:3],loglikeli))
 }
 
 ###########################################################################################################
@@ -474,10 +476,13 @@ scan.qtls <- function(population,map=c("genetic","physical"), env, step=0.1,verb
   flags <- NULL
   names_ <- NULL
   scan2 <- NULL
+  logLikeli <- NULL
+  curlogLikeli <- NULL
   done <- 0
   useEnv <- TRUE
   if(!(length(unique(env))>1)) useEnv <- FALSE
   for(i in 1:nrow(population$offspring$genotypes$simulated)){
+    phenotype <- pull.pheno(returncross)[,i]
     perc <- round(i*100/nrow(population$offspring$genotypes$simulated))
     if(perc%%10==0){
       if(!(perc%in%done)){
@@ -487,15 +492,26 @@ scan.qtls <- function(population,map=c("genetic","physical"), env, step=0.1,verb
       }
       }
     if(useEnv){
-      flag <- t(apply(pull.geno(returncross),2,fullScanRow.internal,pull.pheno(returncross)[,i],env))
+      flag <- t(apply(pull.geno(returncross),2,fullScanRow.internal,phenotype,env))
       flags <- rbind(flags,c(max(flag[,1]),max(flag[,3])))
+      curlogLikeli <- c(curlogLikeli,min(flag[,4]))
     }else{
       flags <- rbind(flags,c(0,0))
+      curlogLikeli <- c(curlogLikeli,0)
     }
     curScan <- scanone(returncross,pheno.col=i,model="np")
     aa <- tempfile()
     sink(aa)
     curScantwo <- scantwo(returncrosstwo,pheno.col=i)
+    maxLine <- which.max(summary(curScantwo)[,6])
+    chr1 <- summary(curScantwo)[maxLine,1]
+    marker1 <- which(returncross$geno[[chr1]]$map==summary(curScantwo)[maxLine,3])
+    chr2 <- summary(curScantwo)[maxLine,2]
+    marker2 <- which(returncross$geno[[chr2]]$map==summary(curScantwo)[maxLine,4])
+    genoRow1 <- returncross$geno[[chr1]]$data[,marker1]
+    genoRow2 <- returncross$geno[[chr2]]$data[,marker2]
+    model <- lm(phenotype ~ env + genoRow1 + genoRow2 + env:genoRow1 + env:genoRow2 + genoRow1:genoRow2 + env:genoRow1:genoRow2)
+    curlogLikeli <- c(curlogLikeli,logLik(model))
     sink()
     file.remove(aa)
     
@@ -505,7 +521,7 @@ scan.qtls <- function(population,map=c("genetic","physical"), env, step=0.1,verb
     chr <- rbind(chr,curScan[,1])
     pos <- rbind(pos,curScan[,2])
     lod <- rbind(lod,curScan[,3])
-    scan2 <- rbind(scan2,max(summary(curScantwo)[,6]))
+    logLikeli <- rbind(logLikeli,curlogLikeli)
     names_ <- c(names_,colnames(returncross$pheno)[i])
   }
   #population$offspring$genotypes$qtl <- t(matrix(unlist(lapply(markers,QTLscan.internal,phenotypes,genotypes)),nrow(genotypes),length(markers)))
@@ -515,7 +531,7 @@ scan.qtls <- function(population,map=c("genetic","physical"), env, step=0.1,verb
   population$offspring$genotypes$qtl$pos <- pos
   population$offspring$genotypes$qtl$chr <- chr
   population$offspring$genotypes$qtl$flags <- flags
-  population$offspring$genotypes$qtl$scan2 <- scan2
+  population$offspring$genotypes$qtl$logLik <- logLikeli
   population$offspring$genotypes$qtl$names <- names_
   rownames(population$offspring$genotypes$qtl$lod) <- names_
   colnames(population$offspring$genotypes$qtl$lod) <- rownames(curScan)   
@@ -523,7 +539,7 @@ scan.qtls <- function(population,map=c("genetic","physical"), env, step=0.1,verb
   colnames(population$offspring$genotypes$qtl$chr) <- rownames(curScan)  
   rownames(population$offspring$genotypes$qtl$pos) <- names_
   colnames(population$offspring$genotypes$qtl$pos) <- rownames(curScan)
-  rownames(population$offspring$genotypes$qtl$scan2) <- names_
+  rownames(population$offspring$genotypes$qtl$logLik) <- names_
   rownames(population$offspring$genotypes$qtl$flags) <- names_
   invisible(population)
 }
