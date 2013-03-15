@@ -371,7 +371,7 @@ bestQTL.internal <- function(cross, population, threshold, flagged, verbose=FALS
           #cat("Marker:",marker,"shows significant association with environent.\n")
           output <- rbind(output,bestQTLSub.internal(population$offspring$genotypes$qtl,marker))
         }
-      }else if(population$offspring$genotypes$qtl$logLik[marker,1]<(population$offspring$genotypes$qtl$logLik[marker,1]-10)){
+      }else if(population$offspring$genotypes$qtl$logLik[marker,1]>(population$offspring$genotypes$qtl$logLik[marker,2]+10)){
         epiInf <- epiInf + 1
         if(flagged=="remove"){
           cat("Marker:",marker,"is influenced by an epistatic interaction and will be removed.\n")
