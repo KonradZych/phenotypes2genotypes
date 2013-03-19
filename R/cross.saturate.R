@@ -477,11 +477,11 @@ scan.qtls <- function(population,map=c("genetic","physical"), env, step=0.1,verb
   names_ <- NULL
   scan2 <- NULL
   logLikeli <- NULL
-  curlogLikeli <- NULL
   done <- 0
   useEnv <- TRUE
   if(!(length(unique(env))>1)) useEnv <- FALSE
   for(i in 1:nrow(population$offspring$genotypes$simulated)){
+    curlogLikeli <- NULL
     phenotype <- pull.pheno(returncross)[,i]
     perc <- round(i*100/nrow(population$offspring$genotypes$simulated))
     if(perc%%10==0){
@@ -510,7 +510,7 @@ scan.qtls <- function(population,map=c("genetic","physical"), env, step=0.1,verb
     marker2 <- which(returncross$geno[[chr2]]$map==summary(curScantwo)[maxLine,4])
     genoRow1 <- returncross$geno[[chr1]]$data[,marker1]
     genoRow2 <- returncross$geno[[chr2]]$data[,marker2]
-    model <- lm(phenotype ~ env + genoRow1 + genoRow2 + env:genoRow1 + env:genoRow2 + genoRow1:genoRow2 + env:genoRow1:genoRow2)
+    model <- lm(phenotype ~ genoRow1 + genoRow2 + genoRow1:genoRow2)
     curlogLikeli <- c(curlogLikeli,logLik(model))
     sink()
     file.remove(aa)
