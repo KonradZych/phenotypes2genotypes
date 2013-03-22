@@ -36,7 +36,15 @@ power.plot <- function(cross1,cross2,qtl.thr=5,n.pheno=500,verbose=FALSE,...){
   if(!is.numeric(n.pheno) || n.pheno<2 || n.pheno>nphe(cross1)){
     stop("n.pheno should be a numeric value between 2 and nphe(cross1).")
   }
+  if(is.null(cross1$geno[[1]]$prob)){
+    cross1 <- calc.genoprob(cross1)
+  }
+  if(is.null(cross2$geno[[1]]$prob)){
+    cross2 <- calc.genoprob(cross2)
+  }
   markers <- sample(1:nphe(cross1),n.pheno)
+  qtl.thr2 <- qtl.thr #- log10(sum(nmar(cross1))/sum(nmar(cross2)))
+  print(qtl.thr2)
   res1 <- scanone(cross1,pheno.col=markers,...)
   res2 <- scanone(cross2,pheno.col=markers,...)
   maxes1 <- apply(res1[,3:ncol(res1)],2,max)
@@ -46,11 +54,14 @@ power.plot <- function(cross1,cross2,qtl.thr=5,n.pheno=500,verbose=FALSE,...){
     colnames(vals) <- c("#phenotype","max LOD in cross1","max LOD in cross2")
     print(vals)
   }
-  plot(maxes1,maxes2,pch=20,xlab="LOD scores in the original cross",ylab="LOD scores in the saturated cross")
-  abline(0,1,col="red")
+  plot(maxes1,maxes2,pch=20,xlab="LOD scores in the original cross",ylab="LOD scores in the saturated cross",main="Figure 3 - QTL detection power.")
+  abline(qtl.thr2-qtl.thr,1,col="red")
   abline(v=qtl.thr,lty=2,col="grey")
-  abline(h=qtl.thr,lty=2,col="grey")
+  abline(h=qtl.thr2,lty=2,col="grey")
   significant<-which(maxes1>qtl.thr)
-  cat(sum(maxes1[significant]<maxes2[significant]),"which is:",sum(maxes1[significant]<maxes2[significant])/length(significant),"% of significant qtls show increase in power\n")
-  invisible(vals)
+  stronger <- sum(maxes1[significant]<(maxes2[significant]))#+log10(sum(nmar(cross1))/sum(nmar(cross2)))))
+  cat(length(significant),"significant qtls\n")
+  cat(stronger,"which is:",stronger/length(significant),"% of significant qtls show increase in power\n")
+  cat(sum(maxes2>qtl.thr2)-sum(maxes1>qtl.thr),"new QTLs found\n")
+  invisible(list(res1,res2))
 }

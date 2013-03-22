@@ -106,7 +106,7 @@ inListCheck.internal <- function(objectToBeChecked,objectName,listOfPossibleElem
 #  none
 ############################################################################################################
 check.population <- function(x){
-  if(length(class(x))!=2) stop("Incorrect class of the object.\n")
+  #if(length(class(x))!=2) stop("Incorrect class of the object.\n")
   if(class(x)[1]!="population") stop("Object is not of a class population.\n")
   if(!(class(x)[2]%in%c("riself", "f2", "bc", "risib"))) stop("Type of the population: ",class(x)[2]," not recognized.\n")
   if(is.null(x$offspring$phenotypes)){

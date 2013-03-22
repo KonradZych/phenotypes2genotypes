@@ -289,5 +289,5 @@ set.geno.from.cross <- function(cross,population,map=c("genetic","physical")){
 }
 
 is.integer0 <- function(x){
-  is.integer(x) && length(x) == 0L
+  return(is.integer(x) && length(x) == 0L)
 }
