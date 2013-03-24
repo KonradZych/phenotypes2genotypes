@@ -240,18 +240,18 @@ check.and.generate.internal <- function(dataRow, threshold, overlapInd, proporti
 }
 
 generate.biomarkers.onthefly.internal <- function(population, threshold, overlapInd, proportion, margin, p.prob=0.8, env, verbose=FALSE, debugMode=0){
-  analysedLines <- NULL
   analysedFile <- file(population$offspring$phenotypes,"r")
   header <- unlist(strsplit(readLines(analysedFile,n=1),"\t"))
   genoMatrix <- NULL
   phenoMatrix <- NULL
   lineNR <- 0
   populationType <- class(population)[2]
+  analysedLines <- readLines(analysedFile,n=population$sliceSize)
   while(!((length(analysedLines) == 0) && (typeof(analysedLines) == "character"))){
-    analysedLines <- readLines(analysedFile,n=population$sliceSize)
     analysedLines <- strsplit(analysedLines,"\t")
     eo <- proc.time()
     if(!((length(analysedLines) == 0) && (typeof(analysedLines) == "character"))){
+     cat("------",length(analysedLines),"\n")
       for(analysedLineNR in 1:length(analysedLines)){
         curlineNR <- analysedLineNR + lineNR
         if(curlineNR %% 500 == 0){
@@ -269,7 +269,9 @@ generate.biomarkers.onthefly.internal <- function(population, threshold, overlap
           phenoMatrix <- rbind(phenoMatrix,c(analysedLineNR,analysedLines[[analysedLineNR]]))
         }
       }
+      
       lineNR <- lineNR+length(analysedLines)
+      analysedLines <- readLines(analysedFile,n=population$sliceSize)
     }
   }
   rownames(genoMatrix) <- genoMatrix[,1]
@@ -279,6 +281,7 @@ generate.biomarkers.onthefly.internal <- function(population, threshold, overlap
   phenoMatrix <- phenoMatrix[,-1]
   population$offspring$phenotypes <- phenoMatrix
   population$offspring$genotypes$simulated <- genoMatrix
+  close(analysedFile)
   invisible(population)
 }
 
