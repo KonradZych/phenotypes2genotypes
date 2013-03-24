@@ -31,6 +31,7 @@ read.population <- function(offspring="offspring",founders="founders", map="maps
   read_mode <- match.arg(read_mode)
   if(read_mode=="normal"){
     population <- read.populationNormal.internal(offspring, founders, map, founders_groups, populationType, verbose, debugMode)
+    population <- find.diff.expressed(population)
   }else{
     filename <- paste(offspring,"_annotations.txt",sep="")
     if(file.exists(filename)){
@@ -38,13 +39,13 @@ read.population <- function(offspring="offspring",founders="founders", map="maps
     }else{
       cat("No annotation file found in",filename,"\n")
       population <- read.populationHT.internal(offspring, founders, map, founders_groups, populationType, verbose, debugMode,...)
+      population <- find.diff.expressed(population)
     }
   }
   #**********FINALIZING FUNCTION*************
   e <- proc.time()
   if(verbose) cat("read.population done in",(e-s)[3],"seconds.\n")
   doCleanUp.internal()
-  population <- find.diff.expressed(population)
   invisible(population)
 }
 
@@ -276,7 +277,7 @@ read.populationHT.internal <- function(offspring,founders,map,founders_groups, p
       population$founders$groups <- founders_groups
       doCleanUp.internal()
     }else{
-      stop("No phenotype file for founders: ",filename," this file is essential in HT mode!\n")
+      cat("No phenotype file for founders: ",filename,"\n")
     }
     #**********READING OFFSPRING PHENOTYPIC DATA*************
     filename <- paste(offspring,"_phenotypes.txt",sep="")
@@ -289,7 +290,7 @@ read.populationHT.internal <- function(offspring,founders,map,founders_groups, p
     }
   }
   class(population) <- c("population", populationType)
-  #**********READING CHILDREN GENOTYPIC DATA*************
+  #**********READING OFFSPRING GENOTYPIC DATA*************
   filename <- paste(offspring,"_genotypes.txt",sep="")
   if(file.exists(filename)){
     if(verbose) cat("Found genotypic file for offspring:",filename,"and will store  it in population$offspring$genotypes$real\n")
@@ -302,7 +303,7 @@ read.populationHT.internal <- function(offspring,founders,map,founders_groups, p
   #**********READING PHYSICAL MAP*************
   filename <- paste(map,"_physical.txt",sep="")
   if(file.exists(filename)){
-    if(verbose) cat("Found genotypic file for offspring:",filename,"and will store  it in population$maps$physical\n")
+    if(verbose) cat("Found physical map:",filename,"and will store  it in population$maps$physical\n")
     physical <- read.table(filename,sep="\t",row.names=1,header=FALSE)
     population <- add.to.population(population, physical, "maps$physical")
     doCleanUp.internal()
@@ -312,7 +313,7 @@ read.populationHT.internal <- function(offspring,founders,map,founders_groups, p
   #**********READING GENETIC MAP*************
   filename <- paste(map,"_genetic.txt",sep="")
   if(file.exists(filename)){
-    if(verbose) cat("Found genotypic file for offspring:",filename,"and will store  it in population$maps$genetic\n")
+    if(verbose) cat("Found etic map:",filename,"and will store  it in population$maps$genetic\n")
     genetic <- read.table(filename,sep="\t",row.names=1,header=FALSE)
     population <- add.to.population(population, genetic, "maps$genetic")
     doCleanUp.internal()
