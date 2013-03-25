@@ -230,7 +230,8 @@ read.populationHT.internal <- function(offspring,founders,map,founders_groups, p
   sliceSize=5000, transformations=c("nothing","log","sqrt","reciprocal","probit","logit"), annots, verbose=FALSE, debugMode=0){
   #**********FOUNDERS GROUPS*************
   if(missing(founders_groups)){ 
-    stop("Specify founders_groups!\n")
+# TODO: WE SHOULD NOT STOP HERE, We can just simulate when missing right ???
+#    stop("Specify founders_groups!\n")
   }else if(!(all(founders_groups %in% c(0,1)))){
     stop("founders_groups should contain only 0s and 1s.")
   }else if(all(founders_groups==1) || all(founders_groups==0)){
@@ -253,6 +254,8 @@ read.populationHT.internal <- function(offspring,founders,map,founders_groups, p
       }else{
         stop("No phenotype file for founders at location: ",filename," \n")
       }
+    }else{
+      # TODO: ADD THE LINE BY LINE SIMULATION OF PARENTS
     }
     #**********READING OFFSPRING PHENOTYPIC DATA*************
     filename <- paste(offspring,"_phenotypes.txt",sep="")
