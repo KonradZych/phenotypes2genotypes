@@ -116,8 +116,8 @@ check.population <- function(x){
     }
   if(is.null(x$offspring$phenotypes)) stop("No offspring phenotype data found, this is not a valid object of class population.\n")
   if(is.null(x$founders$groups)){
-      if(("noParents" %in% x$flags)){ cat("No phenotype data for founders, it will be simulated.\n")
-      }else if("annots" %in% x$flags){ cat("No phenotype data for founders, it will be simulated.\n")
+      if(("noParents" %in% x$flags)){ cat("No founders groups found, it will be simulated.\n")
+      }else if("annots" %in% x$flags){ cat("No founders groups found, it will be simulated.\n")
       }else{ stop("No founders groups found, this is not a valid object of class population.\n")}
     }
 }
