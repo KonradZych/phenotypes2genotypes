@@ -274,9 +274,9 @@ generate.biomarkers.onthefly.internal <- function(population, threshold, overlap
       analysedLines <- readLines(analysedFile,n=population$sliceSize)
     }
   }
+  genoMatrix <- mergeEnv.internal(population, genoMatrix)
   rownames(genoMatrix) <- genoMatrix[,1]
   rownames(phenoMatrix) <- phenoMatrix[,1]
-  genoMatrix <- mergeEnv.internal(population, genoMatrix)
   genoMatrix <- genoMatrix[,-1]
   phenoMatrix <- phenoMatrix[,-1]
   colnames(genoMatrix) <- header
