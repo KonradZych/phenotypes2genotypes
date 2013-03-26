@@ -105,19 +105,19 @@ inListCheck.internal <- function(objectToBeChecked,objectName,listOfPossibleElem
 # OUTPUT:
 #  none
 ############################################################################################################
-check.population <- function(x){
+check.population <- function(x,verbose=TRUE){
   #if(length(class(x))!=2) stop("Incorrect class of the object.\n")
   if(class(x)[1]!="population") stop("Object is not of a class population.\n")
   if(!(class(x)[2]%in%c("riself", "f2", "bc", "risib"))) stop("Type of the population: ",class(x)[2]," not recognized.\n")
   if(is.null(x$founders$phenotypes)){
-      if(("noParents" %in% x$flags)){ cat("No phenotype data for founders, it will be simulated.\n")
-      }else if("annots" %in% x$flags){ cat("No phenotype data for founders, it will be simulated.\n")
+      if(("noParents" %in% x$flags)){ if(verbose) cat("No phenotype data for founders, it will be simulated.\n")
+      }else if("annots" %in% x$flags){ if(verbose) cat("No phenotype data for founders, it will be simulated.\n")
       }else{ stop("No offspring phenotype data found, this is not a valid object of class population.\n")}
     }
   if(is.null(x$offspring$phenotypes)) stop("No offspring phenotype data found, this is not a valid object of class population.\n")
   if(is.null(x$founders$groups)){
-      if(("noParents" %in% x$flags)){ cat("No founders groups found, it will be simulated.\n")
-      }else if("annots" %in% x$flags){ cat("No founders groups found, it will be simulated.\n")
+      if(("noParents" %in% x$flags)){ if(verbose) cat("No founders groups found, it will be simulated.\n")
+      }else if("annots" %in% x$flags){ if(verbose) cat("No founders groups found, it will be simulated.\n")
       }else{ stop("No founders groups found, this is not a valid object of class population.\n")}
     }
 }
