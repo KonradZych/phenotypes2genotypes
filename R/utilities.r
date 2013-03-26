@@ -21,7 +21,7 @@ print.population <- function(x, ...){
   if(missing(x)) stop("Please, provide an object of class population.\n")
   check.population(x)
   if(!(any(names(x)=="offspring"))){  stop("This is not correct population object.\n") }
-  if(!(any(names(x)=="founders"))){  stop("This is not correct population object.\n") }
+  if(!(any(names(x)=="founders"))&&!("annots"%in%x$flags)&&!("noParents"%in%x$flags)){  stop("This is not correct population object.\n") }
   cat("This is object of class \"population\"\n  It is too complex to print, so we provide just this summary.\n\n")
   if(class(x)[2] == "riself"){
     cat("Population type: RILs by selfing\n\n")
@@ -33,8 +33,20 @@ print.population <- function(x, ...){
     cat("Population type: F2 intercross\n\n")
   }
   if(!(is.null(x$offspring))){
-    cat("Offspring (",ncol(x$offspring$phenotypes),"):\n",sep="",...)
-    if(!(is.null(x$offspring$phenotypes))){
+    if("annots"%in%x$flags){
+      if(!(is.null(x$offspring$phenotypes))){
+        if(!(is.null(dim(x$offspring$phenotypes)))){
+           cat("Offspring (",ncol(x$offspring$phenotypes),"):\n",sep="",...)
+           cat("\tPhenotypes:",nrow(x$offspring$phenotypes),"\n",...)
+        }else{
+          cat("Offspring:\n",sep="",...)
+          cat("Offspring phenotypes will be processed on the fly from:",x$offspring$phenotypes,"\n",...)
+        }
+      }else{
+          stop("No phenotype data for offspring, this is not a valid population object\n")
+      }
+    }else if(!(is.null(x$offspring$phenotypes))){
+      cat("Offspring (",ncol(x$offspring$phenotypes),"):\n",sep="",...)
       cat("\tPhenotypes:",nrow(x$offspring$phenotypes),"\n",...)
     }else{
       stop("No phenotype data for offspring, this is not a valid population object\n")
@@ -85,7 +97,7 @@ print.population <- function(x, ...){
     stop("No phenotype data for offspring, this is not a valid population object\n")
   }
 
-  if(!("noParents" %in% x$flags)){
+  if(!("noParents" %in% x$flags)&&!("annots" %in% x$flags)){
     cat("Founders (",ncol(x$founders$phenotypes),"):\n",sep="",...)
     if(!(is.null(x$founders$phenotypes))){
       cat("\tPhenotypes:",nrow(x$founders$phenotypes),"\n",...)
@@ -103,7 +115,8 @@ print.population <- function(x, ...){
       stop("No information about founders groups\n",...)
     }
   }else{
-    cat("Data for founders was simulated.\n")
+    cat("Founders:\n",sep="",...)
+    cat("\tData for founders was simulated.\n")
   }
 }
 
