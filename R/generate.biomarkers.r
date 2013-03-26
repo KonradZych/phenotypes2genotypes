@@ -260,9 +260,9 @@ generate.biomarkers.onthefly.internal <- function(population, threshold, overlap
         }
         probeID <- as.character(population$annots[curlineNR,1])
         if(!(is.null(population$founders$RP$pval[probeID,]))){
-          genoLine <- generate.internal(analysedLines[[analysedLineNR]], population$founders$RP$pval[probeID,], threshold, overlapInd, proportion, margin, p.prob, curlineNR, populationType, verbose)
+          genoLine <- generate.internal(analysedLines[[analysedLineNR]][-1], population$founders$RP$pval[probeID,], threshold, overlapInd, proportion, margin, p.prob, curlineNR, populationType, verbose)
         }else{
-          genoLine <- check.and.generate.internal(analysedLines[[analysedLineNR]], threshold, overlapInd, proportion, margin, p.prob, curlineNR, populationType, verbose)
+         genoLine <- check.and.generate.internal(analysedLines[[analysedLineNR]][-1], threshold, overlapInd, proportion, margin, p.prob, curlineNR, populationType, verbose)
         }
         if(!is.null(genoLine)){
           genoMatrix <- rbind(genoMatrix,genoLine)
@@ -279,6 +279,8 @@ generate.biomarkers.onthefly.internal <- function(population, threshold, overlap
   genoMatrix <- mergeEnv.internal(population, genoMatrix)
   genoMatrix <- genoMatrix[,-1]
   phenoMatrix <- phenoMatrix[,-1]
+  colnames(genoMatrix) <- header
+  colnames(phenoMatrix) <- header
   population$offspring$phenotypes <- phenoMatrix
   population$offspring$genotypes$simulated <- genoMatrix
   close(analysedFile)
@@ -290,13 +292,15 @@ mergeEnv.internal <- function(population, genoMatrix){
   if(length(unique(population$annots[,3]))<nrow(population$annots)){
     done <- NULL
     newGeno <- NULL
-    for(probe in genoMatrix){
+    for(probenr in 1:nrow(genoMatrix)){
+      probe <- genoMatrix[probenr,]
       probeID <- population$annots[probe[1],2]
       probeName <- population$annots[probe[1],1]
       probe_ <- probe[-1]
       if(!(probeID %in% done)){
         done <- c(done,probeID)
         probes <- which(population$annots[,2]==probeID)
+        cat(probes,":",length(probes),"\n")
         if(length(probes)>1){
           newProbe <- probe
           idx <- which(!is.na(probe_))
