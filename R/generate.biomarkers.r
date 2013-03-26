@@ -266,7 +266,7 @@ generate.biomarkers.onthefly.internal <- function(population, threshold, overlap
         }
         if(!is.null(genoLine)){
           genoMatrix <- rbind(genoMatrix,genoLine)
-          phenoMatrix <- rbind(phenoMatrix,c(analysedLineNR,analysedLines[[analysedLineNR]]))
+          phenoMatrix <- rbind(phenoMatrix,c(analysedLineNR,analysedLines[[analysedLineNR]][-1]))
         }
       }
       
