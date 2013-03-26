@@ -254,10 +254,6 @@ insertMarkers.internal <- function(newgeno,newpositions,oldgeno,oldpositions,env
       toInv <- c(toInv,i)
     }
   }
-  #if(!is.null(toRmv)){
-  #  newgeno <- newgeno[,-toRmv]
-  #}
-  #print(toInv)
   ### very primitive inversion in here!
   if(populationType=="f2"){
     invertM <- newgeno[,toInv]
