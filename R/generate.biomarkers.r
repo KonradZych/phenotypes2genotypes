@@ -322,6 +322,7 @@ mergeEnv.internal <- function(population, genoMatrix){
   if(length(unique(population$annots[,3]))<nrow(population$annots)){
     done <- NULL
     newGeno <- NULL
+    # FIX: THERE IS A BUG HERE: there is no CHECK for nrow(genoMatrix) == 0 or is.null(nrow(genoMatrix))
     for(probenr in 1:nrow(genoMatrix)){
       probe <- genoMatrix[probenr,]
       probeID <- population$annots[probe[1],2]
