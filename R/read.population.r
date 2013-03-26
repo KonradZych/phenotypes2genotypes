@@ -230,7 +230,7 @@ read.populationHT.internal <- function(offspring,founders,map,founders_groups, p
   sliceSize=5000, transformations=c("nothing","log","sqrt","reciprocal","probit","logit"), annots, verbose=FALSE, debugMode=0){
   #**********FOUNDERS GROUPS*************
   if(missing(founders_groups)){ 
-    stop("Specify founders_groups!\n")
+  	cat("No founders, but that does not matter!")
   }else if(!(all(founders_groups %in% c(0,1)))){
     stop("founders_groups should contain only 0s and 1s.")
   }else if(all(founders_groups==1) || all(founders_groups==0)){

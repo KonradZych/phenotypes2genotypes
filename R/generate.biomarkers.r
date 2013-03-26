@@ -203,12 +203,12 @@ generate.biomarkers.internal <- function(population, treshold, overlapInd, propo
 
 t.test_line.internal <- function(dataRow,threshold){
   idx <- which(!is.na(dataRow))
-  y <- dataRow[idx]
+  y <- sort(dataRow[idx])
   half <- floor(length(y)/2)
-  res <- t.test(sort(y)[1:half],sort(y)[half:length(y)])
+  res <- t.test(y[1:half], y[half:length(y)])
   if(res$p.value<threshold){
-    invisible(TRUE)
-  }else{
+  	invisible(TRUE)
+    }else{
     invisible(FALSE)
   }
 }
@@ -230,50 +230,80 @@ generate.internal <- function(dataRow, pval, threshold, overlapInd, proportion, 
 check.and.generate.internal <- function(dataRow, threshold, overlapInd, proportion, margin, p.prob, curlineNR, populationType, verbose){
   cur <- NULL
   dataRow <- as.numeric(dataRow)
+
   if(t.test_line.internal(dataRow,threshold)){
+  	
      cur <- splitPhenoRowEM.internal(dataRow, overlapInd, proportion, margin, p.prob, 1, populationType, verbose)[[1]]
      if(!is.null(cur)){
        cur <- c(curlineNR,cur)
      }
+ 	
   }
   invisible(cur)
 }
 
 generate.biomarkers.onthefly.internal <- function(population, threshold, overlapInd, proportion, margin, p.prob=0.8, env, verbose=FALSE, debugMode=0){
+  
+  eo <- proc.time()
+ 
   analysedFile <- file(population$offspring$phenotypes,"r")
   header <- unlist(strsplit(readLines(analysedFile,n=1),"\t"))
   genoMatrix <- NULL
   phenoMatrix <- NULL
   lineNR <- 0
+  goodProbes <- 0
   populationType <- class(population)[2]
   analysedLines <- readLines(analysedFile,n=population$sliceSize)
+ 
+  en <- proc.time()
+  
+  cat("Loading in offspring.txt\n")
+  cat("Splitting header\n")
+  cat("Loading in the first 5000 lines\n")
+  cat("Took", (en-eo)[3], "seconds\n\nReading lines now\n\n")
+  
   while(!((length(analysedLines) == 0) && (typeof(analysedLines) == "character"))){
     analysedLines <- strsplit(analysedLines,"\t")
+    
     eo <- proc.time()
-    if(!((length(analysedLines) == 0) && (typeof(analysedLines) == "character"))){
+    
+    if(!((length(analysedLines) == 0) && (typeof(analysedLines) == "character"))){ 
      cat("------",length(analysedLines),"\n")
-      for(analysedLineNR in 1:length(analysedLines)){
+      
+      for(analysedLineNR in 1:length(analysedLines)){ 
         curlineNR <- analysedLineNR + lineNR
+        
         if(curlineNR %% 500 == 0){
           en <- proc.time()
           cat("Analysing phenotype:",curlineNR,"time:",(en-eo)[3],"s\n")
         }
-        probeID <- as.character(population$annots[curlineNR,1])
+        
+        ##### Start ttesting rows
+        
+       	probeID <- as.character(population$annots[curlineNR,1])
         if(!(is.null(population$founders$RP$pval[probeID,]))){
           genoLine <- generate.internal(analysedLines[[analysedLineNR]][-1], population$founders$RP$pval[probeID,], threshold, overlapInd, proportion, margin, p.prob, curlineNR, populationType, verbose)
         }else{
          genoLine <- check.and.generate.internal(analysedLines[[analysedLineNR]][-1], threshold, overlapInd, proportion, margin, p.prob, curlineNR, populationType, verbose)
         }
         if(!is.null(genoLine)){
+          goodProbes <- (goodProbes+1)
           genoMatrix <- rbind(genoMatrix,genoLine)
           phenoMatrix <- rbind(phenoMatrix,c(analysedLineNR,analysedLines[[analysedLineNR]][-1]))
         }
+        
+        ##### End ------  average 0.04 seconds per marker, x5000 ~= 200 seconds for a batch of 5000 
       }
       
       lineNR <- lineNR+length(analysedLines)
       analysedLines <- readLines(analysedFile,n=population$sliceSize)
+       
     }
+    
+    cat("There are", goodProbes, "good probes\n")
+    
   }
+  
   rownames(genoMatrix) <- genoMatrix[,1]
   rownames(phenoMatrix) <- phenoMatrix[,1]
   genoMatrix <- mergeEnv.internal(population, genoMatrix)
