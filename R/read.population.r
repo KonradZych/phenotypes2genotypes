@@ -135,90 +135,74 @@ read.populationNormal.internal <- function(offspring,founders,map,founders_group
   invisible(population)
 }
 
-t_test_line.internal<- function(foundersline,founders_groups,threshold,rowNames){
-  parentA <- as.numeric(foundersline[which(founders_groups==0)+1])
-  parentB <- as.numeric(foundersline[which(founders_groups==1)+1])
-  res <- t.test(parentA,parentB)
-  if(res$p.value < threshold){
-    return(foundersline)
-  }else{
-    return(NULL)
-  }
+TwoClassTtest <- function(foundersline,foundersGroups,threshold){
+  p1  <- as.numeric(foundersline[which(foundersGroups == 0) + 1])  #TODO: Why add 1, Why dont we get a out-of-bounds error ??
+  p2  <- as.numeric(foundersline[which(foundersGroups == 1) + 1])  #TODO: Why add 1, Why dont we get a out-of-bounds error ??
+  res <- t.test(p1, p2)
+  if(res$p.value < threshold) return(foundersline)
+  return(NULL)
 }
 
-t_test_linebyline.internal <- function(filename,founders_groups,threshold,sliceSize,transformations,verbose=FALSE){
+byLineTtest <- function(filename, foundersGroups, threshold, sliceSize, transformations, verbose=FALSE){
   s <- proc.time()
   analysedFile <- file(filename,"r")
-  if(verbose)cat("Analysing file:",filename,"\n")
+  if(verbose) cat("Analysing file:",filename,"\n")
   analysedLines <- NULL
-  result <- NULL
-  count <- 0
-  n.columns <- length(founders_groups)+1
-  header <- unlist(strsplit(readLines(analysedFile,n=1),"\t"))
-  if(length(header)!=length(founders_groups)){
-    if(length(header)!=length(founders_groups)+1){
+  result        <- NULL
+  count         <- 0
+  n.columns     <- length(foundersGroups) + 1 # Why +1
+  header        <- unlist(strsplit(readLines(analysedFile, n = 1), "\t"))
+  if(length(header) != length(foundersGroups)){
+    if(length(header) != (length(foundersGroups) + 1)){
       stop("Incorrect founders_groups parameter. Should have length: ",length(header)," instead of: ",length(founders_groups),"\n")
     }else{
       header <- header[-1]
     }
   }
+  analysedLines <- readLines(analysedFile, n=sliceSize) # Assume we have at least 1 line
   while(!((length(analysedLines) == 0) && (typeof(analysedLines) == "character"))){
-    analysedLines<-readLines(analysedFile,n=sliceSize)
-    if(!((length(analysedLines) == 0) && (typeof(analysedLines) == "character"))){
-      aa <- t(matrix(unlist(strsplit(analysedLines,"\t")),n.columns,length(analysedLines)))
-      dataUsed <- t(transformation(apply(aa[,-1],c(1,2),as.numeric),transformations)[[length(transformations)]])
-      #print(dataUsed)
-      analysedLines <- NULL
-      gc()
-      dataUsed <- cbind(aa[,1],dataUsed)
-      selected <- rbind(unlist(apply(dataUsed,1,t_test_line.internal,founders_groups,threshold)))
-      selected <- t(matrix(selected,n.columns,length(selected)/n.columns))
-      oldnames <- rownames(result)
-      result <- rbind(result,apply(selected[,-1],c(1,2),as.numeric))
-      rownames(result) <- c(oldnames, selected[,1])
-      count <- count + sliceSize
-      if(verbose) cat("Processed: ",count,"lines\n")
-    }
-  }
-  if((is.null(result))){
-    stop("No parental data read in!\n")
+    readData  <- t(matrix(unlist(strsplit(analysedLines,"\t")), n.columns, length(analysedLines)))
+    nReadData <- apply(readData[,-1], c(1,2), as.numeric)
+    dataUsed  <- cbind(nReadData[,1], t(transformation(nReadData, transformations)[[length(transformations)]]))
+
+    selected  <- rbind(unlist(apply(dataUsed,1,TwoClassTtest, foundersGroups, threshold)))
+    selected  <- t(matrix(selected, n.columns, length(selected)/n.columns))
+    oldnames  <- rownames(result)
+    result    <- rbind(result, apply(selected[,-1],c(1,2),as.numeric))  # Isn't this Nread Data ????
+    rownames(result) <- c(oldnames, selected[,1])
+    count <- count + sliceSize
+    if(verbose) cat("Processed: ",count,"lines\n")
+    analysedLines <- readLines(analysedFile, n=sliceSize)
   }
   close(analysedFile)
+  if((is.null(result))) stop("No parental data read in!\n")
   colnames(result) <- header
   invisible(result)
 }
 
-load_line.internal <- function(curLine, pattern){
-  if(curLine[1] %in% pattern){
-    return(curLine)
-  }
-  return(NULL)
-}
-
-load_linebyline.internal <- function(filename,pattern,sliceSize,transformations,verbose=FALSE){
+loadByLine <- function(filename,pattern,sliceSize,transformations,verbose=FALSE){
   s <- proc.time()
-  analysedFile <- file(filename,"r")
-  analysedLines <- NULL
-  result <- NULL
-  count <- 0
-  header <- unlist(strsplit(readLines(analysedFile,n=1),"\t"))
-  n.columns <- length(header)+1
+  analysedFile  <- file(filename,"r")
+  result        <- NULL
+  count         <- 0
+  header        <- unlist(strsplit(readLines(analysedFile,n=1),"\t"))
+  n.columns     <- length(header)+1
+  analysedLines <- readLines(con=analysedFile, n=sliceSize)
   while(!((length(analysedLines) == 0) && (typeof(analysedLines) == "character"))){
-    analysedLines<-readLines(con=analysedFile,n=sliceSize)
-    if(!((length(analysedLines) == 0) && (typeof(analysedLines) == "character"))){
-      aa <- t(matrix(unlist(strsplit(analysedLines,"\t")),n.columns,length(analysedLines)))
-      analysedLines <- NULL
-      gc()
-      selected <- rbind(unlist(apply(aa,1,load_line.internal,pattern)))
-      selected <- t(matrix(selected,n.columns,length(selected)/n.columns))
-      result <- rbind(result,selected)
-      count <- count + sliceSize
-      if(verbose)cat("Processed: ",count,"lines\n")
-    }
+    readData <- t(matrix(unlist(strsplit(analysedLines,"\t")), n.columns, length(analysedLines)))
+    selected <- rbind(unlist(apply(readData, 1, function(x){
+      if(x[1] %in% pattern) return(x)
+      return(NULL)
+    }, pattern)))
+    selected <- t(matrix(selected,n.columns,length(selected)/n.columns))
+    result   <- rbind(result, selected)
+    count    <- count + sliceSize
+    if(verbose) cat("Processed:", count, "lines\n")
+    analysedLines <- readLines(con=analysedFile, n=sliceSize)
   }
   close(analysedFile)
   rownames(result) <- result[,1]
-  result <- apply(result[,-1],c(1,2),as.numeric)
+  result <- apply(result[,-1], c(1,2), as.numeric)
   if(transformations!="nothing") result <- transformation(result,transformations)[[length(transformations)]]
   colnames(result) <- header
   invisible(result)
@@ -228,7 +212,7 @@ readFoundersAndTtest <- function(fileFoundersPheno, founderGroups, populationTyp
   if(file.exists(fileFoundersPheno)){
     population <- NULL
     if(verbose) cat("Found phenotypic file for founders:", fileFoundersPheno,"and will store  it in population$founders$phenotypes\n")
-    foundersPhenotypes <- t_test_linebyline.internal(fileFoundersPheno, founderGroups, threshold, sliceSize, transformations, verbose)
+    foundersPhenotypes <- byLineTtest(fileFoundersPheno, founderGroups, threshold, sliceSize, transformations, verbose)
     population <- add.to.populationSub.internal(population, foundersPhenotypes, "founders", populationType=populationType)
     population$founders$groups <- founderGroups
     doCleanUp.internal()
@@ -265,7 +249,7 @@ read.populationHT.internal <- function(offspring, founders, map, founders_groups
     #**********READING OFFSPRING PHENOTYPIC DATA*************
     if(file.exists(fileOffspringPheno)){
       if(verbose) cat("Found phenotypic file for offspring:", fileOffspringPheno,"and will store  it in population$offspring$phenotypes\n")
-      offspring_phenotypes <- load_linebyline.internal(fileOffspringPheno, rownames(population$founders$phenotypes), sliceSize, transformations, verbose)
+      offspring_phenotypes <- loadByLine(fileOffspringPheno, rownames(population$founders$phenotypes), sliceSize, transformations, verbose)
       population <- add.to.populationSub.internal(population,offspring_phenotypes,"offspring$phenotypes",populationType=populationType)
       doCleanUp.internal()
     }else{
