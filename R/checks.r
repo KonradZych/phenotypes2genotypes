@@ -17,20 +17,11 @@
 #  boolean
 #
 numericCheck.internal <- function(objectToBeChecked, allow.na=FALSE){
-  if(any(is.na(as.numeric(objectToBeChecked)))){
-    ### if object converted to numeric contains NAs it's either not-convertable or cointained NAs
-    ### previously, if we don't allow NAs - we just quit here, if we do, we have to chech if they
-    ### are intruduced (then object is not-convertable and we rerturm false) or they were in the
-    ### object previously (then we return true)
-    if(!(allow.na)){
-      return(FALSE)
-    }else{
-      if(sum(is.na(as.numeric(as.matrix(objectToBeChecked))))==sum(is.na((objectToBeChecked)))){
-        return(TRUE)
-      }else{
-        return(FALSE)
-      }
-    }
+  converted <- as.numeric(as.matrix(objectToBeChecked))
+  if(any(is.na(converted)){
+    if(!(allow.na)) return(FALSE)
+    if(sum(is.na(converted == sum(is.na((objectToBeChecked)))) return(TRUE)
+    return(FALSE)
   }
   return(TRUE)
 }
@@ -45,23 +36,14 @@ numericCheck.internal <- function(objectToBeChecked, allow.na=FALSE){
 genotypeCheck.internal <- function(objectToBeChecked, genotypes, allow.na=FALSE){
   converted <- as.numeric(as.matrix(objectToBeChecked))
   if(any(is.na(converted))){
-    if(!(allow.na)){
+    if(!(allow.na)) return(FALSE)
+    if(sum(is.na(converted))==sum(is.na(objectToBeChecked))){
+      nrOfCorrect <- sum(is.na(converted))
+      for(genotype in genotypes){ nrOfCorrect <- nrOfCorrect + sum(converted==genotype,na.rm=TRUE) }
+      if(nrOfCorrect==length(converted)) return(TRUE)
       return(FALSE)
-    }else{
-      if(sum(is.na(converted))==sum(is.na(objectToBeChecked))){
-        nrOfCorrect <- sum(is.na(converted))
-        for(genotype in genotypes){
-          nrOfCorrect <- nrOfCorrect + sum(converted==genotype,na.rm=TRUE)
-        }
-        if(nrOfCorrect==length(converted)){
-          return(TRUE)
-        }else{
-          return(FALSE)
-        }
-      }else{
-        return(FALSE)
-      }
     }
+    return(FALSE)
   }
   return(TRUE)
 }
@@ -133,17 +115,11 @@ check.population <- function(x,verbose=FALSE){
 ############################################################################################################
 checkParameters.internal <- function(parameterToBeChecked,possibleValues,nameOfParameter=""){
   if(length(parameterToBeChecked)==length(possibleValues)){
-    if(any(!(parameterToBeChecked%in%possibleValues))){
-      stop(nameOfParameter," parameter is incorrect, possible values: ",paste(possibleValues,sep="\t"),"\n")
-    }else{
-      return(parameterToBeChecked[1])
-    }
+    if(any(!(parameterToBeChecked%in%possibleValues))) stop(nameOfParameter," parameter is incorrect, possible values: ",paste(possibleValues,sep="\t"),"\n")
+    return(parameterToBeChecked[1])
   }else if(length(parameterToBeChecked)==1){
-    if(!(parameterToBeChecked%in%possibleValues)){
-      stop(nameOfParameter," parameter is incorrect, possible values: ",paste(possibleValues,sep="\t"),"\n")
-    }else{
-      return(parameterToBeChecked)
-    }
+    if(!(parameterToBeChecked%in%possibleValues)) stop(nameOfParameter," parameter is incorrect, possible values: ",paste(possibleValues,sep="\t"),"\n")
+    return(parameterToBeChecked)
   }else{
     stop(nameOfParameter," parameter is incorrect, possible values: ",paste(possibleValues,sep="\t"),"\n")
   }
@@ -166,3 +142,4 @@ defaultCheck.internal <- function(parameterToBeChecked,nameOfParameter,maxLength
     invisible(parameterToBeChecked)
   }
 }
+
