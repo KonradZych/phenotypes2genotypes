@@ -296,7 +296,11 @@ add.to.populationSubGeno.internal <- function(population, dataObject, population
   genotypes <- c(1,2)
   if(populationType == "f2") genotypes <- c(1:5)
 
-  rows <- unlist(lapply(c(1:nrow(dataObject)),add.to.populationSubGenoSub.internal,dataObject,genotypes,verbose))
+  rows <- unlist(lapply(c(1:nrow(dataObject)),function(curRow,dataObject,genotypes,verbose=FALSE){
+    if(verbose&&curRow%%1000==0) cat("Processing row:",curRow,"\n")
+    if(!(genotypeCheck.internal(dataObject[curRow,],genotypes,allow.na=TRUE))) return(curRow)
+    return(NULL)
+  },dataObject,genotypes,verbose))
   #Removes faulty rows
   if(!(is.null(rows))){
     if(verbose) cat("Following  rows are not numeric and cannot be converted into numeric:",rows," so will be removed.\n")
@@ -306,16 +310,14 @@ add.to.populationSubGeno.internal <- function(population, dataObject, population
   if(is.null(dim(dataObject))) stop("Not enough data to continue.\n")
     
   cur <- matrix(as.numeric(as.matrix(dataObject)), nrow(dataObject), ncol(dataObject))
-    
-  #Keep colnames
-  if(!is.null(colnames(dataObject))){
+
+  if(!is.null(colnames(dataObject))){  #Keep colnames
     colnames(cur) <- colnames(dataObject)
   }else{
     colnames(cur) <- 1:ncol(cur)
   }
-    
-  #Keep rownames
-  if(!is.null(rownames(dataObject))){
+
+  if(!is.null(rownames(dataObject))){  #Keep rownames
     rownames(cur) <- rownames(dataObject)
   }else{
     rownames(cur) <- 1:nrow(cur)
@@ -326,17 +328,8 @@ add.to.populationSubGeno.internal <- function(population, dataObject, population
     }
     cat("NA: ",round(sum(is.na(cur))/length(cur)*100,2),"%\n",sep="")
   }
-  #Adding data to population
-  return(cur)
-}
 
-add.to.populationSubGenoSub.internal <- function(curRow,dataObject,genotypes,verbose=FALSE){
-  if(verbose&&curRow%%1000==0) cat("Processing row:",curRow,"\n")
-  if(!(genotypeCheck.internal(dataObject[curRow,],genotypes,allow.na=TRUE))){
-    return(curRow)
-  }else{
-    return(NULL)
-  }
+  return(cur)  #Adding data to population
 }
 
 ############################################################################################################

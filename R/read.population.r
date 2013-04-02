@@ -50,29 +50,19 @@ read.population <- function(offspring = "offspring", founders = "founders", map 
 read.populationNormal.internal <- function(offspring,founders,map,founders_groups,populationType=c("riself", "f2", "bc", "risib"), verbose=FALSE,debugMode=0){
   #**********READING CHILDREN PHENOTYPIC DATA*************
   filename <- paste(offspring,"_phenotypes.txt",sep="")
-  if(file.exists(filename)){
-    if(verbose) cat("Found phenotypic file for offspring:",filename,"and will store  it in population$offspring$phenotypes\n")
-    offspring_phenotypes <- read.table(filename,sep="\t",header=TRUE)
-    offspring_phenotypes <- as.matrix(offspring_phenotypes)
-    population <- NULL
-    population <- add.to.populationSub.internal(population,offspring_phenotypes,"offspring$phenotypes",populationType=populationType)
-    doCleanUp.internal()
-  }else{
-    stop("No phenotype file for offspring: ",filename," this file is essentiall, you have to provide it\n")
-  }
+  if(!file.exists(filename)) stop("No phenotype file for offspring: ",filename," this file is essentiall, you have to provide it\n")
+
+  if(verbose) cat("Found phenotypic file for offspring:",filename,"and will store  it in population$offspring$phenotypes\n")
+  offspring_phenotypes <- read.table(filename,sep="\t",header=TRUE)
+  offspring_phenotypes <- as.matrix(offspring_phenotypes)
+  population <- NULL
+  population <- add.to.populationSub.internal(population,offspring_phenotypes,"offspring$phenotypes",populationType=populationType)
+  doCleanUp.internal()
   
   #**********READING PARENTAL PHENOTYPIC DATA*************
   filename <- paste(founders,"_phenotypes.txt",sep="")
   if(missing(founders)){
-    cat("No founders phenotype data provided, it will be simulated!\n")
-    offsprings <- population$offspring$phenotypes
-    half <-floor(ncol(offsprings)/2)
-    founders <- t(apply(offsprings,1,function(x){c(mean(sort(x)[1:half],na.rm=TRUE),mean(sort(x)[2:(half+1)],na.rm=TRUE),
-    mean(sort(x)[3:(half+2)],na.rm=TRUE),mean(sort(x)[(half+1):ncol(offsprings)],na.rm=TRUE),mean(sort(x)[(half):ncol(offsprings)-1],na.rm=TRUE),
-    mean(sort(x)[(half-1):ncol(offsprings)-2],na.rm=TRUE))}))
-    population$flags <- c(population$flags,"noParents")
-    population <- add.to.populationSub.internal(population, founders, "founders",populationType=populationType)
-    founders_groups <- c(0,0,0,1,1,1)
+    population <- simulateParentalPhentypes(population, population$offspring$phenotypes, populationType)
   }else if(file.exists(filename)){
     if(verbose) cat("Found phenotypic file for founders:",filename,"and will store it in population$founders$phenotypes\n")
     founders <- read.table(filename,sep="\t",header=TRUE)
@@ -80,22 +70,18 @@ read.populationNormal.internal <- function(offspring,founders,map,founders_group
     population <- add.to.populationSub.internal(population, founders, "founders",populationType=populationType)
     #removing from founders probes that are not in children:
     population$founders$phenotypes <- mapMarkers.internal(population$founders$phenotypes,population$offspring$phenotypes, mapMode=1, verbose=verbose)
+    population$founders$groups <- founders_groups
     doCleanUp.internal()
   }else{
     stop("No phenotype file for founders at location: ",filename," \n")
   }
   
-  if(missing(founders_groups)){ 
-    stop("Specify founders_groups!\n")
-  }
-  #**********FOUNDERS GROUPS*************
-  if(length(founders_groups)!=ncol(population$founders$phenotypes)){
-    stop("Length of founders_groups should be equal to the number of columns in founder phenotype file.")
-  }else if((sum(founders_groups==1)+sum(founders_groups==0))!=length(founders_groups)){
-    stop("founders_groups should contain only 0s and 1s.")
-  }else{
-    population$founders$groups <- founders_groups
-  }
+  if(missing(population$founders$groups)) stop("Specify founders_groups!\n")
+
+  #*****CHECK FOUNDERS GROUPS*************
+  if(length(population$founders$groups) != ncol(population$founders$phenotypes)) stop("Length of founders_groups should be equal to the number of columns in founder phenotype file.")
+  if((sum(population$founders$groups == 1) + sum(population$founders$groups == 0)) != length(founders_groups)) stop("founders_groups should contain only 0s and 1s.")
+
   class(population) <- c("population", populationType)
   #**********READING CHILDREN GENOTYPIC DATA*************
   filename <- paste(offspring,"_genotypes.txt",sep="")
@@ -141,6 +127,22 @@ TwoClassTtest <- function(foundersline,foundersGroups,threshold){
   res <- t.test(p1, p2)
   if(res$p.value < threshold) return(foundersline)
   return(NULL)
+}
+
+
+simulateParentalPhentypes <- function(population, offspringPhenotypes, populationType){
+  cat("No founders phenotype data provided, it will be simulated!\n")
+  half     <- floor(ncol(offspringPhenotypes)/2)
+  end      <- ncol(offspringPhenotypes)
+  founders <- t(apply(offspringPhenotypes, 1, function(x){
+    x <- sort(x)
+    c( mean(x[1:half],na.rm=TRUE), mean(x[2:(half+1)],na.rm=TRUE), mean(x[3:(half+2)],na.rm=TRUE),
+       mean(x[(half):end],na.rm=TRUE), mean(x[(half-1):(end-1)],na.rm=TRUE), mean(x[(half-2):end-2],na.rm=TRUE))
+  }))
+  population$flags <- c(population$flags,"noParents")
+  population <- add.to.populationSub.internal(population, founders, "founders", populationType=populationType)
+  population$founders$groups <- c(0,0,0,1,1,1)
+  return(population)
 }
 
 byLineTtest <- function(filename, foundersGroups, threshold, sliceSize, transformations, verbose=FALSE){
@@ -219,6 +221,7 @@ readFoundersAndTtest <- function(fileFoundersPheno, founderGroups, populationTyp
     invisible(return(population))
   }else{
     cat("No phenotype file for founders at location: ", fileFoundersPheno," \n")
+    #TODO: SIMULATE DATA WHEN NOT AVAILABLE !!!!!
   }
 }
 
