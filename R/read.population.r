@@ -22,8 +22,8 @@
 # OUTPUT:
 #   An object of class population 
 #
-read.population <- function(offspring="offspring",founders="founders", map="maps", founders_groups,populationType=c("riself", "f2", "bc", "risib"),
-  read_mode=c("normal","HT"), verbose=FALSE, debugMode=0,...){
+read.population <- function(offspring = "offspring", founders = "founders", map = "maps", founders_groups, populationType = c("riself", "f2", "bc", "risib"),
+  read_mode = c("normal","HT"), verbose = FALSE, debugMode = 0,...){
   s <- proc.time()
   if(verbose && debugMode==1) cat("read.population starting.\n")
   population <- NULL
@@ -33,7 +33,7 @@ read.population <- function(offspring="offspring",founders="founders", map="maps
     population <- read.populationNormal.internal(offspring, founders, map, founders_groups, populationType, verbose, debugMode)
     population <- find.diff.expressed(population)
   }else{
-    filename <- paste(offspring,"_annotations.txt",sep="")
+    filename   <- paste(offspring,"_annotations.txt",sep="")
     population <- read.populationHT.internal(offspring, founders, map, founders_groups, populationType, verbose, debugMode,...)
     if(!file.exists(filename)){
       cat("No annotation file found in:",filename,"\n") #TODO: Warning / Error ?
@@ -42,7 +42,7 @@ read.population <- function(offspring="offspring",founders="founders", map="maps
   }
   #**********FINALIZING FUNCTION*************
   e <- proc.time()
-  if(verbose) cat("read.population done in",(e-s)[3],"seconds.\n")
+  if(verbose) cat("read.population finished after",(e-s)[3],"seconds.\n")
   doCleanUp.internal()
   invisible(population)
 }
