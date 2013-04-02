@@ -34,11 +34,9 @@ read.population <- function(offspring="offspring",founders="founders", map="maps
     population <- find.diff.expressed(population)
   }else{
     filename <- paste(offspring,"_annotations.txt",sep="")
-    if(file.exists(filename)){
-      population <- read.populationHT.internal(offspring, founders, map, founders_groups, populationType, verbose, debugMode,...)
-    }else{
-      cat("No annotation file found in",filename,"\n")
-      population <- read.populationHT.internal(offspring, founders, map, founders_groups, populationType, verbose, debugMode,...)
+    population <- read.populationHT.internal(offspring, founders, map, founders_groups, populationType, verbose, debugMode,...)
+    if(!file.exists(filename)){
+      cat("No annotation file found in:",filename,"\n") #TODO: Warning / Error ?
       population <- find.diff.expressed(population)
     }
   }
