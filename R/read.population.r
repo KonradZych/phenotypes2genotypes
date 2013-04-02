@@ -220,7 +220,7 @@ readFoundersAndTtest <- function(fileFoundersPheno, founderGroups, populationTyp
     doCleanUp.internal()
     invisible(return(population))
   }else{
-    cat("No phenotype file for founders at location: ", fileFoundersPheno," \n")
+    cat("No phenotype file for founders at location:", fileFoundersPheno,"\n")
     #TODO: SIMULATE DATA WHEN NOT AVAILABLE !!!!!
   }
 }

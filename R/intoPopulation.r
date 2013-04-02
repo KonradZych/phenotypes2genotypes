@@ -163,11 +163,8 @@ add.to.populationSub.internal <- function(population, populationType=c("riself",
   populationType <- match.arg(populationType)
   if(missing(dataObject)) stop("dataObject is missing\n")
   if(dataType!="founders$groups"){
-    if(class(dataObject)=="data.frame"){
-      dataObject <- as.matrix(dataObject)
-    }else if(class(dataObject)!="matrix"){
-      stop("dataObject should be either a matrix or a date frame")
-    }
+    if(class(dataObject)=="data.frame") dataObject <- as.matrix(dataObject)
+    if(class(dataObject)!="matrix") stop("dataObject should be either a matrix or a date frame")
   }
   if(dataType=="founders" || dataType=="offspring$phenotypes"){
     population <- add.to.populationSubPheno.internal(population,dataObject,dataType, verbose, debugMode)
@@ -181,6 +178,8 @@ add.to.populationSub.internal <- function(population, populationType=c("riself",
     population <- add.to.populationSubMap.internal(population,dataObject, dataType, verbose, debugMode)
   }else if(dataType=="founders$groups"){
     population$founders$groups <- dataObject
+  }else{    #TODO: Is the expected an error a warning orjust an info ???
+    stop("There might be an error but the programmer who made this code was sooo lazy that even his supervisor doesn't know what happend")
   }
   invisible(population)
 }
@@ -208,33 +207,28 @@ add.to.populationSub.internal <- function(population, populationType=c("riself",
 add.to.populationSubPheno.internal <- function(population, dataObject, dataType=c("founders","offspring$phenotypes"),verbose=FALSE,debugMode=0){
   if(verbose && debugMode==1) cat("add.to.populationSub.internal starting.\n")
   s <- proc.time()
-  if(!(is.null(dataObject))&&!is.null(dim(dataObject))){
-    #Check whether rows are numeric/convertable to numeric
-    rows <- unlist(lapply(c(1:nrow(dataObject)),add.to.populationSubPhenoSub.internal,dataObject,verbose))    
-    #Removing faulty rows
-    if(!(is.null(rows))){
-      if(verbose)cat("Following  rows are not numeric and cannot be converted into numeric:",rows," so will be removed.\n")
+  if(!(is.null(dataObject))&&!is.null(dim(dataObject))){ #Check whether rows are numeric/convertable to numeric
+    rows <- unlist(lapply(c(1:nrow(dataObject)), function(curRow,dataObject,verbose){
+      if(verbose&&curRow%%1000==0) cat("Processing row:",curRow,"\n")
+      if(!(numericCheck.internal(dataObject[curRow,],allow.na=TRUE))) return(curRow)
+      return(NULL)
+    },dataObject,verbose))    
+    
+    if(!(is.null(rows))){ #Removing faulty rows
+      if(verbose) cat("Following  rows are not numeric and cannot be converted into numeric:",rows," so will be removed.\n")
       dataObject <- dataObject[-rows,]
     }
     
     if(is.null(dim(dataObject))) stop("Not enough data to continue.\n")
     
-    cur<- apply(as.matrix(dataObject),c(1,2),as.numeric)
-    
-    #Keeping colnames
-    if(!is.null(colnames(dataObject))){
-      colnames(cur) <- colnames(dataObject)
-    }else{
-      colnames(cur) <- 1:ncol(cur)
-    }
-    
-    #Keeping rownames
-    if(!is.null(rownames(dataObject))){
-      rownames(cur) <- rownames(dataObject)
-    }else{
-      rownames(cur) <- 1:nrow(cur)
-    }
-    
+    cur <- apply(as.matrix(dataObject), c(1,2), as.numeric)
+
+    colnames(cur) <- 1:ncol(cur)    #Keeping colnames
+    if(!is.null(colnames(dataObject))) colnames(cur) <- colnames(dataObject)
+
+    rownames(cur) <- 1:nrow(cur)    #Keeping rownames
+    if(!is.null(rownames(dataObject))) rownames(cur) <- rownames(dataObject)
+ 
     #Adding data to population
     if(dataType=="founders"){
       population$founders$phenotypes <- cur
@@ -245,33 +239,8 @@ add.to.populationSubPheno.internal <- function(population, dataObject, dataType=
     stop("No data provided for ",dataType,"!\n")
   }
   e <- proc.time()
-  if(verbose&&debugMode==2)cat("add.to.population for",dataType,"done in:",(e-s)[3],"seconds.\n")
+  if(verbose && debugMode==2) cat("add.to.population for",dataType,"done in:",(e-s)[3],"seconds.\n")
   invisible(population)
-}
-
-############################################################################################################
-#                  *** add.to.populationSubPhenoSub.internal ***
-#
-# DESCRIPTION:
-#  subfunction of add.to.populationSubPheno.internal, checking if a single row of dataObject is formatted
-#  correctly
-# 
-# PARAMETERS:  
-#  curRow - number of row currently being checked  
-#   dataObject - matrix of data to be put into the population object
-#   verbose - be verbose (show information about the progress)
-#
-# OUTPUT:
-#  number or NULL
-#
-############################################################################################################
-add.to.populationSubPhenoSub.internal <- function(curRow,dataObject,verbose){
-  if(verbose&&curRow%%1000==0) cat("Processing row:",curRow,"\n")
-  if(!(numericCheck.internal(dataObject[curRow,],allow.na=TRUE))){
-    return(curRow)
-  }else{
-    return(NULL)
-  }
 }
 
 ############################################################################################################
@@ -354,26 +323,23 @@ add.to.populationSubGeno.internal <- function(population, dataObject, population
 add.to.populationSubMap.internal <- function(population, dataObject, dataType=c("maps$genetic","maps$physical"),verbose=FALSE, debugMode=0){
   if(verbose && debugMode==1) cat("add.to.populationSub.internal starting.\n")
   s <- proc.time()
-  if(!(is.null(dataObject))&&!(is.null(dim(dataObject)))&&class(dataObject)=="matrix"){
-    if(dataType=="maps$genetic" && ncol(dataObject)!=2) cat ("This is not a correct map object.\n")
-    if(dataType=="maps$physical" && ncol(dataObject)!=2 && ncol(dataObject)!=3) cat ("This is not a correct map object.\n")
-    if(any(!(is.numeric(dataObject)))) stop ("This is not a correct map object.\n")
-    ### adding data to population
-    if(dataType=="maps$genetic"){
-      population$maps$genetic <- dataObject
-    }else if(dataType=="maps$physical"){
-      if(ncol(dataObject) == 3){
-        population$maps$physical <- dataObject
-        colnames(population$maps$physical) <- c("Chr","Start","End")
-      }else{
-        population$maps$physical <- cbind(dataObject,dataObject[,2])
-        colnames(population$maps$physical) <- c("Chr","Start","End")
-      }
-    }
-  }else{
-    stop("No data provided for ",dataType,"!\n")
+  if(!(!(is.null(dataObject))&&!(is.null(dim(dataObject)))&&class(dataObject)=="matrix")) stop("No data provided for ",dataType,"!\n")
+
+  if(dataType=="maps$genetic" && ncol(dataObject)!=2) cat ("This is not a correct map object.\n")
+  if(dataType=="maps$physical" && ncol(dataObject)!=2 && ncol(dataObject)!=3) cat ("This is not a correct map object.\n")
+  if(any(!(is.numeric(dataObject)))) stop ("This is not a correct map object.\n")
+  ### adding data to population
+  if(dataType=="maps$genetic"){
+    population$maps$genetic <- dataObject
+  }else if(dataType=="maps$physical"){
+    population$maps$physical <- cbind(dataObject,dataObject[,2])
+    if(ncol(dataObject) == 3) population$maps$physical <- dataObject
+    colnames(population$maps$physical) <- c("Chr","Start","End")
+  }else{    #TODO: Is the is a CAT, WARN or ERROR ???
+    stop("There might be an error but the programmer who made this code was sooo lazy that even his supervisor doesn't know what happend")
   }
   e <- proc.time()
   if(verbose&&debugMode==2)cat("add.to.population for",dataType,"done in:",(e-s)[3],"seconds.\n")
   invisible(population)
 }
+
