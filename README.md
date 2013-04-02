@@ -39,11 +39,13 @@ Load the library in the R interface by the following command (in R):
 You can always access the help files of the package or for any function by typing:
 
     ?pheno2geno
+
 	  ?function.name
 
 Or:
 
     help(pheno2geno)
+
 	  help(function.name)
 
 To read in data files, use the read.population function:
