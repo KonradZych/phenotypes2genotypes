@@ -37,15 +37,11 @@ assignFunction=c(assignMaximumNoConflicts,assignMaximum), reOrder=TRUE, use.orde
 
   if(map=="none"){
     if(reOrder){
-        cross <- formLinkageGroups(cross,reorgMarkers=TRUE,...)
-        cross <- reduceChromosomesNumber(cross, n.chr)
-        if("noParents" %in% population$flags){
-          cross <- mergeInverted(cross, class(population)[2])
-        }
-        if(use.orderMarkers){
-          cross <- orderMarkers(cross,use.ripple=TRUE,verbose=TRUE)
-        }
-        return(cross)
+      cross <- formLinkageGroups(cross, reorgMarkers=TRUE, ...)
+      cross <- reduceChromosomesNumber(cross, n.chr)
+      if("noParents" %in% population$flags) cross <- mergeInverted(cross, class(population)[2])
+      if(use.orderMarkers) cross <- orderMarkers(cross, use.ripple=TRUE, verbose=TRUE)
+      return(cross)
     }else{
       assignment <- names(cross$geno)
       names(assignment) <- names(cross$geno)
@@ -73,7 +69,7 @@ assignFunction=c(assignMaximumNoConflicts,assignMaximum), reOrder=TRUE, use.orde
   e1 <- proc.time()
   if(verbose){cat("Calculating correlation matrix done in:",(e1-s1)[3],"seconds.\n")}
   assignment <- assignFunction(chromToChromArray)
-  if(reOrder==FALSE){
+  if(!reOrder){
     if(verbose)cat("Returning new ordering vector.\n")
     invisible(assignment)
   }else{
@@ -87,10 +83,13 @@ assignFunction=c(assignMaximumNoConflicts,assignMaximum), reOrder=TRUE, use.orde
         e0 <- proc.time()
         cross <- reorganizeMarkersWithin(cross,ordering)
         for(i in 1:nChr){
-          cross <- orderMarkers(cross,use.ripple=TRUE,chr=i,verbose=TRUE)
+          cross <- orderMarkers(cross, use.ripple=TRUE, chr=i, verbose=TRUE)
           e1 <- proc.time()
-          if(i<nChr) te <- ((e1-s0)[3]/sum(nmarkersPerChr[1:i]))*sum(nmarkersPerChr[(i+1):nChr])
-          else te <- 0
+          if(i < nChr){
+            te <- ((e1-s0)[3]/sum(nmarkersPerChr[1:i]))*sum(nmarkersPerChr[(i+1):nChr])
+          }else{ 
+            te <- 0 
+          }
           if(verbose) cat("Done ordering chromosome",i,"/",nChr,"Time remaining:",te,"seconds.\n")
         }
         if(verbose && debugMode==2)cat("Ordering markers inside the cross object done in:",(e0-s0)[3],"seconds.\n")
@@ -112,9 +111,7 @@ assignFunction=c(assignMaximumNoConflicts,assignMaximum), reOrder=TRUE, use.orde
 # OUTPUT:
 #  vector of numerics
 ############################################################################################################
-assignMaximum <- function(x, use=2){
-  apply(x,use,which.max)
-}
+assignMaximum <- function(x, use = 2){ apply(x,use,which.max) }
 
 ############################################################################################################
 #                  *** assignMaximumNoConflicts ***
@@ -124,7 +121,7 @@ assignMaximum <- function(x, use=2){
 # OUTPUT:
 #  vector of numerics
 ############################################################################################################
-assignMaximumNoConflicts <- function(x, use=2){
+assignMaximumNoConflicts <- function(x, use = 2){
   assignment <- assignMaximum(x,use)
   notYetAssigned <- as.numeric(names(assignment)[which(!(names(assignment)%in%assignment))])
   while(any(duplicated(assignment))){

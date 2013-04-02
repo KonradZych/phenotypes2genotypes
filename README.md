@@ -21,44 +21,34 @@ Installation
   - Install the qtl and RankProd packages into the R environment
 
 2. Clone our repository...
-```
+
     git clone git://github.com/KonradZych/phenotypes2genotypes.git  
-```
 
 3. ... or download one of the file archives provided and unzip it.
 
 4. Install into R (from a terminal / commandline):
-```
+
     R CMD INSTALL phenotypes2genotypes                            
-```
 
 Starting
 --------
 Load the library in the R interface by the following command (in R):
 
-```R
-    > library(pheno2geno)
-```
+    library(pheno2geno)
 
 You can always access the help files of the package or for any function by typing:
 
-```R
-    > ?pheno2geno
-	  > ?function.name
-```
+    ?pheno2geno
+	  ?function.name
 
 Or:
 
-```R
-    > help(pheno2geno)
-	  > help(function.name)
-```
+    help(pheno2geno)
+	  help(function.name)
 
 To read in data files, use the read.population function:
 
-```R    
-    > population <- read.population(founders_groups=c(0,0,1,1))
-```
+    population <- read.population(founders_groups=c(0,0,1,1))
 
 In the help file of this function there is a description of the expected file formats. For more information see the manual.
 
@@ -74,29 +64,21 @@ Want to contribute? Great!
 
 a) Clone a local version of the Github repository to your own hard disk:
 
-```shell
-    git clone git://github.com/KonradZych/phenotypes2genotypes.git 
-```
+    git clone git://github.com/KonradZych/phenotypes2genotypes.git
 
 b) Install it from the commandline by using the following command:
 
-```shell
     R CMD INSTALL phenotypes2genotypes
-```
 
 c) Then start R and load the library to make the functions available:
 
-```R
-    > library(pheno2geno)
-```
+    library(pheno2geno)
 
 d) Modify some code. (Search -> 'TODO')
 
 e) To check if the package is able to install in R:
 
-```shell
     R CMD check phenotypes2genotypes
-```
 
 f) If it's warning-free, go back to b) or submit a push request!
 

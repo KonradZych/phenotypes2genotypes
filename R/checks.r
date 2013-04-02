@@ -2,7 +2,7 @@
 # checks.R
 #
 # Copyright (c) 2010-2012 GBIC: Danny Arends, Konrad Zych and Ritsert C. Jansen
-# last modified May, 2012
+# last modified Apr, 2013
 # first written Dec, 2011
 # Contains: numericCheck.internal, genotypeCheck.internal, inRangeCheck.internal 
 #           inListCheck.internal, check.population, crossContainsMap.internal 
@@ -18,9 +18,9 @@
 #
 numericCheck.internal <- function(objectToBeChecked, allow.na=FALSE){
   converted <- as.numeric(as.matrix(objectToBeChecked))
-  if(any(is.na(converted)){
+  if(any(is.na(converted))){
     if(!(allow.na)) return(FALSE)
-    if(sum(is.na(converted == sum(is.na((objectToBeChecked)))) return(TRUE)
+    if(sum(is.na(converted)) == sum(is.na((objectToBeChecked)))) return(TRUE)
     return(FALSE)
   }
   return(TRUE)
@@ -90,18 +90,10 @@ inListCheck.internal <- function(objectToBeChecked,objectName,listOfPossibleElem
 check.population <- function(x,verbose=FALSE){
   #if(length(class(x))!=2) stop("Incorrect class of the object.\n")
   if(class(x)[1]!="population") stop("Object is not of a class population.\n")
-  if(!(class(x)[2]%in%c("riself", "f2", "bc", "risib"))) stop("Type of the population: ",class(x)[2]," not recognized.\n")
-  if(is.null(x$founders$phenotypes)){
-      if(("noParents" %in% x$flags)){ if(verbose) cat("No phenotype data for founders, it will be simulated.\n")
-      }else if("annots" %in% x$flags){ if(verbose) cat("No phenotype data for founders, it will be simulated.\n")
-      }else{ stop("No offspring phenotype data found, this is not a valid object of class population.\n")}
-    }
+  if(!(class(x)[2] %in% c("riself", "f2", "bc", "risib"))) stop("Type of the population: ",class(x)[2]," not recognized.\n")
+  if(is.null(x$founders$phenotypes) && !("noParents" %in% x$flags) && !("annots" %in% x$flags)) stop("No offspring phenotype data found, this is not a valid object of class population.\n")
   if(is.null(x$offspring$phenotypes)) stop("No offspring phenotype data found, this is not a valid object of class population.\n")
-  if(is.null(x$founders$groups)){
-      if(("noParents" %in% x$flags)){ if(verbose) cat("No founders groups found, it will be simulated.\n")
-      }else if("annots" %in% x$flags){ if(verbose) cat("No founders groups found, it will be simulated.\n")
-      }else{ stop("No founders groups found, this is not a valid object of class population.\n")}
-    }
+  if(is.null(x$founders$groups) && !("noParents" %in% x$flags) && !("annots" %in% x$flags)) stop("No offspring phenotype data found, this is not a valid object of class population.\n")
 }
 
 ############################################################################################################
