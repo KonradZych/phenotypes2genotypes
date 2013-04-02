@@ -2,7 +2,7 @@
 # checks.R
 #
 # Copyright (c) 2010-2012 GBIC: Danny Arends, Konrad Zych and Ritsert C. Jansen
-# last modified May, 2012
+# last modified Apr, 2013
 # first written Dec, 2011
 # Contains: numericCheck.internal, genotypeCheck.internal, inRangeCheck.internal 
 #           inListCheck.internal, check.population, crossContainsMap.internal 
