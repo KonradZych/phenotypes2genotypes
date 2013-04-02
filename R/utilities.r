@@ -32,78 +32,65 @@ print.population <- function(x, ...){
   }else if(class(x)[2] == "f2"){
     cat("Population type: F2 intercross\n\n")
   }
-  if(!(is.null(x$offspring))){
-    if("annots"%in%x$flags){
-      if(!(is.null(x$offspring$phenotypes))){
-        if(!(is.null(dim(x$offspring$phenotypes)))){
-           cat("Offspring (",ncol(x$offspring$phenotypes),"):\n",sep="",...)
-           cat("\tPhenotypes:",nrow(x$offspring$phenotypes),"\n",...)
-        }else{
-          cat("Offspring:\n",sep="",...)
-          cat("Offspring phenotypes will be processed on the fly from:",x$offspring$phenotypes,"\n",...)
-        }
-      }else{
-          stop("No phenotype data for offspring, this is not a valid population object\n")
-      }
-    }else if(!(is.null(x$offspring$phenotypes))){
-      cat("Offspring (",ncol(x$offspring$phenotypes),"):\n",sep="",...)
-      cat("\tPhenotypes:",nrow(x$offspring$phenotypes),"\n",...)
+  if(is.null(x$offspring)) stop("No phenotype data for offspring, this is not a valid population object\n")
+  if("annots"%in%x$flags){
+    if((is.null(x$offspring$phenotypes))) stop("No phenotype data for offspring, this is not a valid population object\n")
+    if(!(is.null(dim(x$offspring$phenotypes)))){
+       cat("Offspring (",ncol(x$offspring$phenotypes),"):\n",sep="",...)
+       cat("\tPhenotypes:",nrow(x$offspring$phenotypes),"\n",...)
     }else{
-      stop("No phenotype data for offspring, this is not a valid population object\n")
+      cat("Offspring:\n",sep="",...)
+      cat("Offspring phenotypes will be processed on the fly from:",x$offspring$phenotypes,"\n",...)
     }
-    if(!(is.null(x$offspring$genotypes))){
-      if(!(is.null(x$offspring$genotypes$real))){
-        cat("\tOriginal genotypes:",ncol(x$offspring$genotypes$real),"individuals",nrow(x$offspring$genotypes$real),"markers\n",...)
-        g <- x$offspring$genotypes$real
-        if(class(x)[2]=="f2"){
-          cat("\t   AA:",printGeno.internal(g,1),"%, AB:",printGeno.internal(g,2),"%, BB:",printGeno.internal(g,3),"%, not BB:",printGeno.internal(g,4),"%, not AA:",printGeno.internal(g,5),"%, NA: ",round(sum(is.na(x$offspring$genotypes$real))/length(x$offspring$genotypes$real)*100,1),"%\n",sep="")
-        }else{
-          cat("\t   AA:",printGeno.internal(g,1),"%, BB:",printGeno.internal(g,2),"%, NA: ",round(sum(is.na(x$offspring$genotypes$real))/length(x$offspring$genotypes$real)*100,1),"%\n",sep="")
-        }
-      }else{
-        cat("\tOriginal genotypes: None\n",...)
-      }
-      if(!(is.null(x$offspring$genotypes$simulated))){
-        g <- x$offspring$genotypes$simulated
-        cat("\tSimulated genotypes:",ncol(x$offspring$genotypes$simulated),"individuals",nrow(x$offspring$genotypes$simulated),"markers\n",...)
-        if(class(x)[2]=="f2"){
-          cat("\t   AA:",printGeno.internal(g,1),"%, AB:",printGeno.internal(g,2),"%, BB:",printGeno.internal(g,3),"%, not BB:",printGeno.internal(g,4),"%, not AA:",printGeno.internal(g,5),"%, NA: ",round(sum(is.na(x$offspring$genotypes$real))/length(x$offspring$genotypes$real)*100,1),"%\n",sep="")
-        }else{
-          cat("\t   AA:",printGeno.internal(g,1),"%, BB:",printGeno.internal(g,2),"%, NA: ",round(sum(is.na(x$offspring$genotypes$real))/length(x$offspring$genotypes$real)*100,1),"%\n",sep="")
-        }
-      }else{
-        cat("\tSimulated genotypes: None\n",...)
-      }
+  }else if(!(is.null(x$offspring$phenotypes))){
+    cat("Offspring (",ncol(x$offspring$phenotypes),"):\n",sep="",...)
+    cat("\tPhenotypes:",nrow(x$offspring$phenotypes),"\n",...)
+  }else{ stop("No phenotype data for offspring, this is not a valid population object") }
+
+  if(!(is.null(x$offspring$genotypes))){
+    if(!(is.null(x$offspring$genotypes$real))){
+      cat("\tOriginal genotypes:",ncol(x$offspring$genotypes$real),"individuals",nrow(x$offspring$genotypes$real),"markers\n",...)
+      g <- x$offspring$genotypes$real
+      cat("\t   AA:",printGeno.internal(g,1),"%, AB:", printGeno.internal(g,2),"%")
+      if(class(x)[2]=="f2") cat(", BB:", printGeno.internal(g,3),"%, not BB:",printGeno.internal(g,4),"%, not AA:",printGeno.internal(g,5),"%")
+      cat(" NA: ",round(sum(is.na(x$offspring$genotypes$real))/length(x$offspring$genotypes$real)*100,1),"%\n",sep="")
     }else{
       cat("\tOriginal genotypes: None\n",...)
+    }
+    if(!(is.null(x$offspring$genotypes$simulated))){
+      g <- x$offspring$genotypes$simulated
+      cat("\tSimulated genotypes:",ncol(x$offspring$genotypes$simulated),"individuals",nrow(x$offspring$genotypes$simulated),"markers\n",...)
+      cat("\t   AA:",printGeno.internal(g,1),"%, AB:", printGeno.internal(g,2),"%")
+      if(class(x)[2]=="f2") cat(", BB:", printGeno.internal(g,3),"%, not BB:",printGeno.internal(g,4),"%, not AA:",printGeno.internal(g,5),"%")
+      cat(" NA: ",round(sum(is.na(x$offspring$genotypes$real))/length(x$offspring$genotypes$real)*100,1),"%\n",sep="")
+    }else{
       cat("\tSimulated genotypes: None\n",...)
     }
-    if(!(is.null(x$offspring$genotypes$qtl))){
-      cat("\tQTL scan results detected.\n",...)
-    }else{
-      cat("\tQTL scan results not detected, run scan.qtls.\n",...)
-    }
-    if(!(is.null(x$maps$genetic))){
-      cat("\tGenetic map:",nrow(x$maps$genetic),"markers, ",length(table(x$maps$genetic[,1]))," chromosomes\n",...)
-    }else{
-      cat("\tGenetic map: None\n")
-    }
-    if(!(is.null(x$maps$physical))){
-      cat("\tPhysical map:",nrow(x$maps$physical),"markers, ",length(table(x$maps$physical[,1]))," chromosomes\n",...)
-    }else{
-      cat("\tPhysical map: None\n")
-    }    
   }else{
-    stop("No phenotype data for offspring, this is not a valid population object\n")
+    cat("\tOriginal genotypes: None\n",...)
+    cat("\tSimulated genotypes: None\n",...)
   }
+  if(!(is.null(x$offspring$genotypes$qtl))){
+    cat("\tQTL scan results detected.\n",...)
+  }else{
+    cat("\tQTL scan results not detected, run scan.qtls.\n",...)
+  }
+  if(!(is.null(x$maps$genetic))){
+    cat("\tGenetic map:",nrow(x$maps$genetic),"markers, ",length(table(x$maps$genetic[,1]))," chromosomes\n",...)
+  }else{
+    cat("\tGenetic map: None\n")
+  }
+  if(!(is.null(x$maps$physical))){
+    cat("\tPhysical map:",nrow(x$maps$physical),"markers, ",length(table(x$maps$physical[,1]))," chromosomes\n",...)
+  }else{
+    cat("\tPhysical map: None\n")
+  }    
 
   if(!("noParents" %in% x$flags)&&!("annots" %in% x$flags)){
     cat("Founders (",ncol(x$founders$phenotypes),"):\n",sep="",...)
-    if(!(is.null(x$founders$phenotypes))){
-      cat("\tPhenotypes:",nrow(x$founders$phenotypes),"\n",...)
-    }else{
-      stop("No phenotype data for founders, this is not a valid population object\n")
-    }
+    if(is.null(x$founders$phenotypes)) stop("No phenotype data for founders, this is not a valid population object\n")
+    cat("\tPhenotypes:",nrow(x$founders$phenotypes),"\n",...)
+
     if(!(is.null(x$founders$RP))){
       cat("\tDifferential expression: Detected\n",...)
     }else{
@@ -112,7 +99,7 @@ print.population <- function(x, ...){
     if(!(is.null(x$founders$groups))){
       cat("\tFounder groups:",x$founders$groups,"\n",...)
     }else{
-      stop("No information about founders groups\n",...)
+      cat("No information about founders groups\n",...)
     }
   }else{
     cat("Founders:\n",sep="",...)
