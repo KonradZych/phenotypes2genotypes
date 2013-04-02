@@ -290,46 +290,44 @@ add.to.populationSubPhenoSub.internal <- function(curRow,dataObject,verbose){
 #  number or NULL
 #
 ############################################################################################################
-add.to.populationSubGeno.internal <- function(population,dataObject,populationType=c("riself", "f2", "bc", "risib"),verbose=FALSE){
+add.to.populationSubGeno.internal <- function(population, dataObject, populationType=c("riself", "f2", "bc", "risib"), verbose=FALSE){
   populationType <- match.arg(populationType)
-    #Checking whether rows are numeric/convertable to numeric
-      if(populationType == "f2"){
-        genotypes <- c(1:5)
-      }else{
-        genotypes <- c(1,2)
-      }
-      rows <- unlist(lapply(c(1:nrow(dataObject)),add.to.populationSubGenoSub.internal,dataObject,genotypes,verbose))
-      #Removes faulty rows
-      if(!(is.null(rows))){
-        if(verbose)cat("Following  rows are not numeric and cannot be converted into numeric:",rows," so will be removed.\n")
-        dataObject <- dataObject[-rows,]
-      }
+  #Checking whether rows are numeric/convertable to numeric
+  genotypes <- c(1,2)
+  if(populationType == "f2") genotypes <- c(1:5)
+
+  rows <- unlist(lapply(c(1:nrow(dataObject)),add.to.populationSubGenoSub.internal,dataObject,genotypes,verbose))
+  #Removes faulty rows
+  if(!(is.null(rows))){
+    if(verbose) cat("Following  rows are not numeric and cannot be converted into numeric:",rows," so will be removed.\n")
+    dataObject <- dataObject[-rows,]
+  }
     
-      if(is.null(dim(dataObject))) stop("Not enough data to continue.\n")
+  if(is.null(dim(dataObject))) stop("Not enough data to continue.\n")
     
-      cur<- matrix(as.numeric(as.matrix(dataObject)),nrow(dataObject),ncol(dataObject))
+  cur <- matrix(as.numeric(as.matrix(dataObject)), nrow(dataObject), ncol(dataObject))
     
-      #Keep colnames
-      if(!is.null(colnames(dataObject))){
-        colnames(cur) <- colnames(dataObject)
-      }else{
-        colnames(cur) <- 1:ncol(cur)
-      }
+  #Keep colnames
+  if(!is.null(colnames(dataObject))){
+    colnames(cur) <- colnames(dataObject)
+  }else{
+    colnames(cur) <- 1:ncol(cur)
+  }
     
-      #Keep rownames
-      if(!is.null(rownames(dataObject))){
-        rownames(cur) <- rownames(dataObject)
-      }else{
-        rownames(cur) <- 1:nrow(cur)
-      }
-      if(verbose){
-        for(x in as.numeric(names(table(cur)))){
-          cat(x,": ",round(sum(cur==x,na.rm=T)/length(cur)*100,2),"%\n",sep="")
-        }
-        cat("NA: ",round(sum(is.na(cur))/length(cur)*100,2),"%\n",sep="")
-      }
-      #Adding data to population
-      return(cur)
+  #Keep rownames
+  if(!is.null(rownames(dataObject))){
+    rownames(cur) <- rownames(dataObject)
+  }else{
+    rownames(cur) <- 1:nrow(cur)
+  }
+  if(verbose){
+    for(x in as.numeric(names(table(cur)))){
+      cat(x,": ",round(sum(cur==x,na.rm=T)/length(cur)*100,2),"%\n",sep="")
+    }
+    cat("NA: ",round(sum(is.na(cur))/length(cur)*100,2),"%\n",sep="")
+  }
+  #Adding data to population
+  return(cur)
 }
 
 add.to.populationSubGenoSub.internal <- function(curRow,dataObject,genotypes,verbose=FALSE){
