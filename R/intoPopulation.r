@@ -39,7 +39,7 @@ create.population <- function(offspring_phenotypes, founders, founders_groups, o
   }else{
     n.childrenNotInParental <- sum(!(rownames(founders)%in%rownames(population$offspring$phenotypes)))
     if(n.childrenNotInParental == nrow(founders)) stop("No match between the row names in the founders and offspring.\n")
-    if(n.childrenNotInParental!=0) warning(n.childrenNotInParental,"markers from founders file are not present in offspring data and will be removed.\n")
+    if(n.childrenNotInParental != 0) warning(n.childrenNotInParental,"markers from founders file are not present in offspring data and will be removed.\n")
     founders <- founders[which((rownames(founders) %in% rownames(population$offspring$phenotypes))),]
     population <- add.to.populationSub.internal(population, populationType,founders, "founders", verbose, debugMode)
   }
@@ -109,6 +109,8 @@ add.to.population <- function(population, dataObject, dataType=c("founders","off
     }
   }else if(length(dataType)==1){
     population <- add.to.populationSub.internal(population,populationType,dataObject,dataType, verbose, debugMode)
+  }else{
+    # TODO: Is this an INFO, WARNING or ERROR ???
   }
 
   if(is.null(population)) stop("No data provided!\n")
@@ -260,17 +262,11 @@ add.to.populationSubGeno.internal <- function(population, dataObject, population
     
   cur <- matrix(as.numeric(as.matrix(dataObject)), nrow(dataObject), ncol(dataObject))
 
-  if(!is.null(colnames(dataObject))){  #Keep colnames
-    colnames(cur) <- colnames(dataObject)
-  }else{
-    colnames(cur) <- 1:ncol(cur)
-  }
+  rownames(cur) <- 1:nrow(cur)
+  colnames(cur) <- 1:ncol(cur)
+  if(!is.null(colnames(dataObject))) colnames(cur) <- colnames(dataObject)  #Keep colnames
+  if(!is.null(rownames(dataObject))) rownames(cur) <- rownames(dataObject)  #Keep rownames
 
-  if(!is.null(rownames(dataObject))){  #Keep rownames
-    rownames(cur) <- rownames(dataObject)
-  }else{
-    rownames(cur) <- 1:nrow(cur)
-  }
   if(verbose){
     for(x in as.numeric(names(table(cur)))){
       cat(x,": ",round(sum(cur==x,na.rm=T)/length(cur)*100,2),"%\n",sep="")
