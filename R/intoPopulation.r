@@ -38,23 +38,15 @@ create.population <- function(offspring_phenotypes, founders, founders_groups, o
     population <- simulateParentalPhentypes(population, population$offspring$phenotypes, populationType)
   }else{
     n.childrenNotInParental <- sum(!(rownames(founders)%in%rownames(population$offspring$phenotypes)))
-    if(n.childrenNotInParental==nrow(founders)){
-      stop("No match between the row names in the founders and offspring.\n")
-    }else if(n.childrenNotInParental!=0){
-      warning(n.childrenNotInParental,"markers from founders file are not present in offspring data and will be removed.\n")
-      founders <- founders[which((rownames(founders)%in%rownames(population$offspring$phenotypes))),]
-    }
+    if(n.childrenNotInParental == nrow(founders)) stop("No match between the row names in the founders and offspring.\n")
+    if(n.childrenNotInParental!=0) warning(n.childrenNotInParental,"markers from founders file are not present in offspring data and will be removed.\n")
+    founders <- founders[which((rownames(founders) %in% rownames(population$offspring$phenotypes))),]
     population <- add.to.populationSub.internal(population, populationType,founders, "founders", verbose, debugMode)
   }
-  if(missing(founders_groups)){
-    stop("No information about founders groups provided!\n")
-  }else{
-    if(length(founders_groups)==ncol(population$founders$phenotypes)){
-      population <- add.to.populationSub.internal(population, populationType,founders_groups, "founders$groups", verbose, debugMode)
-    }else{
-      stop("founders_group parameter should have length equall to number of columns in founders phenotype data!\n")
-    }
-  }
+  if(missing(founders_groups)) stop("No information about founders groups provided!\n")
+  if(length(founders_groups)!=ncol(population$founders$phenotypes)) stop("founders_group parameter should have length equall to number of columns in founders phenotype data")
+  population <- add.to.populationSub.internal(population, populationType,founders_groups, "founders$groups", verbose, debugMode)
+
   if(missing(offspring_genotypes)){
     if(verbose && !(no.warn))cat("No offspring genotypic data provided. You can supply it later using add.to.population.\n")
   }else{
@@ -70,16 +62,12 @@ create.population <- function(offspring_phenotypes, founders, founders_groups, o
   }else{
     population <- add.to.populationSub.internal(population, populationType, maps_physical, "maps$physical", verbose, debugMode)
   }
-  if(is.null(population)) stop("No data provided!\n")
+  if(is.null(population)) stop("No data provided")
   class(population) <- c("population", populationType)
-  e <- proc.time()
   check.population(population)
   if(verbose){
-    if(debugMode==2){
-      cat("create.population done in:",(e-s)[3],"seconds.\n")
-    }else{
-      cat("create.population finished\n")
-    }
+    cat("create.population finished")
+    if(debugMode==2) cat(" in:",(e-s)[3],"seconds.\n")
   }
   invisible(population)
 }
