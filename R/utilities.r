@@ -252,15 +252,15 @@ write.population <- function(population,outputFile="population.txt",verbose=FALS
 #
 ############################################################################################################
 assignChrToMarkers <- function(assignment,cross){
-    ordering <- vector(sum(nmar(cross)),mode="numeric")
-    names(ordering) <- markernames(cross)
-    for(i in 1:length(assignment)){
-      oldChrom <- as.numeric(names(assignment)[i])
-      newChrom <- assignment[i]
-      markersFromOldChrom <- colnames(cross$geno[[oldChrom]]$data)
-      ordering[markersFromOldChrom] <- rep(newChrom,length(markersFromOldChrom))
-    }
-    invisible(ordering)
+  ordering <- vector(sum(nmar(cross)),mode="numeric")
+  names(ordering) <- markernames(cross)
+  for(i in 1:length(assignment)){
+    oldChrom <- as.numeric(names(assignment)[i])
+    newChrom <- assignment[i]
+    markersFromOldChrom <- colnames(cross$geno[[oldChrom]]$data)
+    ordering[markersFromOldChrom] <- rep(newChrom,length(markersFromOldChrom))
+  }
+  invisible(ordering)
 }
 
 ############################################################################################################
@@ -291,3 +291,4 @@ set.geno.from.cross <- function(cross,population,map=c("genetic","physical")){
 is.integer0 <- function(x){
   return(is.integer(x) && length(x) == 0L)
 }
+
