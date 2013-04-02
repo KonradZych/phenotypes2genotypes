@@ -224,99 +224,95 @@ load_linebyline.internal <- function(filename,pattern,sliceSize,transformations,
   invisible(result)
 }
 
-read.populationHT.internal <- function(offspring,founders,map,founders_groups, populationType=c("riself", "f2", "bc", "risib"), threshold=0.01,
-  sliceSize=5000, transformations=c("nothing","log","sqrt","reciprocal","probit","logit"), annots, verbose=FALSE, debugMode=0){
+readFoundersAndTtest <- function(fileFoundersPheno, founderGroups, populationType, threshold, sliceSize, transformations, verbose){
+  if(file.exists(fileFoundersPheno)){
+    population <- NULL
+    if(verbose) cat("Found phenotypic file for founders:", fileFoundersPheno,"and will store  it in population$founders$phenotypes\n")
+    foundersPhenotypes <- t_test_linebyline.internal(fileFoundersPheno, founderGroups, threshold, sliceSize, transformations, verbose)
+    population <- add.to.populationSub.internal(population, foundersPhenotypes, "founders", populationType=populationType)
+    population$founders$groups <- founderGroups
+    doCleanUp.internal()
+    invisible(return(population))
+  }else{
+    cat("No phenotype file for founders at location: ", fileFoundersPheno," \n")
+  }
+}
+
+read.populationHT.internal <- function(offspring, founders, map, founders_groups, populationType=c("riself", "f2", "bc", "risib"), threshold=0.01,
+  sliceSize = 5000, transformations = c("nothing","log","sqrt","reciprocal","probit","logit"), annots, verbose=FALSE, debugMode=0){
   #**********FOUNDERS GROUPS*************
   if(missing(founders_groups)){ 
-    stop("Specify founders_groups!\n")
+    stop("Specify founders_groups!")
   }else if(!(all(founders_groups %in% c(0,1)))){
     stop("founders_groups should contain only 0s and 1s.")
   }else if(all(founders_groups==1) || all(founders_groups==0)){
     stop("founders_groups should contain both 0s and 1s.")
   }
-  filename <- paste(founders,"_phenotypes.txt",sep="")
-  filenameA <- paste(offspring,"_annotations.txt",sep="")
+  fileFoundersPheno  <- paste(founders,"_phenotypes.txt",sep="")
+  fileOffspringPheno <- paste(offspring,"_phenotypes.txt",sep="")
+  fileOffspringGeno  <- paste(offspring,"_genotypes.txt",sep="")
+  fileAnnotations    <- paste(offspring,"_annotations.txt",sep="")
+  fileMapPhys        <- paste(map,"_physical.txt",sep="")
+  fileMapGen         <- paste(map,"_genetic.txt",sep="")
   population <- NULL
-  if(!(file.exists(filenameA))){
+  if(!(file.exists(fileAnnotations))){
+
     #**********READING FOUNDERS PHENOTYPIC DATA*************
-    if(verbose)cat("No annotation file ",filenameA,"\n")
-    if(!missing(founders)){
-      if(file.exists(filename)){
-        population <- NULL
-        if(verbose) cat("Found phenotypic file for founders:",filename,"and will store  it in population$founders$phenotypes\n")
-        founders_phenotypes <- t_test_linebyline.internal(filename,founders_groups,threshold,sliceSize,transformations,verbose)
-        population <- add.to.populationSub.internal(population,founders_phenotypes,"founders",populationType=populationType)
-        population$founders$groups <- founders_groups
-        doCleanUp.internal()
-      }else{
-        stop("No phenotype file for founders at location: ",filename," \n")
-      }
-    }
+    if(verbose)cat("No annotation file",fileAnnotations,"\n")
+    if(missing(founders)) stop("Founder phenotype data needs to be available:", fileFoundersPheno)
+    readFoundersAndTtest(fileFoundersPheno, founders_groups, populationType, threshold, sliceSize, transformations, verbose)
+
     #**********READING OFFSPRING PHENOTYPIC DATA*************
-    filename <- paste(offspring,"_phenotypes.txt",sep="")
-    if(file.exists(filename)){
-      if(verbose) cat("Found phenotypic file for offspring:",filename,"and will store  it in population$offspring$phenotypes\n")
-      offspring_phenotypes <- load_linebyline.internal(filename,rownames(population$founders$phenotypes),sliceSize,transformations,verbose)
+    if(file.exists(fileOffspringPheno)){
+      if(verbose) cat("Found phenotypic file for offspring:", fileOffspringPheno,"and will store  it in population$offspring$phenotypes\n")
+      offspring_phenotypes <- load_linebyline.internal(fileOffspringPheno, rownames(population$founders$phenotypes), sliceSize, transformations, verbose)
       population <- add.to.populationSub.internal(population,offspring_phenotypes,"offspring$phenotypes",populationType=populationType)
       doCleanUp.internal()
     }else{
-      stop("No phenotype file for offspring: ",filename," this file is essential!\n")
+      stop("No phenotype file for offspring: ",fileOffspringPheno," this file is essential!\n")
     }
   }else{
     #**********READING FOUNDERS PHENOTYPIC DATA*************
-    if(verbose)cat("Annotation file ",filenameA,"\n")
-    population <- NULL
-    population$flags <- c(population$flags,"annots")
-    population$annots <- read.table(filenameA,sep="\t")
-    if(file.exists(filename)){
-      if(verbose) cat("Found phenotypic file for founders:",filename,"and will store  it in population$founders$phenotypes\n")
-      founders_phenotypes <- t_test_linebyline.internal(filename,founders_groups,threshold,sliceSize,transformations,verbose)
-      population <- add.to.populationSub.internal(population,founders_phenotypes,"founders",populationType=populationType)
-      population$founders$groups <- founders_groups
-      doCleanUp.internal()
-    }else{
-      cat("No phenotype file for founders: ",filename,"\n")
-    }
+    if(verbose) cat("Annotation file", fileAnnotations,"\n")
+    population$flags  <- c(population$flags,"annots")
+    population$annots <- read.table(fileAnnotations,sep="\t")
+    readFoundersAndTtest(fileFoundersPheno, founders_groups, populationType, threshold, sliceSize, transformations, verbose)
+
     #**********READING OFFSPRING PHENOTYPIC DATA*************
-    filename <- paste(offspring,"_phenotypes.txt",sep="")
-    if(file.exists(filename)){
-      if(verbose) cat("Found phenotypic file for offspring:",filename,"and will store  it in population$offspring$phenotypes\n")
-      population$offspring$phenotypes <- filename
-      
-    }else{
-      stop("No phenotype file for offspring: ",filename," this file is essential!\n")
-    }
+    if(!file.exists(fileOffspringPheno)) stop("No phenotype file for offspring: ",fileOffspringPheno," this file is essential!\n")
+    if(verbose) cat("Found phenotypic file for offspring:", fileOffspringPheno,"and will store  it in population$offspring$phenotypes\n")
+    population$offspring$phenotypes <- fileOffspringPheno
+
   }
   class(population) <- c("population", populationType)
   #**********READING OFFSPRING GENOTYPIC DATA*************
-  filename <- paste(offspring,"_genotypes.txt",sep="")
-  if(file.exists(filename)){
-    if(verbose) cat("Found genotypic file for offspring:",filename,"and will store  it in population$offspring$genotypes$real\n")
-    offspring_genotypes <- read.table(filename,sep="\t",row.names=1,header=TRUE)
+
+  if(file.exists(fileOffspringGeno)){
+    if(verbose) cat("Found genotypic file for offspring:",fileOffspringGeno,"and will store  it in population$offspring$genotypes$real\n")
+    offspring_genotypes <- read.table(fileOffspringGeno,sep="\t", row.names=1, header=TRUE)
     population <- add.to.population(population, offspring_genotypes, "offspring$genotypes")
     doCleanUp.internal()
   }else{
-    if(verbose)cat("No genotypic file for offspring:",filename,"genotypic data for offspring will be simulated\n")
+    if(verbose) cat("No genotypic file for offspring:",fileOffspringGeno,"genotypic data for offspring will be simulated\n")
   }
+
   #**********READING PHYSICAL MAP*************
-  filename <- paste(map,"_physical.txt",sep="")
-  if(file.exists(filename)){
-    if(verbose) cat("Found physical map:",filename,"and will store  it in population$maps$physical\n")
-    physical <- read.table(filename,sep="\t",row.names=1,header=FALSE)
+  if(file.exists(fileMapPhys)){
+    if(verbose) cat("Found physical map:",fileMapPhys,"and will store  it in population$maps$physical\n")
+    physical <- read.table(fileMapPhys,sep="\t", row.names=1, header=FALSE)
     population <- add.to.population(population, physical, "maps$physical")
     doCleanUp.internal()
   }else{
-    if(verbose)cat("No physical map file:",filename,".\n")
+    if(verbose) cat("No physical map file:",fileMapPhys,".\n")
   }
   #**********READING GENETIC MAP*************
-  filename <- paste(map,"_genetic.txt",sep="")
-  if(file.exists(filename)){
-    if(verbose) cat("Found etic map:",filename,"and will store  it in population$maps$genetic\n")
-    genetic <- read.table(filename,sep="\t",row.names=1,header=FALSE)
+  if(file.exists(fileMapGen)){
+    if(verbose) cat("Found genetic map:",fileMapGen,"and will store  it in population$maps$genetic\n")
+    genetic <- read.table(fileMapGen,sep="\t",row.names=1,header=FALSE)
     population <- add.to.population(population, genetic, "maps$genetic")
     doCleanUp.internal()
   }else{
-    if(verbose)cat("No genetic map file:",filename,".\n")
+    if(verbose) cat("No genetic map file:",fileMapGen,".\n")
   }
   population$sliceSize <- sliceSize
   invisible(population)
