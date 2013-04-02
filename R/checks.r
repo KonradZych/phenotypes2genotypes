@@ -18,9 +18,9 @@
 #
 numericCheck.internal <- function(objectToBeChecked, allow.na=FALSE){
   converted <- as.numeric(as.matrix(objectToBeChecked))
-  if(any(is.na(converted)){
+  if(any(is.na(converted))){
     if(!(allow.na)) return(FALSE)
-    if(sum(is.na(converted == sum(is.na((objectToBeChecked)))) return(TRUE)
+    if(sum(is.na(converted)) == sum(is.na((objectToBeChecked)))) return(TRUE)
     return(FALSE)
   }
   return(TRUE)
