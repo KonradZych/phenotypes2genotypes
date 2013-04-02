@@ -56,7 +56,7 @@ find.diff.expressed <- function(population,use=c("ttest","rankprod"),verbose=FAL
 findUsingTTest.internal <- function(phenoRow,groupLabels){
   a <- which(groupLabels==0)
   b <- which(groupLabels==1)
-  if(mean(phenoRow[a]) < mean(phenoRow[b])){
+  if(mean(phenoRow[a],na.rm=T) < mean(phenoRow[b],na.rm=T)){
     what <- "less"
     return(c(0,t.test(phenoRow[a],phenoRow[b],alt=what)$p.value))
   }else{

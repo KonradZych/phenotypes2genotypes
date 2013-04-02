@@ -169,7 +169,6 @@ writeGenotypes.internal <- function(genotypeMatrix,chr=1,positions=NULL,outputFi
   if(verbose && debugMode==1) cat("writeGenotypes starting.\n")
   if(is.null(positions)) positions <- 1:nrow(genotypeMatrix)
   else if(length(positions)!=length(1:nrow(genotypeMatrix))) stop("Posistions object is not correct, check help files.\n")
-  if(verbose && debugMode==1) cat("writeGenotypes starting.\n")
   genotypeMatrix <- cleanNames.internal(genotypeMatrix)
   write.table(cbind(rownames(genotypeMatrix),chr,positions,genotypeMatrix),file=outputFile,sep=",",quote=FALSE,
     col.names=FALSE,append=TRUE,row.names=FALSE)

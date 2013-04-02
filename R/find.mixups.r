@@ -74,6 +74,7 @@ find.mixups <- function(population,map=c("genetic","physical"),n.qtls=50,thresho
   scores <- vector(mode="numeric",length=ncol(population$offspring$phenotypes))
   names(scores) <- colnames(population$offspring$phenotypes)
   done <- 0
+  if(verbose) cat("--- starting the QTL analysis ---\n")
   while(qtls_found<n.qtls){
     phenotype <- round(runif(1,1,nrow(population$offspring$phenotypes)))
     cur_phenotype <- matrix(scanone(returncross,pheno.col=phenotype,method="hk")[,3],1,nrow(population$offspring$genotypes$real))
