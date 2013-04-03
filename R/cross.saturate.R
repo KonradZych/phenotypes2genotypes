@@ -25,7 +25,7 @@ cross.saturate <- function(population, cross, map=c("genetic","physical"), place
   if(!is.numeric(threshold)||is.na(threshold)) stop("Please provide correct threshold")
   if(threshold<0) stop("Threshold needs to be > 0")
   if(placeUsing=="correlation" && threshold >= 5) cat("WARNING: threshold too high, few new markers will be selected\n")
-  if(placeUsing=="qtl" && threshold>=20) cat("WARNING: threshold too high, few new markers will be selected\n")
+  if(placeUsing=="qtl" && threshold >= 20) cat("WARNING: threshold too high, few new markers will be selected\n")
 
   map <- match.arg(map)
   placeUsing <- checkParameters.internal(placeUsing,c("qtl","correlation"),"placeUsing")
@@ -172,12 +172,10 @@ rearrangeMarkers <- function(cross, population, populationType, cur_map, thresho
       newpositions <- NULL
     }
     toRmv <- NULL
-    if(length(newnames)>0){
-      if(length(toRmv)>0){
-        newnames <- newnames[-toRmv]
-        newpositions <- newpositions[-toRmv]
-        redundant <- c(redundant,newnames[toRmv])
-      }
+    if(length(newnames)>0 && length(toRmv)>0){
+      newnames <- newnames[-toRmv]
+      newpositions <- newpositions[-toRmv]
+      redundant <- c(redundant,newnames[toRmv])
     }
     if(x %in% chr) if(verbose) cat("Selected:",length(newnames),"new and",length(oldnames),"original markers,",length(toRmv),"markers were removed\n") 
     if(addMarkers){
