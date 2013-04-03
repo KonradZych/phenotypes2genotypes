@@ -23,17 +23,16 @@
 # OUTPUT:
 #  An object of class population
 #
-create.population <- function(offspring_phenotypes, founders, founders_groups, offspring_genotypes, maps_genetic, maps_physical,
+create.population <- function(offspringPhenotypes, founders, foundersGroups, offspringGenotypes, mapsGenetic, mapsPhysical,
   populationType=c("riself", "f2", "bc", "risib"), no.warn=FALSE, verbose=FALSE, debugMode=0){
   if(verbose && debugMode==1) cat("create.population starting.\n")
   s <- proc.time()
   population <- NULL
   populationType <- match.arg(populationType)
-  if(missing(offspring_phenotypes)){
-    stop("No offspring phenotype data provided!\n")
-  }else{
-    population <- add.to.populationSub.internal(population, populationType, offspring_phenotypes, "offspring$phenotypes", verbose, debugMode)
-  }
+  
+  if(missing(offspringPhenotypes)) stop("No offspring phenotype data provided!")
+  population <- add.to.populationSub.internal(population, populationType, offspringPhenotypes, "offspring$phenotypes", verbose, debugMode)
+
   if(missing(founders)){
     population <- simulateParentalPhentypes(population, population$offspring$phenotypes, populationType)
   }else{
@@ -41,29 +40,29 @@ create.population <- function(offspring_phenotypes, founders, founders_groups, o
     if(n.childrenNotInParental == nrow(founders)) stop("No match between the row names in the founders and offspring.\n")
     if(n.childrenNotInParental != 0) warning(n.childrenNotInParental,"markers from founders file are not present in offspring data and will be removed.\n")
     founders <- founders[which((rownames(founders) %in% rownames(population$offspring$phenotypes))),]
-    population <- add.to.populationSub.internal(population, populationType,founders, "founders", verbose, debugMode)
-    population$founders$groups <-  founders_groups
+    population <- add.to.populationSub.internal(population, populationType, founders, "founders", verbose, debugMode)
   }
   
-  if(missing(founders_groups)) stop("No information about founders groups provided!\n")
-  if(length(founders_groups)!=ncol(population$founders$phenotypes)) stop("founders_group parameter should have length equall to number of columns in founders phenotype data")
-  population <- add.to.populationSub.internal(population, populationType,founders_groups, "founders$groups", verbose, debugMode)
+  if(is.null(population$founders$groups)) stop("No information about founders groups provided!\n")
+  if(length(population$founders$groups) !=ncol(population$founders$phenotypes)) stop("foundersGroup parameter should have length equal to number of columns in founders phenotype data") 
+  population <- add.to.populationSub.internal(population, populationType, population$founders$groups, "founders$groups", verbose, debugMode)
 
-  if(missing(offspring_genotypes)){
+  if(missing(offspringGenotypes)){
     if(verbose && !(no.warn))cat("No offspring genotypic data provided. You can supply it later using add.to.population.\n")
   }else{
-    population <- add.to.populationSub.internal(population, populationType, offspring_genotypes, "offspring$genotypes", verbose, debugMode)
+    population <- add.to.populationSub.internal(population, populationType, offspringGenotypes, "offspring$genotypes", verbose, debugMode)
   }
-  if(missing(maps_genetic)){
+  if(missing(mapsGenetic)){
     if(verbose && !(no.warn))cat("No genotic map provided. You can supply it later using add.to.population.\n")
   }else{
-    population <- add.to.populationSub.internal(population, populationType, maps_genetic, "maps$genetic", verbose, debugMode)
+    population <- add.to.populationSub.internal(population, populationType, mapsGenetic, "maps$genetic", verbose, debugMode)
   }
-  if(missing(maps_physical)){
+  if(missing(mapsPhysical)){
     if(verbose && !(no.warn))cat("No physical map provided.  You can supply it later using add.to.population.\n")
   }else{
-    population <- add.to.populationSub.internal(population, populationType, maps_physical, "maps$physical", verbose, debugMode)
+    population <- add.to.populationSub.internal(population, populationType, mapsPhysical, "maps$physical", verbose, debugMode)
   }
+  
   if(is.null(population)) stop("No data provided")
   class(population) <- c("population", populationType)
   check.population(population)
