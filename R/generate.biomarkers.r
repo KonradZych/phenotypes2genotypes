@@ -185,16 +185,8 @@ generate.biomarkers.internal <- function(population, treshold, overlapInd, propo
   if(verbose) cat("Generated ",nrow(output),"markers.\n")
   ### putting results inside population object
   if(is.null(dim(output))) stop("No markers selected.")
- # if(length(table(env))>1){
-  #  print("multiple")
-   # if(populationType=="f2"){
-   #   output <- t(apply(output,1,cleanGeno.internal,env,c(1,2,3)))
-   # }else{
-   #   output <- t(apply(output,1,cleanGeno.internal,env,c(1,2)))
-   # }
- # }
+
   population$offspring$genotypes$simulated <- output
-  #population$offspring$genotypes$EM <- outputEM
   colnames(population$offspring$genotypes$simulated) <- colnames(upRils)
   invisible(population)
 }
@@ -392,7 +384,6 @@ splitPheno.internal <- function(offspring, founders, overlapInd, proportion, mar
 #
 ############################################################################################################
 splitPhenoRowEM.internal <- function(x, overlapInd, proportion, margin, p.prob=0.8, up=1, populationType, verbose=FALSE){
-  #cat("post.prob = ",p.prob,"\n")
   aa <- tempfile()
   sink(aa)                                   #TODO: When we sink, we need to try{}catch so that we can undo our sink even when an error occurs
   nrDistributions <- length(proportion)
