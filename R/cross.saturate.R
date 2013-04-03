@@ -358,29 +358,23 @@ bestQTL.internal <- function(cross, population, threshold, flagged, verbose=FALS
   if(verbose) cat("Qtl analysis done in:",(e-s)[3],"seconds\n")
   rownames(peaksMatrix) <- markers
   for(marker in markers){
-    if(sum(peaksMatrix[marker,]==2)==1){
-      if(any(population$offspring$genotypes$qtl$flags[marker,]>(threshold/2))){
+    if(sum(peaksMatrix[marker,]==2)==1){ #TODO: Figure out the logic here, Its not logical
+      if(any(population$offspring$genotypes$qtl$flags[marker,] > (threshold/2))){
         envInf <- envInf + 1
         if(flagged=="remove"){
           cat("Marker:",marker,"shows significant association with environent and will be removed.\n")
           output <- rbind(output,c(NA,NA,NA))
-        }else if(flagged=="warn"){
-          cat("Marker:",marker,"shows significant association with environent.\n")
-          output <- rbind(output,bestQTLSub.internal(population$offspring$genotypes$qtl,marker))
         }else{
-          #cat("Marker:",marker,"shows significant association with environent.\n")
+          if(flagged=="warn") cat("Marker:",marker,"shows significant association with environent.\n")
           output <- rbind(output,bestQTLSub.internal(population$offspring$genotypes$qtl,marker))
         }
-      }else if(population$offspring$genotypes$qtl$logLik[marker,1]>(population$offspring$genotypes$qtl$logLik[marker,2]+10)){
+      }else if(population$offspring$genotypes$qtl$logLik[marker,1] > (population$offspring$genotypes$qtl$logLik[marker,2]+10)){
         epiInf <- epiInf + 1
         if(flagged=="remove"){
           cat("Marker:",marker,"is influenced by an epistatic interaction and will be removed.\n")
           output <- rbind(output,c(NA,NA,NA))
-        }else if(flagged=="warn"){
-          cat("Marker:",marker,"is influenced by an epistatic interaction.\n")
-          output <- rbind(output,bestQTLSub.internal(population$offspring$genotypes$qtl,marker))
         }else{
-          #cat("Marker:",marker,"shows significant association with environent.\n")
+          if(flagged=="warn") cat("Marker:",marker,"is influenced by an epistatic interaction.\n")
           output <- rbind(output,bestQTLSub.internal(population$offspring$genotypes$qtl,marker))
         }
       }else{

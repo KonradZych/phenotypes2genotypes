@@ -42,7 +42,9 @@ create.population <- function(offspring_phenotypes, founders, founders_groups, o
     if(n.childrenNotInParental != 0) warning(n.childrenNotInParental,"markers from founders file are not present in offspring data and will be removed.\n")
     founders <- founders[which((rownames(founders) %in% rownames(population$offspring$phenotypes))),]
     population <- add.to.populationSub.internal(population, populationType,founders, "founders", verbose, debugMode)
+    population$founders$groups <-  founders_groups
   }
+  
   if(missing(founders_groups)) stop("No information about founders groups provided!\n")
   if(length(founders_groups)!=ncol(population$founders$phenotypes)) stop("founders_group parameter should have length equall to number of columns in founders phenotype data")
   population <- add.to.populationSub.internal(population, populationType,founders_groups, "founders$groups", verbose, debugMode)
