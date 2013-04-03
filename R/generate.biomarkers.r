@@ -204,13 +204,11 @@ t.test_line.internal <- function(dataRow,threshold){
   y <- dataRow[idx]
   half <- floor(length(y)/2)
   res <- t.test(sort(y)[1:half],sort(y)[half:length(y)])
-  if(res$p.value<threshold){
-    invisible(TRUE)
-  }else{
-    invisible(FALSE)
-  }
+  if(res$p.value<threshold) invisible(TRUE)
+  invisible(FALSE)
 }
 
+#TODO: This function is equal to check.and.generate.internal merge them !!!
 generate.internal <- function(dataRow, pval, threshold, overlapInd, proportion, margin, p.prob, curlineNR, populationType, verbose){
   cur <- NULL
   dataRow <- as.numeric(dataRow)
@@ -219,20 +217,18 @@ generate.internal <- function(dataRow, pval, threshold, overlapInd, proportion, 
   }else if(pval[2]<threshold && pval[2]!=0){
     cur <- splitPhenoRowEM.internal(dataRow, overlapInd, proportion, margin, p.prob, 1, populationType, verbose)[[1]]
   }
-  if(!is.null(cur)){
-    cur <- c(curlineNR,cur)
-  }
+  if(!is.null(cur)) cur <- c(curlineNR,cur)
+
   invisible(cur)
 }
 
+#TODO: This function is equal to generate.internal merge them !!!
 check.and.generate.internal <- function(dataRow, threshold, overlapInd, proportion, margin, p.prob, curlineNR, populationType, verbose){
   cur <- NULL
   dataRow <- as.numeric(dataRow)
   if(t.test_line.internal(dataRow,threshold)){
      cur <- splitPhenoRowEM.internal(dataRow, overlapInd, proportion, margin, p.prob, 1, populationType, verbose)[[1]]
-     if(!is.null(cur)){
-       cur <- c(curlineNR,cur)
-     }
+     if(!is.null(cur)) cur <- c(curlineNR,cur)
   }
   invisible(cur)
 }
@@ -309,14 +305,22 @@ mergeEnv.internal <- function(population, genoMatrix){
             if(any(idb%in%idx)){
               newProbe[which(idb%in%idx)] <- mean(newProbe[which(idb%in%idx)], probeB_[which(idb%in%idx)])
               idb <- idb[which(!(idb%in%idx))]
+            }else{
+              #TODO: What do we need to do when we are in the ELSE ?
             }
             newProbe[idb] <- probeB_[idb]
             probe_ <- newProbe
           }
+        }else{
+          #TODO: What do we need to do when we are in the ELSE ?
         }
+      }else{
+        #TODO: What do we need to do when we are in the ELSE ?
       }
       newGeno <- rbind(newGeno,c(probeName,probe_))
     }
+  }else{
+    #TODO: What do we need to do when we are in the ELSE ?
   }
   invisible(newGeno)
 }
