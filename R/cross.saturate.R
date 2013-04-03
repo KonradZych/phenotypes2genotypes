@@ -87,20 +87,16 @@ cross.saturate <- function(population, cross, map=c("genetic","physical"), place
   s1 <- proc.time()
   cross <- rearrangeMarkers(cross, population, populationType, cur_map, threshold, placeUsing, flagged, env, addMarkers=TRUE, keep.redundant, chr, verbose=verbose)
   count <- 1
-  while(cross$left>1000){
-      count <- count+1
-      #cat("Still",cross$left,"markers left to place\n")
-      #cat("==== Iteration",count,":",nmar(cross)," ")
-      population <- set.geno.from.cross(cross,population,map)
-      population <- scan.qtls(population,map)
-      #cat("==== genos:",dim(population$offspring$genotypes$real),"\n")
-      aa <- tempfile()
-      sink(aa)
-      cross <- genotypesToCross.internal(population,"simulated",verbose=verbose,debugMode=debugMode)
-      sink()
-      file.remove(aa)
-      e1 <- proc.time()
-      cross <- rearrangeMarkers(cross, population, populationType, cur_map, threshold, placeUsing, flagged, env, addMarkers=TRUE, keep.redundant, chr, verbose=verbose)
+  while(cross$left>1000){ # TODO: What does this 1000 do ??? Please explain and make it a user defined parameter
+    count <- count+1      # TODO: We dont start counting from 2 ???!!! we start at 0
+    population <- scan.qtls(set.geno.from.cross(cross, population, map),map)
+    aa <- tempfile()
+    sink(aa)
+    cross <- genotypesToCross.internal(population,"simulated",verbose=verbose,debugMode=debugMode)
+    sink()
+    file.remove(aa)
+    e1 <- proc.time()
+    cross <- rearrangeMarkers(cross, population, populationType, cur_map, threshold, placeUsing, flagged, env, addMarkers=TRUE, keep.redundant, chr, verbose=verbose)
   }
   e1 <- proc.time()
   if(verbose && debugMode==2)cat("Enrichment of original map done in:",(e1-s1)[3],"seconds.\n")
@@ -154,10 +150,8 @@ rearrangeMarkers <- function(cross, population, populationType, cur_map, thresho
     oldnames <- oldnamesChr[which(oldnamesChr %in% oldnames_)]
     oldpositions <- cur_map[oldnames,2]
     if(x %in% chr){
-      newnames_ <- rownames(markersNewPostions)[which(markersNewPostions[,1]==x)]
-      if(any(newnames_%in%oldnames)){
-        newnames_ <- newnames_[-which(newnames_%in%oldnames)]
-      }
+      newnames_ <- rownames(markersNewPostions)[which(markersNewPostions[,1]==x)]             #TODO: Never Never Never Never Identifiers with _
+      if(any(newnames_%in%oldnames)) newnames_ <- newnames_[-which(newnames_%in%oldnames)]
       newnames <- NULL
       newpositions <- NULL
         positions <- cbind(newnames_,markersNewPostions[newnames_,2],markersNewPostions[newnames_,3])
@@ -208,7 +202,6 @@ rearrangeMarkers <- function(cross, population, populationType, cur_map, thresho
     class(returncross$geno[[i]]) <- "A"
   }
   returncross$redundant <- redundant
-  #cat("======",left,"======\n")
   returncross$left <- left
   invisible(returncross)
 }
@@ -265,13 +258,12 @@ cleanGeno.internal <- function(genoCol,env,genos){
 # OUTPUT:
 #  vector with new ordering of chromosomes inside cross object
 ############################################################################################################
-bestCorelated.internal <- function(cross,population, cur_map,corSDTreshold,verbose=FALSE){
+bestCorelated.internal <- function(cross, population, cur_map, corSDTreshold, verbose=FALSE){
   cormatrix <- map2mapCorrelationMatrix(cross,population,verbose)
-  maximums <- apply(abs(cormatrix),2,max)
-  means <- apply(abs(cormatrix),2,mean)
-  sds <- apply(abs(cormatrix),2,sd)
-  #select markers that are correlated highly with more than one of the old markers
-  selected <- which(maximums > (means+corSDTreshold*sds))
+  maximums <- apply(abs(cormatrix), 2,max)
+  means <- apply(abs(cormatrix), 2,mean)
+  sds <- apply(abs(cormatrix), 2,sd)
+  selected <- which(maximums > (means+corSDTreshold*sds))  # Select markers that are correlated highly with more than one of the old markers
   cormatrix <- cormatrix[,selected]
   bestCorMarkers <- matrix(0,length(selected),2)
   bestCorMarkers[,1] <- apply(abs(cormatrix),2,function(r){rownames(cormatrix)[which.max(r)]})
@@ -361,11 +353,10 @@ bestQTL.internal <- function(cross, population, threshold, flagged, verbose=FALS
   invisible(output)
 }
 
-fullScanRow.internal <- function(genoRow,phenoRow,env){
+#TODO: Add documentation
+fullScanRow.internal <- function(genoRow, phenoRow, env){
   model <- lm(phenoRow ~ env + genoRow + env:genoRow)
-  anov <- anova(model)
-  loglikeli <- logLik(model)
-  return(c(-log10(anov[[5]])[1:3],loglikeli))
+  return(c(-log10(anova(model)[[5]])[1:3], logLik(model)))
 }
 
 ###########################################################################################################
@@ -399,10 +390,10 @@ scan.qtls <- function(population,map=c("genetic","physical"), env, step=0.1,verb
     population10pheno <- population
     population10pheno$offspring$phenotypes <- population10pheno$offspring$phenotypes[1:10,]
     aa <- tempfile()
-    sink(aa)
+    sink(aa)          #TODO: When using Sink make sure you Try{}Catch everything, we need to dis-able sink even if everythign exploded
     returncross <- genotypesToCross.internal(population10pheno,"real","map_genetic")
     sink()
-    file.remove(aa)
+    file.remove(aa)   #TODO: If we have an error we don't delete our file ????
   }else{
     matchingMarkers <- which(rownames(population$offspring$genotypes$real)%in%rownames(population$maps$physical))
     if(length(matchingMarkers)<=0) stop("Marker names on the map and in the genotypes doesn't match!\n")
@@ -412,7 +403,7 @@ scan.qtls <- function(population,map=c("genetic","physical"), env, step=0.1,verb
       n.markersToRmv <- nrow(population$offspring$genotypes$real)-length(matchingMarkers)
       if(verbose && n.markersToRmv>0) cat(n.markersToRmv,"markers were removed due to name mismatch\n")
     }
-    #for faster creation of cross
+    #TODO: Why is this here the original comment: 'for faster creation of cross' is meaningless
     population10pheno <- population
     population10pheno$offspring$phenotypes <- population10pheno$offspring$phenotypes[1:10,]
     aa <- tempfile()
@@ -440,13 +431,11 @@ scan.qtls <- function(population,map=c("genetic","physical"), env, step=0.1,verb
     curlogLikeli <- NULL
     phenotype <- pull.pheno(returncross)[,i]
     perc <- round(i*100/nrow(population$offspring$genotypes$simulated))
-    if(perc%%10==0){
-      if(!(perc%in%done)){
-        e <- proc.time()
-        cat("Analysing markers",perc,"% done, estimated time remaining:",(e-s)[3]/perc*(100-perc),"s\n")
-        done <- c(done,perc)
-      }
-      }
+    if(perc%%10==0 && !(perc%in%done)){
+      e <- proc.time()
+      cat("Analysing markers",perc,"% done, estimated time remaining:",(e-s)[3]/perc*(100-perc),"s\n")
+      done <- c(done,perc)
+    }
     if(useEnv){
       flag <- t(apply(pull.geno(returncross),2,fullScanRow.internal,phenotype,env))
       flags <- rbind(flags,c(max(flag[,1]),max(flag[,3])))
@@ -456,7 +445,7 @@ scan.qtls <- function(population,map=c("genetic","physical"), env, step=0.1,verb
       curlogLikeli <- c(curlogLikeli,0)
     }
     curScan <- scanone(returncross,pheno.col=i,model="np")
-    aa <- tempfile()
+    aa <- tempfile()                #TODO:  When using Sink make sure you Try{}Catch everything, we need to dis-able sink even if everythign exploded
     sink(aa)
     curScantwo <- scantwo(returncrosstwo,pheno.col=i)
     maxLine <- which.max(summary(curScantwo)[,6])
@@ -470,17 +459,14 @@ scan.qtls <- function(population,map=c("genetic","physical"), env, step=0.1,verb
     curlogLikeli <- c(curlogLikeli,logLik(model))
     sink()
     file.remove(aa)
-    
-    #if(any(is.infinite(curScan[,3]))){
-    #  stop("scanone results contain Inf values, check your data!")
-    #}
+
     chr <- rbind(chr,curScan[,1])
     pos <- rbind(pos,curScan[,2])
     lod <- rbind(lod,curScan[,3])
     logLikeli <- rbind(logLikeli,curlogLikeli)
     names_ <- c(names_,colnames(returncross$pheno)[i])
   }
-  #population$offspring$genotypes$qtl <- t(matrix(unlist(lapply(markers,QTLscan.internal,phenotypes,genotypes)),nrow(genotypes),length(markers)))
+
   e <- proc.time()
   if(verbose) cat("Qtl scan done in",(e-s)[3],"s\n")
   population$offspring$genotypes$qtl$lod <- lod
