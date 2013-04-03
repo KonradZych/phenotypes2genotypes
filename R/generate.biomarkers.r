@@ -39,7 +39,7 @@ generate.biomarkers <- function(population, threshold=0.05, overlapInd = 10, pro
   
   #*******CONVERTING CHILDREN PHENOTYPIC DATA TO GENOTYPES*******
   s1 <- proc.time()
-  if(!is.null(population$annots)){
+  if(!is.null(population$annots)){ #TODO: Merge this 2 functions into 1
     population <- generate.biomarkers.onthefly.internal(population, threshold, overlapInd, proportion, margin, p.prob, verbose, debugMode)
   }else{
     population <- generate.biomarkers.internal(population, threshold, overlapInd, proportion, margin, p.prob, verbose, debugMode)
