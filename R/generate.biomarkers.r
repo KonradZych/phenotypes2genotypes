@@ -32,11 +32,9 @@
 generate.biomarkers <- function(population, threshold=0.05, overlapInd = 10, proportion = c(50,50), margin = 15, p.prob=0.8, env, verbose=FALSE, debugMode=0){
   if(missing(population)) stop("Population object not found.\n")
   check.population(population) # CHECK
-  #if(missing(env)) env <- rep(1,ncol(population$offspring$phenotypes))
-  #if(length(env)!=ncol(population$offspring$phenotypes)) stop("Incorrect environmental vector!\n")
   s<-proc.time()
-  if(any(proportion < 1) || sum(proportion) != 100) stop("Wrong proportion paramete\n")
-  #if(overlapInd < 0 || overlapInd > ncol(population$offspring$phenotypes)) stop("overlapInd is a number (0,lenght of the row).")
+  if(any(proportion < 1) || sum(proportion) != 100) stop("Proportion should be > 0 and < 100")
+
   if(verbose && debugMode==1) cat("generate.biomarkers starting withour errors in checkpoint.\n")
   
   #*******CONVERTING CHILDREN PHENOTYPIC DATA TO GENOTYPES*******
@@ -47,7 +45,7 @@ generate.biomarkers <- function(population, threshold=0.05, overlapInd = 10, pro
     population <- generate.biomarkers.internal(population, threshold, overlapInd, proportion, margin, p.prob, verbose, debugMode)
   }
   e1 <- proc.time()
-  if(verbose && debugMode==2)cat("Converting phenotypes to genotypes done in:",(e1-s1)[3],"seconds.\n")
+  if(verbose && debugMode==2) cat("Converting phenotypes to genotypes done in:",(e1-s1)[3],"seconds.\n")
   
   #*******RETURNING CROSS OBJECT*******
   e<-proc.time()
@@ -247,10 +245,10 @@ generate.biomarkers.onthefly.internal <- function(population, threshold, overlap
   lineNR <- 0
   populationType <- class(population)[2]
   analysedLines <- readLines(analysedFile,n=population$sliceSize)
-  while(!((length(analysedLines) == 0) && (typeof(analysedLines) == "character"))){
+  while(!((length(analysedLines) == 0) && (typeof(analysedLines) == "character"))){ #TODO: Wrong condition in the while
     analysedLines <- strsplit(analysedLines,"\t")
     eo <- proc.time()
-    if(!((length(analysedLines) == 0) && (typeof(analysedLines) == "character"))){
+    if(!((length(analysedLines) == 0) && (typeof(analysedLines) == "character"))){  #TODO: Wrong condition in the if (should not be here)
      cat("------",length(analysedLines),"\n")
       for(analysedLineNR in 1:length(analysedLines)){
         curlineNR <- analysedLineNR + lineNR
@@ -342,20 +340,19 @@ mergeEnv.internal <- function(population, genoMatrix){
 #  list containg genotype matrix and names of selected markers
 #
 ############################################################################################################
-#DANNY: TODO MERGE splitPhenoRowEM.internal into this function 
+#DANNY: TODO MERGE splitPhenoRowEM.internal into this function  <- TODO: Do somehting with the TODOs
 ##K: left, I\'ll try to use apply here instead of for
 splitPheno.internal <- function(offspring, founders, overlapInd, proportion, margin, p.prob=0.8, populationType, up, done=0, left=0, verbose=FALSE){
-  output <- NULL
-  #outputEM <- vector(nrow(offspring),mode="list")
+  output      <- NULL
   markerNames <- NULL
-  s <-proc.time()
+  s           <- proc.time()
   for(x in 1:nrow(offspring)){
     cur <- splitPhenoRowEM.internal(offspring[x,], overlapInd, proportion, margin, p.prob, up, populationType, verbose)
     if(!(is.null(cur[[1]]))){
       output <- rbind(output,cur[[1]])
       markerNames <- c(markerNames,rownames(offspring)[x])
     }
-    #outputEM[[x]] <- cur[[2]] 
+
     if(verbose){
       perc <- round((x+done)*100/nrow(offspring+done+left))
       if(perc%%10==0){
@@ -366,7 +363,7 @@ splitPheno.internal <- function(offspring, founders, overlapInd, proportion, mar
     }
   }
   rownames(output) <- markerNames
-  #invisible(list(output,outputEM))
+
   invisible(output)
 }
 
@@ -393,7 +390,7 @@ splitPheno.internal <- function(offspring, founders, overlapInd, proportion, mar
 splitPhenoRowEM.internal <- function(x, overlapInd, proportion, margin, p.prob=0.8, up=1, populationType, verbose=FALSE){
   #cat("post.prob = ",p.prob,"\n")
   aa <- tempfile()
-  sink(aa)
+  sink(aa)                                   #TODO: When we sink, we need to try{}catch so that we can undo our sink even when an error occurs
   nrDistributions <- length(proportion)
   result <- rep(NA,length(x))
   
@@ -407,15 +404,11 @@ splitPhenoRowEM.internal <- function(x, overlapInd, proportion, margin, p.prob=0
   e1<-proc.time()
   sink()
   file.remove(aa)
-  if(is.null(EM)){
-        result <- NULL
-  }else if(filterRow.internal(EM$lambda,proportion,margin)){
+  result <- NULL
+  if(filterRow.internal(EM$lambda,proportion,margin)){
     if(populationType == "f2"){
-      if(up==1){
-        genotypes <- c(1:5)
-      }else if(up==0){
-        genotypes <- c(3,2,1,5,4)
-      }
+      genotypes <- c(1:5)
+      if(up==0) genotypes <- c(3,2,1,5,4)
       for(i in (1:length(y))){
         if(any(EM$posterior[i,]>p.prob)){
           result[idx[i]] <- genotypes[which.max(EM$posterior[i,])]
@@ -428,24 +421,14 @@ splitPhenoRowEM.internal <- function(x, overlapInd, proportion, margin, p.prob=0
         }
       }
     }else{
-      if(up==1){
-        genotypes <- c(1,2)
-      }else if(up==0){
-        genotypes <- c(2,1)
-      }
+      genotypes <- c(1:2)
+      if(up==0) genotypes <- c(2,1)
       for(i in (1:length(y))){
-        if(any(EM$posterior[i,]>p.prob)){
-          result[idx[i]] <- genotypes[which.max(EM$posterior[i,])]
-        }else{
-          result[idx[i]] <- NA
-        }
+        result[idx[i]] <- NA
+        if(any(EM$posterior[i,]>p.prob)) result[idx[i]] <- genotypes[which.max(EM$posterior[i,])]
       }
     }
-    if((sum(is.na(result))-idw)>overlapInd){
-      result <- NULL
-    }
-  }else{
-   result <- NULL
+    if((sum(is.na(result))-idw)>overlapInd) result <- NULL
   }
   invisible(list(result,EM))
 }
@@ -468,11 +451,10 @@ splitPhenoRowEM.internal <- function(x, overlapInd, proportion, margin, p.prob=0
 #
 ############################################################################################################
 filterRow.internal<- function(lambda, proportion, margin){
-  if(length(lambda)!=length(proportion)) return(FALSE)
+  if(length(lambda) != length(proportion)) return(FALSE)
   for(i in 1:length(lambda)){
-    if((lambda[i]>((proportion[i]+margin/2)/100))||(lambda[i]<((proportion[i]-margin/2)/100))){
-      return(FALSE)
-    }
+    if((lambda[i]>((proportion[i]+margin/2)/100)) || (lambda[i]<((proportion[i]-margin/2)/100))) return(FALSE)    #TODO use abs and merge the 2 similar IF conditions
   }
   return(TRUE)
 }
+
