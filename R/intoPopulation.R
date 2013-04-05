@@ -95,7 +95,7 @@ create.population <- function(offspringPhenotypes, founders, foundersGroups, off
 #  an object of class population
 #
 ############################################################################################################
-add.to.population <- function(population, dataObject, dataType=c("founders","offspring$phenotypes","founders$group","offspring$genotypes","maps$genetic","maps$physical"),verbose=FALSE,debugMode=0){
+add.to.population <- function(population, dataObject, dataType=c("founders","offspring$phenotypes","founders$group","offspring$genotypes","maps$genetic","maps$physical","annotations"),verbose=FALSE,debugMode=0){
   ### checks
   check.population(population)
   populationType <- class(population)[2]
@@ -111,7 +111,8 @@ add.to.population <- function(population, dataObject, dataType=c("founders","off
   }else if(length(dataType)==1){
     population <- add.to.populationSub.internal(population,populationType,dataObject,dataType, verbose, debugMode)
   }else{
-    # TODO: Is this an INFO, WARNING or ERROR ???
+    # TODO: Is this an INFO, WARNING or ERROR ??? -> error
+    stop("Incorrect data object provided with a length of:",length(dataType),"\n")
   }
 
   if(is.null(population)) stop("No data provided!\n")
@@ -141,7 +142,8 @@ add.to.population <- function(population, dataObject, dataType=c("founders","off
 #  an object of class population
 #
 ############################################################################################################
-add.to.populationSub.internal <- function(population, populationType=c("riself", "f2", "bc", "risib"), dataObject, dataType=c("founders","offspring$phenotypes","founders$groups","offspring$genotypes","maps$genetic","maps$physical"),verbose=FALSE,debugMode=0){
+add.to.populationSub.internal <- function(population, populationType=c("riself", "f2", "bc", "risib"), dataObject,
+dataType=c("founders","offspring$phenotypes","founders$groups","offspring$genotypes","maps$genetic","maps$physical"),verbose=FALSE,debugMode=0){
   dataType <- match.arg(dataType)
   populationType <- match.arg(populationType)
   if(missing(dataObject)) stop("dataObject is missing\n")
@@ -161,9 +163,11 @@ add.to.populationSub.internal <- function(population, populationType=c("riself",
     population <- add.to.populationSubMap.internal(population,dataObject, dataType, verbose, debugMode)
   }else if(dataType=="founders$groups"){
     population$founders$groups <- dataObject
-  }else{    #TODO: Is the expected an error a warning orjust an info ???
-    stop("There might be an error but the programmer who made this code was sooo lazy that even his supervisor doesn't know what happend")
-  }
+  }else{
+    population <- add.to.populationSubAnnots.internal(population,dataObject,verbose,debugMode)
+  }#else{    #TODO: Is the expected an error a warning orjust an info ??? <- match.arg is checking this
+  #  stop("There might be an error but the programmer who made this code was sooo lazy that even his supervisor doesn't know what happend")
+  #}
   invisible(population)
 }
 
@@ -300,6 +304,7 @@ add.to.populationSubGeno.internal <- function(population, dataObject, population
 add.to.populationSubMap.internal <- function(population, dataObject, dataType=c("maps$genetic","maps$physical"),verbose=FALSE, debugMode=0){
   if(verbose && debugMode==1) cat("add.to.populationSub.internal starting.\n")
   s <- proc.time()
+  dataType <- match.arg(dataType)
   if(!(!(is.null(dataObject))&&!(is.null(dim(dataObject)))&&class(dataObject)=="matrix")) stop("No data provided for ",dataType,"!\n")
 
   if(dataType=="maps$genetic" && ncol(dataObject)!=2) cat ("This is not a correct map object.\n")
@@ -312,11 +317,44 @@ add.to.populationSubMap.internal <- function(population, dataObject, dataType=c(
     population$maps$physical <- cbind(dataObject,dataObject[,2])
     if(ncol(dataObject) == 3) population$maps$physical <- dataObject
     colnames(population$maps$physical) <- c("Chr","Start","End")
-  }else{    #TODO: Is the is a CAT, WARN or ERROR ???
-    stop("There might be an error but the programmer who made this code was sooo lazy that even his supervisor doesn't know what happend")
-  }
+  }#else{    #TODO: Is the is a CAT, WARN or ERROR ??? -> this cannot happen now any more (match.arg will error)
+  #  stop("There might be an error but the programmer who made this code was sooo lazy that even his supervisor doesn't know what happend")
+  #}
   e <- proc.time()
   if(verbose&&debugMode==2)cat("add.to.population for",dataType,"done in:",(e-s)[3],"seconds.\n")
+  invisible(population)
+}
+
+############################################################################################################
+#                  *** add.to.populationSubAnnots.internal ***
+#
+# DESCRIPTION:
+#  subfunction of add.to.populationSub.internal, adding a single map object to the object of class population
+# 
+# PARAMETERS:  
+#  population - object of class population, data should be put into
+#   dataObject - matrix of data to be put into ril object
+#   dataType - what kind of data dataObject contains:
+#     -  maps$genetic - genetic map 
+#     -  maps$physical - physical map
+#   verbose - be verbose
+#   debugMode - 1: print our checks, 2: print additional time information
+#
+# OUTPUT:
+#  an object of class population
+#
+############################################################################################################
+add.to.populationSubAnnots.internal <- function(population, dataObject, verbose=FALSE, debugMode=0){
+  if(verbose && debugMode==1) cat("add.to.populationSubAnnots.internal starting.\n")
+  s <- proc.time()
+  if(!(!(is.null(dataObject))&&!(is.null(dim(dataObject)))&&class(dataObject)=="matrix")) stop("No data provided for annotations!\n")
+  if(ncol(dataObject)!=3) cat ("This is not a correct annotations object.\n")
+  ### adding data to population
+  population$maps$genetic <- dataObject
+  population$flags  <- c(population$flags,"annots")
+  rownames(population$annots) <- 1:nrow(population$annots)
+  e <- proc.time()
+  if(verbose&&debugMode==2)cat("add.to.population for annotations done in:",(e-s)[3],"seconds.\n")
   invisible(population)
 }
 
