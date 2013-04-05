@@ -97,7 +97,7 @@ create.population <- function(offspringPhenotypes, founders, foundersGroups, off
 ############################################################################################################
 add.to.population <- function(population, dataObject, dataType=c("founders","offspring$phenotypes","founders$group","offspring$genotypes","maps$genetic","maps$physical","annotations"),verbose=FALSE,debugMode=0){
   ### checks
-  check.population(population)
+  #check.population(population)
   populationType <- class(population)[2]
   dataType <- match.arg(dataType)
   if(verbose && debugMode==1) cat("add.to.population starting without errors in checkpoints.\n")
@@ -143,7 +143,7 @@ add.to.population <- function(population, dataObject, dataType=c("founders","off
 #
 ############################################################################################################
 add.to.populationSub.internal <- function(population, populationType=c("riself", "f2", "bc", "risib"), dataObject,
-dataType=c("founders","offspring$phenotypes","founders$groups","offspring$genotypes","maps$genetic","maps$physical"),verbose=FALSE,debugMode=0){
+dataType=c("founders","offspring$phenotypes","founders$groups","offspring$genotypes","maps$genetic","maps$physical","annotations"),verbose=FALSE,debugMode=0){
   dataType <- match.arg(dataType)
   populationType <- match.arg(populationType)
   if(missing(dataObject)) stop("dataObject is missing\n")
@@ -350,7 +350,7 @@ add.to.populationSubAnnots.internal <- function(population, dataObject, verbose=
   if(!(!(is.null(dataObject))&&!(is.null(dim(dataObject)))&&class(dataObject)=="matrix")) stop("No data provided for annotations!\n")
   if(ncol(dataObject)!=3) cat ("This is not a correct annotations object.\n")
   ### adding data to population
-  population$maps$genetic <- dataObject
+  population$annots <- dataObject
   population$flags  <- c(population$flags,"annots")
   rownames(population$annots) <- 1:nrow(population$annots)
   e <- proc.time()

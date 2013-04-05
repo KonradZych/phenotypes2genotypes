@@ -23,7 +23,7 @@
 #   An object of class population 
 #
 read.population <- function(offspring = "offspring", founders = "founders", map = "map", foundersGroups, populationType = c("riself", "f2", "bc", "risib"),
-  readMode = c("normal","HT"), verbose = FALSE, debugMode = 0,...){
+  readMode = c("normal","HT"), verbose = FALSE, debugMode = 0, ...){
 
   ### checks
   populationType <- match.arg(populationType)
@@ -50,7 +50,7 @@ read.population <- function(offspring = "offspring", founders = "founders", map 
     if(verbose)  cat("File:",fileOffspringPheno,"found and will be processed.\n")
     if(readMode == "normal"){
       ### TODO: this should be using readSingleFile
-      offspringPhenotypes <- read.table(filename,sep="\t", row.names=1, ...)
+      offspringPhenotypes <- read.table(fileOffspringPheno,sep="\t", row.names=1, header=TRUE)
       population <- add.to.populationSub.internal(population,offspringPhenotypes,"offspring$phenotypes",populationType=populationType)
     }else{
       population$offspring$phenotypes <- fileOffspringPheno
@@ -60,7 +60,7 @@ read.population <- function(offspring = "offspring", founders = "founders", map 
   ### founders phenotypic file
   if(!file.exists(fileFoundersPheno)){
     ### simulate data if there is no file
-    stop("No phenotype file for offspring: ",fileFoundersPheno,". Founder phenotypes will be simulated.\n")
+    if(verbose)cat("No phenotype file for founders: ",fileFoundersPheno,". Founder phenotypes will be simulated.\n")
     if(readMode == "normal"){
       population <- simulateParentalPhentypes(population, population$offspring$phenotypes, populationType)
     }
@@ -73,25 +73,29 @@ read.population <- function(offspring = "offspring", founders = "founders", map 
     ### founders groups should be a sequence of 0s and 1s
     if(any(foundersGroups!=0 && foundersGroups!=1)) stop("Founders groups attribute is incorrect.\n")
     if(readMode == "normal"){
-      population <- readSingleFile(population, fileFoundersPheno, "founders", header=TRUE)
+      population <- readSingleFile(population, fileFoundersPheno, "founders", verbose=verbose, header=TRUE)
       if(length(foundersGroups)!=ncol(population$offspring$phenotypes)) stop("Founders groups attribute is incorrect.\n")
     }else{
       population <- readFoundersAndTtest(fileFoundersPheno, founders_groups, populationType, threshold, sliceSize, transformations, verbose)
     }
   }
   
+  class(population) <- c("population",populationType)
+  
   ### annotations file
-  population <- readSingleFile(population, fileAnnotations, "annotations", header=TRUE)
+  population <- readSingleFile(population, fileAnnotations, "annotations", verbose=verbose, header=TRUE)
 
   ### offspring genotypic file
-  population <- readSingleFile(population, fileOffspringGeno, "offspring$genotypes", header=TRUE)
+  population <- readSingleFile(population, fileOffspringGeno, "offspring$genotypes", verbose=verbose, header=TRUE)
   
   ### physical map
-  population <- readSingleFile(population, fileMapPhys, "maps$physical", header=FALSE)
+  population <- readSingleFile(population, fileMapPhys, "maps$physical", verbose=verbose, header=FALSE)
 
   ### genetic map
-  population <- readSingleFile(population, fileMapGen, "maps$genetic", header=FALSE)
+  population <- readSingleFile(population, fileMapGen, "maps$genetic", verbose=verbose, header=FALSE)
 
+  ### TO BE REMOVED when generate.biomarkers is corrected
+  population$sliceSize <- 5000
   #**********FINALIZING FUNCTION*************
   e <- proc.time()
   if(verbose && debugMode==2) cat("read.population finished after",(e-s)[3],"seconds.\n")
@@ -109,7 +113,7 @@ read.population <- function(offspring = "offspring", founders = "founders", map 
 # OUTPUT:
 #   An object of class population 
 #
-readSingleFile <- function(population, filename, fileType, ...){
+readSingleFile <- function(population, filename, fileType, verbose=FALSE, ...){
   if(file.exists(filename)){
     if(verbose) cat("File:",filename,"found and will be processed.\n")
     dataRead <- read.table(filename,sep="\t", row.names=1, ...)
