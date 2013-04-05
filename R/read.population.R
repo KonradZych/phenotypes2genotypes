@@ -49,6 +49,7 @@ read.population <- function(offspring = "offspring", founders = "founders", map 
   }else{
     if(verbose)  cat("File:",fileOffspringPheno,"found and will be processed.\n")
     if(readMode == "normal"){
+      ### TODO: this should be using readSingleFile
       offspringPhenotypes <- read.table(filename,sep="\t", row.names=1, ...)
       population <- add.to.populationSub.internal(population,offspringPhenotypes,"offspring$phenotypes",populationType=populationType)
     }else{
