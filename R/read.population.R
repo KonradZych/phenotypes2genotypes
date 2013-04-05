@@ -22,7 +22,7 @@
 # OUTPUT:
 #   An object of class population 
 #
-read.population <- function(offspring = "offspring", founders = "founders", map = "maps", founders_groups, populationType = c("riself", "f2", "bc", "risib"),
+read.population.old <- function(offspring = "offspring", founders = "founders", map = "maps", founders_groups, populationType = c("riself", "f2", "bc", "risib"),
   read_mode = c("normal","HT"), verbose = FALSE, debugMode = 0,...){
   s <- proc.time()
   if(verbose && debugMode==1) cat("read.population starting.\n")
@@ -47,6 +47,104 @@ read.population <- function(offspring = "offspring", founders = "founders", map 
   invisible(population)
 }
 
+read.population <- function(offspring = "offspring", founders = "founders", map = "map", foundersGroups, populationType = c("riself", "f2", "bc", "risib"),
+  readMode = c("normal","HT"), verbose = FALSE, debugMode = 0,...){
+
+  ### checks
+  populationType <- match.arg(populationType)
+  readMode <- match.arg(readMode)
+  
+  
+  ### file names
+  fileFoundersPheno  <- paste(founders,"_phenotypes.txt",sep="")
+  fileOffspringPheno <- paste(offspring,"_phenotypes.txt",sep="")
+  fileOffspringGeno  <- paste(offspring,"_genotypes.txt",sep="")
+  fileAnnotations    <- paste(offspring,"_annotations.txt",sep="")
+  fileMapPhys        <- paste(map,"_physical.txt",sep="")
+  fileMapGen         <- paste(map,"_genetic.txt",sep="")
+
+  ### initializing  
+  s <- proc.time()
+  if(verbose && debugMode==1) cat("read.population starting.\n")
+  population <- NULL
+  
+  ### offspring phenotypic file
+  if(!file.exists(fileOffspringPheno)){
+    stop("No phenotype file for offspring: ",fileOffspringPheno," this file is essential, you have to provide it\n")
+  }else{
+    if(verbose)  cat("File:",fileOffspringPheno,"found and will be processed.\n")
+    if(readMode == "normal"){
+      offspringPhenotypes <- read.table(filename,sep="\t", row.names=1, ...)
+      population <- add.to.populationSub.internal(population,offspringPhenotypes,"offspring$phenotypes",populationType=populationType)
+    }else{
+      population$offspring$phenotypes <- fileOffspringPheno
+    }
+  }
+
+  ### founders phenotypic file
+  if(!file.exists(fileFoundersPheno)){
+    ### simulate data if there is no file
+    stop("No phenotype file for offspring: ",fileFoundersPheno,". Founder phenotypes will be simulated.\n")
+    if(readMode == "normal"){
+      population <- simulateParentalPhentypes(population, population$offspring$phenotypes, populationType)
+    }
+    ### if the mode is HT, we don't simulate founders but just judge the variance in the offspring while converting phenotypes to genotypes
+  }else{
+    ### read the file if present
+    if(verbose)  cat("File:",fileFoundersPheno,"found and will be processed.\n")
+    ### check if there is an information about the founders groups
+    if(missing(foundersGroups)) stop("No information about founders groups provided.\n")
+    ### founders groups should be a sequence of 0s and 1s
+    if(any(foundersGroups!=0 && foundersGroups!=1)) stop("Founders groups attribute is incorrect.\n")
+    if(readMode == "normal"){
+      population <- readSingleFile(population, fileFoundersPheno, "founders", header=TRUE)
+      if(length(foundersGroups)!=ncol(population$offspring$phenotypes)) stop("Founders groups attribute is incorrect.\n")
+    }else{
+      population <- readFoundersAndTtest(fileFoundersPheno, founders_groups, populationType, threshold, sliceSize, transformations, verbose)
+    }
+  }
+  
+  ### annotations file
+  population <- readSingleFile(population, fileAnnotations, "annotations", header=TRUE)
+
+  ### offspring genotypic file
+  population <- readSingleFile(population, fileOffspringGeno, "offspring$genotypes", header=TRUE)
+  
+  ### physical map
+  population <- readSingleFile(population, fileMapPhys, "maps$physical", header=FALSE)
+
+  ### genetic map
+  population <- readSingleFile(population, fileMapGen, "maps$genetic", header=FALSE)
+
+  #**********FINALIZING FUNCTION*************
+  e <- proc.time()
+  if(verbose && debugMode==2) cat("read.population finished after",(e-s)[3],"seconds.\n")
+  invisible(population)
+}
+
+#  readSingleFile
+#
+# DESCRIPTION:
+#  Reads single geno/phenotypic file into R environment into special object.
+# PARAMETERS:
+#   - population - an object of class population
+#   - filename - name of the file that will be processed
+#   - fileType - type of the file that will be processed (information about what type of data it contains)
+# OUTPUT:
+#   An object of class population 
+#
+readSingleFile <- function(population, filename, fileType, ...){
+  if(file.exists(filename)){
+    if(verbose) cat("File:",filename,"found and will be processed.\n")
+    dataRead <- read.table(filename,sep="\t", row.names=1, ...)
+    population <- add.to.population(population, dataRead, fileType)
+    doCleanUp.internal()
+  }else{
+    if(verbose) cat("File:",filename,"not found.\n")
+  }
+  invisible(population)
+}
+
 read.populationNormal.internal <- function(offspring,founders,map,founders_groups,populationType=c("riself", "f2", "bc", "risib"), verbose=FALSE,debugMode=0){
   #**********READING CHILDREN PHENOTYPIC DATA*************
   filename <- paste(offspring,"_phenotypes.txt",sep="")
@@ -56,7 +154,7 @@ read.populationNormal.internal <- function(offspring,founders,map,founders_group
   offspring_phenotypes <- read.table(filename,sep="\t",header=TRUE)
   offspring_phenotypes <- as.matrix(offspring_phenotypes)
   population <- NULL
-  population <- add.to.populationSub.internal(population,offspring_phenotypes,"offspring$phenotypes",populationType=populationType)
+  population <- add.to.populationSub.internal(population,offspring_phenotypes,"offspring$phenotypes",populationType=populationType)population <- add.to.populationSub.internal(population,offspring_phenotypes,"offspring$phenotypes",populationType=populationType)
   doCleanUp.internal()
   
   #**********READING PARENTAL PHENOTYPIC DATA*************
@@ -122,7 +220,7 @@ read.populationNormal.internal <- function(offspring,founders,map,founders_group
 }
 
 TwoClassTtest <- function(foundersline,foundersGroups,threshold){
-  p1  <- as.numeric(foundersline[which(foundersGroups == 0) + 1])  #TODO: Why add 1, Why dont we get a out-of-bounds error ??
+  p1  <- as.numeric(foundersline[which(foundersGroups == 0) + 1])  #TODO: Why add 1, Why dont we get a out-of-bounds error ?? -> first element of the line is a name of the row
   p2  <- as.numeric(foundersline[which(foundersGroups == 1) + 1])  #TODO: Why add 1, Why dont we get a out-of-bounds error ??
   res <- t.test(p1, p2)
   if(res$p.value < threshold) return(foundersline)
