@@ -50,7 +50,7 @@ read.population <- function(offspring = "offspring", founders = "founders", map 
     if(verbose)  cat("File:",fileOffspringPheno,"found and will be processed.\n")
     if(readMode == "normal"){
       ### TODO: this should be using readSingleFile
-      offspringPhenotypes <- read.table(fileOffspringPheno,sep="\t", row.names=1, header=TRUE)
+      offspringPhenotypes <- applyFunctionToFile(fileOffspringPheno,sep="\t", header=TRUE, FUN=normalModeReading)
       population <- add.to.populationSub.internal(population,offspringPhenotypes,"offspring$phenotypes",populationType=populationType)
     }else{
       population$offspring$phenotypes <- fileOffspringPheno
@@ -73,10 +73,10 @@ read.population <- function(offspring = "offspring", founders = "founders", map 
     ### founders groups should be a sequence of 0s and 1s
     if(any(foundersGroups!=0 && foundersGroups!=1)) stop("Founders groups attribute is incorrect.\n")
     if(readMode == "normal"){
-      population <- readSingleFile(population, fileFoundersPheno, "founders", verbose=verbose, header=TRUE)
+      population$offspring$phenotypes <- applyFunctionToFile(fileOffspringPheno,sep="\t", header=TRUE, verbose=verbose, FUN=normalModeReading)
       if(length(foundersGroups)!=ncol(population$offspring$phenotypes)) stop("Founders groups attribute is incorrect.\n")
     }else{
-      population <- readFoundersAndTtest(fileFoundersPheno, founders_groups, populationType, threshold, sliceSize, transformations, verbose)
+      population$offspring$phenotypes <- applyFunctionToFile(fileOffspringPheno,sep="\t", header=TRUE, verbose=verbose, FUN=tTestByLine, dataGroups=foundersGroups, threshold=threshold)
     }
   }
   
@@ -138,11 +138,12 @@ readSingleFile <- function(population, filename, fileType, verbose=FALSE, ...){
 # OUTPUT:
 #   A matrix with values from the file.
 #
-applyFunctionToFile <- function(filename, header=TRUE, sep="\t", FUN, ...){
-  filePointer <- open(filename,"r")
+applyFunctionToFile <- function(filename, header=TRUE, sep="\t", FUN, verbose=FALSE, ...){
+  filePointer <- file(filename,"r")
   if(header){
     headerLine <- readLines(filePointer, n=1)
-    header <- strsplit(headerLine,sep)
+    header <- unlist(strsplit(headerLine,sep))
+  }
   res <- NULL
   lineNR <- 0
   ### reading the first non-header line
@@ -150,16 +151,16 @@ applyFunctionToFile <- function(filename, header=TRUE, sep="\t", FUN, ...){
   while(length(curLine) > 0){
     lineNR <- lineNR + 1
     if(verbose && lineNR%%10000==0) cat("processing line:",lineNr,"\n")
-    curLineSplitted <- strsplit(curLine,sep)
+    curLineSplitted <- unlist(strsplit(curLine,sep))
     ### changing it into a matrix for easier handling
-    curRow <- matrix(curLineSplitted[-1],1,length(curLineSplitted)-1)
+    curRow <- matrix(as.numeric(curLineSplitted[-1]),1,length(curLineSplitted)-1)
     rownames(curRow) <- curLineSplitted[1]
     ### if there is header, use it as colnames
-    if(header){
-      if(length(header)!= ncol(curRow){
+    if(!is.null(header)){
+      if(length(header)!= ncol(curRow)){
         stop("Incorect length of line: ",lineNR," it is: ",ncol(curRow)," instead of: ",length(header),"\n")
       }else{
-        colnames(curRow) <- curRow
+        colnames(curRow) <- header
       }
     }
     ### execute the function specified by user and rbind results
@@ -173,7 +174,7 @@ applyFunctionToFile <- function(filename, header=TRUE, sep="\t", FUN, ...){
     res <-  rbind(res,curRes)
     curLine <- readLines(filePointer, n=1)
   }
-  filePointer.close()
+  close(filePointer)
   invisible(res)
 }
 
