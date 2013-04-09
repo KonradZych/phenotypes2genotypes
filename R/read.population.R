@@ -177,6 +177,39 @@ applyFunctionToFile <- function(filename, header=TRUE, sep="\t", FUN, ...){
   invisible(res)
 }
 
+#  tTestByLine
+#
+# DESCRIPTION:
+#  T.test a single line of a file (formated as a matrix with one row)
+# PARAMETERS:
+#   - dataMatrix - matrix containing data (with one row)
+#   - dataGroups - specifing which columns of the matrix belong to which group
+#   - threshold - threshold for pval
+# OUTPUT:
+#   An input matrix, if the pval is below the threshold. Otherwise NULL
+#
+tTestByLine <- function(dataMatrix, dataGroups, threshold){
+  group0  <- as.numeric(dataMatrix[,which(dataGroups == 0)])
+  group1  <- as.numeric(dataMatrix[,which(dataGroups == 1)])
+  if(length(group0)<3 || length(group1)<3) stop("Not enough observations to perform the t.test.\n")
+  res <- t.test(group0, group1)
+  if(res$p.value < threshold) return(dataMatrix)
+  invisible(NULL)
+}
+
+#  normalModeReading
+#
+# DESCRIPTION:
+#  Returns the input object without changing it
+# PARAMETERS:
+#   - dataMatrix - matrix containing data (with one row)
+# OUTPUT:
+#   An input matrix.
+#
+normalModeReading <- function(dataMatrix){
+  invisible(dataMatrix)
+}
+
 TwoClassTtest <- function(foundersline,foundersGroups,threshold){
   p1  <- as.numeric(foundersline[which(foundersGroups == 0) + 1])  #TODO: Why add 1, Why dont we get a out-of-bounds error ?? -> first element of the line is a name of the row
   p2  <- as.numeric(foundersline[which(foundersGroups == 1) + 1])  #TODO: Why add 1, Why dont we get a out-of-bounds error ??
