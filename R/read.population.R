@@ -125,6 +125,58 @@ readSingleFile <- function(population, filename, fileType, verbose=FALSE, ...){
   invisible(population)
 }
 
+#  applyFunctionToFile
+#
+# DESCRIPTION:
+#  Reads a file line by line, applying a function to each of the lines.
+# PARAMETERS:
+#   - filename - name of the file that will be processed
+#   - header - does the file contain header
+#   - sep - separator of the values in the file
+#   - FUN - function to be applied to the lines of the file 
+#   - ... - parameters passed to FUN
+# OUTPUT:
+#   A matrix with values from the file.
+#
+applyFunctionToFile <- function(filename, header=TRUE, sep="\t", FUN, ...){
+  filePointer <- open(filename,"r")
+  if(header){
+    headerLine <- readLines(filePointer, n=1)
+    header <- strsplit(headerLine,sep)
+  res <- NULL
+  lineNR <- 0
+  ### reading the first non-header line
+  curLine <- readLines(filePointer, n=1)
+  while(length(curLine) > 0){
+    lineNR <- lineNR + 1
+    if(verbose && lineNR%%10000==0) cat("processing line:",lineNr,"\n")
+    curLineSplitted <- strsplit(curLine,sep)
+    ### changing it into a matrix for easier handling
+    curRow <- matrix(curLineSplitted[-1],1,length(curLineSplitted)-1)
+    rownames(curRow) <- curLineSplitted[1]
+    ### if there is header, use it as colnames
+    if(header){
+      if(length(header)!= ncol(curRow){
+        stop("Incorect length of line: ",lineNR," it is: ",ncol(curRow)," instead of: ",length(header),"\n")
+      }else{
+        colnames(curRow) <- curRow
+      }
+    }
+    ### execute the function specified by user and rbind results
+    curRes <-  FUN(curRow, ...)
+    ### check if the result can be rbinded
+       ### first, check if there is anything in the res already?
+    if(!is.null(res)){
+        if(ncol(res)!=ncol(curRes)) stop("Incorrect result for line: ",lineNR,"\n")
+    }
+    ### it is correct, it can be rbinded
+    res <-  rbind(res,curRes)
+    curLine <- readLines(filePointer, n=1)
+  }
+  filePointer.close()
+  invisible(res)
+}
+
 TwoClassTtest <- function(foundersline,foundersGroups,threshold){
   p1  <- as.numeric(foundersline[which(foundersGroups == 0) + 1])  #TODO: Why add 1, Why dont we get a out-of-bounds error ?? -> first element of the line is a name of the row
   p2  <- as.numeric(foundersline[which(foundersGroups == 1) + 1])  #TODO: Why add 1, Why dont we get a out-of-bounds error ??
@@ -132,7 +184,6 @@ TwoClassTtest <- function(foundersline,foundersGroups,threshold){
   if(res$p.value < threshold) return(foundersline)
   return(NULL)
 }
-
 
 simulateParentalPhentypes <- function(population, offspringPhenotypes, populationType){
   cat("No founders phenotype data provided, it will be simulated!\n")
