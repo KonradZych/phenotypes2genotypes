@@ -62,7 +62,7 @@ read.population <- function(offspring = "offspring", founders = "founders", map 
     ### simulate data if there is no file
     if(verbose)cat("No phenotype file for founders: ",fileFoundersPheno,". Founder phenotypes will be simulated.\n")
     if(readMode == "normal"){
-      population <- simulateParentalPhentypes(population, population$offspring$phenotypes, populationType)
+      population <- simulateParentalPhenotypes(population, population$offspring$phenotypes, populationType)
     }
     ### if the mode is HT, we don't simulate founders but just judge the variance in the offspring while converting phenotypes to genotypes
   }else{
@@ -211,14 +211,25 @@ normalModeReading <- function(dataMatrix){
   invisible(dataMatrix)
 }
 
-simulateParentalPhentypes <- function(population, offspringPhenotypes, populationType){
+#  simulateParentalPhenotypes
+#
+# DESCRIPTION:
+#  Simulating founders phenotypes based on offspring data
+# PARAMETERS:
+#   - population - an object of class population
+#   - populationType - breeeding scheme used in the population
+#   - offspringPhenotypes - matrix containing phenotypes of the offspring
+# OUTPUT:
+#   An object of class population
+#
+simulateParentalPhenotypes <- function(population, populationType, offspringPhenotypes){
   cat("No founders phenotype data provided, it will be simulated!\n")
   half     <- floor(ncol(offspringPhenotypes)/2)
   end      <- ncol(offspringPhenotypes)
   founders <- t(apply(offspringPhenotypes, 1, function(x){
     x <- sort(x)
     c( mean(x[1:half],na.rm=TRUE), mean(x[2:(half+1)],na.rm=TRUE), mean(x[3:(half+2)],na.rm=TRUE),
-       mean(x[(half):end],na.rm=TRUE), mean(x[(half-1):(end-1)],na.rm=TRUE), mean(x[(half-2):end-2],na.rm=TRUE))
+       mean(x[(half+1):end],na.rm=TRUE), mean(x[(half):(end-1)],na.rm=TRUE), mean(x[(half-2):(end-2)],na.rm=TRUE))
   }))
   population$flags <- c(population$flags,"noParents")
   population <- add.to.populationSub.internal(population, founders, "founders", populationType=populationType)
