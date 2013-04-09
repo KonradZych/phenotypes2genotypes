@@ -211,14 +211,6 @@ normalModeReading <- function(dataMatrix){
   invisible(dataMatrix)
 }
 
-TwoClassTtest <- function(foundersline,foundersGroups,threshold){
-  p1  <- as.numeric(foundersline[which(foundersGroups == 0) + 1])  #TODO: Why add 1, Why dont we get a out-of-bounds error ?? -> first element of the line is a name of the row
-  p2  <- as.numeric(foundersline[which(foundersGroups == 1) + 1])  #TODO: Why add 1, Why dont we get a out-of-bounds error ??
-  res <- t.test(p1, p2)
-  if(res$p.value < threshold) return(foundersline)
-  return(NULL)
-}
-
 simulateParentalPhentypes <- function(population, offspringPhenotypes, populationType){
   cat("No founders phenotype data provided, it will be simulated!\n")
   half     <- floor(ncol(offspringPhenotypes)/2)
