@@ -113,11 +113,11 @@ read.population <- function(offspring = "offspring", founders = "founders", map 
 # OUTPUT:
 #   An object of class population 
 #
-readSingleFile <- function(population, filename, fileType, verbose=FALSE, ...){
+readSingleFile   <- function(population, filename, fileType, verbose=FALSE, ...){
   if(file.exists(filename)){
-    if(verbose) cat("File:",filename,"found and will be processed.\n")
-    dataRead <- read.table(filename,sep="\t", row.names=1, ...)
-    population <- add.to.population(population, dataRead, fileType)
+    if(verbose)  cat("File:",filename,"found and will be processed.\n")
+    dataRead     <- read.table(filename,sep="\t", row.names=1, ...)
+    population   <- add.to.population(population, dataRead, fileType)
     doCleanUp.internal()
   }else{
     if(verbose) cat("File:",filename,"not found.\n")
@@ -142,19 +142,22 @@ applyFunctionToFile <- function(filename, header=TRUE, sep="\t", FUN, verbose=FA
   filePointer <- file(filename,"r")
   if(header){
     headerLine <- readLines(filePointer, n=1)
-    header <- unlist(strsplit(headerLine,sep))
+    header     <- unlist(strsplit(headerLine,sep))
   }
-  res <- NULL
+  res    <- NULL
   lineNR <- 0
+  
   ### reading the first non-header line
   curLine <- readLines(filePointer, n=1)
   while(length(curLine) > 0){
-    lineNR <- lineNR + 1
+    lineNR          <- lineNR + 1
     if(verbose && lineNR%%10000==0) cat("processing line:",lineNr,"\n")
     curLineSplitted <- unlist(strsplit(curLine,sep))
+    
     ### changing it into a matrix for easier handling
-    curRow <- matrix(as.numeric(curLineSplitted[-1]),1,length(curLineSplitted)-1)
+    curRow          <- matrix(as.numeric(curLineSplitted[-1]),1,length(curLineSplitted)-1)
     rownames(curRow) <- curLineSplitted[1]
+    
     ### if there is header, use it as colnames
     if(!is.null(header)){
       if(length(header)!= ncol(curRow)){
@@ -163,15 +166,18 @@ applyFunctionToFile <- function(filename, header=TRUE, sep="\t", FUN, verbose=FA
         colnames(curRow) <- header
       }
     }
+    
     ### execute the function specified by user and rbind results
     curRes <-  FUN(curRow, ...)
+    
     ### check if the result can be rbinded
        ### first, check if there is anything in the res already?
     if(!is.null(res)){
         if(ncol(res)!=ncol(curRes)) stop("Incorrect result for line: ",lineNR,"\n")
     }
+    
     ### it is correct, it can be rbinded
-    res <-  rbind(res,curRes)
+    res     <- rbind(res,curRes)
     curLine <- readLines(filePointer, n=1)
   }
   close(filePointer)
@@ -190,10 +196,10 @@ applyFunctionToFile <- function(filename, header=TRUE, sep="\t", FUN, verbose=FA
 #   An input matrix, if the pval is below the threshold. Otherwise NULL
 #
 tTestByLine <- function(dataMatrix, dataGroups, threshold){
-  group0  <- as.numeric(dataMatrix[,which(dataGroups == 0)])
-  group1  <- as.numeric(dataMatrix[,which(dataGroups == 1)])
+  group0    <- as.numeric(dataMatrix[,which(dataGroups == 0)])
+  group1    <- as.numeric(dataMatrix[,which(dataGroups == 1)])
   if(length(group0)<3 || length(group1)<3) stop("Not enough observations to perform the t.test.\n")
-  res <- t.test(group0, group1)
+  res       <- t.test(group0, group1)
   if(res$p.value < threshold) return(dataMatrix)
   invisible(NULL)
 }
@@ -222,17 +228,17 @@ normalModeReading <- function(dataMatrix){
 # OUTPUT:
 #   An object of class population
 #
-simulateParentalPhenotypes <- function(population, populationType, offspringPhenotypes){
+simulateParentalPhenotypes <- function(population, offspringPhenotypes, populationType){
   cat("No founders phenotype data provided, it will be simulated!\n")
   half     <- floor(ncol(offspringPhenotypes)/2)
   end      <- ncol(offspringPhenotypes)
   founders <- t(apply(offspringPhenotypes, 1, function(x){
-    x <- sort(x)
+    x      <- sort(x)
     c( mean(x[1:half],na.rm=TRUE), mean(x[2:(half+1)],na.rm=TRUE), mean(x[3:(half+2)],na.rm=TRUE),
        mean(x[(half+1):end],na.rm=TRUE), mean(x[(half):(end-1)],na.rm=TRUE), mean(x[(half-1):(end-2)],na.rm=TRUE))
   }))
-  population$flags <- c(population$flags,"noParents")
-  population <- add.to.populationSub.internal(population, founders, "founders", populationType=populationType)
+  population$flags           <- c(population$flags,"noParents")
+  population                 <- add.to.populationSub.internal(population, founders, "founders", populationType=populationType)
   population$founders$groups <- c(0,0,0,1,1,1)
   return(population)
 }
