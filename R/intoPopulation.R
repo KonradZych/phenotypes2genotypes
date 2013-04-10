@@ -67,7 +67,8 @@ create.population <- function(offspringPhenotypes, founders, foundersGroups, off
   class(population) <- c("population", populationType)
   check.population(population)
   if(verbose){
-    cat("create.population finished")
+    e <- proc.time()
+    cat("\ncreate.population finished")
     if(debugMode==2) cat(" in:",(e-s)[3],"seconds.\n")
   }
   invisible(population)
