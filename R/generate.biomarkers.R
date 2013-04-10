@@ -183,7 +183,7 @@ generate.biomarkers.internal <- function(population, treshold, overlapInd, propo
     outputEM[[1]]         <- cur[[2]]
     names(outputEM[[1]])  <- rownames(population$offspring$phenotypes)
   }else{
-    if(verbose) cat("Selected none upregulated potential markers.\n")
+    if(verbose) cat("Selected none downregulated potential markers.\n")
   }
   
   if(verbose) cat("Generated ",nrow(output),"markers.\n")
