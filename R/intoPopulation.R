@@ -34,7 +34,7 @@ create.population <- function(offspringPhenotypes, founders, foundersGroups, off
   population <- add.to.populationSub.internal(population, populationType, offspringPhenotypes, "offspring$phenotypes", verbose, debugMode)
 
   if(missing(founders)){
-    population <- simulateParentalPhentypes(population, population$offspring$phenotypes, populationType)
+    population <- simulateParentalPhenotypes(population, population$offspring$phenotypes, populationType)
   }else{
     n.childrenNotInParental <- sum(!(rownames(founders)%in%rownames(population$offspring$phenotypes)))
     if(n.childrenNotInParental == nrow(founders)) stop("No match between the row names in the founders and offspring.\n")

@@ -229,7 +229,7 @@ simulateParentalPhenotypes <- function(population, populationType, offspringPhen
   founders <- t(apply(offspringPhenotypes, 1, function(x){
     x <- sort(x)
     c( mean(x[1:half],na.rm=TRUE), mean(x[2:(half+1)],na.rm=TRUE), mean(x[3:(half+2)],na.rm=TRUE),
-       mean(x[(half+1):end],na.rm=TRUE), mean(x[(half):(end-1)],na.rm=TRUE), mean(x[(half-2):(end-2)],na.rm=TRUE))
+       mean(x[(half+1):end],na.rm=TRUE), mean(x[(half):(end-1)],na.rm=TRUE), mean(x[(half-1):(end-2)],na.rm=TRUE))
   }))
   population$flags <- c(population$flags,"noParents")
   population <- add.to.populationSub.internal(population, founders, "founders", populationType=populationType)
