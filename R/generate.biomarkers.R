@@ -375,9 +375,9 @@ splitPheno.internal <- function(offspring, founders, overlapInd, proportion, mar
     cur <- splitPhenoRowEM.internal(offspring[x,], overlapInd, proportion, margin, pProb, up, populationType, verbose)
     if(!(is.null(cur[[1]]))){
       output      <- rbind(output,cur[[1]])
-      outputEM    <- rbind(outputEM,cur[[2]])
       markerNames <- c(markerNames,rownames(offspring)[x])
     }
+    outputEM    <- rbind(outputEM,cur[[2]])
     if(verbose){
       perc <- round((x+done)*100/nrow(offspring+done+left))
       if(perc%%10==0 && !(perc%in%printedProc)){
