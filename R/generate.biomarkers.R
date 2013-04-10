@@ -148,28 +148,16 @@ generate.biomarkers.internal <- function(population, treshold, overlapInd, propo
   ### initialization
   populationType <- class(population)[2]
   if(verbose && debugMode==1) cat("generate.biomarkers.internal starting.\n")
-  output <- NULL
-  outputEM <- vector(2,mode="list")
+  output      <- NULL
+  outputEM    <- vector(2,mode="list")
   markerNames <- NULL 
   
   ### selection step
   ### up-regulated
-  upNotNull         <- which(population$founders$RP$pval[,1] > 0)
-  upBelowTreshold   <- which(population$founders$RP$pval[,1] < treshold)
-  upSelected        <- upBelowTreshold[which(upBelowTreshold%in%upNotNull)]
-  upParental        <- population$founders$phenotypes[upSelected,]
-  rownamesUp        <- rownames(upParental)
-  if(any(rownamesUp == "")) rownamesUp <- rownamesUp[-which(rownamesUp == "")]
-  upRils            <- population$offspring$phenotypes[rownamesUp,]
+  upRils      <- selectPhenotypes(population, treshold, RPcolumn=1)
   
   ### down-regulated
-  downNotNull       <- which(population$founders$RP$pval[,2] > 0)
-  downBelowTreshold <- which(population$founders$RP$pval[,2] < treshold)
-  downSelected      <- downBelowTreshold[which(downBelowTreshold%in%downNotNull)]
-  downParental      <- population$founders$phenotypes[downSelected,]
-  rownamesDown      <- rownames(downParental)
-  if(any(rownamesDown == "")) rownamesDown <- rownamesDown[-which(rownamesDown == "")]
-  downRils          <- population$offspring$phenotypes[rownamesDown,]
+  downRils    <- selectPhenotypes(population, treshold, RPcolumn=2)
   
   ### checking if anything is selected and if yes - processing
   if(!(is.null(dim(upRils)))&&(nrow(upRils)!=0)){
@@ -184,14 +172,14 @@ generate.biomarkers.internal <- function(population, treshold, overlapInd, propo
       cur                   <- splitPheno.internal(downRils, downParental, overlapInd, proportion, margin, pProb, populationType, 0, 0, nrow(upRils),verbose)
       output                <- rbind(output,cur[[1]])
       outputEM[[1]]         <- cur[[2]]
-      names(outputEM[[1]])  <- rownames(downRils)
+      names(outputEM[[1]])  <- rownames(population$offspring$phenotypes)
     }else{
       if(verbose) cat("Selected ",nrow(upRils),"upregulated potential markers.\n")
     }
     cur                     <- splitPheno.internal(upRils, upParental, overlapInd, proportion, margin, pProb, populationType, 1, 0, 0, verbose)
     output                  <- rbind(output,cur[[1]])
     outputEM[[2]]           <- cur[[2]]
-    names(outputEM[[2]])    <- rownames(upRils)
+    names(outputEM[[2]])    <- rownames(population$offspring$phenotypes)
     
   }else{
     if(!(is.null(dim(downRils)))&&(nrow(downRils)!=0)){
@@ -199,7 +187,7 @@ generate.biomarkers.internal <- function(population, treshold, overlapInd, propo
       cur                   <- splitPheno.internal(downRils, downParental, overlapInd, proportion, margin, pProb, populationType, 0, 0, 0,verbose)
       output                <- rbind(output,cur[[1]])
       outputEM[[1]]         <- cur[[2]]
-      names(outputEM[[1]])  <- rownames(downRils)
+      names(outputEM[[1]])  <- rownames(population$offspring$phenotypes)
     }else{
       stop("None of the markers was selected using specified treshold: ",treshold,"\n")
     }
@@ -212,6 +200,28 @@ generate.biomarkers.internal <- function(population, treshold, overlapInd, propo
   population$offspring$genotypes$EM <- outputEM
   colnames(population$offspring$genotypes$simulated) <- colnames(upRils)
   invisible(population)
+}
+
+# selectPhenotypes
+#
+# DESCRIPTION:
+#  Function that selects offsprings fulfilling the criteria
+# PARAMETERS:
+#   - population - An object of class population.
+#   - threshold - If  pval for gene is lower that this value, we assume it is being diff. expressed.
+
+# OUTPUT:
+#  A matrix with selected phenotypes
+#
+selectPhenotypes <- function(population, treshold, RPcolumn){
+  notNullPhenotypes   <- which(population$founders$RP$pval[,RPcolumn] > 0)      # rank product gives a score for 0 sometimes -> this is below the threshold but these phenotypes wshould not be selected
+  belowTreshold       <- which(population$founders$RP$pval[,RPcolumn] < treshold) # phenos diff expressed with pval lower than threshold
+  selected            <- belowTreshold[which(belowTreshold%in%notNullPhenotypes)]
+  selectedParental    <- population$founders$phenotypes[selected,]
+  rownamesOfSelected  <- rownames(selectedParental)
+  if(any(rownamesOfSelected == "")) rownamesOfSelected <- rownamesOfSelected[-which(rownamesOfSelected == "")]
+  selectedRils              <- population$offspring$phenotypes[rownamesOfSelected,]
+  invisible(selectedRils)
 }
 
 t.test_line.internal <- function(dataRow,threshold){
@@ -362,10 +372,11 @@ mergeEnv.internal <- function(population, genoMatrix){
 #DANNY: TODO MERGE splitPhenoRowEM.internal into this function  <- TODO: Do somehting with the TODOs
 ##K: left, I\'ll try to use apply here instead of for
 splitPheno.internal <- function(offspring, founders, overlapInd, proportion, margin, pProb=0.8, populationType, up, done=0, left=0, verbose=FALSE){
-  output      <- NULL
+  output        <- NULL
   outputEM      <- NULL
-  markerNames <- NULL
-  s           <- proc.time()
+  markerNames   <- NULL
+  s             <- proc.time()
+  printedProc   <- NULL
   for(x in 1:nrow(offspring)){
     cur <- splitPhenoRowEM.internal(offspring[x,], overlapInd, proportion, margin, pProb, up, populationType, verbose)
     if(!(is.null(cur[[1]]))){
@@ -373,11 +384,11 @@ splitPheno.internal <- function(offspring, founders, overlapInd, proportion, mar
       outputEM    <- rbind(outputEM,cur[[2]])
       markerNames <- c(markerNames,rownames(offspring)[x])
     }
-
     if(verbose){
       perc <- round((x+done)*100/nrow(offspring+done+left))
-      if(perc%%10==0){
+      if(perc%%10==0 && !(perc%in%printedProc)){
         e <- proc.time()
+        printedProc <- c(printedProc,perc)
         te <- ((e-s)[3]/x)*(nrow(offspring)-x+left)
         cat("Done with: ",perc,"%. Estimated time remaining:",te,"s\n")
       }
