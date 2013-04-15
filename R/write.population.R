@@ -37,10 +37,13 @@ write.population <- function(population, offspring = "offspring", founders = "fo
   ### initializing  
   s <- proc.time()
   
-  ### offspring phenotypic file
-  if(is.null(dim(population$offspring$phenotypes))) stop("Phenotype data for offspring are already stored in:",population$offspring$phenotypes,". The function will not overwrite that file.")
-
-  writeSingleFile(population$offspring$phenotypes, "offspring phenotypes", fileOffspringPheno, verbose=verbose) # REQUIRED
+  ### offspring phenotypes coukld be euther a matrix with phenotypes (that we can save) or a name of the file (then we just warn that the data is already in that file)
+  ### if it is null - error!
+  if(is.character(population$offspring$phenotypes)){ 
+    stop("Phenotype data for offspring are already stored in:",population$offspring$phenotypes,". The function will not overwrite that file.")
+  }else{ 
+    writeSingleFile(population$offspring$phenotypes, "offspring phenotypes", fileOffspringPheno, errIfNotFound=TRUE, verbose=verbose) # REQUIRED
+  }
   writeSingleFile(population$founders$phenotypes, "founder phenotypes", fileFoundersPheno, verbose=verbose)     # OPTIONAL
   writeSingleFile(population$annots, "annotation", fileAnnotations, verbose=verbose)                            # OPTIONAL
   writeSingleFile(population$offspring$genotypes, "offspring genotypes", fileOffspringGeno, verbose=verbose)    # OPTIONAL
