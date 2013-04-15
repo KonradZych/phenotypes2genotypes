@@ -62,6 +62,7 @@ write.population <- function(population, offspring = "offspring", founders = "fo
   #**********FINALIZING FUNCTION*************
   e <- proc.time()
   if(verbose && debugMode==2) cat("read.population finished after",(e-s)[3],"seconds.\n")
+  invisible(NULL)
 }
 
 #  writeSingleFile
