@@ -179,10 +179,10 @@ generate.biomarkers.internal <- function(population, treshold, overlapInd, propo
   ### if any of the phenotypes is down-regulated - process them
   if(!(is.null(dim(downRegulatedPhenos)))&&(nrow(downRegulatedPhenos)!=0)){
     if(verbose) cat("Selected ",nrow(downRegulatedPhenos),"downregulated potential markers.\n")
-    cur                   <- splitPheno.internal(downRegulatedPhenos, downParental, overlapInd, proportion, margin, pProb, populationType, 0, 0, 0,verbose)
-    output                <- rbind(output,cur[[1]])
-    outputEM[[1]]         <- cur[[2]]
-    names(outputEM[[1]])  <- rownames(population$offspring$phenotypes)
+    cur                     <- splitPheno.internal(downRegulatedPhenos, downParental, overlapInd, proportion, margin, pProb, populationType, 0, 0, 0,verbose)
+    output                  <- rbind(output,cur[[1]])
+    outputEM[[1]]           <- cur[[2]]
+    names(outputEM[[1]])    <- rownames(population$offspring$phenotypes)
   }else{
     if(verbose) cat("Selected none downregulated potential markers.\n")
   }
