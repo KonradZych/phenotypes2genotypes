@@ -38,28 +38,18 @@ write.population <- function(population, offspring = "offspring", founders = "fo
   s <- proc.time()
   
   ### offspring phenotypic file
-  if(is.null(dim(population$offspring$phenotypes))) stop("Phenotype data for offspring are already stored in:",population$offspring$phenotypes,". The function will not overwrite that file.\n")
+  if(is.null(dim(population$offspring$phenotypes))) stop("Phenotype data for offspring are already stored in:",population$offspring$phenotypes,". The function will not overwrite that file.")
 
-  writeSingleFile(population$offspring$phenotypes, "offspring phenotypes", fileOffspringPheno, verbose=verbose)
-
-  ### founders phenotypic file
-  writeSingleFile(population$founders$phenotypes, "founder phenotypes", fileFoundersPheno, verbose=verbose)
-  
-  ### annotations file
-  writeSingleFile(population$annots, "annotation", fileAnnotations, verbose=verbose)
-
-  ### offspring genotypic file
-  writeSingleFile(population$offspring$genotypes, "offspring genotypes", fileOffspringGeno, verbose=verbose)
-  
-  ### physical map
-  writeSingleFile(population$maps$physical, "physical map", fileMapPhys, verbose=verbose, col.names=FALSE)
-
-  ### genetic map
-  writeSingleFile(population$maps$genetic, "genetic map", fileMapGen, verbose=verbose, col.names=FALSE)
+  writeSingleFile(population$offspring$phenotypes, "offspring phenotypes", fileOffspringPheno, verbose=verbose) # REQUIRED
+  writeSingleFile(population$founders$phenotypes, "founder phenotypes", fileFoundersPheno, verbose=verbose)     # OPTIONAL
+  writeSingleFile(population$annots, "annotation", fileAnnotations, verbose=verbose)                            # OPTIONAL
+  writeSingleFile(population$offspring$genotypes, "offspring genotypes", fileOffspringGeno, verbose=verbose)    # OPTIONAL
+  writeSingleFile(population$maps$physical, "physical map", fileMapPhys, verbose=verbose, col.names=FALSE)      # OPTIONAL
+  writeSingleFile(population$maps$genetic, "genetic map", fileMapGen, verbose=verbose, col.names=FALSE)         # OPTIONAL
 
   #**********FINALIZING FUNCTION*************
   e <- proc.time()
-  if(verbose && debugMode==2) cat("read.population finished after",(e-s)[3],"seconds.\n")
+  if(verbose && debugMode==2) cat("read.population finished after", (e-s)[3], "seconds.\n")
   invisible(NULL)
 }
 
