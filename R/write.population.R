@@ -77,7 +77,7 @@ write.population <- function(population, offspring = "offspring", founders = "fo
 #   None
 #
 writeSingleFile   <- function(dataMatrix, dataType, filename, verbose=FALSE, ...){
-  if(file.exists(filename))  stop("File:",filename,"already exists!\n")
+  if(file.exists(filename))  stop("File: ",filename," already exists!\n")
   if(!is.null(dim(dataMatrix))){
     write.table(dataMatrix,file=filename,sep="\t",quote=FALSE,...)
     if(verbose) cat(dataType,"saved in file:",filename,".\n")
