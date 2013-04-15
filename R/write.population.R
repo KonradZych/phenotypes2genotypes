@@ -80,8 +80,8 @@ writeSingleFile   <- function(dataMatrix, dataType, filename, verbose=FALSE, ...
   if(file.exists(filename))  stop("File: ",filename," already exists!\n")
   if(!is.null(dim(dataMatrix))){
     write.table(dataMatrix,file=filename,sep="\t",quote=FALSE,...)
-    if(verbose) cat(dataType,"saved in file:",filename,".\n")
+    if(verbose) cat(dataType,"saved in file:",filename,"\n")
   }else{
-    if(verbose) cat("No:",dataType,"found.\n")
+    if(verbose) cat("no",dataType,"found\n")
   }
 }
