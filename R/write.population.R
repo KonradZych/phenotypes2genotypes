@@ -62,7 +62,6 @@ write.population <- function(population, offspring = "offspring", founders = "fo
   #**********FINALIZING FUNCTION*************
   e <- proc.time()
   if(verbose && debugMode==2) cat("read.population finished after",(e-s)[3],"seconds.\n")
-  invisible(population)
 }
 
 #  writeSingleFile
@@ -80,7 +79,7 @@ write.population <- function(population, offspring = "offspring", founders = "fo
 writeSingleFile   <- function(dataMatrix, dataType, filename, verbose=FALSE, ...){
   if(file.exists(filename))  stop("File:",filename,"already exists!\n")
   if(!is.null(dim(dataMatrix))){
-    write.table(dataMatrix,sep="\t",quote=FALSE,...)
+    write.table(dataMatrix,file=filename,sep="\t",quote=FALSE,...)
     if(verbose) cat(dataType,"saved in file:",filename,".\n")
   }else{
     if(verbose) cat("No:",dataType,"found.\n")
