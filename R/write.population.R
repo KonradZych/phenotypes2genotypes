@@ -54,10 +54,10 @@ write.population <- function(population, offspring = "offspring", founders = "fo
   writeSingleFile(population$offspring$genotypes, "offspring genotypes", fileOffspringGeno, verbose=verbose)
   
   ### physical map
-  writeSingleFile(population$maps$physical, "physical map", fileMapPhys, verbose=verbose, row.names=FALSE)
+  writeSingleFile(population$maps$physical, "physical map", fileMapPhys, verbose=verbose, col.names=FALSE)
 
   ### genetic map
-  writeSingleFile(population$maps$genetic, "genetic map", fileMapGen, verbose=verbose, row.names=FALSE)
+  writeSingleFile(population$maps$genetic, "genetic map", fileMapGen, verbose=verbose, col.names=FALSE)
 
   #**********FINALIZING FUNCTION*************
   e <- proc.time()
