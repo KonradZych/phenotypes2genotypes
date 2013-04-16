@@ -59,9 +59,9 @@ generate.biomarkers <- function(population, threshold=0.05, overlapInd = 10, pro
   #*******CONVERTING CHILDREN PHENOTYPIC DATA TO GENOTYPES*******
   s1 <- proc.time()
   if(!is.null(population$annots)){ #TODO: Merge this 2 functions into 1
-    population <- generate.biomarkers.onthefly.internal(population, threshold, overlapInd, proportion, margin, pProb, verbose, debugMode)
+    population <- generate.biomarkers.internal(population, threshold, overlapInd, proportion, margin, pProb, "ht", verbose, debugMode)
   }else{
-    population <- generate.biomarkers.internal(population, threshold, overlapInd, proportion, margin, pProb, verbose, debugMode)
+    population <- generate.biomarkers.internal(population, threshold, overlapInd, proportion, margin, pProb, "normal", verbose, debugMode)
   }
   e1 <- proc.time()
   if(verbose && debugMode==2) cat("Converting phenotypes to genotypes done in:",(e1-s1)[3],"seconds.\n")
@@ -144,24 +144,32 @@ selectTopMarker.internal <- function(markers,pattern,verbose){
 #  object of class population
 #
 ############################################################################################################
-generate.biomarkers.internal <- function(population, treshold, overlapInd, proportion, margin, pProb=0.8, env, verbose=FALSE, debugMode=0){
+generate.biomarkers.internal <- function(population, treshold, overlapInd, proportion, margin, pProb=0.8, verbose=FALSE, debugMode=0){
   ### initialization
-  populationType <- class(population)[2]
+  populationType          <- class(population)[2]
   if(verbose && debugMode==1) cat("generate.biomarkers.internal starting.\n")
-  output      <- NULL
-  outputEM    <- vector(2,mode="list")
-  markerNames <- NULL 
+  output                  <- NULL
+  outputEM                <- vector(2,mode="list")
+  markerNames             <- NULL 
   
   ### selection step
-  ### checking if any of the phenotypes is up-regulated
-  upRegulatedPhenos      <- selectPhenotypes(population, treshold, RPcolumn=1)
+  if(is.character(population$offspring$phenotypes)){
+    ### in HT mode markers are read from file line by line and processed on the fly
+    selectedProbes <- applyFunctionToFile(fileFoundersPheno,sep="\t", header=TRUE, verbose=verbose, FUN=tTestByLine, dataGroups=foundersGroups, threshold=threshold)
+    selectedProbesReformatted <- reformatProbes(selectedProbes)
+    population$offspring$phenotypes          <- selectedProbesReformatted[[1]]
+    population$offspring$genotypes$simulated <- selectedProbesReformatted[[2]]
+    invisible(population)
+  }else{
+    ### checking if any of the phenotypes is down/up-regulated
+    upRegulatedPhenos       <- selectPhenotypes(population, treshold, 1)
+    downRegulatedPhenos     <- selectPhenotypes(population, treshold, 2)
+  }
   
-  ### checking if any of the phenotypes is down-regulated
-  downRegulatedPhenos    <- selectPhenotypes(population, treshold, RPcolumn=2)
-  
+  ### removing probes that were selected as both up and down regulated - obsolete as rankprod is not really used any more and t.test will never do that
   if(!is.null(rownames(upRegulatedPhenos)) && !is.null(rownames(downRegulatedPhenos))){
-    inupndown                    <- which(rownames(upRegulatedPhenos) %in% rownames(downRegulatedPhenos))
-    if(length(inupndown)>0)      upRegulatedPhenos      <- upRegulatedPhenos[-inupndown,]
+    inupndown               <- which(rownames(upRegulatedPhenos) %in% rownames(downRegulatedPhenos))
+    if(length(inupndown)>0) upRegulatedPhenos  <- upRegulatedPhenos[-inupndown,]
   }
 
   ### if any of the phenotypes is up-regulated - process them
@@ -379,6 +387,8 @@ splitPheno.internal <- function(offspring, founders, overlapInd, proportion, mar
       markerNames <- c(markerNames,rownames(offspring)[x])
     }
     outputEM    <- rbind(outputEM,cur[[2]])
+    
+    ### information abpout the progress of the function
     if(verbose){
       perc <- round((x+done)*100/nrow(offspring+done+left))
       if(perc%%10==0 && !(perc%in%printedProc)){
