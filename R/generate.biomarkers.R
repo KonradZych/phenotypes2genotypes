@@ -155,8 +155,8 @@ generate.biomarkers.internal <- function(population, treshold, overlapInd, propo
   ### selection step
   if(is.character(population$offspring$phenotypes)){
     ### in HT mode markers are read from file line by line and processed on the fly
-    selectedProbes <- applyFunctionToFile(fileFoundersPheno,sep="\t", header=TRUE, verbose=verbose, FUN=tTestByLine, dataGroups=foundersGroups, threshold=threshold)
-    selectedProbesReformatted <- reformatProbes(selectedProbes)
+    selectedProbes                           <- applyFunctionToFile(fileFoundersPheno,sep="\t", header=TRUE, verbose=verbose, FUN=selectByLine, population, treshold, overlapInd, proportion, margin, pProb)
+    selectedProbesReformatted                <- reformatProbes(selectedProbes)
     population$offspring$phenotypes          <- selectedProbesReformatted[[1]]
     population$offspring$genotypes$simulated <- selectedProbesReformatted[[2]]
     invisible(population)
@@ -225,6 +225,59 @@ selectPhenotypes <- function(population, treshold, RPcolumn){
   if(any(rownamesOfSelected == "")) rownamesOfSelected <- rownamesOfSelected[-which(rownamesOfSelected == "")]
   selectedRils              <- population$offspring$phenotypes[rownamesOfSelected,]
   invisible(selectedRils)
+}
+
+# selectPhenotypes
+#
+# DESCRIPTION:
+#  Function that selects offsprings fulfilling the criteria
+# PARAMETERS:
+#   - population - An object of class population.
+#   - threshold - If  pval for gene is lower that this value, we assume it is being diff. expressed.
+
+# OUTPUT:
+#  A matrix with selected phenotypes
+#
+selectByLine <- function(phenoRow, population, treshold, overlapInd, proportion, margin, pProb){
+  ### first element is the name of the probe
+  phenoid   <- phenoRow[1] #this will be used as a name of the row - must be unique
+  phenoname <- phenoRow[1] #this will be used to check parental data - may not be unique
+  phenoRow  <- as.numeric(phenoRow[-1])
+  
+  ### if there is an annotation for that probe - lets use it, if not - do nothing
+  if(!is.null(population$annots)){
+    ### if there is an annotation data, the name of the probe should be a number corresponding
+    # to a number of a row storing information about the probe in annotation matrix
+    if(!is.numeric(phenoname)){
+      phenoname <- as.numeric(phenoname)
+      if(!is.finite(phenoname)) stop(phenoname," is not a correct name for a probe!")
+    } ### if it is numeric, we still need to check wheter there is a row like that,
+    ### if that is true -> select the names of the probe stored there
+    if(phenoname > 0 && phenoname < nrow(population$annots)) phenoname <- population$annots[phenoname,1]
+  }
+  
+  ### is there parental information
+  if(!is.null(population$founders$RP$pval)){
+    ### is there parental information for a certain probe
+    if(phenoname%in%rownames(population$founders$RP$pval)){
+      ### is there parental information for a certain probe
+      if(!is.null(population$founders$RP$pval[phenoname,])){
+        ### if it is there but does not pass the threshold - return NULL
+        if(!any(population$founders$RP$pval[phenoname,]>0 && population$founders$RP$pval[phenoname,]<threshold)) invisible(NULL)
+      }
+    }
+  }### TODO: no info - asses the variance in the probe
+  
+  ### split the probe and select [[1]], [[2]] -> info about EM that we cannot store in HT mode
+  result       <- splitPhenoRowEM.internal(phenoRow, overlapInd, proportion, margin, pProb, up, populationType, verbose)[[1]]
+  
+  ### if the probe is selected (so result != NULL) return both genotype and phenotype
+  if(!is.null(result)){
+    result <- rbind(result,phenoRow))
+    rownames(result) <- (paste(phenoid,"_geno",sep=""),paste(phenoid,"_phno",sep=""))
+  }
+  
+  invisible(result)
 }
 
 mergeEnv.internal <- function(population, genoMatrix){
