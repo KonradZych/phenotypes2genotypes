@@ -227,88 +227,6 @@ selectPhenotypes <- function(population, treshold, RPcolumn){
   invisible(selectedRils)
 }
 
-t.test_line.internal <- function(dataRow,threshold){
-  idx <- which(!is.na(dataRow))
-  y <- dataRow[idx]
-  half <- floor(length(y)/2)
-  res <- t.test(sort(y)[1:half],sort(y)[half:length(y)])
-  if(res$p.value<threshold) invisible(TRUE)
-  invisible(FALSE)
-}
-
-#TODO: This function is equal to check.and.generate.internal merge them !!!
-generate.internal <- function(dataRow, pval, threshold, overlapInd, proportion, margin, pProb, curlineNR, populationType, verbose){
-  cur <- NULL
-  dataRow <- as.numeric(dataRow)
-  if(pval[1]<threshold && pval[1]!=0){
-    cur <- splitPhenoRowEM.internal(dataRow, overlapInd, proportion, margin, pProb, 0, populationType, verbose)[[1]]
-  }else if(pval[2]<threshold && pval[2]!=0){
-    cur <- splitPhenoRowEM.internal(dataRow, overlapInd, proportion, margin, pProb, 1, populationType, verbose)[[1]]
-  }
-  if(!is.null(cur)) cur <- c(curlineNR,cur)
-
-  invisible(cur)
-}
-
-#TODO: This function is equal to generate.internal merge them !!!
-check.and.generate.internal <- function(dataRow, threshold, overlapInd, proportion, margin, pProb, curlineNR, populationType, verbose){
-  cur <- NULL
-  dataRow <- as.numeric(dataRow)
-  if(t.test_line.internal(dataRow,threshold)){
-     cur <- splitPhenoRowEM.internal(dataRow, overlapInd, proportion, margin, pProb, 1, populationType, verbose)[[1]]
-     if(!is.null(cur)) cur <- c(curlineNR,cur)
-  }
-  invisible(cur)
-}
-
-generate.biomarkers.onthefly.internal <- function(population, threshold, overlapInd, proportion, margin, pProb=0.8, env, verbose=FALSE, debugMode=0){
-  analysedFile <- file(population$offspring$phenotypes,"r")
-  header <- unlist(strsplit(readLines(analysedFile,n=1),"\t"))
-  genoMatrix <- NULL
-  phenoMatrix <- NULL
-  lineNR <- 0
-  populationType <- class(population)[2]
-  analysedLines <- readLines(analysedFile,n=population$sliceSize)
-  while(!((length(analysedLines) == 0) && (typeof(analysedLines) == "character"))){ #TODO: Wrong condition in the while
-    analysedLines <- strsplit(analysedLines,"\t")
-    eo <- proc.time()
-    if(!((length(analysedLines) == 0) && (typeof(analysedLines) == "character"))){  #TODO: Wrong condition in the if (should not be here)
-     cat("------",length(analysedLines),"\n")
-      for(analysedLineNR in 1:length(analysedLines)){
-        curlineNR <- analysedLineNR + lineNR
-        if(curlineNR %% 500 == 0){
-          en <- proc.time()
-          cat("Analysing phenotype:",curlineNR,"time:",(en-eo)[3],"s\n")
-        }
-        probeID <- as.character(population$annots[curlineNR,1])
-        if(!(is.null(population$founders$RP$pval[probeID,]))){
-          genoLine <- generate.internal(analysedLines[[analysedLineNR]][-1], population$founders$RP$pval[probeID,], threshold, overlapInd, proportion, margin, pProb, curlineNR, populationType, verbose)
-        }else{
-         genoLine <- check.and.generate.internal(analysedLines[[analysedLineNR]][-1], threshold, overlapInd, proportion, margin, pProb, curlineNR, populationType, verbose)
-        }
-        if(!is.null(genoLine)){
-          genoMatrix <- rbind(genoMatrix,genoLine)
-          phenoMatrix <- rbind(phenoMatrix,c(analysedLineNR,analysedLines[[analysedLineNR]][-1]))
-        }
-      }
-      
-      lineNR <- lineNR+length(analysedLines)
-      analysedLines <- readLines(analysedFile,n=population$sliceSize)
-    }
-  }
-  genoMatrix <- mergeEnv.internal(population, genoMatrix)
-  rownames(genoMatrix) <- genoMatrix[,1]
-  rownames(phenoMatrix) <- phenoMatrix[,1]
-  genoMatrix <- genoMatrix[,-1]
-  phenoMatrix <- phenoMatrix[,-1]
-  colnames(genoMatrix) <- header
-  colnames(phenoMatrix) <- header
-  population$offspring$phenotypes <- phenoMatrix
-  population$offspring$genotypes$simulated <- genoMatrix
-  close(analysedFile)
-  invisible(population)
-}
-
 mergeEnv.internal <- function(population, genoMatrix){
   ### check if there is anything to merge and if so -> merge
   if(length(unique(population$annots[,3]))<nrow(population$annots)){
@@ -372,8 +290,6 @@ mergeEnv.internal <- function(population, genoMatrix){
 #  list containg genotype matrix and names of selected markers
 #
 ############################################################################################################
-#DANNY: TODO MERGE splitPhenoRowEM.internal into this function  <- TODO: Do somehting with the TODOs
-##K: left, I\'ll try to use apply here instead of for
 splitPheno.internal <- function(offspring, founders, overlapInd, proportion, margin, pProb=0.8, populationType, up, done=0, left=0, verbose=FALSE){
   output        <- NULL
   outputEM      <- NULL
@@ -388,7 +304,7 @@ splitPheno.internal <- function(offspring, founders, overlapInd, proportion, mar
     }
     outputEM    <- rbind(outputEM,cur[[2]])
     
-    ### information abpout the progress of the function
+    ### information about the progress of the function
     if(verbose){
       perc <- round((x+done)*100/nrow(offspring+done+left))
       if(perc%%10==0 && !(perc%in%printedProc)){
@@ -426,7 +342,7 @@ splitPheno.internal <- function(offspring, founders, overlapInd, proportion, mar
 ############################################################################################################
 splitPhenoRowEM.internal <- function(x, overlapInd, proportion, margin, pProb=0.8, up=1, populationType, verbose=FALSE){
   aa <- tempfile()
-  sink(aa)                                   #TODO: When we sink, we need to try{}catch so that we can undo our sink even when an error occurs
+  tryCatch(sink(aa)                                   #TODO: When we sink, we need to try{}catch so that we can undo our sink even when an error occurs
   nrDistributions <- length(proportion)
   result <- rep(NA,length(x))
   
@@ -439,7 +355,7 @@ splitPhenoRowEM.internal <- function(x, overlapInd, proportion, margin, pProb=0.
   tryCatch(EM <- normalmixEM(y, k=nrDistributions, lambda= proportion, maxrestarts=1, maxit = 300, fast=FALSE),error = function(x){cat(x[[1]],"\n")})
   e1<-proc.time()
   sink()
-  file.remove(aa)
+  file.remove(aa),error = function(x){cat(x[[1]],"\n")})
   result <- NULL
   if(filterRow.internal(EM$lambda,proportion,margin)){
     if(populationType == "f2"){
