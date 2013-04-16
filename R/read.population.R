@@ -61,15 +61,19 @@ read.population <- function(offspring = "offspring", founders = "founders", map 
   if(!file.exists(fileFoundersPheno)){
     ### simulate data if there is no file
     if(verbose)cat("No phenotype file for founders: ",fileFoundersPheno,". Founder phenotypes will be simulated.\n")
+    
     if(readMode == "normal"){
-      population <- simulateParentalPhenotypes(population, population$offspring$phenotypes, populationType)
+      population                         <- simulateParentalPhenotypes(population, population$offspring$phenotypes, populationType)
     }
     ### if the mode is HT, we don't simulate founders but just judge the variance in the offspring while converting phenotypes to genotypes
+    
   }else{
     ### read the file if present
     if(verbose)  cat("File:",fileFoundersPheno,"found and will be processed.\n")
+    
     ### check if there is an information about the founders groups
     if(missing(foundersGroups)) stop("No information about founders groups provided.\n")
+    
     ### founders groups should be a sequence of 0s and 1s
     if(any(foundersGroups!=0 && foundersGroups!=1)) stop("Founders groups attribute is incorrect.\n")
     if(readMode == "normal"){
