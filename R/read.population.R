@@ -73,10 +73,10 @@ read.population <- function(offspring = "offspring", founders = "founders", map 
     ### founders groups should be a sequence of 0s and 1s
     if(any(foundersGroups!=0 && foundersGroups!=1)) stop("Founders groups attribute is incorrect.\n")
     if(readMode == "normal"){
-      population$offspring$phenotypes <- applyFunctionToFile(fileOffspringPheno,sep="\t", header=TRUE, verbose=verbose, FUN=normalModeReading)
-      if(length(foundersGroups)!=ncol(population$offspring$phenotypes)) stop("Founders groups attribute is incorrect.\n")
+      population$founders$phenotypes    <- applyFunctionToFile(fileFoundersPheno,sep="\t", header=TRUE, verbose=verbose, FUN=normalModeReading)
+      if(length(foundersGroups)         != ncol(population$founders$phenotypes)) stop("Founders groups attribute is incorrect.\n")
     }else{
-      population$offspring$phenotypes <- applyFunctionToFile(fileOffspringPheno,sep="\t", header=TRUE, verbose=verbose, FUN=tTestByLine, dataGroups=foundersGroups, threshold=threshold)
+      population$founders$phenotypes    <- applyFunctionToFile(fileFoundersPheno,sep="\t", header=TRUE, verbose=verbose, FUN=tTestByLine, dataGroups=foundersGroups, threshold=threshold)
     }
   }
   
@@ -144,18 +144,18 @@ applyFunctionToFile <- function(filename, header=TRUE, sep="\t", FUN, verbose=FA
     headerLine <- readLines(filePointer, n=1)
     header     <- unlist(strsplit(headerLine,sep))
   }
-  res    <- NULL
-  lineNR <- 0
+  res          <- NULL
+  lineNR       <- 0
   
   ### reading the first non-header line
   curLine <- readLines(filePointer, n=1)
   while(length(curLine) > 0){
-    lineNR          <- lineNR + 1
+    lineNR            <- lineNR + 1
     if(verbose && lineNR%%10000==0) cat("processing line:",lineNr,"\n")
-    curLineSplitted <- unlist(strsplit(curLine,sep))
+    curLineSplitted   <- unlist(strsplit(curLine,sep))
     
     ### changing it into a matrix for easier handling
-    curRow          <- matrix(as.numeric(curLineSplitted[-1]),1,length(curLineSplitted)-1)
+    curRow           <- matrix(as.numeric(curLineSplitted[-1]),1,length(curLineSplitted)-1)
     rownames(curRow) <- curLineSplitted[1]
     
     ### if there is header, use it as colnames
