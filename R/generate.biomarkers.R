@@ -234,7 +234,7 @@ selectPhenotypes <- function(population, treshold, RPcolumn){
 # PARAMETERS:
 #   - population - An object of class population.
 #   - threshold - If  pval for gene is lower that this value, we assume it is being diff. expressed.
-
+#
 # OUTPUT:
 #  A matrix with selected phenotypes
 #
@@ -264,9 +264,16 @@ selectByLine <- function(phenoRow, population, treshold, overlapInd, proportion,
       if(!is.null(population$founders$RP$pval[phenoname,])){
         ### if it is there but does not pass the threshold - return NULL
         if(!any(population$founders$RP$pval[phenoname,]>0 && population$founders$RP$pval[phenoname,]<threshold)) invisible(NULL)
+      }else{
+        stop("Founders data present, but not for probe: ",phenoname)
       }
+    }else{
+      stop("Founders data present, but not for probe: ",phenoname)
     }
-  }### TODO: no info - asses the variance in the probe
+  }else{
+    ### analyse variance of the probe - is it even worth touching by EM
+    if(!analyseLineVariance(phenoRow,threshold)) invisible(NULL)
+  }
   
   ### split the probe and select [[1]], [[2]] -> info about EM that we cannot store in HT mode
   result       <- splitPhenoRowEM.internal(phenoRow, overlapInd, proportion, margin, pProb, up, populationType, verbose)[[1]]
@@ -279,6 +286,36 @@ selectByLine <- function(phenoRow, population, treshold, overlapInd, proportion,
   
   invisible(result)
 }
+
+analyseLineVariance <- function(dataRow,threshold){
+  if(any(!is.numeric(dataRow))) invisible(FALSE)
+  ### code duplication !!! remember to remove it
+  half     <- floor(ncol(offspringPhenotypes)/2)
+  end      <- ncol(offspringPhenotypes)
+  founders <- t(apply(offspringPhenotypes, 1, function(x){
+    x      <- sort(x)
+    c( mean(x[1:half],na.rm=TRUE), mean(x[2:(half+1)],na.rm=TRUE), mean(x[3:(half+2)],na.rm=TRUE),
+       mean(x[(half+1):end],na.rm=TRUE), mean(x[(half):(end-1)],na.rm=TRUE), mean(x[(half-1):(end-2)],na.rm=TRUE))
+  }))
+  ### end of duplication
+  
+  ### is the variance passing the threshold?
+  res      <- t.test(founders[1:3], founders[4:6])
+  if($p.val < threshold) invisible(TRUE)
+  invisible(FALSE)
+}
+
+# selectPhenotypes
+#
+# DESCRIPTION:
+#  Function that selects offsprings fulfilling the criteria
+# PARAMETERS:
+#   - population - An object of class population.
+#   - threshold - If  pval for gene is lower that this value, we assume it is being diff. expressed.
+#
+# OUTPUT:
+#  A matrix with selected phenotypes
+#
 
 mergeEnv.internal <- function(population, genoMatrix){
   ### check if there is anything to merge and if so -> merge
