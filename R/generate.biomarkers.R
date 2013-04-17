@@ -144,7 +144,7 @@ selectTopMarker.internal <- function(markers,pattern,verbose){
 #  object of class population
 #
 ############################################################################################################
-generate.biomarkers.internal <- function(population, treshold, overlapInd, proportion, margin, pProb=0.8, verbose=FALSE, debugMode=0){
+generate.biomarkers.internal <- function(population, threshold, overlapInd, proportion, margin, pProb=0.8, verbose=FALSE, debugMode=0){
   ### initialization
   populationType          <- class(population)[2]
   if(verbose && debugMode==1) cat("generate.biomarkers.internal starting.\n")
@@ -155,7 +155,8 @@ generate.biomarkers.internal <- function(population, treshold, overlapInd, propo
   ### selection step
   if(is.character(population$offspring$phenotypes)){
     ### in HT mode markers are read from file line by line and processed on the fly
-    selectedProbes                           <- applyFunctionToFile(population$offspring$phenotypes,sep="\t", header=TRUE, verbose=verbose, FUN=selectByLine, population, treshold, overlapInd, proportion, margin, pProb)
+    selectedProbes                           <- applyFunctionToFile(population$offspring$phenotypes,sep="\t", header=TRUE, verbose=verbose, FUN=selectByLine, 
+    population=population, threshold=threshold, overlapInd=overlapInd, proportion=proportion, margin=margin, pProb=pProb)
     selectedProbesReformatted                <- reformatProbes(selectedProbes)
     population$offspring$phenotypes          <- selectedProbesReformatted[[1]]
     population$offspring$genotypes$simulated <- selectedProbesReformatted[[2]]
@@ -220,12 +221,8 @@ selectPhenotypes <- function(population, treshold, RPcolumn){
 
 
 ### select phenotypes that are suitable for EM algorithm in a line by line fashion
-selectByLine <- function(phenoRow, population, result, lineNR, overlapInd, proportion, margin, pProb){
-  ### first element is the name of the probe
-  phenoid   <- phenoRow[1] #this will be used as a name of the row - must be unique
-  phenoname <- phenoRow[1] #this will be used to check parental data - may not be unique
-  phenoRow  <- as.numeric(phenoRow[-1])
-  
+selectByLine <- function(dataMatrix, population, lineNR, threshold, overlapInd, proportion, margin, pProb){
+  phenoname <- rownames(dataMatrix)
   ### if there is an annotation for that probe - lets use it, if not - do nothing
   if(!is.null(population$annots)){
     ### if there is an annotation data, the name of the probe should be a number corresponding
@@ -254,22 +251,19 @@ selectByLine <- function(phenoRow, population, result, lineNR, overlapInd, propo
     }
   }else{
     ### analyse variance of the probe - is it even worth touching by EM
-    if(!analyseLineVariance(phenoRow,threshold)) invisible(NULL)
+    if(!analyseLineVariance(dataMatrix,threshold)) invisible(NULL)
   }
   
   ### split the probe and select [[1]], [[2]] -> info about EM that we cannot store in HT mode
-  result             <- splitPhenoRowEM.internal(phenoRow, overlapInd, proportion, margin, pProb, up, populationType, verbose)[[1]]
-  
-  ### reformatting as a matrix for easier handling
-  result             <- matrix(result,1,length(result))
-  phenoRow           <- matrix(phenoRow,1,length(phenoRow))
-  rownames(result)   <- phenoid
-  rownames(phenoRow)   <- phenoid
+  result             <- splitPhenoRowEM.internal(dataMatrix[1,], overlapInd, proportion, margin, pProb, up, populationType, verbose)[[1]]
   
   ### if the probe is selected (so result != NULL) return both genotype and phenotype
   if(!is.null(result)){
+    ### reformatting as a matrix for easier handling
+    result             <- matrix(result,1,ncol(dataMatrix))
+    rownames(result)   <- rownames(dataMatrix)
     population                                         <- checkAndBind(population$offspring$genotypes$simulated,result,lineNR)
-    population                                         <- checkAndBind(population$offspring$phenotypes,phenoRow,lineNR)
+    population                                         <- checkAndBind(population$offspring$phenotypes,dataMatrix,lineNR)
   }
   invisible(population)
 }

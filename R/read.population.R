@@ -149,12 +149,12 @@ applyFunctionToFile <- function(filename, population, header=TRUE, sep="\t", FUN
   curLine <- readLines(filePointer, n=1)
   while(length(curLine) > 0){
     lineNR            <- lineNR + 1
-    if(verbose && lineNR%%10000==0) cat("processing line:",lineNr,"\n")
-    curLineSplitted   <- unlist(strsplit(curLine,sep))
+    if(verbose && lineNR%%10000==0) cat("processing line:",lineNR,"\n")
+    curLineSplitted   <- strsplit(curLine,sep)[[1]]
     
     ### changing it into a matrix for easier handling
     curRow           <- matrix(as.numeric(curLineSplitted[-1]),1,length(curLineSplitted)-1)
-    rownames(curRow) <- curLineSplitted[1]
+    rownames(curRow) <- lineNR
     
     ### if there is header, use it as colnames
     if(!is.null(header)){
