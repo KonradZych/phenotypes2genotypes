@@ -289,18 +289,17 @@ selectByLine <- function(phenoRow, population, treshold, overlapInd, proportion,
 
 analyseLineVariance <- function(dataRow,threshold){
   if(any(!is.numeric(dataRow))) invisible(FALSE)
+  
   ### code duplication !!! remember to remove it
-  half     <- floor(ncol(offspringPhenotypes)/2)
-  end      <- ncol(offspringPhenotypes)
-  founders <- t(apply(offspringPhenotypes, 1, function(x){
-    x      <- sort(x)
-    c( mean(x[1:half],na.rm=TRUE), mean(x[2:(half+1)],na.rm=TRUE), mean(x[3:(half+2)],na.rm=TRUE),
+  half     <- floor(length(dataRow)/2)
+  end      <- length(dataRow)
+  dataRow      <- sort(dataRow)
+  meansToTest <- c( mean(x[1:half],na.rm=TRUE), mean(x[2:(half+1)],na.rm=TRUE), mean(x[3:(half+2)],na.rm=TRUE),
        mean(x[(half+1):end],na.rm=TRUE), mean(x[(half):(end-1)],na.rm=TRUE), mean(x[(half-1):(end-2)],na.rm=TRUE))
-  }))
   ### end of duplication
   
   ### is the variance passing the threshold?
-  res      <- t.test(founders[1:3], founders[4:6])
+  res      <- t.test(meansToTest[1:3], meansToTest[4:6])
   if($p.val < threshold) invisible(TRUE)
   invisible(FALSE)
 }
