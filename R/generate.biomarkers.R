@@ -206,9 +206,10 @@ generate.biomarkers.internal <- function(population, treshold, overlapInd, propo
   invisible(population)
 }
 
-### reformats the array containing both genotypes and phenotypes
+### reformats the matrix containing both genotypes and phenotypes so that it is easier to handle
+### from a matrix that contians both to the list with elements
 reformatProbes <- function(selectedProbes){
-  if(is.null(selectedProbes)) stop("Probes without rownames selected")
+  if(is.null(rownames(selectedProbes))) stop("Probes without rownames selected")
   
   ### rows containg phenotypes have probe names + _pheno in their name
   phenoRows       <- grep("pheno",rownames(selectedProbes))
@@ -228,17 +229,7 @@ reformatProbes <- function(selectedProbes){
   invisible(result)
 }
 
-# selectPhenotypes
-#
-# DESCRIPTION:
-#  Function that selects offsprings fulfilling the criteria
-# PARAMETERS:
-#   - population - An object of class population.
-#   - threshold - If  pval for gene is lower that this value, we assume it is being diff. expressed.
-
-# OUTPUT:
-#  A matrix with selected phenotypes
-#
+### select phenotypes that are suitable for EM algorithm
 selectPhenotypes <- function(population, treshold, RPcolumn){
   notNullPhenotypes   <- which(population$founders$RP$pval[,RPcolumn] > 0)        # rank product gives a score for 0 sometimes -> this is below the threshold but these phenotypes wshould not be selected
   belowTreshold       <- which(population$founders$RP$pval[,RPcolumn] < treshold) # phenos diff expressed with pval lower than threshold
@@ -250,17 +241,8 @@ selectPhenotypes <- function(population, treshold, RPcolumn){
   invisible(selectedRils)
 }
 
-# selectPhenotypes
-#
-# DESCRIPTION:
-#  Function that selects offsprings fulfilling the criteria
-# PARAMETERS:
-#   - population - An object of class population.
-#   - threshold - If  pval for gene is lower that this value, we assume it is being diff. expressed.
-#
-# OUTPUT:
-#  A matrix with selected phenotypes
-#
+
+### select phenotypes that are suitable for EM algorithm in a line by line fashion
 selectByLine <- function(phenoRow, population, treshold, overlapInd, proportion, margin, pProb){
   ### first element is the name of the probe
   phenoid   <- phenoRow[1] #this will be used as a name of the row - must be unique
