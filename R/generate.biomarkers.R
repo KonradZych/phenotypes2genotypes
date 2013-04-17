@@ -260,14 +260,16 @@ selectByLine <- function(phenoRow, population, result, lineNR, overlapInd, propo
   ### split the probe and select [[1]], [[2]] -> info about EM that we cannot store in HT mode
   result             <- splitPhenoRowEM.internal(phenoRow, overlapInd, proportion, margin, pProb, up, populationType, verbose)[[1]]
   
+  ### reformatting as a matrix for easier handling
+  result             <- matrix(result,1,length(result))
+  phenoRow           <- matrix(phenoRow,1,length(phenoRow))
+  rownames(result)   <- phenoid
+  rownames(phenoRow)   <- phenoid
+  
   ### if the probe is selected (so result != NULL) return both genotype and phenotype
   if(!is.null(result)){
-    oldRownamesPheno                                   <- rownames(population$offspring$phenotypes)
-    oldRownamesGeno                                    <- rownames(population$offspring$genotypes$simulated)
     population                                         <- checkAndBind(population$offspring$genotypes$simulated,result,lineNR)
     population                                         <- checkAndBind(population$offspring$phenotypes,phenoRow,lineNR)
-    rownames(population$offspring$phenotypes)          <- c(oldRownamesPheno,phenoid)
-    rownames(population$offspring$genotypes$simulated) <- c(oldRownamesGeno,phenoid)
   }
   invisible(population)
 }

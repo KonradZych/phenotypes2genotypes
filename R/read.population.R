@@ -208,26 +208,15 @@ normalModeReading <- function(dataMatrix, population, lineNR){
 }
 
 checkAndBind <- function(dataMatrix, toBind, lineNR){
-
-  ### if we are to rbind matrix to matrix - ncols must be the same
-  ### if we are to rbind vector to matrix - ncol of matrix must be equal to the length of vector
-  if(class(toBind)=="matrix"){
-    size <- ncol(toBind)
-  }else if(class(toBind)=="vector"){
-    size <- length(toBind)
-  }else{
-    stop("Cannot bind an object at line: ",lineNR)
-  }
-    
-  ### if the population object is not empty then we need to check if we can put it into phenotype matrix 
+ ### if the population object is not empty then we need to check if we can put it into phenotype matrix 
   if(!is.null(dataMatrix)){
     ### can we rbind it?
     if( size != ncol(dataMatrix)){
       ("Incorect length of line: ",lineNR," it is: ",ncol(toBind)," instead of: ",ncol(dataMatrix),"\n")
     }
   }### if the object is still empty - we need to fill it
- dataMatrix <- rbind(dataMatrix,toBind)
- invisible(dataMatrix)
+  dataMatrix <- rbind(dataMatrix,toBind)
+  invisible(dataMatrix)
 }
 
 #  simulateParentalPhenotypes
