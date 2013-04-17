@@ -149,7 +149,8 @@ applyFunctionToFile <- function(filename, population, header=TRUE, sep="\t", FUN
   curLine <- readLines(filePointer, n=1)
   while(length(curLine) > 0){
     lineNR            <- lineNR + 1
-    if(verbose && lineNR%%10000==0) cat("processing line:",lineNR,"\n")
+    if(verbose && lineNR%%10000==0){cat("processing line:",lineNR,"\n")
+    print(curLine)}
     curLineSplitted   <- strsplit(curLine,sep)[[1]]
     
     ### changing it into a matrix for easier handling
@@ -167,7 +168,7 @@ applyFunctionToFile <- function(filename, population, header=TRUE, sep="\t", FUN
     
     ### execute the function specified by user and rbind results
     population <-  FUN(curRow, population, lineNR, ...)
-    
+    curLine <- readLines(filePointer, n=1)
   }
   close(filePointer)
   invisible(res)
@@ -203,7 +204,7 @@ tTestByLine <- function(dataMatrix, population, lineNR, dataGroups, threshold){
 #   An input matrix.
 #
 normalModeReading <- function(dataMatrix, population, lineNR){
-  population <- checkAndBind(population$offspring$phenotypes,dataMatrix,lineNR)
+  population$offspring$phenotypes <- checkAndBind(population$offspring$phenotypes,dataMatrix,lineNR)
   invisible(population)
 }
 
@@ -211,7 +212,7 @@ checkAndBind <- function(dataMatrix, toBind, lineNR){
  ### if the population object is not empty then we need to check if we can put it into phenotype matrix 
   if(!is.null(dataMatrix)){
     ### can we rbind it?
-    if( size != ncol(dataMatrix)){
+    if(ncol(toBind) != ncol(dataMatrix)){
       stop("Incorect length of line: ",lineNR," it is: ",ncol(toBind)," instead of: ",ncol(dataMatrix),"\n")
     }
   }### if the object is still empty - we need to fill it

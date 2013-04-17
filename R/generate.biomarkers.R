@@ -154,12 +154,11 @@ generate.biomarkers.internal <- function(population, threshold, overlapInd, prop
   
   ### selection step
   if(is.character(population$offspring$phenotypes)){
+    offspringFile <- population$offspring$phenotypes
+    population$offspring$phenotypes <- NULL
     ### in HT mode markers are read from file line by line and processed on the fly
-    selectedProbes                           <- applyFunctionToFile(population$offspring$phenotypes,sep="\t", header=TRUE, verbose=verbose, FUN=selectByLine, 
+    population                           <- applyFunctionToFile(offspringFile,sep="\t", header=TRUE, verbose=verbose, FUN=selectByLine, 
     population=population, threshold=threshold, overlapInd=overlapInd, proportion=proportion, margin=margin, pProb=pProb)
-    selectedProbesReformatted                <- reformatProbes(selectedProbes)
-    population$offspring$phenotypes          <- selectedProbesReformatted[[1]]
-    population$offspring$genotypes$simulated <- selectedProbesReformatted[[2]]
     invisible(population)
     
   }else{
@@ -222,7 +221,9 @@ selectPhenotypes <- function(population, treshold, RPcolumn){
 
 ### select phenotypes that are suitable for EM algorithm in a line by line fashion
 selectByLine <- function(dataMatrix, population, lineNR, threshold, overlapInd, proportion, margin, pProb){
-  phenoname <- rownames(dataMatrix)
+  #if(verbose && debugMode==1) cat("selectByLine starting.\n")
+  phenoname      <- rownames(dataMatrix)
+  populationType <- class(population)[2]
   ### if there is an annotation for that probe - lets use it, if not - do nothing
   if(!is.null(population$annots)){
     ### if there is an annotation data, the name of the probe should be a number corresponding
@@ -255,15 +256,15 @@ selectByLine <- function(dataMatrix, population, lineNR, threshold, overlapInd, 
   }
   
   ### split the probe and select [[1]], [[2]] -> info about EM that we cannot store in HT mode
-  result             <- splitPhenoRowEM.internal(dataMatrix[1,], overlapInd, proportion, margin, pProb, up, populationType, verbose)[[1]]
+  result                                           <- splitPhenoRowEM.internal(dataMatrix[1,], overlapInd, proportion, margin, pProb, 1, populationType)[[1]]
   
   ### if the probe is selected (so result != NULL) return both genotype and phenotype
   if(!is.null(result)){
     ### reformatting as a matrix for easier handling
-    result             <- matrix(result,1,ncol(dataMatrix))
-    rownames(result)   <- rownames(dataMatrix)
-    population                                         <- checkAndBind(population$offspring$genotypes$simulated,result,lineNR)
-    population                                         <- checkAndBind(population$offspring$phenotypes,dataMatrix,lineNR)
+    result                                         <- matrix(result,1,ncol(dataMatrix))
+    rownames(result)                               <- rownames(dataMatrix)
+    population$offspring$genotypes$simulated       <- checkAndBind(population$offspring$genotypes$simulated,result,lineNR)
+    population$offspring$phenotypes                <- checkAndBind(population$offspring$phenotypes,dataMatrix,lineNR)
   }
   invisible(population)
 }
