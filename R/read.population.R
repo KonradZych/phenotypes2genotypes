@@ -212,7 +212,7 @@ checkAndBind <- function(dataMatrix, toBind, lineNR){
   if(!is.null(dataMatrix)){
     ### can we rbind it?
     if( size != ncol(dataMatrix)){
-      ("Incorect length of line: ",lineNR," it is: ",ncol(toBind)," instead of: ",ncol(dataMatrix),"\n")
+      stop("Incorect length of line: ",lineNR," it is: ",ncol(toBind)," instead of: ",ncol(dataMatrix),"\n")
     }
   }### if the object is still empty - we need to fill it
   dataMatrix <- rbind(dataMatrix,toBind)

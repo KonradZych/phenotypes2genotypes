@@ -422,20 +422,18 @@ splitPheno.internal <- function(offspring, founders, overlapInd, proportion, mar
 ############################################################################################################
 splitPhenoRowEM.internal <- function(x, overlapInd, proportion, margin, pProb=0.8, up=1, populationType, verbose=FALSE){
   aa <- tempfile()
-  tryCatch(sink(aa)                                   #TODO: When we sink, we need to try{}catch so that we can undo our sink even when an error occurs
+  sink(aa)                                   #TODO: When we sink, we need to try{}catch so that we can undo our sink even when an error occurs
   nrDistributions <- length(proportion)
   result <- rep(NA,length(x))
-  
   EM <- NULL
   idx <- which(!(is.na(x)))
   idw <- length(which((is.na(x))))
   y <- x[idx]
   s1<-proc.time()
-  print(tryCatch)
   tryCatch(EM <- normalmixEM(y, k=nrDistributions, lambda= proportion, maxrestarts=1, maxit = 300, fast=FALSE),error = function(x){cat(x[[1]],"\n")})
   e1<-proc.time()
   sink()
-  file.remove(aa),error = function(x){cat(x[[1]],"\n")})
+  file.remove(aa)
   result <- NULL
   if(filterRow.internal(EM$lambda,proportion,margin)){
     if(populationType == "f2"){
