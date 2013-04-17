@@ -206,6 +206,28 @@ generate.biomarkers.internal <- function(population, treshold, overlapInd, propo
   invisible(population)
 }
 
+### reformats the array containing both genotypes and phenotypes
+reformatProbes <- function(selectedProbes){
+  if(is.null(selectedProbes)) stop("Probes without rownames selected")
+  
+  ### rows containg phenotypes have probe names + _pheno in their name
+  phenoRows       <- grep("pheno",rownames(selectedProbes))
+  ### the rows that are not containing phenotypes contain genotype
+  genoRows        <- which(!((1:nrow(selectedProbes))%in%phenoRows))
+  ### rownames of genotypes - names of the probes
+  correctRownames <- rownames(selectedProbes)[genoRows]
+  
+  genotypes       <- selectedProbes[genoRows,]
+  phenotypes      <- selectedProbes[phenoRows,]
+  
+  ### putting phenotypes and genotypes in the list
+  result          <- vector("list",2)
+  result[[1]]     <- phenotypes
+  result[[2]]     <- genotypes
+  
+  invisible(result)
+}
+
 # selectPhenotypes
 #
 # DESCRIPTION:
@@ -282,7 +304,7 @@ selectByLine <- function(phenoRow, population, treshold, overlapInd, proportion,
   ### if the probe is selected (so result != NULL) return both genotype and phenotype
   if(!is.null(result)){
     result <- rbind(result,phenoRow))
-    rownames(result) <- (paste(phenoid,"_geno",sep=""),paste(phenoid,"_phno",sep=""))
+    rownames(result) <- (paste(phenoid,sep=""),paste(phenoid,"_pheno",sep=""))
   }
   
   invisible(result)
