@@ -59,9 +59,9 @@ generate.biomarkers <- function(population, threshold=0.05, overlapInd = 10, pro
   #*******CONVERTING CHILDREN PHENOTYPIC DATA TO GENOTYPES*******
   s1 <- proc.time()
   if(!is.null(population$annots)){ #TODO: Merge this 2 functions into 1
-    population <- generate.biomarkers.internal(population, threshold, overlapInd, proportion, margin, pProb, "ht", verbose, debugMode)
+    population <- generate.biomarkers.internal(population, threshold, overlapInd, proportion, margin, pProb, verbose, debugMode)
   }else{
-    population <- generate.biomarkers.internal(population, threshold, overlapInd, proportion, margin, pProb, "normal", verbose, debugMode)
+    population <- generate.biomarkers.internal(population, threshold, overlapInd, proportion, margin, pProb, verbose, debugMode)
   }
   e1 <- proc.time()
   if(verbose && debugMode==2) cat("Converting phenotypes to genotypes done in:",(e1-s1)[3],"seconds.\n")
@@ -155,7 +155,7 @@ generate.biomarkers.internal <- function(population, treshold, overlapInd, propo
   ### selection step
   if(is.character(population$offspring$phenotypes)){
     ### in HT mode markers are read from file line by line and processed on the fly
-    selectedProbes                           <- applyFunctionToFile(fileFoundersPheno,sep="\t", header=TRUE, verbose=verbose, FUN=selectByLine, population, treshold, overlapInd, proportion, margin, pProb)
+    selectedProbes                           <- applyFunctionToFile(population$offspring$phenotypes,sep="\t", header=TRUE, verbose=verbose, FUN=selectByLine, population, treshold, overlapInd, proportion, margin, pProb)
     selectedProbesReformatted                <- reformatProbes(selectedProbes)
     population$offspring$phenotypes          <- selectedProbesReformatted[[1]]
     population$offspring$genotypes$simulated <- selectedProbesReformatted[[2]]
@@ -276,17 +276,17 @@ selectByLine <- function(phenoRow, population, result, lineNR, overlapInd, propo
 
 analyseLineVariance <- function(dataRow,threshold){
   if(any(!is.numeric(dataRow))) invisible(FALSE)
-  
+  dataRow <- dataRow[-which(is.na(dataRow))]
   ### code duplication !!! remember to remove it
   half         <- floor(length(dataRow)/2)
   end          <- length(dataRow)
   dataRow      <- sort(dataRow)
-  meansToTest  <- c( mean(x[1:half],na.rm=TRUE), 
-                     mean(x[2:(half+1)],na.rm=TRUE),
-                     mean(x[3:(half+2)],na.rm=TRUE),
-                     mean(x[(half+1):end],na.rm=TRUE),
-                     mean(x[(half):(end-1)],na.rm=TRUE),
-                     mean(x[(half-1):(end-2)],na.rm=TRUE))
+  meansToTest  <- c( mean(dataRow[1:half],na.rm=TRUE), 
+                     mean(dataRow[2:(half+1)],na.rm=TRUE),
+                     mean(dataRow[3:(half+2)],na.rm=TRUE),
+                     mean(dataRow[(half+1):end],na.rm=TRUE),
+                     mean(dataRow[(half):(end-1)],na.rm=TRUE),
+                     mean(dataRow[(half-1):(end-2)],na.rm=TRUE))
   ### end of duplication
   
   ### is the variance passing the threshold?
