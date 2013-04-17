@@ -291,7 +291,7 @@ analyseLineVariance <- function(dataRow,threshold){
   
   ### is the variance passing the threshold?
   res      <- t.test(meansToTest[1:3], meansToTest[4:6])
-  if($p.val < threshold) invisible(TRUE)
+  if(res$p.val < threshold) invisible(TRUE)
   invisible(FALSE)
 }
 
