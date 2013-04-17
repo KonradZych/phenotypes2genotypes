@@ -160,6 +160,7 @@ generate.biomarkers.internal <- function(population, treshold, overlapInd, propo
     population$offspring$phenotypes          <- selectedProbesReformatted[[1]]
     population$offspring$genotypes$simulated <- selectedProbesReformatted[[2]]
     invisible(population)
+    
   }else{
     ### checking if any of the phenotypes is down/up-regulated
     upRegulatedPhenos       <- selectPhenotypes(population, treshold, 1)
@@ -217,7 +218,7 @@ generate.biomarkers.internal <- function(population, treshold, overlapInd, propo
 #  A matrix with selected phenotypes
 #
 selectPhenotypes <- function(population, treshold, RPcolumn){
-  notNullPhenotypes   <- which(population$founders$RP$pval[,RPcolumn] > 0)      # rank product gives a score for 0 sometimes -> this is below the threshold but these phenotypes wshould not be selected
+  notNullPhenotypes   <- which(population$founders$RP$pval[,RPcolumn] > 0)        # rank product gives a score for 0 sometimes -> this is below the threshold but these phenotypes wshould not be selected
   belowTreshold       <- which(population$founders$RP$pval[,RPcolumn] < treshold) # phenos diff expressed with pval lower than threshold
   selected            <- belowTreshold[which(belowTreshold%in%notNullPhenotypes)]
   selectedParental    <- population$founders$phenotypes[selected,]
@@ -276,7 +277,7 @@ selectByLine <- function(phenoRow, population, treshold, overlapInd, proportion,
   }
   
   ### split the probe and select [[1]], [[2]] -> info about EM that we cannot store in HT mode
-  result       <- splitPhenoRowEM.internal(phenoRow, overlapInd, proportion, margin, pProb, up, populationType, verbose)[[1]]
+  result             <- splitPhenoRowEM.internal(phenoRow, overlapInd, proportion, margin, pProb, up, populationType, verbose)[[1]]
   
   ### if the probe is selected (so result != NULL) return both genotype and phenotype
   if(!is.null(result)){
@@ -297,7 +298,7 @@ analyseLineVariance <- function(dataRow,threshold){
   meansToTest  <- c( mean(x[1:half],na.rm=TRUE), 
                      mean(x[2:(half+1)],na.rm=TRUE),
                      mean(x[3:(half+2)],na.rm=TRUE),
-                     mean(x[(half+1):end],na.rm=TRUE), 
+                     mean(x[(half+1):end],na.rm=TRUE),
                      mean(x[(half):(end-1)],na.rm=TRUE),
                      mean(x[(half-1):(end-2)],na.rm=TRUE))
   ### end of duplication
