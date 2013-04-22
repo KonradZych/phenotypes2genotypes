@@ -206,23 +206,24 @@ rearrangeMarkers <- function(cross, population, populationType, originalMap, thr
 ###
 insertMarkers.internal <- function(newgeno,newpositions,oldgeno,originalPositions,env,populationType){
   if(length(newgeno)<1){ return(oldgeno) }
-  toRmv <- NULL    #TODO: Give a description of what I do
-  toInv <- NULL    #TODO: Give a description of what I do
+  toRmv <- NULL    #markers to be removed
+  toInv <- NULL    #markers to be inverted
   if(is.null(dim(newgeno))){ newgeno <- as.matrix(newgeno) }  #Does this do anything ? If there is no dim how would as.matrix figure it out then ?
   if(is.null(dim(oldgeno))){ oldgeno <- as.matrix(oldgeno) }  #Does this do anything ? If there is no dim how would as.matrix figure it out then ?
 
   for(i in 1:length(newpositions)){
-    distance <- abs(originalPositions-as.numeric(newpositions[i]))
-    curCor <- cor(newgeno[,i],oldgeno[,which.min(distance)],use="pair")
-    if(abs(curCor) < 0.1){
+    distance <- abs(originalPositions-as.numeric(newpositions[i]))        # calculating distance of new markers to original ones
+    curCor   <- cor(newgeno[,i],oldgeno[,which.min(distance)],use="pair") # correlation with the closest original marker
+    if(abs(curCor) < 0.1){     ### TODO? let userset this value
+      ### if correlation to the closest original markers is that low the markers should be removed
       toRmv <- c(toRmv,i)
-    }else if(curCor < (-0.3)){
+    }else if(curCor < (-0.4)){ ### TODO? let userset this value
+      ### if correlation to the closest original markers is negative, the marker should be inverted
       toInv <- c(toInv,i)
-    }else{
-      #TODO: Figure out what we need to do else
-    }
+    }# if none of these are true - marker is ok, do nothing to it!
   }
   
+  ### inverting in f2: 1<->3 and 4<->5, any other case: 1<->2
   if(populationType == "f2"){ #TODO: Updated this very primitive inversion
     invertM <- newgeno[,toInv]
     invertM[which(invertM==1)] <- 3
@@ -230,7 +231,9 @@ insertMarkers.internal <- function(newgeno,newpositions,oldgeno,originalPosition
     invertM[which(invertM==5)] <- 4
     invertM[which(invertM==4)] <- 5
     newgeno[,toInv] <- invertM
-  }else{ newgeno[,toInv] <- 3 - newgeno[,toInv] }
+  }else{ 
+    newgeno[,toInv] <- 3 - newgeno[,toInv]
+  }
   
   return(cbind(newgeno,oldgeno))
 }
