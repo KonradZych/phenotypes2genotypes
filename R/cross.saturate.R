@@ -62,7 +62,7 @@ cross.saturate <- function(population, cross, map=c("genetic","physical"), place
     cur_map     <- population$maps$physical
   }
   
-  n.originalM <- nrow(population$offspring$genotypes$real)
+  nrOfOriginalMarkers  <- nrow(population$offspring$genotypes$real)
 
   ### saturating only a subset of chromosomes
   if(missing(chr)){
@@ -78,21 +78,7 @@ cross.saturate <- function(population, cross, map=c("genetic","physical"), place
   s1     <- proc.time()
   cross  <- rearrangeMarkers(cross, population, populationType, cur_map, threshold, placeUsing,
                              flagged, env, addMarkers=TRUE, keep.redundant, chr, verbose=verbose)
-  count  <- 1
-  
-  while(cross$left>1000){ # TODO: What does this 1000 do ??? Please explain and make it a user defined parameter
-    count <- count+1      # TODO: We dont start counting from 2 ???!!! we start at 0
-    population <- scan.qtls(set.geno.from.cross(cross, population, map),map)
-    aa <- tempfile()
-    sink(aa)
-    cross <- genotypesToCross.internal(population,"simulated",verbose=verbose,debugMode=debugMode)
-    sink()
-    file.remove(aa)
-    e1 <- proc.time()
-    cross <- rearrangeMarkers(cross, population, populationType, cur_map, threshold, placeUsing, flagged, env, addMarkers=TRUE, keep.redundant, chr, verbose=verbose)
-  }
-  e1 <- proc.time()
-  if(verbose && debugMode==2)cat("Enrichment of original map done in:",(e1-s1)[3],"seconds.\n")
+  if(verbose && debugMode==2)cat("Saturation of the original map done in:",(e1-s1)[3],"seconds.\n")
   
   #*******ORDERING NEW MAP*******
   if(use.orderMarkers){
@@ -105,10 +91,12 @@ cross.saturate <- function(population, cross, map=c("genetic","physical"), place
     file.remove(aa)
     e1    <- proc.time()
     if(verbose && debugMode==2)cat("Saving data into cross object done in:",(e1-s1)[3],"seconds.\n")
-   }
-   n.newM <- sum(nmar(cross))-  n.originalM
-   percentageSat <-  (n.newM/n.originalM)*100
-   if(verbose) cat("\ncross.saturate statistics:\n # original markers:",n.originalM,"\n # inserted markers: ",n.newM,"\n saturation (% of markers added): ",percentageSat,"\n")
+  }
+   
+  nrOfNewMarkers           <- sum(nmar(cross))-  nrOfOriginalMarkers 
+  percentageOfSaturation   <-  (nrOfNewMarkers /nrOfOriginalMarkers )*100
+  if(verbose) cat("\ncross.saturate statistics:\n # original markers:",nrOfOriginalMarkers ,"\n # inserted markers: ",nrOfNewMarkers ,"\n saturation (% of markers added): ",percentageOfSaturation,"\n")
+  
   invisible(cross)
 }
 
