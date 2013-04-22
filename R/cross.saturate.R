@@ -75,10 +75,11 @@ cross.saturate <- function(population, cross, map=c("genetic","physical"), place
   }
 
   #*******ENRICHING ORIGINAL MAP*******
-  s1 <- proc.time()
-  cross                          <- rearrangeMarkers(cross, population, populationType, cur_map, threshold, placeUsing,
-                                                     flagged, env, addMarkers=TRUE, keep.redundant, chr, verbose=verbose)
-  count <- 1
+  s1     <- proc.time()
+  cross  <- rearrangeMarkers(cross, population, populationType, cur_map, threshold, placeUsing,
+                             flagged, env, addMarkers=TRUE, keep.redundant, chr, verbose=verbose)
+  count  <- 1
+  
   while(cross$left>1000){ # TODO: What does this 1000 do ??? Please explain and make it a user defined parameter
     count <- count+1      # TODO: We dont start counting from 2 ???!!! we start at 0
     population <- scan.qtls(set.geno.from.cross(cross, population, map),map)
@@ -95,14 +96,14 @@ cross.saturate <- function(population, cross, map=c("genetic","physical"), place
   
   #*******ORDERING NEW MAP*******
   if(use.orderMarkers){
-    if(verbose)cat("Ordering markers inside the cross object\n")
-    s1 <- proc.time()
-    aa <- tempfile()
+    if(verbose) cat("Ordering markers inside the cross object\n")
+    s1    <- proc.time()
+    aa    <- tempfile()
     sink(aa)
     cross <- orderMarkers(cross,use.ripple=FALSE,verbose=TRUE)
     sink()
     file.remove(aa)
-    e1 <- proc.time()
+    e1    <- proc.time()
     if(verbose && debugMode==2)cat("Saving data into cross object done in:",(e1-s1)[3],"seconds.\n")
    }
    n.newM <- sum(nmar(cross))-  n.originalM
@@ -112,15 +113,15 @@ cross.saturate <- function(population, cross, map=c("genetic","physical"), place
 }
 
 matchMarkers <- function(population, map, mapType=c("genetic","physical")){
-  mapType                                 <- match.arg(mapType)
-
-  matchingMarkers                         <- which(rownames(population$offspring$genotypes$real)%in%rownames(map))
-  if(length(matchingMarkers)<=0)          stop("Marker names on the map and in the genotypes doesn't match!\n")
+  mapType          <- match.arg(mapType)
+  matchingMarkers  <- which(rownames(population$offspring$genotypes$real)%in%rownames(map))
+  
+  if(length(matchingMarkers)<=0) stop("Marker names on the map and in the genotypes doesn't match!\n")
   
   if(length(matchingMarkers)!=nrow(population$offspring$genotypes$real)){
     population$offspring$genotypes$real   <- population$offspring$genotypes$real[matchingMarkers,]
     map                                   <- map[rownames(population$offspring$genotypes$real),]
-    
+
     cat(nrow(population$offspring$genotypes$real)-length(matchingMarkers),"markers were removed due to name mismatch\n")
   }
   if(mapType=="genetic"){
@@ -268,18 +269,18 @@ cleanGeno.internal <- function(genoCol,env,genos){
 #  vector with new ordering of chromosomes inside cross object
 ############################################################################################################
 bestCorelated.internal <- function(cross, population, cur_map, corSDTreshold, verbose=FALSE){
-  cormatrix <- map2mapCorrelationMatrix(cross,population,verbose)
-  maximums <- apply(abs(cormatrix), 2,max)
-  means <- apply(abs(cormatrix), 2,mean)
-  sds <- apply(abs(cormatrix), 2,sd)
-  selected <- which(maximums > (means+corSDTreshold*sds))  # Select markers that are correlated highly with more than one of the old markers
-  cormatrix <- cormatrix[,selected]
-  bestCorMarkers <- matrix(0,length(selected),2)
-  bestCorMarkers[,1] <- apply(abs(cormatrix),2,function(r){rownames(cormatrix)[which.max(r)]})
-  bestCorMarkers[,2] <- apply(abs(cormatrix),2,function(r){rownames(cormatrix)[which.max(r[-which.max(r)])]})
-  bestCorMarkers[,3] <- apply(abs(cormatrix),2,max)
-  rownames(bestCorMarkers) <- rownames(cormatrix)
-  output <- t(apply(bestCorMarkers,1,bestCorelatedSub.internal,cur_map))
+  cormatrix                 <- map2mapCorrelationMatrix(cross,population,verbose)
+  maximums                  <- apply(abs(cormatrix), 2, max)
+  means                     <- apply(abs(cormatrix), 2, mean)
+  sds                       <- apply(abs(cormatrix), 2, sd)
+  selected                  <- which(maximums > (means+corSDTreshold*sds))  # Select markers that are correlated highly with more than one of the old markers
+  cormatrix                 <- cormatrix[,selected]
+  bestCorMarkers            <- matrix(0,length(selected),2)
+  bestCorMarkers[,1]        <- apply(abs(cormatrix),2,function(r){rownames(cormatrix)[which.max(r)]})
+  bestCorMarkers[,2]        <- apply(abs(cormatrix),2,function(r){rownames(cormatrix)[which.max(r[-which.max(r)])]})
+  bestCorMarkers[,3]        <- maximums[selected]
+  rownames(bestCorMarkers)  <- rownames(cormatrix)
+  output                    <- t(apply(bestCorMarkers,1,bestCorelatedSub.internal,cur_map))
   invisible(output)
 }
 
