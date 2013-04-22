@@ -2,9 +2,9 @@
 # map.functions.R
 #
 # Copyright (c) 2010-2012 GBIC: Danny Arends, Konrad Zych and Ritsert C. Jansen
-# last modified Aug, 2012
+# last modified Apr, 2013
 # first written Aug, 2012
-# Contains: avg_map_distance
+# Contains: avg_map_distance, map_distances
 #
 
 avg_map_distances <- function(m){

@@ -65,3 +65,4 @@ power.plot <- function(cross1,cross2,qtl.thr=5,n.pheno=500,verbose=FALSE,...){
   cat(sum(maxes2>qtl.thr2)-sum(maxes1>qtl.thr),"new QTLs found\n")
   invisible(list(res1,res2))
 }
+

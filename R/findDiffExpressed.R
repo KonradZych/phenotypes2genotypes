@@ -123,7 +123,9 @@ plotRPpval <- function(population,thresholdRange=c(0.01,0.1,0.01)){
     n.upSelected <- c(n.upSelected,length(which(upNotNull < threshold)))
     n.downSelected <- c(n.downSelected,length(which(downNotNull < threshold)))
   }
-  plot(thrRange,n.upSelected ,main="RP analysis p-values",xlab="p-value",ylab="# markers selected",xlim=c(thresholdRange[1],thresholdRange[2]),ylim=c(min(min(n.upSelected),min(n.downSelected )),max(max(n.upSelected),max(n.downSelected))),type="o")
+  xlim <- c(thresholdRange[1],thresholdRange[2])
+  ylim <- c(min(c(n.upSelected, n.downSelected)),max(c(n.upSelected, n.downSelected)))
+  plot(thrRange,n.upSelected ,main="RP analysis p-values",xlab="p-value",ylab="# markers selected", xlim=xlim, ylim=ylim, type="o")
   points(thrRange,n.downSelected,col="red",type="o")
   legend(x="topleft",legend=c("up regulated","down regulated"),col=c("black","red"),cex=0.8,pch=21,lwd=2,bg="white")
 }
