@@ -162,8 +162,8 @@ generate.biomarkers.internal <- function(population, threshold, overlapInd, prop
     return(population)
   }else{
     ### checking if any of the phenotypes is down/up-regulated
-    upRegulatedPhenos       <- selectPhenotypes(population, treshold, 1)
-    downRegulatedPhenos     <- selectPhenotypes(population, treshold, 2)
+    upRegulatedPhenos       <- selectPhenotypes(population, threshold, 1)
+    downRegulatedPhenos     <- selectPhenotypes(population, threshold, 2)
   }
   
   ### removing probes that were selected as both up and down regulated - obsolete as rankprod is not really used any more and t.test will never do that
@@ -206,9 +206,9 @@ generate.biomarkers.internal <- function(population, threshold, overlapInd, prop
 }
 
 ### select phenotypes that are suitable for EM algorithm
-selectPhenotypes <- function(population, treshold, RPcolumn){
+selectPhenotypes <- function(population, threshold, RPcolumn){
   notNullPhenotypes   <- which(population$founders$RP$pval[,RPcolumn] > 0)        # rank product gives a score for 0 sometimes -> this is below the threshold but these phenotypes wshould not be selected
-  belowTreshold       <- which(population$founders$RP$pval[,RPcolumn] < treshold) # phenos diff expressed with pval lower than threshold
+  belowTreshold       <- which(population$founders$RP$pval[,RPcolumn] < threshold) # phenos diff expressed with pval lower than threshold
   selected            <- belowTreshold[which(belowTreshold%in%notNullPhenotypes)]
   selectedParental    <- population$founders$phenotypes[selected,]
   rownamesOfSelected  <- rownames(selectedParental)
