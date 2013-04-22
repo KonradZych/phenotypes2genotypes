@@ -15,7 +15,7 @@
 # OUTPUT:
 #  An object of class cross
 #
-cross.saturate <- function(population, cross, map=c("genetic","physical"), placeUsing=c("qtl","correlation"), flagged = c("remove","warn","ignore"), model, threshold=3, chr, env, keep.redundant=FALSE, use.orderMarkers=FALSE, verbose=FALSE, debugMode=0){
+cross.saturate <- function(population, cross, map=c("genetic","physical"), placeUsing=c("qtl","correlation"), flagged = c("remove","warn","ignore"), model, threshold=3, chr, env, use.orderMarkers=FALSE, verbose=FALSE, debugMode=0){
 
   if(missing(population)) stop("Please provide a population object\n")
   check.population(population)
@@ -43,23 +43,23 @@ cross.saturate <- function(population, cross, map=c("genetic","physical"), place
     population   <- set.geno.from.cross(cross,population,map)
     population   <- scan.qtls(population,map,env=env)
   }
-  s1     <- proc.time()
+  startTime1     <- proc.time()
   aa     <- tempfile()
   sink(aa)
   cross  <- genotypesToCross.internal(population,"simulated",verbose=verbose,debugMode=debugMode)
   sink()
   file.remove(aa)
-  e1     <- proc.time()
+  startTime1     <- proc.time()
   if(!(all(rownames(population$offspring$genotypes$simulated)%in%rownames(population$offspring$genotypes$qtl$lod)))) stop("QTL scan results don't match with simulated genotypes, please, run scan.qtls function")
   if(!(all(rownames(population$offspring$genotypes$qtl$lod)%in%rownames(population$offspring$genotypes$simulated)))) stop("QTL scan results don't match with simulated genotypes, please, run scan.qtls function")
   
   matchMarkers
  if(map=="genetic"){
     popualtion  <- matchMarkers(population, population$maps$genetic, mapType="genetic")
-    cur_map     <- population$maps$genetic
+    originalMap     <- population$maps$genetic
   }else{
     popualtion  <- matchMarkers(population, population$maps$physical, mapType="physical")
-    cur_map     <- population$maps$physical
+    originalMap     <- population$maps$physical
   }
   
   nrOfOriginalMarkers  <- nrow(population$offspring$genotypes$real)
@@ -67,34 +67,34 @@ cross.saturate <- function(population, cross, map=c("genetic","physical"), place
   ### saturating only a subset of chromosomes
   if(missing(chr)){
     if(verbose) cat("Saturating all the chromosomes in the set\n")
-    chr           <- unique(cur_map[,1])
+    chr           <- unique(originalMap[,1])
   }else{
-    availableChr  <- unique(cur_map[,1])
+    availableChr  <- unique(originalMap[,1])
     if(any(!(chr%in%availableChr))) stop("Incorrect chr parameter!\n")
     if(verbose) cat("Saturating chromosomes:\n",paste(chr,",",sep=""),"\n")
   }
 
   #*******ENRICHING ORIGINAL MAP*******
-  s1     <- proc.time()
-  cross  <- rearrangeMarkers(cross, population, populationType, cur_map, threshold, placeUsing,
-                             flagged, env, addMarkers=TRUE, keep.redundant, chr, verbose=verbose)
-  if(verbose && debugMode==2)cat("Saturation of the original map done in:",(e1-s1)[3],"seconds.\n")
+  startTime1     <- proc.time()
+  cross  <- rearrangeMarkers(cross, population, populationType, originalMap, threshold, placeUsing,
+                             flagged, env, addMarkers=TRUE, chr, verbose=verbose)
+  if(verbose && debugMode==2) cat("Saturation of the original map done in:",(endTime1-startTime1)[3],"seconds.\n")
   
   #*******ORDERING NEW MAP*******
   if(use.orderMarkers){
     if(verbose) cat("Ordering markers inside the cross object\n")
-    s1    <- proc.time()
-    aa    <- tempfile()
+    startTime1  <- proc.time()
+    aa          <- tempfile()
     sink(aa)
-    cross <- orderMarkers(cross,use.ripple=FALSE,verbose=TRUE)
+    cross       <- orderMarkers(cross,use.ripple=FALSE,verbose=TRUE)
     sink()
     file.remove(aa)
-    e1    <- proc.time()
-    if(verbose && debugMode==2)cat("Saving data into cross object done in:",(e1-s1)[3],"seconds.\n")
+    endTime1    <- proc.time()
+    if(verbose && debugMode==2)cat("Saving data into cross object done in:",(endTime1-startTime1)[3],"seconds.\n")
   }
    
   nrOfNewMarkers           <- sum(nmar(cross))-  nrOfOriginalMarkers 
-  percentageOfSaturation   <-  (nrOfNewMarkers /nrOfOriginalMarkers )*100
+  percentageOfSaturation   <- (nrOfNewMarkers /nrOfOriginalMarkers )*100
   if(verbose) cat("\ncross.saturate statistics:\n # original markers:",nrOfOriginalMarkers ,"\n # inserted markers: ",nrOfNewMarkers ,"\n saturation (% of markers added): ",percentageOfSaturation,"\n")
   
   invisible(cross)
@@ -128,84 +128,83 @@ matchMarkers <- function(population, map, mapType=c("genetic","physical")){
 # OUTPUT:
 #  object of class cross
 ############################################################################################################
-rearrangeMarkers <- function(cross, population, populationType, cur_map, threshold=3, placeUsing, flagged, env, addMarkers=FALSE, keep.redundant=FALSE, chr, verbose=FALSE){
-  if(verbose) cat("old map contains",max(cur_map[,1]),"chromosomes\n")
-  redundant <- NULL
+rearrangeMarkers <- function(cross, population, populationType, originalMap, threshold=3, placeUsing, flagged, env, addMarkers=FALSE, chr, verbose=FALSE){
+  ### addMarkers will be removed - obsolete
+
+  if(verbose) cat("old map contains",max(originalMap[,1]),"chromosomes\n")
+  
   if(placeUsing=="qtl"){
     markersNewPostions <- bestQTL.internal(cross,population,threshold,flagged,verbose)
   }else{
-    markersNewPostions <- bestCorelated.internal(cross,population,cur_map,threshold,verbose)
+    markersNewPostions <- bestCorelated.internal(cross,population,originalMap,threshold,verbose)
   }
+  ### markersNewPostions - matrix: rows - markers, columns: chr where marker is mapping - position on chr - LOD/cor score
   if(verbose) cat("selected",nrow(markersNewPostions),"markers for further analysis\n")
 
-  returncross <- cross
-  returncross$geno <- vector(length(unique(cur_map[,1])), mode="list")
-  returncross$pheno <- pull.pheno(cross)
-  oldnames_ <- rownames(cur_map)[which(rownames(cur_map) %in% rownames(population$offspring$genotypes$real))]
+  ### creating a cross object with empty genotypes
+  returncross      <- cross
+  returncross$geno <- vector(length(unique(originalMap[,1])), mode="list")
+  
+  ### names of original markers
+  originalNames <- rownames(originalMap)[which(rownames(originalMap) %in% rownames(population$offspring$genotypes$real))]
   if(verbose) cat("Reordering markers \n")
-  left <- 0
+  
   for(x in 1:length(returncross$geno)){
-    #if(verbose) cat("- chr ",x," -\n")    
-    oldnamesChr <- rownames(cur_map)[which(cur_map[,1]==x)]
-    oldnames <- oldnamesChr[which(oldnamesChr %in% oldnames_)]
-    oldpositions <- cur_map[oldnames,2]
+    originalNamesFromCurChr <- rownames(originalMap)[which(originalMap[,1]==x)]
+    originalNamesSelected   <- originalNamesFromCurChr[which(originalNamesFromCurChr %in% originalNames)]
+    originalPositions       <- originalMap[originalNamesSelected,2]
     if(x %in% chr){
-      newnames_ <- rownames(markersNewPostions)[which(markersNewPostions[,1]==x)]             #TODO: Never Never Never Never Identifiers with _
-      if(any(newnames_%in%oldnames)) newnames_ <- newnames_[-which(newnames_%in%oldnames)]
-      newnames <- NULL
-      newpositions <- NULL
-        positions <- cbind(newnames_,markersNewPostions[newnames_,2],markersNewPostions[newnames_,3])
-        for(pos in unique(positions[,2])){
-          mappingM <- which(positions[,2]==pos)
-          newpositions <- c(newpositions,pos)
-          if(length(mappingM)==1){
-            newnames <- c(newnames,positions[mappingM,1])
-          }else{
-            selM <- positions[mappingM,1]
-            bestM <- which.max(as.numeric(positions[selM,3]))
-            left <- left+1
-            newnames <- c(newnames,selM[bestM])
-          }
+      newnames                  <- rownames(markersNewPostions)[which(markersNewPostions[,1]==x)]
+      ### remove new markers that are already in the map
+      if(any(newnames%in%originalNamesSelected)) newnames <- newnames[-which(newnames%in%originalNamesSelected)]
+      newnamesSelected          <- NULL
+      newpositions              <- NULL
+      positions                 <- cbind(newnames,markersNewPostions[newnames,2],markersNewPostions[newnames,3])
+      ### are there markers mapping to the same position
+      for(position in unique(positions[,2])){
+        mappingMarkers  <- which(positions[,2]==position)
+        newpositions    <- c(newpositions, position)
+        if(length(mappingMarkers)==1){
+          newnamesSelected  <- c(newnamesSelected,positions[mappingMarkers,1])
+        }else{
+          ### if more than one marker maps to a certain position - select the one with the highest (QLT/correlation) score
+          selM              <- positions[mappingMarkers,1]
+          bestM             <- which.max(as.numeric(positions[selM,3]))
+          if(length(bestM) > 1) bestM <- bestM[1]
+          left              <- left+1
+          newnamesSelected  <- c(newnamesSelected,selM[bestM])
         }
+      }
     }else{
-      newnames <- NULL
+      newnamesSelected <- NULL
       newpositions <- NULL
     }
-    toRmv <- NULL
-    if(length(newnames)>0 && length(toRmv)>0){
-      newnames <- newnames[-toRmv]
-      newpositions <- newpositions[-toRmv]
-      redundant <- c(redundant,newnames[toRmv])
+    ### constructing the map
+    if(verbose){
+      cat("Chromosome",x,"\n")
+      if(x %in% chr){ cat("\tSelected:",length(newnamesSelected),"new and",length(originalNamesSelected),"original markers.\n")
+      }else{ cat("\tSelected:",length(originalNamesSelected),"original markers.\n")}
     }
-    if(x %in% chr) if(verbose) cat("Selected:",length(newnames),"new and",length(oldnames),"original markers,",length(toRmv),"markers were removed\n") 
-    if(addMarkers){
-      returncross$geno[[x]]$data <- insertMarkers.internal(pull.geno(cross)[,newnames],newpositions,t(population$offspring$genotypes$real[oldnames,]),oldpositions, env, populationType)
-      newmap <- c(as.numeric(newpositions),oldpositions)
-      names(newmap) <- c(newnames,oldnames)
-      newmap <- sort(newmap)
-      colnames(returncross$geno[[x]]$data) <- c(newnames,oldnames)
-      returncross$geno[[x]]$data <- returncross$geno[[x]]$data[,names(newmap)]
-    }else{
-      returncross$geno[[x]]$data <- pull.geno(cross)[,newnames]
-      newmap <- as.numeric(newpositions)
-      names(newmap) <- newnames
-      newmap <- sort(newmap)
-      colnames(returncross$geno[[x]]$data) <- newnames
-      returncross$geno[[x]]$data <- returncross$geno[[x]]$data[,names(newmap)]
-    }
-    returncross$geno[[x]]$map <- c(newmap)
+    returncross$geno[[x]]$data           <- insertMarkers.internal(pull.geno(cross)[,newnamesSelected],newpositions,t(population$offspring$genotypes$real[originalNamesSelected,]),originalPositions, env, populationType)
+    newmap                               <- c(as.numeric(newpositions),originalPositions)
+    names(newmap)                        <- c(newnamesSelected,originalNamesSelected)
+    newmap                               <- sort(newmap)
+    colnames(returncross$geno[[x]]$data) <- c(newnamesSelected,originalNamesSelected)
+    returncross$geno[[x]]$data           <- returncross$geno[[x]]$data[,names(newmap)]
+    returncross$geno[[x]]$map            <- c(newmap)
   }
-  names(returncross$geno) <- 1:length(returncross$geno)
+  names(returncross$geno) <- 1:nchr(returncross) ### setting chrnames
+  
+  ### class of chromosomes set to autosomes - required by r/qtl
   for(i in 1:length(returncross$geno)){
     class(returncross$geno[[i]]) <- "A"
   }
-  returncross$redundant <- redundant
-  returncross$left <- left
+  
   invisible(returncross)
 }
 
 ###
-insertMarkers.internal <- function(newgeno,newpositions,oldgeno,oldpositions,env,populationType){
+insertMarkers.internal <- function(newgeno,newpositions,oldgeno,originalPositions,env,populationType){
   if(length(newgeno)<1){ return(oldgeno) }
   toRmv <- NULL    #TODO: Give a description of what I do
   toInv <- NULL    #TODO: Give a description of what I do
@@ -213,7 +212,7 @@ insertMarkers.internal <- function(newgeno,newpositions,oldgeno,oldpositions,env
   if(is.null(dim(oldgeno))){ oldgeno <- as.matrix(oldgeno) }  #Does this do anything ? If there is no dim how would as.matrix figure it out then ?
 
   for(i in 1:length(newpositions)){
-    distance <- abs(oldpositions-as.numeric(newpositions[i]))
+    distance <- abs(originalPositions-as.numeric(newpositions[i]))
     curCor <- cor(newgeno[,i],oldgeno[,which.min(distance)],use="pair")
     if(abs(curCor) < 0.1){
       toRmv <- c(toRmv,i)
@@ -256,7 +255,7 @@ cleanGeno.internal <- function(genoCol,env,genos){
 # OUTPUT:
 #  vector with new ordering of chromosomes inside cross object
 ############################################################################################################
-bestCorelated.internal <- function(cross, population, cur_map, corSDTreshold, verbose=FALSE){
+bestCorelated.internal <- function(cross, population, originalMap, corSDTreshold, verbose=FALSE){
   cormatrix                 <- map2mapCorrelationMatrix(cross,population,verbose)
   maximums                  <- apply(abs(cormatrix), 2, max)
   means                     <- apply(abs(cormatrix), 2, mean)
@@ -268,13 +267,13 @@ bestCorelated.internal <- function(cross, population, cur_map, corSDTreshold, ve
   bestCorMarkers[,2]        <- apply(abs(cormatrix),2,function(r){rownames(cormatrix)[which.max(r[-which.max(r)])]})
   bestCorMarkers[,3]        <- maximums[selected]
   rownames(bestCorMarkers)  <- rownames(cormatrix)
-  output                    <- t(apply(bestCorMarkers,1,bestCorelatedSub.internal,cur_map))
+  output                    <- t(apply(bestCorMarkers,1,bestCorelatedSub.internal,originalMap))
   invisible(output)
 }
 
-bestCorelatedSub.internal <- function(bestCorMarkersRow,cur_map){
-  chr <- cur_map[bestCorMarkersRow[1],1]
-  pos <- mean(cur_map[bestCorMarkersRow[1],2],cur_map[bestCorMarkersRow[2],2])
+bestCorelatedSub.internal <- function(bestCorMarkersRow,originalMap){
+  chr <- originalMap[bestCorMarkersRow[1],1]
+  pos <- mean(originalMap[bestCorMarkersRow[1],2],originalMap[bestCorMarkersRow[2],2])
   invisible(c(chr,pos,bestCorMarkersRow[3]))
 }
 
