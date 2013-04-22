@@ -19,7 +19,7 @@
 #   - verbose - Be verbose
 #   - debugMode - 1: Print our checks, 2: print additional time information
 # OUTPUT:
-#   None
+#   Null
 #
 write.population <- function(population, offspring = "offspring", founders = "founders", map = "map", verbose = FALSE, debugMode = 0){
 
@@ -37,10 +37,13 @@ write.population <- function(population, offspring = "offspring", founders = "fo
   ### initializing  
   s <- proc.time()
   
-  ### offspring phenotypic file
-  if(is.null(dim(population$offspring$phenotypes))) stop("Phenotype data for offspring are already stored in:",population$offspring$phenotypes,". The function will not overwrite that file.")
-
-  writeSingleFile(population$offspring$phenotypes, "offspring phenotypes", fileOffspringPheno, verbose=verbose) # REQUIRED
+  ### offspring phenotypes coukld be euther a matrix with phenotypes (that we can save) or a name of the file (then we just warn that the data is already in that file)
+  ### if it is null - error!
+  if(is.character(population$offspring$phenotypes)){ 
+    cat("Phenotype data for offspring are already stored in:",population$offspring$phenotypes,". The function will not overwrite that file.")
+  }else{ 
+    writeSingleFile(population$offspring$phenotypes, "offspring phenotypes", fileOffspringPheno, errIfNotFound=TRUE, verbose=verbose) # REQUIRED
+  }
   writeSingleFile(population$founders$phenotypes, "founder phenotypes", fileFoundersPheno, verbose=verbose)     # OPTIONAL
   writeSingleFile(population$annots, "annotation", fileAnnotations, verbose=verbose)                            # OPTIONAL
   writeSingleFile(population$offspring$genotypes, "offspring genotypes", fileOffspringGeno, verbose=verbose)    # OPTIONAL
@@ -63,14 +66,18 @@ write.population <- function(population, offspring = "offspring", founders = "fo
 #   - verbose - be verbose
 #   - ... - passed to write.table
 # OUTPUT:
-#   None
+#   Null
 #
 writeSingleFile   <- function(dataMatrix, dataType, filename, errIfNotFound = FALSE, verbose=FALSE, ...){
-  if(file.exists(filename))  stop("file: ",filename," already exists!\n")
-  if(missing(dataMatrix) || is.null(dim(dataMatrix))){
-    if(errIfNotFound) stop("no",dataType,"found")
-    return(cat("no",dataType,"found\n"))
+  if(file.exists(filename)){
+    cat("file: ",filename," already exists and will not be overwritten!\n")
+   }else{
+    if(missing(dataMatrix) || is.null(dim(dataMatrix))){
+      if(errIfNotFound) stop("no",dataType,"found")
+      return(cat("no",dataType,"found\n"))
+    }
+    write.table(dataMatrix,file=filename,sep="\t",quote=FALSE,...)
+    if(verbose) cat(dataType,"saved in file:",filename,"\n")
   }
-  write.table(dataMatrix,file=filename,sep="\t",quote=FALSE,...)
-  if(verbose) cat(dataType,"saved in file:",filename,"\n")
+  invisible(NULL)
 }

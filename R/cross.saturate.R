@@ -16,76 +16,71 @@
 #  An object of class cross
 #
 cross.saturate <- function(population, cross, map=c("genetic","physical"), placeUsing=c("qtl","correlation"), flagged = c("remove","warn","ignore"), model, threshold=3, chr, env, keep.redundant=FALSE, use.orderMarkers=FALSE, verbose=FALSE, debugMode=0){
-  if(missing(population)) stop("Please provide a population object\n")
-  flagged <- match.arg(flagged)
-  if(missing(env)) env <- rep(1,ncol(population$offspring$phenotypes))
-  if(length(env)!=ncol(population$offspring$phenotypes)) stop("Incorrect environmental vector!\n")
-  populationType <- class(population)[2]
-  check.population(population)
-  if(!is.numeric(threshold)||is.na(threshold)) stop("Please provide correct threshold")
-  if(threshold<0) stop("Threshold needs to be > 0")
-  if(placeUsing=="correlation" && threshold >= 5) cat("WARNING: threshold too high, few new markers will be selected\n")
-  if(placeUsing=="qtl" && threshold >= 20) cat("WARNING: threshold too high, few new markers will be selected\n")
 
-  map <- match.arg(map)
-  placeUsing <- checkParameters.internal(placeUsing,c("qtl","correlation"),"placeUsing")
+  if(missing(population))                                         stop("Please provide a population object\n")
+  check.population(population)
+  
+  flagged <- match.arg(flagged)
+  
+  if(missing(env))                                   env          <- rep(1,ncol(population$offspring$phenotypes))
+  if(length(env)!=ncol(population$offspring$phenotypes))          stop("Incorrect environmental vector!\n")
+  
+  populationType                                                  <- class(population)[2]
+  
+  if(!is.numeric(threshold)||is.na(threshold))                    stop("Please provide correct threshold")
+  if(threshold<0)                                                 stop("Threshold needs to be > 0")
+
+  if(placeUsing=="correlation" && threshold >= 5)                 cat("WARNING: threshold too high, few new markers will be selected\n")
+  if(placeUsing=="qtl" && threshold >= 20)                        cat("WARNING: threshold too high, few new markers will be selected\n")
+
+  map                                                             <- match.arg(map)
+
+  placeUsing                                                      <- checkParameters.internal(placeUsing,c("qtl","correlation"),"placeUsing")
+
+  ### if the cross object is not provided -> we can create it from original genotypes and map stored in population object
   if(missing(cross)){
-    if(is.null(population$offspring$genotypes$real)) stop("No original genotypes in population$offspring$genotypes$real, load them in using add.to.population")
-    if(is.null(population$offspring$genotypes$simulated)) stop("No genotype data in population$offspring$genotypes$simulated, run generate.biomarkers first")
-    #*******SAVING CROSS OBJECT*******
-    s1 <- proc.time()
-    aa <- tempfile()
-    sink(aa)
-    cross <- genotypesToCross.internal(population,"simulated",verbose=verbose,debugMode=debugMode)
-    sink()
-    file.remove(aa)
-    e1 <- proc.time()
-    if(verbose && debugMode==2)cat("Saving data into cross object done in:",(e1-s1)[3],"seconds.\n")
+    ### checking if we are  able to recreate the original cross object
+    if(is.null(population$offspring$genotypes$real))              stop("No original genotypes in population$offspring$genotypes$real, load them in using add.to.population")
+    if(is.null(population$offspring$genotypes$simulated))         stop("No genotype data in population$offspring$genotypes$simulated, run generate.biomarkers first")
   }else{
-    population <- set.geno.from.cross(cross,population,map)
-    population <- scan.qtls(population,map,env=env)
-    aa <- tempfile()
-    sink(aa)
-    cross <- genotypesToCross.internal(population,"simulated",verbose=verbose,debugMode=debugMode)
-    sink()
-    file.remove(aa)
-    e1 <- proc.time()
+    population                    <- set.geno.from.cross(cross,population,map)
+    population                    <- scan.qtls(population,map,env=env)
   }
+  s1                              <- proc.time()
+  aa                              <- tempfile()
+  sink(aa)
+  cross                           <- genotypesToCross.internal(population,"simulated",verbose=verbose,debugMode=debugMode)
+  sink()
+  file.remove(aa)
+  e1                              <- proc.time()
   if(!(all(rownames(population$offspring$genotypes$simulated)%in%rownames(population$offspring$genotypes$qtl$lod)))) stop("QTL scan results don't match with simulated genotypes, please, run scan.qtls function")
   if(!(all(rownames(population$offspring$genotypes$qtl$lod)%in%rownames(population$offspring$genotypes$simulated)))) stop("QTL scan results don't match with simulated genotypes, please, run scan.qtls function")
-
+  
+  matchMarkers
  if(map=="genetic"){
-    matchingMarkers <- which(rownames(population$offspring$genotypes$real)%in%rownames(population$maps$genetic))
-    if(length(matchingMarkers)<=0) stop("Marker names on the map and in the genotypes doesn't match!\n")
-    if(length(matchingMarkers)!=nrow(population$offspring$genotypes$real)){
-      population$offspring$genotypes$real <- population$offspring$genotypes$real[matchingMarkers,]
-      population$maps$genetic <- population$maps$genetic[rownames(population$offspring$genotypes$real),]
-      if(verbose) cat(nrow(population$offspring$genotypes$real)-length(matchingMarkers),"markers were removed due to name mismatch\n")
-    }
+    popualtion                    <- matchMarkers(population, population$maps$genetic, mapType="genetic")
     cur_map <- population$maps$genetic
   }else{
-    matchingMarkers <- which(rownames(population$offspring$genotypes$real)%in%rownames(population$maps$physical))
-    if(length(matchingMarkers)<=0) stop("Marker names on the map and in the genotypes doesn't match!\n")
-    if(length(matchingMarkers)!=nrow(population$offspring$genotypes$real)){
-      population$offspring$genotypes$real <- population$offspring$genotypes$real[matchingMarkers,]
-      population$maps$physical <- population$maps$physical[rownames(population$offspring$genotypes$real),]
-      if(verbose) cat(nrow(population$offspring$genotypes$real)-length(matchingMarkers),"markers were removed due to name mismatch\n")
-    }
+    popualtion                    <- matchMarkers(population, population$maps$physical, mapType="physical")
     cur_map <- population$maps$physical
   }
+  
   n.originalM <- nrow(population$offspring$genotypes$real)
+
   ### saturating only a subset of chromosomes
   if(missing(chr)){
     if(verbose) cat("Saturating all the chromosomes in the set\n")
-    chr = unique(cur_map[,1])
+    chr                          <- unique(cur_map[,1])
   }else{
-    availableChr = unique(cur_map[,1])
+    availableChr                 <- unique(cur_map[,1])
     if(any(!(chr%in%availableChr))) stop("Incorrect chr parameter!\n")
     if(verbose) cat("Saturating chromosomes:\n",paste(chr,",",sep=""),"\n")
   }
+
   #*******ENRICHING ORIGINAL MAP*******
   s1 <- proc.time()
-  cross <- rearrangeMarkers(cross, population, populationType, cur_map, threshold, placeUsing, flagged, env, addMarkers=TRUE, keep.redundant, chr, verbose=verbose)
+  cross                          <- rearrangeMarkers(cross, population, populationType, cur_map, threshold, placeUsing,
+                                                     flagged, env, addMarkers=TRUE, keep.redundant, chr, verbose=verbose)
   count <- 1
   while(cross$left>1000){ # TODO: What does this 1000 do ??? Please explain and make it a user defined parameter
     count <- count+1      # TODO: We dont start counting from 2 ???!!! we start at 0
@@ -119,6 +114,25 @@ cross.saturate <- function(population, cross, map=c("genetic","physical"), place
   invisible(cross)
 }
 
+matchMarkers <- function(population, map, mapType=c("genetic","physical")){
+  mapType                                 <- match.arg(mapType)
+
+  matchingMarkers                         <- which(rownames(population$offspring$genotypes$real)%in%rownames(map))
+  if(length(matchingMarkers)<=0)          stop("Marker names on the map and in the genotypes doesn't match!\n")
+  
+  if(length(matchingMarkers)!=nrow(population$offspring$genotypes$real)){
+    population$offspring$genotypes$real   <- population$offspring$genotypes$real[matchingMarkers,]
+    map                                   <- map[rownames(population$offspring$genotypes$real),]
+    
+    cat(nrow(population$offspring$genotypes$real)-length(matchingMarkers),"markers were removed due to name mismatch\n")
+  }
+  if(mapType=="genetic"){
+    population$maps$genetic              <- map
+  }else{
+    population$maps$physical              <- map
+  }
+  invisible(population)
+}
 
 ###########################################################################################################
 #                                    *** rearrangeMarkers ***

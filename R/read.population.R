@@ -49,9 +49,7 @@ read.population <- function(offspring = "offspring", founders = "founders", map 
   }else{
     if(verbose)  cat("File:",fileOffspringPheno,"found and will be processed.\n")
     if(readMode == "normal"){
-      ### TODO: this should be using readSingleFile
-      offspringPhenotypes <- applyFunctionToFile(fileOffspringPheno,sep="\t", header=TRUE, FUN=normalModeReading)
-      population <- add.to.populationSub.internal(population,offspringPhenotypes,"offspring$phenotypes",populationType=populationType)
+      population                      <- applyFunctionToFile(fileOffspringPheno, population, sep="\t", header=TRUE, FUN=normalModeReading)
     }else{
       population$offspring$phenotypes <- fileOffspringPheno
     }
@@ -61,23 +59,23 @@ read.population <- function(offspring = "offspring", founders = "founders", map 
   if(!file.exists(fileFoundersPheno)){
     ### simulate data if there is no file
     if(verbose)cat("No phenotype file for founders: ",fileFoundersPheno,". Founder phenotypes will be simulated.\n")
+    
     if(readMode == "normal"){
-      population <- simulateParentalPhenotypes(population, population$offspring$phenotypes, populationType)
+      population                         <- simulateParentalPhenotypes(population, population$offspring$phenotypes, populationType)
     }
     ### if the mode is HT, we don't simulate founders but just judge the variance in the offspring while converting phenotypes to genotypes
+    
   }else{
     ### read the file if present
     if(verbose)  cat("File:",fileFoundersPheno,"found and will be processed.\n")
+    
     ### check if there is an information about the founders groups
     if(missing(foundersGroups)) stop("No information about founders groups provided.\n")
+    
     ### founders groups should be a sequence of 0s and 1s
     if(any(foundersGroups!=0 && foundersGroups!=1)) stop("Founders groups attribute is incorrect.\n")
-    if(readMode == "normal"){
-      population$offspring$phenotypes <- applyFunctionToFile(fileOffspringPheno,sep="\t", header=TRUE, verbose=verbose, FUN=normalModeReading)
-      if(length(foundersGroups)!=ncol(population$offspring$phenotypes)) stop("Founders groups attribute is incorrect.\n")
-    }else{
-      population$offspring$phenotypes <- applyFunctionToFile(fileOffspringPheno,sep="\t", header=TRUE, verbose=verbose, FUN=tTestByLine, dataGroups=foundersGroups, threshold=threshold)
-    }
+    population                        <- applyFunctionToFile(fileFoundersPheno,population,sep="\t", header=TRUE, verbose=verbose, FUN=normalModeReading)
+    if(length(foundersGroups)         != ncol(population$founders$phenotypes)) stop("Founders groups attribute is incorrect.\n")
   }
   
   class(population) <- c("population",populationType)
@@ -138,25 +136,26 @@ readSingleFile   <- function(population, filename, fileType, verbose=FALSE, ...)
 # OUTPUT:
 #   A matrix with values from the file.
 #
-applyFunctionToFile <- function(filename, header=TRUE, sep="\t", FUN, verbose=FALSE, ...){
+applyFunctionToFile <- function(filename, population, header=TRUE, sep="\t", FUN, verbose=FALSE, ...){
   filePointer <- file(filename,"r")
   if(header){
     headerLine <- readLines(filePointer, n=1)
     header     <- unlist(strsplit(headerLine,sep))
   }
-  res    <- NULL
-  lineNR <- 0
+  res          <- NULL
+  lineNR       <- 0
   
   ### reading the first non-header line
   curLine <- readLines(filePointer, n=1)
   while(length(curLine) > 0){
-    lineNR          <- lineNR + 1
-    if(verbose && lineNR%%10000==0) cat("processing line:",lineNr,"\n")
-    curLineSplitted <- unlist(strsplit(curLine,sep))
+    lineNR            <- lineNR + 1
+    if(verbose && lineNR%%10000==0){cat("processing line:",lineNR,"\n")
+    print(curLine)}
+    curLineSplitted   <- strsplit(curLine,sep)[[1]]
     
     ### changing it into a matrix for easier handling
-    curRow          <- matrix(as.numeric(curLineSplitted[-1]),1,length(curLineSplitted)-1)
-    rownames(curRow) <- curLineSplitted[1]
+    curRow           <- matrix(as.numeric(curLineSplitted[-1]),1,length(curLineSplitted)-1)
+    rownames(curRow) <- lineNR
     
     ### if there is header, use it as colnames
     if(!is.null(header)){
@@ -168,16 +167,7 @@ applyFunctionToFile <- function(filename, header=TRUE, sep="\t", FUN, verbose=FA
     }
     
     ### execute the function specified by user and rbind results
-    curRes <-  FUN(curRow, ...)
-    
-    ### check if the result can be rbinded
-       ### first, check if there is anything in the res already?
-    if(!is.null(res)){
-        if(ncol(res)!=ncol(curRes)) stop("Incorrect result for line: ",lineNR,"\n")
-    }
-    
-    ### it is correct, it can be rbinded
-    res     <- rbind(res,curRes)
+    population <-  FUN(curRow, population, lineNR, ...)
     curLine <- readLines(filePointer, n=1)
   }
   close(filePointer)
@@ -195,7 +185,7 @@ applyFunctionToFile <- function(filename, header=TRUE, sep="\t", FUN, verbose=FA
 # OUTPUT:
 #   An input matrix, if the pval is below the threshold. Otherwise NULL
 #
-tTestByLine <- function(dataMatrix, dataGroups, threshold){
+tTestByLine <- function(dataMatrix, population, lineNR, dataGroups, threshold){
   group0    <- as.numeric(dataMatrix[,which(dataGroups == 0)])
   group1    <- as.numeric(dataMatrix[,which(dataGroups == 1)])
   if(length(group0)<3 || length(group1)<3) stop("Not enough observations to perform the t.test.\n")
@@ -213,7 +203,20 @@ tTestByLine <- function(dataMatrix, dataGroups, threshold){
 # OUTPUT:
 #   An input matrix.
 #
-normalModeReading <- function(dataMatrix){
+normalModeReading <- function(dataMatrix, population, lineNR){
+  population$offspring$phenotypes <- checkAndBind(population$offspring$phenotypes,dataMatrix,lineNR)
+  invisible(population)
+}
+
+checkAndBind <- function(dataMatrix, toBind, lineNR){
+ ### if the population object is not empty then we need to check if we can put it into phenotype matrix 
+  if(!is.null(dataMatrix)){
+    ### can we rbind it?
+    if(ncol(toBind) != ncol(dataMatrix)){
+      stop("Incorect length of line: ",lineNR," it is: ",ncol(toBind)," instead of: ",ncol(dataMatrix),"\n")
+    }
+  }### if the object is still empty - we need to fill it
+  dataMatrix <- rbind(dataMatrix,toBind)
   invisible(dataMatrix)
 }
 
