@@ -185,12 +185,12 @@ rearrangeMarkers <- function(cross, population, populationType, originalMap, thr
       if(x %in% chr){ cat("\tSelected:",length(newnamesSelected),"new and",length(originalNamesSelected),"original markers.\n")
       }else{ cat("\tSelected:",length(originalNamesSelected),"original markers.\n")}
     }
-    returncross$geno[[x]]$data           <- insertMarkers.internal(pull.geno(cross)[,newnamesSelected],newpositions,t(population$offspring$genotypes$real[originalNamesSelected,]),originalPositions, env, populationType)
-    newmap                               <- c(as.numeric(newpositions),originalPositions)
-    names(newmap)                        <- c(newnamesSelected,originalNamesSelected)
-    newmap                               <- sort(newmap)
-    colnames(returncross$geno[[x]]$data) <- c(newnamesSelected,originalNamesSelected)
-    returncross$geno[[x]]$data           <- returncross$geno[[x]]$data[,names(newmap)]
+    returncross$geno[[x]]$data           <- insertMarkers.internal(pull.geno(cross)[,newnamesSelected],newpositions,t(population$offspring$genotypes$real[originalNamesSelected,]), originalPositions, env, populationType)
+    newmap                               <- c(as.numeric(newpositions),originalPositions) # new and old positions together
+    names(newmap)                        <- c(newnamesSelected,originalNamesSelected)     # new and old names together
+    colnames(returncross$geno[[x]]$data) <- c(newnamesSelected,originalNamesSelected)     # new and old names together
+    newmap                               <- sort(newmap)                                  # markers on the map must be order based on their position
+    returncross$geno[[x]]$data           <- returncross$geno[[x]]$data[,names(newmap)]    # the same order in map and in data matrix
     returncross$geno[[x]]$map            <- c(newmap)
   }
   names(returncross$geno) <- 1:nchr(returncross) ### setting chrnames
