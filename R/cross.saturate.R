@@ -317,8 +317,8 @@ bestQTLSub.internal <- function(qtls,marker){
 #  vector with new ordering of chromosomes inside cross object
 ############################################################################################################
 bestQTL.internal <- function(cross, population, threshold, flagged, verbose=FALSE){
-  if(is.null(population$offspring$genotypes$qtl)) stop("No qtl data in population$offspring$genotypes$qtl, run scan.qtls function first.")
-  if(is.null(population$offspring$genotypes$qtl$flags)) stop("Old version of the QTL scan detected. Re-run scan.qtls!")
+  if(is.null(population$offspring$genotypes$qtl))              stop("No qtl data in population$offspring$genotypes$qtl, run scan.qtls function first.")
+  if(is.null(population$offspring$genotypes$qtl$interactions)) stop("Old version of the QTL scan detected. Re-run scan.qtls!")
   
   genotypes             <- population$offspring$genotypes$real
   markerNames           <- markernames(cross)
@@ -336,7 +336,7 @@ bestQTL.internal <- function(cross, population, threshold, flagged, verbose=FALS
     ### is there a single significant peak in the data?
     if(sum(peaksMatrix[marker,]==2)==1){ #TODO: Figure out the logic here, Its not logical
     
-      if(any(population$offspring$genotypes$qtl$flags[marker,] > (threshold/2))){
+      if(any(population$offspring$genotypes$qtl$interactions[marker,] > (threshold/2))){
         envInt <- envInt + 1
         if(flagged=="remove"){
           cat("Marker:",marker,"shows significant association with environent and will be removed.\n")
