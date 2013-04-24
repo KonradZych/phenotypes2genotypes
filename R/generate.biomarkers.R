@@ -421,14 +421,20 @@ splitPhenoRowEM.internal <- function(x, overlapInd, proportion, margin, pProb=0.
   idx             <- which(!(is.na(x)))
   idw             <- length(which((is.na(x))))
   y               <- x[idx]
+  if(populationType == "f2"){
+    minimalObsRequired <- ceiling(0.67*length(x)) # three normals - 2/3 of data is not NA
+    if(length(y) < minimalObsRequired) stop("Too little observations for accurate EM fitting! At least: ",minimalObsRequired," observations required!")
+  }else{
+    minimalObsRequired <- ceiling(0.5*length(x)) # two normals - 1/2 of data is not NA
+    if(length(y) < minimalObsRequired) stop("Too little observations for accurate EM fitting! At least: ",minimalObsRequired," observations required!")
+  }
   ### EM
   tryCatch({
     aa <- tempfile()
     sink(aa)
     EM <- normalmixEM(y, k=nrDistributions, lambda= proportion, maxrestarts=1, maxit = 300, fast=FALSE)
   },
-  error= function(err,y){
-    cat(y[[1]],"\n")
+  error= function(err){
     print(paste("ERROR in splitPhenoRowEM.internal while running EM:  ",err))
     sink()            # sink if errored -> otherwise everything is sinked into aa file
     # file is not removed -> contains output that may help with debugging
