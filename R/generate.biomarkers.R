@@ -303,44 +303,27 @@ analyseLineVariance <- function(dataRow,threshold){
 
 mergeEnv.internal <- function(population, genoMatrix){
   ### check if there is anything to merge and if so -> merge
-  if(length(unique(population$annots[,3]))<nrow(population$annots)){
-    done <- NULL
-    newGeno <- NULL
-    for(probenr in 1:nrow(genoMatrix)){
-      probe <- genoMatrix[probenr,]
-      probeID <- population$annots[probe[1],2]
-      probeName <- population$annots[probe[1],1]
-      probe_ <- probe[-1]
-      if(!(probeID %in% done)){
-        done <- c(done,probeID)
-        probes <- which(population$annots[,2]==probeID)
-        cat(probes,":",length(probes),"\n")
-        if(length(probes)>1){
-          newProbe <- probe
-          idx <- which(!is.na(probe_))
-          for(probeB in probes[2:length(probes)]){
-            cat("Mergining:",probe[1],"with",probeB[1],"\n")
-            probeB_ <- probeB[-1]
-            idb <- which(!(is.na(probeB_)))
-            if(any(idb%in%idx)){
-              newProbe[which(idb%in%idx)] <- mean(newProbe[which(idb%in%idx)], probeB_[which(idb%in%idx)])
-              idb <- idb[which(!(idb%in%idx))]
-            }else{
-              #TODO: What do we need to do when we are in the ELSE ?
-            }
-            newProbe[idb] <- probeB_[idb]
-            probe_ <- newProbe
-          }
-        }else{
-          #TODO: What do we need to do when we are in the ELSE ?
-        }
-      }else{
-        #TODO: What do we need to do when we are in the ELSE ?
+  done    <- NULL
+  newGeno <- NULL
+  for(probenr in 1:nrow(genoMatrix)){
+    probe     <- genoMatrix[probenr,]
+    probeNr   <- probe[1]                      # first element of the probe is its number
+    probe     <- probe[-1]
+    probeID   <- population$annots[probe[1],2] # rows must be matching between annotations and genotypes
+    probeName <- population$annots[probe[1],1]
+    if(!(probeID %in% done)){                     # if the probe was not yet merged -> we should analyse it
+      done        <- c(done,probeID)              # so that we know we have processed it already
+      probeNrs    <- which(population$annots[,2]==probeID)
+      #cat(probes,":",length(probes),"\n")
+      
+      if(length(probeNrs)>1){                       # we have more than one probe with the same ID -> merging
+        cat("Mergining:",length(probeNrs),"probes with ID:",probeID,"\n")
+        probes        <- genoMatrix[probeNrs,]
+        # for each of the positions we set a consensus genotype
+        consensusGeno <- round(apply(probes,2,mean,na.rm=TRUE))
       }
-      newGeno <- rbind(newGeno,c(probeName,probe_))
     }
-  }else{
-    #TODO: What do we need to do when we are in the ELSE ?
+    newGeno <- rbind(newGeno,c(probeName,probe_))
   }
   invisible(newGeno)
 }
