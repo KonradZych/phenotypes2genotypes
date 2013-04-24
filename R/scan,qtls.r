@@ -35,29 +35,41 @@ scan.qtls <- function(population,map=c("genetic","physical"), env, step=0.1,verb
     originalMap     <- population$maps$physical
   }
   
-  population10pheno <- population
+  population10pheno                      <- population
   population10pheno$offspring$phenotypes <- population10pheno$offspring$phenotypes[1:10,]
-  aa <- tempfile()
-  sink(aa)          #TODO: When using Sink make sure you Try{}Catch everything, we need to dis-able sink even if everythign exploded
-  returncross <- genotypesToCross.internal(population10pheno,"real","map_genetic")
-  sink()
-  file.remove(aa)   #TODO: If we have an error we don't delete our file ????
+  
+  ### creation of the cross so that we can use r/qtl for qtl mapping
+  tryCatch({
+    aa <- tempfile()
+    sink(aa)
+    returncross <- genotypesToCross.internal(population10pheno,"real","map_genetic")
+  },
+  error= function(err){
+    print(paste("ERROR in scan.qtls while creating cross:  ",err))
+    sink()            # sink if errored -> otherwise everything is sinked into aa file
+    # file is not removed -> contains output that may help with debugging
+  },
+  finally={
+    sink()
+    file.remove(aa) # no error -> close sink and remove unneeded file
+  })
   
   returncross$pheno <- t(population$offspring$genotypes$simulated)
-  returncross <- calc.genoprob(returncross,step=step)
-  returncrosstwo <- calc.genoprob(returncross,step=0)
-  if(verbose) cat("Starting qtl scan, this may take a long time to finish!\n")
-  s <- proc.time()
-  lod <- NULL
-  pos <- NULL
-  chr <- NULL
-  flags <- NULL
-  names_ <- NULL
-  scan2 <- NULL
-  logLikeli <- NULL
-  done <- 0
-  useEnv <- TRUE
+  returncross       <- calc.genoprob(returncross,step=step)
+  returncrosstwo    <- calc.genoprob(returncross,step=0)
+  s                 <- proc.time()
+  lod               <- NULL
+  pos               <- NULL
+  chr               <- NULL
+  interactions      <- NULL
+  selectedNames     <- NULL
+  scan2             <- NULL
+  logLikeli         <- NULL
+  done              <- 0
+  useEnv            <- TRUE
+
   if(!(length(unique(env))>1)) useEnv <- FALSE
+
   for(i in 1:nrow(population$offspring$genotypes$simulated)){
     curlogLikeli <- NULL
     phenotype <- pull.pheno(returncross)[,i]
@@ -68,12 +80,12 @@ scan.qtls <- function(population,map=c("genetic","physical"), env, step=0.1,verb
       done <- c(done,perc)
     }
     if(useEnv){
-      flag <- t(apply(pull.geno(returncross),2,fullScanRow.internal,phenotype,env))
-      flags <- rbind(flags,c(max(flag[,1]),max(flag[,3])))
-      curlogLikeli <- c(curlogLikeli,min(flag[,4]))
+      curInteractions <- t(apply(pull.geno(returncross),2,fullScanRow.internal,phenotype,env))
+      interactions    <- rbind(interactions,c(max(flag[,1]),max(flag[,3])))
+      curlogLikeli    <- c(curlogLikeli,min(flag[,4]))
     }else{
-      flags <- rbind(flags,c(0,0))
-      curlogLikeli <- c(curlogLikeli,0)
+      interactions    <- rbind(interactions,c(0,0))
+      curlogLikeli    <- c(curlogLikeli,0)
     }
     curScan <- scanone(returncross,pheno.col=i,model="np")
     aa <- tempfile()                #TODO:  When using Sink make sure you Try{}Catch everything, we need to dis-able sink even if everythign exploded
@@ -91,29 +103,30 @@ scan.qtls <- function(population,map=c("genetic","physical"), env, step=0.1,verb
     sink()
     file.remove(aa)
 
-    chr <- rbind(chr,curScan[,1])
-    pos <- rbind(pos,curScan[,2])
-    lod <- rbind(lod,curScan[,3])
-    logLikeli <- rbind(logLikeli,curlogLikeli)
-    names_ <- c(names_,colnames(returncross$pheno)[i])
+    chr           <- rbind(chr,curScan[,1])
+    pos           <- rbind(pos,curScan[,2])
+    lod           <- rbind(lod,curScan[,3])
+    logLikeli     <- rbind(logLikeli,curlogLikeli)
+    selectedNames <- c(selectedNames,colnames(returncross$pheno)[i])
   }
 
   e <- proc.time()
   if(verbose) cat("Qtl scan done in",(e-s)[3],"s\n")
-  population$offspring$genotypes$qtl$lod              <- lod
-  population$offspring$genotypes$qtl$pos              <- pos
-  population$offspring$genotypes$qtl$chr              <- chr
-  population$offspring$genotypes$qtl$flags            <- flags
-  population$offspring$genotypes$qtl$logLik           <- logLikeli
-  population$offspring$genotypes$qtl$names            <- names_
-  rownames(population$offspring$genotypes$qtl$lod)    <- names_
-  colnames(population$offspring$genotypes$qtl$lod)    <- rownames(curScan)   
-  rownames(population$offspring$genotypes$qtl$chr)    <- names_
-  colnames(population$offspring$genotypes$qtl$chr)    <- rownames(curScan)  
-  rownames(population$offspring$genotypes$qtl$pos)    <- names_
-  colnames(population$offspring$genotypes$qtl$pos)    <- rownames(curScan)
-  rownames(population$offspring$genotypes$qtl$logLik) <- names_
-  rownames(population$offspring$genotypes$qtl$flags)  <- names_
+  ### packing all the results into the population object
+  population$offspring$genotypes$qtl$lod                     <- lod
+  population$offspring$genotypes$qtl$pos                     <- pos
+  population$offspring$genotypes$qtl$chr                     <- chr
+  population$offspring$genotypes$qtl$interactions            <- interactions
+  population$offspring$genotypes$qtl$logLik                  <- logLikeli
+  population$offspring$genotypes$qtl$names                   <- selectedNames
+  rownames(population$offspring$genotypes$qtl$lod)           <- selectedNames
+  colnames(population$offspring$genotypes$qtl$lod)           <- rownames(curScan)   
+  rownames(population$offspring$genotypes$qtl$chr)           <- selectedNames
+  colnames(population$offspring$genotypes$qtl$chr)           <- rownames(curScan)  
+  rownames(population$offspring$genotypes$qtl$pos)           <- selectedNames
+  colnames(population$offspring$genotypes$qtl$pos)           <- rownames(curScan)
+  rownames(population$offspring$genotypes$qtl$logLik)        <- selectedNames
+  rownames(population$offspring$genotypes$qtl$interactions)  <- selectedNames
   invisible(population)
 }
 

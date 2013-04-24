@@ -44,12 +44,23 @@ cross.saturate <- function(population, cross, map=c("genetic","physical"), place
     population   <- scan.qtls(population,map,env=env)
   }
   startTime1     <- proc.time()
-  aa     <- tempfile()
-  sink(aa)
-  cross  <- genotypesToCross.internal(population,"simulated",verbose=verbose,debugMode=debugMode)
-  sink()
-  file.remove(aa)
-  startTime1     <- proc.time()
+  
+  ### creation of the cross
+  tryCatch({
+    aa <- tempfile()
+    sink(aa)
+     cross  <- genotypesToCross.internal(population,"simulated",verbose=verbose,debugMode=debugMode)
+  },
+  error= function(err){
+    print(paste("ERROR in scan.qtls while creating cross:  ",err))
+    sink()            # sink if errored -> otherwise everything is sinked into aa file
+    # file is not removed -> contains output that may help with debugging
+  },
+  finally={
+    sink()
+    file.remove(aa) # no error -> close sink and remove unneeded file
+  })
+  
   if(!(all(rownames(population$offspring$genotypes$simulated)%in%rownames(population$offspring$genotypes$qtl$lod)))) stop("QTL scan results don't match with simulated genotypes, please, run scan.qtls function")
   if(!(all(rownames(population$offspring$genotypes$qtl$lod)%in%rownames(population$offspring$genotypes$simulated)))) stop("QTL scan results don't match with simulated genotypes, please, run scan.qtls function")
   
@@ -74,9 +85,9 @@ cross.saturate <- function(population, cross, map=c("genetic","physical"), place
   }
 
   #*******ENRICHING ORIGINAL MAP*******
-  startTime1     <- proc.time()
   cross  <- rearrangeMarkers(cross, population, populationType, originalMap, threshold, placeUsing,
                              flagged, env, addMarkers=TRUE, chr, verbose=verbose)
+  endTime1     <- proc.time()
   if(verbose && debugMode==2) cat("Saturation of the original map done in:",(endTime1-startTime1)[3],"seconds.\n")
   
   #*******ORDERING NEW MAP*******
