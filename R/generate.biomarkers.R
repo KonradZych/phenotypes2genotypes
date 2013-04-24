@@ -415,20 +415,28 @@ splitPheno.internal <- function(offspring, founders, overlapInd, proportion, mar
 #
 ############################################################################################################
 splitPhenoRowEM.internal <- function(x, overlapInd, proportion, margin, pProb=0.8, up=1, populationType, verbose=FALSE){
-  aa <- tempfile()
-  sink(aa)                                   #TODO: When we sink, we need to try{}catch so that we can undo our sink even when an error occurs
   nrDistributions <- length(proportion)
-  result <- rep(NA,length(x))
-  EM <- NULL
-  idx <- which(!(is.na(x)))
-  idw <- length(which((is.na(x))))
-  y <- x[idx]
-  s1<-proc.time()
-  tryCatch(EM <- normalmixEM(y, k=nrDistributions, lambda= proportion, maxrestarts=1, maxit = 300, fast=FALSE),error = function(x){cat(x[[1]],"\n")})
-  e1<-proc.time()
-  sink()
-  file.remove(aa)
-  result <- NULL
+  result          <- rep(NA,length(x))
+  EM              <- NULL
+  idx             <- which(!(is.na(x)))
+  idw             <- length(which((is.na(x))))
+  y               <- x[idx]
+  ### EM
+  tryCatch({
+    aa <- tempfile()
+    sink(aa)
+    EM <- normalmixEM(y, k=nrDistributions, lambda= proportion, maxrestarts=1, maxit = 300, fast=FALSE)
+  },
+  error= function(err,y){
+    cat(y[[1]],"\n")
+    print(paste("ERROR in splitPhenoRowEM.internal while running EM:  ",err))
+    sink()            # sink if errored -> otherwise everything is sinked into aa file
+    # file is not removed -> contains output that may help with debugging
+  },
+  finally={
+    sink()
+    file.remove(aa) # no error -> close sink and remove unneeded file
+  })
   if(filterRow.internal(EM$lambda,proportion,margin)){
     if(populationType == "f2"){
       genotypes <- c(1:5)
