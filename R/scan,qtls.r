@@ -16,16 +16,25 @@
 #  vector with new ordering of chromosomes inside cross object
 ############################################################################################################
 scan.qtls <- function(population,map=c("genetic","physical"), env, step=0.1,verbose=FALSE){
+
   if(missing(population)) stop("Please provide a population object\n")
   check.population(population)
-  if(is.null(population$offspring$genotypes$real)){
-    stop("No original genotypes in population$offspring$genotypes$real, load them in using add.to.population\n")
-  }
-  if(is.null(population$offspring$genotypes$simulated)){
-    stop("No simulated genotypes in population$offspring$genotypes$simulated, run generate.biomarkers first\n")
-  }
-  if(missing(env)) env <- rep(1,ncol(population$offspring$phenotypes))
+  
+  if(is.null(population$offspring$genotypes$real))      stop("No original genotypes in population$offspring$genotypes$real, load them in using add.to.population\n")
+  if(is.null(population$offspring$genotypes$simulated)) stop("No simulated genotypes in population$offspring$genotypes$simulated, run generate.biomarkers first\n")
+  
+  if(missing(env)) env <- rep(1,ncol(population$offspring$phenotypes)) #if there is no infor about env -> all of them in the same env
+  
   map <- match.arg(map)
+
+  if(map=="genetic"){
+    population  <- matchMarkers(population, population$maps$genetic, mapType="genetic")
+    originalMap     <- population$maps$genetic
+  }else{
+    population  <- matchMarkers(population, population$maps$physical, mapType="physical")
+    originalMap     <- population$maps$physical
+  }
+  
   if(map=="genetic"){
     matchingMarkers <- which(rownames(population$offspring$genotypes$real)%in%rownames(population$maps$genetic))
     if(length(matchingMarkers)<=0) stop("Marker names on the map and in the genotypes doesn't match!\n")

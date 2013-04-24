@@ -53,12 +53,11 @@ cross.saturate <- function(population, cross, map=c("genetic","physical"), place
   if(!(all(rownames(population$offspring$genotypes$simulated)%in%rownames(population$offspring$genotypes$qtl$lod)))) stop("QTL scan results don't match with simulated genotypes, please, run scan.qtls function")
   if(!(all(rownames(population$offspring$genotypes$qtl$lod)%in%rownames(population$offspring$genotypes$simulated)))) stop("QTL scan results don't match with simulated genotypes, please, run scan.qtls function")
   
-  matchMarkers
  if(map=="genetic"){
-    popualtion  <- matchMarkers(population, population$maps$genetic, mapType="genetic")
+    population  <- matchMarkers(population, population$maps$genetic, mapType="genetic")
     originalMap     <- population$maps$genetic
   }else{
-    popualtion  <- matchMarkers(population, population$maps$physical, mapType="physical")
+    population  <- matchMarkers(population, population$maps$physical, mapType="physical")
     originalMap     <- population$maps$physical
   }
   
@@ -214,10 +213,10 @@ insertMarkers.internal <- function(newgeno,newpositions,oldgeno,originalPosition
   for(i in 1:length(newpositions)){
     distance <- abs(originalPositions-as.numeric(newpositions[i]))        # calculating distance of new markers to original ones
     curCor   <- cor(newgeno[,i],oldgeno[,which.min(distance)],use="pair") # correlation with the closest original marker
-    if(abs(curCor) < 0.1){     ### TODO? let userset this value
+    if(abs(curCor) < 0.1){     ### TODO? let user set this value
       ### if correlation to the closest original markers is that low the markers should be removed
       toRmv <- c(toRmv,i)
-    }else if(curCor < (-0.4)){ ### TODO? let userset this value
+    }else if(curCor < (-0.4)){ ### TODO? let user set this value
       ### if correlation to the closest original markers is negative, the marker should be inverted
       toInv <- c(toInv,i)
     }# if none of these are true - marker is ok, do nothing to it!
