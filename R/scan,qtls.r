@@ -28,47 +28,21 @@ scan.qtls <- function(population,map=c("genetic","physical"), env, step=0.1,verb
   map <- match.arg(map)
 
   if(map=="genetic"){
-    population  <- matchMarkers(population, population$maps$genetic, mapType="genetic")
+    population      <- matchMarkers(population, population$maps$genetic, mapType="genetic")
     originalMap     <- population$maps$genetic
   }else{
-    population  <- matchMarkers(population, population$maps$physical, mapType="physical")
+    population      <- matchMarkers(population, population$maps$physical, mapType="physical")
     originalMap     <- population$maps$physical
   }
   
-  if(map=="genetic"){
-    matchingMarkers <- which(rownames(population$offspring$genotypes$real)%in%rownames(population$maps$genetic))
-    if(length(matchingMarkers)<=0) stop("Marker names on the map and in the genotypes doesn't match!\n")
-    if(length(matchingMarkers)!=nrow(population$offspring$genotypes$real)){
-      population$offspring$genotypes$real <- population$offspring$genotypes$real[matchingMarkers,]
-      population$maps$genetic <- population$maps$genetic[rownames(population$offspring$genotypes$real),]
-      n.markersToRmv <- nrow(population$offspring$genotypes$real)-length(matchingMarkers)
-      if(verbose && n.markersToRmv>0) cat(n.markersToRmv,"markers were removed due to name mismatch\n")
-    }
-    population10pheno <- population
-    population10pheno$offspring$phenotypes <- population10pheno$offspring$phenotypes[1:10,]
-    aa <- tempfile()
-    sink(aa)          #TODO: When using Sink make sure you Try{}Catch everything, we need to dis-able sink even if everythign exploded
-    returncross <- genotypesToCross.internal(population10pheno,"real","map_genetic")
-    sink()
-    file.remove(aa)   #TODO: If we have an error we don't delete our file ????
-  }else{
-    matchingMarkers <- which(rownames(population$offspring$genotypes$real)%in%rownames(population$maps$physical))
-    if(length(matchingMarkers)<=0) stop("Marker names on the map and in the genotypes doesn't match!\n")
-    if(length(matchingMarkers)!=nrow(population$offspring$genotypes$real)){
-      population$offspring$genotypes$real <- population$offspring$genotypes$real[matchingMarkers,]
-      population$maps$physical <- population$maps$physical[rownames(population$offspring$genotypes$real),]
-      n.markersToRmv <- nrow(population$offspring$genotypes$real)-length(matchingMarkers)
-      if(verbose && n.markersToRmv>0) cat(n.markersToRmv,"markers were removed due to name mismatch\n")
-    }
-    #TODO: Why is this here the original comment: 'for faster creation of cross' is meaningless
-    population10pheno <- population
-    population10pheno$offspring$phenotypes <- population10pheno$offspring$phenotypes[1:10,]
-    aa <- tempfile()
-    sink(aa)
-    returncross <- genotypesToCross.internal(population10pheno,"real","map_physical")
-    sink()
-    file.remove(aa)
-  }
+  population10pheno <- population
+  population10pheno$offspring$phenotypes <- population10pheno$offspring$phenotypes[1:10,]
+  aa <- tempfile()
+  sink(aa)          #TODO: When using Sink make sure you Try{}Catch everything, we need to dis-able sink even if everythign exploded
+  returncross <- genotypesToCross.internal(population10pheno,"real","map_genetic")
+  sink()
+  file.remove(aa)   #TODO: If we have an error we don't delete our file ????
+  
   returncross$pheno <- t(population$offspring$genotypes$simulated)
   returncross <- calc.genoprob(returncross,step=step)
   returncrosstwo <- calc.genoprob(returncross,step=0)
