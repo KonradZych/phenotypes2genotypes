@@ -52,7 +52,7 @@ cross.saturate <- function(population, cross, map=c("genetic","physical"), place
     cross  <- genotypesToCross.internal(population,"simulated",verbose=verbose,debugMode=debugMode)
   },
   error= function(err){
-    print(paste("ERROR in scan.qtls while creating cross:  ",err))
+    print(paste("ERROR in cross.saturate while creating cross:  ",err))
     sink()            # sink if errored -> otherwise everything is sinked into aa file
     # file is not removed -> contains output that may help with debugging
   },
@@ -101,7 +101,7 @@ cross.saturate <- function(population, cross, map=c("genetic","physical"), place
       cross       <- orderMarkers(cross,use.ripple=FALSE,verbose=TRUE)
     },
     error= function(err){
-      print(paste("ERROR in scan.qtls while creating cross:  ",err))
+      print(paste("ERROR in cross.saturate while ordering markers in cross:  ",err))
       sink()            # sink if errored -> otherwise everything is sinked into aa file
       # file is not removed -> contains output that may help with debugging
     },
