@@ -49,7 +49,7 @@ cross.saturate <- function(population, cross, map=c("genetic","physical"), place
   tryCatch({
     aa <- tempfile()
     sink(aa)
-     cross  <- genotypesToCross.internal(population,"simulated",verbose=verbose,debugMode=debugMode)
+    cross  <- genotypesToCross.internal(population,"simulated",verbose=verbose,debugMode=debugMode)
   },
   error= function(err){
     print(paste("ERROR in scan.qtls while creating cross:  ",err))
@@ -94,11 +94,22 @@ cross.saturate <- function(population, cross, map=c("genetic","physical"), place
   if(use.orderMarkers){
     if(verbose) cat("Ordering markers inside the cross object\n")
     startTime1  <- proc.time()
-    aa          <- tempfile()
-    sink(aa)
-    cross       <- orderMarkers(cross,use.ripple=FALSE,verbose=TRUE)
-    sink()
-    file.remove(aa)
+
+    tryCatch({
+      aa <- tempfile()
+      sink(aa)
+      cross       <- orderMarkers(cross,use.ripple=FALSE,verbose=TRUE)
+    },
+    error= function(err){
+      print(paste("ERROR in scan.qtls while creating cross:  ",err))
+      sink()            # sink if errored -> otherwise everything is sinked into aa file
+      # file is not removed -> contains output that may help with debugging
+    },
+    finally={
+      sink()
+      file.remove(aa) # no error -> close sink and remove unneeded file
+    })
+    
     endTime1    <- proc.time()
     if(verbose && debugMode==2)cat("Saving data into cross object done in:",(endTime1-startTime1)[3],"seconds.\n")
   }
