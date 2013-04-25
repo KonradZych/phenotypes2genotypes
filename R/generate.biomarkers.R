@@ -58,7 +58,7 @@ generate.biomarkers <- function(population, threshold=0.05, overlapInd = 10, pro
   
   #*******CONVERTING CHILDREN PHENOTYPIC DATA TO GENOTYPES*******
   s1 <- proc.time()
-  if(!is.null(population$annots)){ #TODO: Merge this 2 functions into 1
+  if(!is.null(population$annots)){
     population <- generate.biomarkers.internal(population, threshold, overlapInd, proportion, margin, pProb, verbose, debugMode)
   }else{
     population <- generate.biomarkers.internal(population, threshold, overlapInd, proportion, margin, pProb, verbose, debugMode)
@@ -117,7 +117,7 @@ pull.biomarkers <- function(population,pattern,verbose=FALSE){
 ############################################################################################################
 selectTopMarker.internal <- function(markers,pattern,verbose){
   markerPoints <- apply(markers,1,function(x){sum(x==pattern)})
-  topMarker <- rownames(markers)[which.max(markerPoints)]
+  topMarker    <- rownames(markers)[which.max(markerPoints)]
   if(verbose) cat("Markers best matching pattern:",topMarker,"with identity:",max(markerPoints)/ncol(markers)*100,"%\n")
   invisible(markers[topMarker,])
 }
@@ -199,8 +199,8 @@ generate.biomarkers.internal <- function(population, threshold, overlapInd, prop
   ### putting results inside population object
   if(is.null(dim(output))) stop("No markers selected.")
 
-  population$offspring$genotypes$simulated <- output
-  population$offspring$genotypes$EM <- outputEM
+  population$offspring$genotypes$simulated           <- output
+  population$offspring$genotypes$EM                  <- outputEM
   colnames(population$offspring$genotypes$simulated) <- colnames(upRegulatedPhenos)
   invisible(population)
 }
@@ -213,7 +213,7 @@ selectPhenotypes <- function(population, threshold, RPcolumn){
   selectedParental    <- population$founders$phenotypes[selected,]
   rownamesOfSelected  <- rownames(selectedParental)
   if(any(rownamesOfSelected == "")) rownamesOfSelected <- rownamesOfSelected[-which(rownamesOfSelected == "")]
-  selectedRils              <- population$offspring$phenotypes[rownamesOfSelected,]
+  selectedRils        <- population$offspring$phenotypes[rownamesOfSelected,]
   invisible(selectedRils)
 }
 
@@ -323,7 +323,7 @@ mergeEnv.internal <- function(population, genoMatrix){
         consensusGeno <- round(apply(probes,2,mean,na.rm=TRUE))
       }
     }
-    newGeno <- rbind(newGeno,c(probeName,probe_))
+    newGeno <- rbind(newGeno,c(probeName,probe))
   }
   invisible(newGeno)
 }
