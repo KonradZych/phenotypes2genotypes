@@ -192,7 +192,6 @@ rearrangeMarkers <- function(cross, population, populationType, originalMap, thr
           selM              <- positions[mappingMarkers,1]
           bestM             <- which.max(as.numeric(positions[selM,3]))
           if(length(bestM) > 1) bestM <- bestM[1]
-          left              <- left+1
           newnamesSelected  <- c(newnamesSelected,selM[bestM])
         }
       }
