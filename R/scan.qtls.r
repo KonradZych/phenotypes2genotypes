@@ -87,9 +87,20 @@ scan.qtls <- function(population,map=c("genetic","physical"), env, step=0.1,verb
       interactions    <- rbind(interactions,c(0,0))
       curlogLikeli    <- c(curlogLikeli,0)
     }
-    curScan <- scanone(returncross,pheno.col=i,model="np")
-    aa <- tempfile()                #TODO:  When using Sink make sure you Try{}Catch everything, we need to dis-able sink even if everythign exploded
-    sink(aa)
+    tryCatch({
+      aa <- tempfile()
+      sink(aa)
+      curScan <- scanone(returncross,pheno.col=i,model="np")
+    },
+    error= function(err){
+      print(paste("ERROR in scan.qtls while using scanone:  ",err))
+      sink()            # sink if errored -> otherwise everything is sinked into aa file
+      # file is not removed -> contains output that may help with debugging
+    },
+    finally={
+      sink()
+      file.remove(aa) # no error -> close sink and remove unneeded file
+    })
     curScantwo <- scantwo(returncrosstwo,pheno.col=i)
     maxLine <- which.max(summary(curScantwo)[,6])
     chr1 <- summary(curScantwo)[maxLine,1]
@@ -100,9 +111,6 @@ scan.qtls <- function(population,map=c("genetic","physical"), env, step=0.1,verb
     genoRow2 <- returncross$geno[[chr2]]$data[,marker2]
     model <- lm(phenotype ~ genoRow1 + genoRow2 + genoRow1:genoRow2)
     curlogLikeli <- c(curlogLikeli,logLik(model))
-    sink()
-    file.remove(aa)
-
     chr           <- rbind(chr,curScan[,1])
     pos           <- rbind(pos,curScan[,2])
     lod           <- rbind(lod,curScan[,3])
