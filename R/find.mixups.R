@@ -43,12 +43,22 @@ find.mixups <- function(population,map=c("genetic","physical"),n.qtls=50,thresho
     ### THAT's just ugly trick to make saving the cross with a lot fo phenotypes faster.
     population10pheno <- population
     population10pheno$offspring$phenotypes <- population10pheno$offspring$phenotypes[1:10,]
-    aa <- tempfile()
-    sink(aa)
-    returncross <- genotypesToCross.internal(population10pheno,"real","map_genetic")
-    returncross$pheno <- t(population$offspring$phenotypes)
-    sink()
-    file.remove(aa)
+    ### creation of the cross
+    tryCatch({
+      aa <- tempfile()
+      sink(aa)
+      returncross <- genotypesToCross.internal(population10pheno,"real","map_genetic")
+      returncross$pheno <- t(population$offspring$phenotypes)
+    },
+    error= function(err){
+      print(paste("ERROR in find.mixups while creating cross:  ",err))
+      sink()            # sink if errored -> otherwise everything is sinked into aa file
+      # file is not removed -> contains output that may help with debugging
+    },
+    finally={
+      sink()
+      file.remove(aa) # no error -> close sink and remove unneeded file
+    })
   }else{
     matchingMarkers <- which(rownames(population$offspring$genotypes$real)%in%rownames(population$maps$physical))
     if(length(matchingMarkers)<=0) stop("Marker names on the map and in the genotypes doesn't match!\n")
@@ -60,12 +70,22 @@ find.mixups <- function(population,map=c("genetic","physical"),n.qtls=50,thresho
     #for faster creation of cross
     population10pheno <- population
     population10pheno$offspring$phenotypes <- population10pheno$offspring$phenotypes[1:10,]
-    aa <- tempfile()
-    sink(aa)
-    returncross <- genotypesToCross.internal(population10pheno,"real","map_physical")
-    returncross$pheno <- t(population$offspring$phenotypes)
-    sink()
-    file.remove(aa)
+    ### creation of the cross
+    tryCatch({
+      aa <- tempfile()
+      sink(aa)
+      returncross <- genotypesToCross.internal(population10pheno,"real","map_physical")
+      returncross$pheno <- t(population$offspring$phenotypes)
+    },
+    error= function(err){
+      print(paste("ERROR in find.mixups while creating cross:  ",err))
+      sink()            # sink if errored -> otherwise everything is sinked into aa file
+      # file is not removed -> contains output that may help with debugging
+    },
+    finally={
+      sink()
+      file.remove(aa) # no error -> close sink and remove unneeded file
+    })
   }
   returncross <- calc.genoprob(returncross)
   qtls_found <- 0

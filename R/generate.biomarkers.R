@@ -58,7 +58,7 @@ generate.biomarkers <- function(population, threshold=0.05, overlapInd = 10, pro
   
   #*******CONVERTING CHILDREN PHENOTYPIC DATA TO GENOTYPES*******
   s1 <- proc.time()
-  if(!is.null(population$annots)){ #TODO: Merge this 2 functions into 1
+  if(!is.null(population$annots)){
     population <- generate.biomarkers.internal(population, threshold, overlapInd, proportion, margin, pProb, verbose, debugMode)
   }else{
     population <- generate.biomarkers.internal(population, threshold, overlapInd, proportion, margin, pProb, verbose, debugMode)
@@ -117,7 +117,7 @@ pull.biomarkers <- function(population,pattern,verbose=FALSE){
 ############################################################################################################
 selectTopMarker.internal <- function(markers,pattern,verbose){
   markerPoints <- apply(markers,1,function(x){sum(x==pattern)})
-  topMarker <- rownames(markers)[which.max(markerPoints)]
+  topMarker    <- rownames(markers)[which.max(markerPoints)]
   if(verbose) cat("Markers best matching pattern:",topMarker,"with identity:",max(markerPoints)/ncol(markers)*100,"%\n")
   invisible(markers[topMarker,])
 }
@@ -199,8 +199,8 @@ generate.biomarkers.internal <- function(population, threshold, overlapInd, prop
   ### putting results inside population object
   if(is.null(dim(output))) stop("No markers selected.")
 
-  population$offspring$genotypes$simulated <- output
-  population$offspring$genotypes$EM <- outputEM
+  population$offspring$genotypes$simulated           <- output
+  population$offspring$genotypes$EM                  <- outputEM
   colnames(population$offspring$genotypes$simulated) <- colnames(upRegulatedPhenos)
   invisible(population)
 }
@@ -213,7 +213,7 @@ selectPhenotypes <- function(population, threshold, RPcolumn){
   selectedParental    <- population$founders$phenotypes[selected,]
   rownamesOfSelected  <- rownames(selectedParental)
   if(any(rownamesOfSelected == "")) rownamesOfSelected <- rownamesOfSelected[-which(rownamesOfSelected == "")]
-  selectedRils              <- population$offspring$phenotypes[rownamesOfSelected,]
+  selectedRils        <- population$offspring$phenotypes[rownamesOfSelected,]
   invisible(selectedRils)
 }
 
@@ -303,44 +303,27 @@ analyseLineVariance <- function(dataRow,threshold){
 
 mergeEnv.internal <- function(population, genoMatrix){
   ### check if there is anything to merge and if so -> merge
-  if(length(unique(population$annots[,3]))<nrow(population$annots)){
-    done <- NULL
-    newGeno <- NULL
-    for(probenr in 1:nrow(genoMatrix)){
-      probe <- genoMatrix[probenr,]
-      probeID <- population$annots[probe[1],2]
-      probeName <- population$annots[probe[1],1]
-      probe_ <- probe[-1]
-      if(!(probeID %in% done)){
-        done <- c(done,probeID)
-        probes <- which(population$annots[,2]==probeID)
-        cat(probes,":",length(probes),"\n")
-        if(length(probes)>1){
-          newProbe <- probe
-          idx <- which(!is.na(probe_))
-          for(probeB in probes[2:length(probes)]){
-            cat("Mergining:",probe[1],"with",probeB[1],"\n")
-            probeB_ <- probeB[-1]
-            idb <- which(!(is.na(probeB_)))
-            if(any(idb%in%idx)){
-              newProbe[which(idb%in%idx)] <- mean(newProbe[which(idb%in%idx)], probeB_[which(idb%in%idx)])
-              idb <- idb[which(!(idb%in%idx))]
-            }else{
-              #TODO: What do we need to do when we are in the ELSE ?
-            }
-            newProbe[idb] <- probeB_[idb]
-            probe_ <- newProbe
-          }
-        }else{
-          #TODO: What do we need to do when we are in the ELSE ?
-        }
-      }else{
-        #TODO: What do we need to do when we are in the ELSE ?
+  done    <- NULL
+  newGeno <- NULL
+  for(probenr in 1:nrow(genoMatrix)){
+    probe     <- genoMatrix[probenr,]
+    probeNr   <- probe[1]                      # first element of the probe is its number
+    probe     <- probe[-1]
+    probeID   <- population$annots[probe[1],2] # rows must be matching between annotations and genotypes
+    probeName <- population$annots[probe[1],1]
+    if(!(probeID %in% done)){                     # if the probe was not yet merged -> we should analyse it
+      done        <- c(done,probeID)              # so that we know we have processed it already
+      probeNrs    <- which(population$annots[,2]==probeID)
+      #cat(probes,":",length(probes),"\n")
+      
+      if(length(probeNrs)>1){                       # we have more than one probe with the same ID -> merging
+        cat("Mergining:",length(probeNrs),"probes with ID:",probeID,"\n")
+        probes        <- genoMatrix[probeNrs,]
+        # for each of the positions we set a consensus genotype
+        consensusGeno <- round(apply(probes,2,mean,na.rm=TRUE))
       }
-      newGeno <- rbind(newGeno,c(probeName,probe_))
     }
-  }else{
-    #TODO: What do we need to do when we are in the ELSE ?
+    newGeno <- rbind(newGeno,c(probeName,probe))
   }
   invisible(newGeno)
 }
@@ -415,20 +398,34 @@ splitPheno.internal <- function(offspring, founders, overlapInd, proportion, mar
 #
 ############################################################################################################
 splitPhenoRowEM.internal <- function(x, overlapInd, proportion, margin, pProb=0.8, up=1, populationType, verbose=FALSE){
-  aa <- tempfile()
-  sink(aa)                                   #TODO: When we sink, we need to try{}catch so that we can undo our sink even when an error occurs
   nrDistributions <- length(proportion)
-  result <- rep(NA,length(x))
-  EM <- NULL
-  idx <- which(!(is.na(x)))
-  idw <- length(which((is.na(x))))
-  y <- x[idx]
-  s1<-proc.time()
-  tryCatch(EM <- normalmixEM(y, k=nrDistributions, lambda= proportion, maxrestarts=1, maxit = 300, fast=FALSE),error = function(x){cat(x[[1]],"\n")})
-  e1<-proc.time()
-  sink()
-  file.remove(aa)
-  result <- NULL
+  result          <- rep(NA,length(x))
+  EM              <- NULL
+  idx             <- which(!(is.na(x)))
+  idw             <- length(which((is.na(x))))
+  y               <- x[idx]
+  if(populationType == "f2"){
+    minimalObsRequired <- ceiling(0.67*length(x)) # three normals - 2/3 of data is not NA
+    if(length(y) < minimalObsRequired) stop("Too little observations for accurate EM fitting! At least: ",minimalObsRequired," observations required!")
+  }else{
+    minimalObsRequired <- ceiling(0.5*length(x)) # two normals - 1/2 of data is not NA
+    if(length(y) < minimalObsRequired) stop("Too little observations for accurate EM fitting! At least: ",minimalObsRequired," observations required!")
+  }
+  ### EM
+  tryCatch({
+    aa <- tempfile()
+    sink(aa)
+    EM <- normalmixEM(y, k=nrDistributions, lambda= proportion, maxrestarts=1, maxit = 300, fast=FALSE)
+  },
+  error= function(err){
+    print(paste("ERROR in splitPhenoRowEM.internal while running EM:  ",err))
+    sink()            # sink if errored -> otherwise everything is sinked into aa file
+    # file is not removed -> contains output that may help with debugging
+  },
+  finally={
+    sink()
+    file.remove(aa) # no error -> close sink and remove unneeded file
+  })
   if(filterRow.internal(EM$lambda,proportion,margin)){
     if(populationType == "f2"){
       genotypes <- c(1:5)

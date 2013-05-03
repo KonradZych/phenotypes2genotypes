@@ -398,19 +398,23 @@ cross.denovo.internal<- function(population,  n.chr,  use=c("rf","geno"), verbos
   }
   #*******SAVING CROSS OBJECT*******
   s1 <- proc.time()
-  aa <- tempfile()
-  sink(aa)
-  cross <- genotypesToCross.internal(population,"simulated",verbose=verbose,debugMode=debugMode)
-  #cross <- fill.geno(cross)
-  sink()
-  file.remove(aa)
+  ### creation of the cross
+  tryCatch({
+    aa <- tempfile()
+    sink(aa)
+    cross <- genotypesToCross.internal(population,"simulated",verbose=verbose,debugMode=debugMode)
+  },
+  error= function(err){
+    print(paste("ERROR in cross.saturate while creating cross:  ",err))
+    sink()            # sink if errored -> otherwise everything is sinked into aa file
+    # file is not removed -> contains output that may help with debugging
+  },
+  finally={
+    sink()
+    file.remove(aa) # no error -> close sink and remove unneeded file
+  })
   e1 <- proc.time()
   if(verbose && debugMode==2)cat("saving data into cross object done in:",(e1-s1)[3],"seconds.\n")
-  
-  #####
-  ######
-  ########## VERY DIRTY HACK
-  #cross <- convert2riself(cross)
   
   #*******CREATING NEW MAP*******
   s1 <- proc.time()
