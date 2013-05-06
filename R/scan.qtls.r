@@ -81,8 +81,8 @@ scan.qtls <- function(population,map=c("genetic","physical"), env, step=0.1,verb
     }
     if(useEnv){
       curInteractions <- t(apply(pull.geno(returncross),2,fullScanRow.internal,phenotype,env))
-      interactions    <- rbind(interactions,c(max(flag[,1]),max(flag[,3])))
-      curlogLikeli    <- c(curlogLikeli,min(flag[,4]))
+      interactions    <- rbind(interactions,c(max(curInteractions[,1]),max(curInteractions[,3])))
+      curlogLikeli    <- c(curlogLikeli,min(curInteractions[,4]))
     }else{
       interactions    <- rbind(interactions,c(0,0))
       curlogLikeli    <- c(curlogLikeli,0)
