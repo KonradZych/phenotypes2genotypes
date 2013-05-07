@@ -82,10 +82,8 @@ scan.qtls <- function(population,map=c("genetic","physical"), env, step=0.1,verb
     if(useEnv){
       curInteractions <- t(apply(pull.geno(returncross),2,fullScanRow.internal,phenotype,env))
       interactions    <- rbind(interactions,c(max(curInteractions[,1]),max(curInteractions[,3])))
-      curlogLikeli    <- c(curlogLikeli,min(curInteractions[,4]))
     }else{
       interactions    <- rbind(interactions,c(0,0))
-      curlogLikeli    <- c(curlogLikeli,0)
     }
     tryCatch({
       aa <- tempfile()
@@ -101,21 +99,13 @@ scan.qtls <- function(population,map=c("genetic","physical"), env, step=0.1,verb
       sink()
       file.remove(aa) # no error -> close sink and remove unneeded file
     })
-    curScantwo <- scantwo(returncrosstwo,pheno.col=i)
-    maxLine    <- which.max(summary(curScantwo)[,6])
-    chr1       <- summary(curScantwo)[maxLine,1]
-    marker1    <- which(returncross$geno[[chr1]]$map==summary(curScantwo)[maxLine,3])
-    chr2       <- summary(curScantwo)[maxLine,2]
-    marker2    <- which(returncross$geno[[chr2]]$map==summary(curScantwo)[maxLine,4])
-    genoRow1   <- returncross$geno[[chr1]]$data[,marker1]
-    genoRow2   <- returncross$geno[[chr2]]$data[,marker2]
     
-    curlogLikeli <- c(curlogLikeli,logLik(model))
-  
+    epistaticInter  <- checkForEpistasis(curScan,pull.geno(returncross),pull.pheno(returncross)[,i],env)
+    curInteractions <- c(curInteractions,epistaticInter)
+
     chr           <- rbind(chr,curScan[,1])
     pos           <- rbind(pos,curScan[,2])
     lod           <- rbind(lod,curScan[,3])
-    logLikeli     <- rbind(logLikeli,curlogLikeli)
     selectedNames <- c(selectedNames,colnames(returncross$pheno)[i])
   }
 
@@ -126,7 +116,6 @@ scan.qtls <- function(population,map=c("genetic","physical"), env, step=0.1,verb
   population$offspring$genotypes$qtl$pos                     <- pos
   population$offspring$genotypes$qtl$chr                     <- chr
   population$offspring$genotypes$qtl$interactions            <- interactions
-  population$offspring$genotypes$qtl$logLik                  <- logLikeli
   population$offspring$genotypes$qtl$names                   <- selectedNames
   rownames(population$offspring$genotypes$qtl$lod)           <- selectedNames
   colnames(population$offspring$genotypes$qtl$lod)           <- rownames(curScan)   
@@ -137,6 +126,18 @@ scan.qtls <- function(population,map=c("genetic","physical"), env, step=0.1,verb
   rownames(population$offspring$genotypes$qtl$logLik)        <- selectedNames
   rownames(population$offspring$genotypes$qtl$interactions)  <- selectedNames
   invisible(population)
+}
+
+checkForEpistasis <- function(scanResults,originalGeno,marker,env){
+  maxGenoNr <- rownames(scanResults)[which.max(scanResults[,3])]
+  results   <- apply(originalGeno, 2, twoGenosModel, marker, originalGeno[,maxGenoNr])
+  results   <- results[-maxGenoNr] # removing model with env + maxGenoNr +maxGenoNr (overfit!)
+  invisible(max(results))
+}
+
+twoGenosModel <- function(genoRow, markerRow, maxGeno, env){
+  curRes <- -log10(anova(lm(markerRow~env+maxGeno+genoRow))[[5]][3])
+  invisible(curRes)
 }
 
 #TODO: Add documentation
