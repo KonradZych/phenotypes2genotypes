@@ -102,15 +102,16 @@ scan.qtls <- function(population,map=c("genetic","physical"), env, step=0.1,verb
       file.remove(aa) # no error -> close sink and remove unneeded file
     })
     curScantwo <- scantwo(returncrosstwo,pheno.col=i)
-    maxLine <- which.max(summary(curScantwo)[,6])
-    chr1 <- summary(curScantwo)[maxLine,1]
-    marker1 <- which(returncross$geno[[chr1]]$map==summary(curScantwo)[maxLine,3])
-    chr2 <- summary(curScantwo)[maxLine,2]
-    marker2 <- which(returncross$geno[[chr2]]$map==summary(curScantwo)[maxLine,4])
-    genoRow1 <- returncross$geno[[chr1]]$data[,marker1]
-    genoRow2 <- returncross$geno[[chr2]]$data[,marker2]
-    model <- lm(phenotype ~ genoRow1 + genoRow2 + genoRow1:genoRow2)
+    maxLine    <- which.max(summary(curScantwo)[,6])
+    chr1       <- summary(curScantwo)[maxLine,1]
+    marker1    <- which(returncross$geno[[chr1]]$map==summary(curScantwo)[maxLine,3])
+    chr2       <- summary(curScantwo)[maxLine,2]
+    marker2    <- which(returncross$geno[[chr2]]$map==summary(curScantwo)[maxLine,4])
+    genoRow1   <- returncross$geno[[chr1]]$data[,marker1]
+    genoRow2   <- returncross$geno[[chr2]]$data[,marker2]
+    
     curlogLikeli <- c(curlogLikeli,logLik(model))
+  
     chr           <- rbind(chr,curScan[,1])
     pos           <- rbind(pos,curScan[,2])
     lod           <- rbind(lod,curScan[,3])
