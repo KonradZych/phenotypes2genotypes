@@ -56,16 +56,13 @@ scan.qtls <- function(population,map=c("genetic","physical"), env, step=0.1,verb
   
   returncross$pheno <- t(population$offspring$genotypes$simulated)
   returncross       <- calc.genoprob(returncross,step=step)
-  returncrosstwo    <- calc.genoprob(returncross,step=0)
   s                 <- proc.time()
-  lod               <- NULL
-  pos               <- NULL
-  chr               <- NULL
-  interactions      <- NULL
-  selectedNames     <- NULL
-  scan2             <- NULL
-  logLikeli         <- NULL
-  done              <- 0
+  lod               <- NULL # LOD scores
+  pos               <- NULL # position of the QTL peak on a chromosome
+  chr               <- NULL # chromosome of the peak marker
+  interactions      <- NULL # 1 - max lod score for Env, 2 - G:E, 3- epistasis
+  markerNames       <- NULL # names of the markers se
+  done              <- 0    
   useEnv            <- TRUE
 
   if(!(length(unique(env))>1)) useEnv <- FALSE
@@ -74,16 +71,16 @@ scan.qtls <- function(population,map=c("genetic","physical"), env, step=0.1,verb
     curlogLikeli <- NULL
     phenotype <- pull.pheno(returncross)[,i]
     perc <- round(i*100/nrow(population$offspring$genotypes$simulated))
-    if(perc%%10==0 && !(perc%in%done)){
+    if(perc%%10==0 && !(perc%in%done)){ # bit dirty hack to avoid displaying the same value more than once in verbose mode (this can happen due to rounding)
       e <- proc.time()
       cat("Analysing markers",perc,"% done, estimated time remaining:",(e-s)[3]/perc*(100-perc),"s\n")
       done <- c(done,perc)
     }
     if(useEnv){
-      curInteractions <- t(apply(pull.geno(returncross),2,fullScanRow.internal,phenotype,env))
-      interactions    <- rbind(interactions,c(max(curInteractions[,1]),max(curInteractions[,3])))
+      fullScanResults    <- t(apply(pull.geno(returncross),2,fullScanRow.internal,phenotype,env))
+      curInteractions    <- c(max(fullScanResults[,1]),max(fullScanResults[,3]))
     }else{
-      interactions    <- rbind(interactions,c(0,0))
+      curInteractions    <- c(0,0)
     }
     tryCatch({
       aa <- tempfile()
@@ -102,29 +99,32 @@ scan.qtls <- function(population,map=c("genetic","physical"), env, step=0.1,verb
     
     epistaticInter  <- checkForEpistasis(curScan,pull.geno(returncross),pull.pheno(returncross)[,i],env)
     curInteractions <- c(curInteractions,epistaticInter)
+    interactions    <- rbind(interactions,curInteractions)
 
     chr             <- rbind(chr,curScan[,1])
     pos             <- rbind(pos,curScan[,2])
     lod             <- rbind(lod,curScan[,3])
-    selectedNames   <- c(selectedNames,colnames(returncross$pheno)[i])
+    markerNames     <- c(markerNames,colnames(returncross$pheno)[i])
   }
 
   e <- proc.time()
   if(verbose) cat("Qtl scan done in",(e-s)[3],"s\n")
+  
   ### packing all the results into the population object
   population$offspring$genotypes$qtl$lod                     <- lod
+  rownames(population$offspring$genotypes$qtl$lod)           <- markerNames
+  colnames(population$offspring$genotypes$qtl$lod)           <- rownames(curScan)
+  
   population$offspring$genotypes$qtl$pos                     <- pos
+  rownames(population$offspring$genotypes$qtl$chr)           <- markerNames
+  colnames(population$offspring$genotypes$qtl$chr)           <- rownames(curScan)
+
   population$offspring$genotypes$qtl$chr                     <- chr
-  population$offspring$genotypes$qtl$interactions            <- interactions
-  population$offspring$genotypes$qtl$names                   <- selectedNames
-  rownames(population$offspring$genotypes$qtl$lod)           <- selectedNames
-  colnames(population$offspring$genotypes$qtl$lod)           <- rownames(curScan)   
-  rownames(population$offspring$genotypes$qtl$chr)           <- selectedNames
-  colnames(population$offspring$genotypes$qtl$chr)           <- rownames(curScan)  
-  rownames(population$offspring$genotypes$qtl$pos)           <- selectedNames
+  rownames(population$offspring$genotypes$qtl$pos)           <- markerNames
   colnames(population$offspring$genotypes$qtl$pos)           <- rownames(curScan)
-  rownames(population$offspring$genotypes$qtl$logLik)        <- selectedNames
-  rownames(population$offspring$genotypes$qtl$interactions)  <- selectedNames
+  
+  population$offspring$genotypes$qtl$interactions            <- interactions
+  rownames(population$offspring$genotypes$qtl$interactions)  <- markerNames
   invisible(population)
 }
 
@@ -145,3 +145,4 @@ fullScanRow.internal <- function(genoRow, phenoRow, env){
   model <- lm(phenoRow ~ env + genoRow + env:genoRow)
   return(c(-log10(anova(model)[[5]])[1:3], logLik(model)))
 }
+
