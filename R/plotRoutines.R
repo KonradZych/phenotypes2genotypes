@@ -160,16 +160,15 @@ plotMarkerDistribution <- function(population,marker,nrDistributions,logarithmic
 projectOldMarkers <- function(cross,population,map=c("genetic","physical"),label=c("positions","names","no"),...){
 	if(missing(cross)) stop("No cross object provided!\n")
 	if(missing(population)) stop("No population object provided!\n")
-  map <- checkParameters.internal(map,c("genetic","physical"),"map")
+  map <- match.arg(map)
 	if(map=="genetic"){
     cur_map <- population$maps$genetic
   }else{
     cur_map <- population$maps$physical
   }
   if(is.null(cur_map)) stop("no ",map," map provided!")  
-  label <- checkParameters.internal(label,c("positions","names","no"),"label")
+  label <- match.arg(label)
 	qp_ <- NULL
-	inListCheck.internal(label,"label",c("positions","names","no"))
   cross <- jittermap(cross)
 	for(i in 1:nchr(cross)){
 		qp_ <- c(qp_,cross$geno[[i]]$map)
