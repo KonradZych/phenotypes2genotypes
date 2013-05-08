@@ -23,7 +23,7 @@ find.diff.expressed <- function(population,use=c("ttest","rankprod"),verbose=FAL
   #checks
   if(missing(population)) stop("provide population object\n")
   check.population(population)
-  use <- checkParameters.internal(use,c("ttest","rankprod"),"use")
+  use <- match.arg(use)
   if(verbose && debugMode==1) cat("find.diff.expressed starting withour errors in checkpoints.\n")
   
   s<-proc.time()

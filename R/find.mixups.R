@@ -31,7 +31,7 @@ find.mixups <- function(population,map=c("genetic","physical"),n.qtls=50,thresho
   if(n.qtls<0 || n.qtls>nrow(population$offspring$phenotypes)){
     stop("Value of n.qtls is too high or too low.\n")
   }
-  map <- checkParameters.internal(map,c("genetic","physical"),"map")
+  map <- match.arg(map)
   if(map=="genetic"){
     matchingMarkers <- which(rownames(population$offspring$genotypes$real)%in%rownames(population$maps$genetic))
     if(length(matchingMarkers)<=0) stop("Marker names on the map and in the genotypes doesn't match!\n")
