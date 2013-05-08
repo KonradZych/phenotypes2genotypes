@@ -30,8 +30,7 @@ set.geno.from.cross(cross,population,map=c("genetic","physical"))
 }
 
 \details{
-This function pull genotypes with a map from the cross object and puts them into provided population object. This is useful if the same cross is saturated and smoothed
-(using \code{\link{smooth.geno}}) multiple times to fix the markers that were already smoothed.
+This function pull genotypes with a map from the cross object and puts them into provided population object. This is useful if the same cross is saturated multiple times.
 }
 
 \author{
