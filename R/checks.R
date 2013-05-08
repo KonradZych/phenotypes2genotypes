@@ -31,6 +31,23 @@ genotypeCheck.internal <- function(objectToBeChecked, genotypes, allow.na=FALSE)
   return(TRUE)
 }
 
+# numericCheck.internal
+#
+# DESCRIPTION:
+#  Checking if given object is numeric or could be converted to numeric
+# OUTPUT:
+#  boolean
+#
+numericCheck.internal <- function(objectToBeChecked, allow.na=FALSE){
+  converted <- as.numeric(as.matrix(objectToBeChecked))
+  if(any(is.na(converted))){
+    if(!(allow.na)) return(FALSE)
+      if(sum(is.na(converted)) == sum(is.na((objectToBeChecked)))) return(TRUE)
+    return(FALSE)
+  }
+  return(TRUE)
+}
+
 ############################################################################################################
 #                                          *** check.population ***
 #

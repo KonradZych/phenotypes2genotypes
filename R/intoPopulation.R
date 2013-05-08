@@ -198,7 +198,7 @@ add.to.populationSubPheno.internal <- function(population, dataObject, dataType=
   if(!(is.null(dataObject))&&!is.null(dim(dataObject))){ #Check whether rows are numeric/convertable to numeric
     rows <- unlist(lapply(c(1:nrow(dataObject)), function(curRow,dataObject,verbose){
       if(verbose&&curRow%%1000==0) cat("Processing row:",curRow,"\n")
-      if(!(numericCheck.internal(dataObject[curRow,],allow.na=TRUE))) return(curRow)
+      if(numericCheck.internal(dataObject[curRow,],allow.na=TRUE)) return(curRow)
       return(NULL)
     },dataObject,verbose))    
     
