@@ -9,12 +9,15 @@
 \alias{checkForEpistasis}
 \alias{cleanRfs}
 \alias{donothing}
+\alias{getMarkerOffsets}
+\alias{getMarkerOffsetsFromMap}
 \alias{matchMarkers}
 \alias{mlog}
 \alias{mlogit}
 \alias{mprobit}
 \alias{msqrt}
 \alias{map2mapCorrelationMatrix}
+\alias{map2mapImage}
 \alias{mergeInverted}
 \alias{normalModeReading}
 \alias{plot4Nmixture}
@@ -36,8 +39,10 @@
 \alias{add.to.populationSubPheno.internal}
 
 \alias{bestQTLSub.internal}
+\alias{bestCorelated.internal}
 \alias{bestCorelatedSub.internal}
 \alias{bestQTL.internal}
+\alias{chromosomesLengths.internal}
 \alias{cleanGeno.internal}
 \alias{cleanNames.internal}
 \alias{convertMap.internal}
@@ -64,6 +69,7 @@
 \alias{inRangeCheck.internal}
 \alias{insertMarkers.internal}
 \alias{invertChromosome.internal}
+\alias{lowerTrng.internal}
 \alias{makeChromPal.internal}
 \alias{makeHaplos.internal}
 \alias{mapMarkers.internal}
