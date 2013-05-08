@@ -19,15 +19,19 @@
 cross.denovo <- function(population, n.chr, map=c("none","genetic","physical"), comparisonMethod = c(sumMajorityCorrelation,majorityCorrelation,meanCorrelation,majorityOfMarkers), 
 assignFunction=c(assignMaximumNoConflicts,assignMaximum), reOrder=TRUE, use.orderMarkers=FALSE, verbose=FALSE, debugMode=0, ...){
   #checks
-  if(missing(population)) stop("provide population object\n")
-  if(missing(n.chr)) stop("provide number of expected chromosomes\n")
+  if(missing(population)) stop("Provide a population object.\n")
   check.population(population)
-  map <- match.arg(map)
-  comparisonMethod <- defaultCheck.internal(comparisonMethod,"comparisonMethod",4,sumMajorityCorrelation)
-  assignFunction <- defaultCheck.internal(assignFunction,"assignFunction",2,assignMaximumNoConflicts)
+
+  if(missing(n.chr))     stop("Provide number of expected chromosomes.\n")
+  if(!is.numeric(n.chr)) stop("Number of expected chromosomes must be a numeric value.\n")
+  if(n.chr < 1)          stop("Number of expected chromosomes must be a positive value.\n")
   if("noParents" %in% population$flag) n.chr <- n.chr*2 
-  #print(n.chr)
-  cross <- cross.denovo.internal(population,n.chr,verbose=TRUE,debugMode=2)
+
+  map              <- match.arg(map)
+  comparisonMethod <- defaultCheck.internal(comparisonMethod,"comparisonMethod",4,sumMajorityCorrelation)
+  assignFunction   <- defaultCheck.internal(assignFunction,"assignFunction",2,assignMaximumNoConflicts)
+
+  cross            <- cross.denovo.internal(population,n.chr,verbose=TRUE,debugMode=2)
 
   if(length(cross$geno)<=1){
     cat("Selected cross object contains too little chromosomes to assign them, returning it.")
@@ -43,7 +47,7 @@ assignFunction=c(assignMaximumNoConflicts,assignMaximum), reOrder=TRUE, use.orde
       if(use.orderMarkers) cross <- orderMarkers(cross, use.ripple=TRUE, verbose=TRUE)
       return(cross)
     }else{
-      assignment <- names(cross$geno)
+      assignment        <- names(cross$geno)
       names(assignment) <- names(cross$geno)
       return(assignment)
     }
@@ -52,8 +56,7 @@ assignFunction=c(assignMaximumNoConflicts,assignMaximum), reOrder=TRUE, use.orde
   if(map=="genetic"){
     if(is.null(population$maps$genetic==NULL)) stop("No genetic map provided in population$maps$genetic\n")
     originalMap <- population$maps$genetic
-  }
-  if(map=="physical"){
+  }else if(map=="physical"){
     if(is.null(population$maps$physical)) stop("No physical map provided in population$maps$physical\n")
     originalMap <- population$maps$physical
   }
@@ -80,7 +83,6 @@ assignFunction=c(assignMaximumNoConflicts,assignMaximum), reOrder=TRUE, use.orde
         s0 <- proc.time()
         nmarkersPerChr <- nmar(cross)
         nChr <- length(nmarkersPerChr)
-        e0 <- proc.time()
         cross <- reorganizeMarkersWithin(cross,ordering)
         for(i in 1:nChr){
           cross <- orderMarkers(cross, use.ripple=TRUE, chr=i, verbose=TRUE)
@@ -92,6 +94,7 @@ assignFunction=c(assignMaximumNoConflicts,assignMaximum), reOrder=TRUE, use.orde
           }
           if(verbose) cat("Done ordering chromosome",i,"/",nChr,"Time remaining:",te,"seconds.\n")
         }
+        e0 <- proc.time()
         if(verbose && debugMode==2)cat("Ordering markers inside the cross object done in:",(e0-s0)[3],"seconds.\n")
     }else{
       cross <- reorganizeMarkersWithin(cross,ordering)
@@ -140,8 +143,8 @@ assignMaximumNoConflicts <- function(x, use = 2){
 }
 
 mergeInverted <- function(cross,populationType){
-  chr.correlations <- matrix(0,nchr(cross),nchr(cross))
-  mar.correlations <- cor(pull.geno(cross),use="pair")
+  chr.correlations           <- matrix(0,nchr(cross),nchr(cross))
+  mar.correlations           <- cor(pull.geno(cross),use="pair")
   rownames(mar.correlations) <- markernames(cross)
   colnames(mar.correlations) <- markernames(cross)
   colnames(chr.correlations) <- 1:nchr(cross)
@@ -391,7 +394,7 @@ majorityOfMarkers <- function(cross,originalMap,population,verbose=FALSE){
 cross.denovo.internal<- function(population,  n.chr,  use=c("rf","geno"), verbose=FALSE, debugMode=0){
   if(missing(n.chr)) stop("n.chr in an obligatory parameter")
   if(missing(population)) stop("no population object provided")
-  use <- checkParameters.internal(use,c("rf","geno"),"use")
+  use <- match.arg(use)
   check.population(population)
   if(is.null(population$offspring$genotypes$simulated)){
     stop("no simulated genotypes in population object, first use generate.biomarkers!\n")
