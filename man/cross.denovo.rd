@@ -14,16 +14,7 @@
 }
 
 \usage{
-cross.denovo(population, 
-             n.chr, 
-             map=c("none", "genetic", "physical"), 
-             comparisonMethod = c(sumMajorityCorrelation, majorityCorrelation, meanCorrelation, majorityOfMarkers),
-             assignFunction=c(assignMaximumNoConflicts, assignMaximum), 
-             reOrder=TRUE, 
-             use.orderMarkers=FALSE, 
-             verbose=FALSE, 
-             debugMode=0,
-            ...)
+cross.denovo(population, n.chr, map=c("none", "genetic", "physical"), comparisonMethod = c(sumMajorityCorrelation, majorityCorrelation, meanCorrelation, majorityOfMarkers), assignFunction=c(assignMaximumNoConflicts, assignMaximum), reOrder=TRUE, use.orderMarkers=FALSE, verbose=FALSE, debugMode=0, ...)
 }
 
 \arguments{
