@@ -83,8 +83,10 @@ showRPpval <- function(population,markers=1:10){
   #checks
   if(missing(population)) stop("provide population object\n")
   check.population(population)
+  if(!is.numeric(markers)) stop("markers parameter must be numeric.\n")
+  if(any(markers<1) || any(markers>nrow(population$founders$phenotypes))) stop("markers parameter must contain only values in between 1 and nr of markers (",nrow(population$founders$phenotypes),").\n")
+  
   if(is.null(population$founders$RP$pval)) stop("Population object does not contain results of RP analysis run find.diff.expressed first.\n")
-  inRangeCheck.internal(markers,"markers",1,nrow(population$founders$phenotypes))
   
   toPrint <- matrix(0,length(markers),2)
   toPrint[,1] <- population$founders$RP$pval[markers,1]
