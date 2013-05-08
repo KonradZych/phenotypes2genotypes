@@ -43,8 +43,7 @@ lowerTrng.internal <- function(inputMatrix){
 
 cleanRfs <- function(cross){
   dataRf 		<- t(est.rf(cross)$rf) #Replaced double for loop with a transform
-  rowMinimums	<- apply(dataRf, 1, min)
-  
+  rowMinimums	<- apply(dataRf, 1, min, na.rm=T)
   for(i in 1:nrow(dataRf)){
     if(rowMinimums[i] > 0.5){
       cat("dropping", rownames(dataRf)[i], "min:", rowMinimums[i])
