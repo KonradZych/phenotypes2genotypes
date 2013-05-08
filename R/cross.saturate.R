@@ -155,7 +155,7 @@ rearrangeMarkers <- function(cross, population, populationType, originalMap, thr
   if(verbose) cat("old map contains",max(originalMap[,1]),"chromosomes\n")
   
   if(placeUsing=="qtl"){
-    markersNewPostions <- bestQTL.internal(cross,population,threshold,flagged,verbose)
+    markersNewPostions <- bestQTL.internal(cross,population,threshold,flagged,env,verbose)
   }else{
     markersNewPostions <- bestCorelated.internal(cross,population,originalMap,threshold,verbose)
   }
@@ -315,13 +315,13 @@ bestQTLSub.internal <- function(qtls,marker){
 # OUTPUT:
 #  vector with new ordering of chromosomes inside cross object
 ############################################################################################################
-bestQTL.internal <- function(cross, population, threshold, flagged, verbose=FALSE){
+bestQTL.internal <- function(cross, population, threshold, flagged, env, verbose=FALSE){
   if(is.null(population$offspring$genotypes$qtl))              stop("No qtl data in population$offspring$genotypes$qtl, run scan.qtls function first.")
   if(is.null(population$offspring$genotypes$qtl$interactions)) stop("Old version of the QTL scan detected. Re-run scan.qtls!")
   
-  genotypes             <- population$offspring$genotypes$real
+  originalGeno          <- population$offspring$genotypes$real
   markerNames           <- markernames(cross)
-  phenotypes            <- pull.geno(cross)[,markerNames]
+  newGeno               <- pull.geno(cross)
   output                <- NULL
   count                 <- 0
   
@@ -334,8 +334,9 @@ bestQTL.internal <- function(cross, population, threshold, flagged, verbose=FALS
   for(marker in markerNames){
     ### is there a single significant peak in the data?
     if(sum(peaksMatrix[marker,]==2)==1){ #TODO: Figure out the logic here, Its not logical
-    
-      if(any(population$offspring$genotypes$qtl$interactions[marker,] > (threshold/2))){
+      envInteractions <- population$offspring$genotypes$qtl$interactions[marker,c(1,2)]
+      epiInteractions <- population$offspring$genotypes$qtl$interactions[marker,3]
+      if(any( envInteractions > (threshold/2))){
         envInt <- envInt + 1
         if(flagged=="remove"){
           cat("Marker:",marker,"shows significant association with environent and will be removed.\n")
@@ -344,7 +345,7 @@ bestQTL.internal <- function(cross, population, threshold, flagged, verbose=FALS
           if(flagged=="warn") cat("Marker:",marker,"shows significant association with environent.\n")
           output <- rbind(output,bestQTLSub.internal(population$offspring$genotypes$qtl,marker))
         }
-      }else if(population$offspring$genotypes$qtl$logLik[marker,1] > (population$offspring$genotypes$qtl$logLik[marker,2]+10)){
+      }else if(epiInteractions > (threshold/2)){
         epiInt <- epiInt + 1
         if(flagged=="remove"){
           cat("Marker:",marker,"is influenced by an epistatic interaction and will be removed.\n")

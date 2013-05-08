@@ -32,6 +32,15 @@ assignLinkageGroups <- function(cross, n.chr, use = c("geno","rf"), ...){
   reorganizeMarkersWithin(cross, clustering$cluster)
 }
 
+lowerTrng.internal <- function(inputMatrix){
+  if(ncol(inputMatrix)!=nrow(inputMatrix)) stop("unable to select lower triangle\n")
+  outputMatrix <- inputMatrix
+  for(i in 1:(nrow(inputMatrix)-1)){
+      outputMatrix[i,(i+1):nrow(inputMatrix)] <- outputMatrix[(i+1):nrow(inputMatrix),i]
+  }
+  invisible(outputMatrix)
+}
+
 cleanRfs <- function(cross){
   dataRf 		<- t(est.rf(cross)$rf) #Replaced double for loop with a transform
   rowMinimums	<- apply(dataRf, 1, min)

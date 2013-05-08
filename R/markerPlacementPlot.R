@@ -9,7 +9,7 @@
 
 markerPlacementPlot <- function(population, placeUsing=c("qtl","correlation"),thrRange=c(1,5,1),cross,verbose=FALSE){
   if(missing(population)) stop("Please provide a population object\n")
-  placeUsing <- checkParameters.internal(placeUsing,c("qtl","correlation"),"placeUsing")
+  placeUsing <- match.arg(placeUsing)
   check.population(population)
   if(is.null(population$offspring$genotypes$real)){
     stop("No original genotypes in population$offspring$genotypes$real, load them in using add.to.population\n")

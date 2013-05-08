@@ -175,7 +175,7 @@ generate.biomarkers.internal <- function(population, threshold, overlapInd, prop
   ### if any of the phenotypes is up-regulated - process them
   if(!(is.null(dim(upRegulatedPhenos)))&&(nrow(upRegulatedPhenos)!=0)){
     if(verbose) cat("Selected ",nrow(upRegulatedPhenos),"upregulated potential markers.\n")
-    cur                     <- splitPheno.internal(upRegulatedPhenos, upParental, overlapInd, proportion, margin, pProb, populationType, 1, 0, 0, verbose)
+    cur                     <- splitPheno.internal(upRegulatedPhenos, overlapInd, proportion, margin, pProb, populationType, 1, 0, 0, verbose)
     output                  <- rbind(output,cur[[1]])
     outputEM[[2]]           <- cur[[2]]
     names(outputEM[[2]])    <- rownames(population$offspring$phenotypes)
@@ -187,7 +187,7 @@ generate.biomarkers.internal <- function(population, threshold, overlapInd, prop
   ### if any of the phenotypes is down-regulated - process them
   if(!(is.null(dim(downRegulatedPhenos)))&&(nrow(downRegulatedPhenos)!=0)){
     if(verbose) cat("Selected ",nrow(downRegulatedPhenos),"downregulated potential markers.\n")
-    cur                     <- splitPheno.internal(downRegulatedPhenos, downParental, overlapInd, proportion, margin, pProb, populationType, 0, 0, 0,verbose)
+    cur                     <- splitPheno.internal(downRegulatedPhenos, overlapInd, proportion, margin, pProb, populationType, 0, 0, 0,verbose)
     output                  <- rbind(output,cur[[1]])
     outputEM[[1]]           <- cur[[2]]
     names(outputEM[[1]])    <- rownames(population$offspring$phenotypes)
@@ -347,7 +347,7 @@ mergeEnv.internal <- function(population, genoMatrix){
 #  list containg genotype matrix and names of selected markers
 #
 ############################################################################################################
-splitPheno.internal <- function(offspring, founders, overlapInd, proportion, margin, pProb=0.8, populationType, up, done=0, left=0, verbose=FALSE){
+splitPheno.internal <- function(offspring, overlapInd, proportion, margin, pProb=0.8, populationType, up, done=0, left=0, verbose=FALSE){
   output        <- NULL
   outputEM      <- NULL
   markerNames   <- NULL

@@ -56,16 +56,13 @@ scan.qtls <- function(population,map=c("genetic","physical"), env, step=0.1,verb
   
   returncross$pheno <- t(population$offspring$genotypes$simulated)
   returncross       <- calc.genoprob(returncross,step=step)
-  returncrosstwo    <- calc.genoprob(returncross,step=0)
   s                 <- proc.time()
-  lod               <- NULL
-  pos               <- NULL
-  chr               <- NULL
-  interactions      <- NULL
-  selectedNames     <- NULL
-  scan2             <- NULL
-  logLikeli         <- NULL
-  done              <- 0
+  lod               <- NULL # LOD scores
+  pos               <- NULL # position of the QTL peak on a chromosome
+  chr               <- NULL # chromosome of the peak marker
+  interactions      <- NULL # 1 - max lod score for Env, 2 - G:E, 3- epistasis
+  markerNames       <- NULL # names of the markers se
+  done              <- 0    
   useEnv            <- TRUE
 
   if(!(length(unique(env))>1)) useEnv <- FALSE
@@ -74,60 +71,73 @@ scan.qtls <- function(population,map=c("genetic","physical"), env, step=0.1,verb
     curlogLikeli <- NULL
     phenotype <- pull.pheno(returncross)[,i]
     perc <- round(i*100/nrow(population$offspring$genotypes$simulated))
-    if(perc%%10==0 && !(perc%in%done)){
+    if(perc%%10==0 && !(perc%in%done)){ # bit dirty hack to avoid displaying the same value more than once in verbose mode (this can happen due to rounding)
       e <- proc.time()
       cat("Analysing markers",perc,"% done, estimated time remaining:",(e-s)[3]/perc*(100-perc),"s\n")
       done <- c(done,perc)
     }
     if(useEnv){
-      curInteractions <- t(apply(pull.geno(returncross),2,fullScanRow.internal,phenotype,env))
-      interactions    <- rbind(interactions,c(max(curInteractions[,1]),max(curInteractions[,3])))
-      curlogLikeli    <- c(curlogLikeli,min(curInteractions[,4]))
+      fullScanResults    <- t(apply(pull.geno(returncross),2,fullScanRow.internal,phenotype,env))
+      curInteractions    <- c(max(fullScanResults[,1]),max(fullScanResults[,3]))
     }else{
-      interactions    <- rbind(interactions,c(0,0))
-      curlogLikeli    <- c(curlogLikeli,0)
+      curInteractions    <- c(0,0)
     }
-    curScan <- scanone(returncross,pheno.col=i,model="np")
-    aa <- tempfile()                #TODO:  When using Sink make sure you Try{}Catch everything, we need to dis-able sink even if everythign exploded
-    sink(aa)
-    curScantwo <- scantwo(returncrosstwo,pheno.col=i)
-    maxLine <- which.max(summary(curScantwo)[,6])
-    chr1 <- summary(curScantwo)[maxLine,1]
-    marker1 <- which(returncross$geno[[chr1]]$map==summary(curScantwo)[maxLine,3])
-    chr2 <- summary(curScantwo)[maxLine,2]
-    marker2 <- which(returncross$geno[[chr2]]$map==summary(curScantwo)[maxLine,4])
-    genoRow1 <- returncross$geno[[chr1]]$data[,marker1]
-    genoRow2 <- returncross$geno[[chr2]]$data[,marker2]
-    model <- lm(phenotype ~ genoRow1 + genoRow2 + genoRow1:genoRow2)
-    curlogLikeli <- c(curlogLikeli,logLik(model))
-    sink()
-    file.remove(aa)
+    tryCatch({
+      aa <- tempfile()
+      sink(aa)
+      curScan <- scanone(returncross,pheno.col=i,model="np")
+    },
+    error= function(err){
+      print(paste("ERROR in scan.qtls while using scanone:  ",err))
+      sink()            # sink if errored -> otherwise everything is sinked into aa file
+      # file is not removed -> contains output that may help with debugging
+    },
+    finally={
+      sink()
+      file.remove(aa) # no error -> close sink and remove unneeded file
+    })
+    
+    epistaticInter  <- checkForEpistasis(curScan,pull.geno(returncross),pull.pheno(returncross)[,i],env)
+    curInteractions <- c(curInteractions,epistaticInter)
+    interactions    <- rbind(interactions,curInteractions)
 
-    chr           <- rbind(chr,curScan[,1])
-    pos           <- rbind(pos,curScan[,2])
-    lod           <- rbind(lod,curScan[,3])
-    logLikeli     <- rbind(logLikeli,curlogLikeli)
-    selectedNames <- c(selectedNames,colnames(returncross$pheno)[i])
+    chr             <- rbind(chr,curScan[,1])
+    pos             <- rbind(pos,curScan[,2])
+    lod             <- rbind(lod,curScan[,3])
+    markerNames     <- c(markerNames,colnames(returncross$pheno)[i])
   }
 
   e <- proc.time()
   if(verbose) cat("Qtl scan done in",(e-s)[3],"s\n")
+  
   ### packing all the results into the population object
   population$offspring$genotypes$qtl$lod                     <- lod
+  rownames(population$offspring$genotypes$qtl$lod)           <- markerNames
+  colnames(population$offspring$genotypes$qtl$lod)           <- rownames(curScan)
+  
   population$offspring$genotypes$qtl$pos                     <- pos
+  rownames(population$offspring$genotypes$qtl$chr)           <- markerNames
+  colnames(population$offspring$genotypes$qtl$chr)           <- rownames(curScan)
+
   population$offspring$genotypes$qtl$chr                     <- chr
-  population$offspring$genotypes$qtl$interactions            <- interactions
-  population$offspring$genotypes$qtl$logLik                  <- logLikeli
-  population$offspring$genotypes$qtl$names                   <- selectedNames
-  rownames(population$offspring$genotypes$qtl$lod)           <- selectedNames
-  colnames(population$offspring$genotypes$qtl$lod)           <- rownames(curScan)   
-  rownames(population$offspring$genotypes$qtl$chr)           <- selectedNames
-  colnames(population$offspring$genotypes$qtl$chr)           <- rownames(curScan)  
-  rownames(population$offspring$genotypes$qtl$pos)           <- selectedNames
+  rownames(population$offspring$genotypes$qtl$pos)           <- markerNames
   colnames(population$offspring$genotypes$qtl$pos)           <- rownames(curScan)
-  rownames(population$offspring$genotypes$qtl$logLik)        <- selectedNames
-  rownames(population$offspring$genotypes$qtl$interactions)  <- selectedNames
+  
+  population$offspring$genotypes$qtl$interactions            <- interactions
+  rownames(population$offspring$genotypes$qtl$interactions)  <- markerNames
   invisible(population)
+}
+
+checkForEpistasis <- function(scanResults,originalGeno,marker,env){
+  maxGenoNr <- rownames(scanResults)[which.max(scanResults[,3])]
+  results   <- apply(originalGeno, 2, twoGenosModel, marker, originalGeno[,maxGenoNr], env)
+  results   <- results[-maxGenoNr] # removing model with env + maxGenoNr +maxGenoNr (overfit!)
+  invisible(max(results))
+}
+
+twoGenosModel <- function(genoRow, markerRow, maxGeno, env){
+  curRes <- -log10(anova(lm(markerRow~env+maxGeno+genoRow))[[5]][3])
+  invisible(curRes)
 }
 
 #TODO: Add documentation
@@ -135,3 +145,4 @@ fullScanRow.internal <- function(genoRow, phenoRow, env){
   model <- lm(phenoRow ~ env + genoRow + env:genoRow)
   return(c(-log10(anova(model)[[5]])[1:3], logLik(model)))
 }
+

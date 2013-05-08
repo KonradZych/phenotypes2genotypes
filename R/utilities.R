@@ -166,7 +166,7 @@ assignChrToMarkers <- function(assignment,cross){
 #
 ############################################################################################################
 set.geno.from.cross <- function(cross,population,map=c("genetic","physical")){
-  map <- checkParameters.internal(map,c("genetic","physical"),"map")
+  map <- match.arg(map)
   if(missing(population)) stop("Please provide a population object\n")
   if(missing(cross)) stop("Please provide a cross object\n")
   if(nrow(pull.geno(cross))!= ncol(population$offspring$phenotypes)) stop("Different nr of individuals in population and cross objects.")
