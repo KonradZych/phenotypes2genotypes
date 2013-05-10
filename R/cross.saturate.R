@@ -334,6 +334,7 @@ bestQTL.internal <- function(cross, population, threshold, flagged, env, verbose
   for(marker in markerNames){
     ### is there a single significant peak in the data?
     if(sum(peaksMatrix[marker,]==2)==1){ #TODO: Figure out the logic here, Its not logical
+      QTLlod          <- max(yeastPopulation$offspring$genotypes$qtl$lod[marker,])
       envInteractions <- population$offspring$genotypes$qtl$interactions[marker,c(1,2)]
       epiInteractions <- population$offspring$genotypes$qtl$interactions[marker,3]
       if(any( envInteractions > (threshold/2))){
@@ -345,7 +346,7 @@ bestQTL.internal <- function(cross, population, threshold, flagged, env, verbose
           if(flagged=="warn") cat("Marker:",marker,"shows significant association with environent.\n")
           output <- rbind(output,bestQTLSub.internal(population$offspring$genotypes$qtl,marker))
         }
-      }else if(epiInteractions > (threshold/2)){
+      }else if(epiInteractions > (threshold/2) + QTLlod){
         epiInt <- epiInt + 1
         if(flagged=="remove"){
           cat("Marker:",marker,"is influenced by an epistatic interaction and will be removed.\n")

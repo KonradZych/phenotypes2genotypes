@@ -97,7 +97,9 @@ scan.qtls <- function(population,map=c("genetic","physical"), env, step=0.1,verb
       file.remove(aa) # no error -> close sink and remove unneeded file
     })
     
-    epistaticInter  <- checkForEpistasis(curScan,pull.geno(returncross),pull.pheno(returncross)[,i],env)
+    #epistaticInter  <- checkForEpistasis(curScan,pull.geno(returncross),pull.pheno(returncross)[,i],env)
+    curScantwo      <- scantwo(returncrosstwo,pheno.col=i)
+    epistaticInter  <- max(summary(curScantwo)[,6])
     curInteractions <- c(curInteractions,epistaticInter)
     interactions    <- rbind(interactions,curInteractions)
 
