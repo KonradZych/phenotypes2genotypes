@@ -85,7 +85,8 @@ scan.qtls <- function(population,map=c("genetic","physical"), env, step=0.1,verb
     tryCatch({
       aa <- tempfile()
       sink(aa)
-      curScan <- scanone(returncross,pheno.col=i,model="np")
+      curScan     <- scanone(returncross,pheno.col=i,model="np")
+      curScanNoPM <- curScan[markernames(returncross),] #ignoring PM in check for epistasis
     },
     error= function(err){
       print(paste("ERROR in scan.qtls while using scanone:  ",err))
@@ -97,9 +98,7 @@ scan.qtls <- function(population,map=c("genetic","physical"), env, step=0.1,verb
       file.remove(aa) # no error -> close sink and remove unneeded file
     })
     
-    #epistaticInter  <- checkForEpistasis(curScan,pull.geno(returncross),pull.pheno(returncross)[,i],env)
-    curScantwo      <- scantwo(returncrosstwo,pheno.col=i)
-    epistaticInter  <- max(summary(curScantwo)[,6])
+    epistaticInter  <- checkForEpistasis(curScanNoPM,pull.geno(returncross),pull.pheno(returncross)[,i],env)
     curInteractions <- c(curInteractions,epistaticInter)
     interactions    <- rbind(interactions,curInteractions)
 
@@ -116,14 +115,14 @@ scan.qtls <- function(population,map=c("genetic","physical"), env, step=0.1,verb
   population$offspring$genotypes$qtl$lod                     <- lod
   rownames(population$offspring$genotypes$qtl$lod)           <- markerNames
   colnames(population$offspring$genotypes$qtl$lod)           <- rownames(curScan)
-  
-  population$offspring$genotypes$qtl$pos                     <- pos
-  rownames(population$offspring$genotypes$qtl$chr)           <- markerNames
-  colnames(population$offspring$genotypes$qtl$chr)           <- rownames(curScan)
 
-  population$offspring$genotypes$qtl$chr                     <- chr
+  population$offspring$genotypes$qtl$pos                     <- pos
   rownames(population$offspring$genotypes$qtl$pos)           <- markerNames
   colnames(population$offspring$genotypes$qtl$pos)           <- rownames(curScan)
+  
+  population$offspring$genotypes$qtl$chr                     <- chr
+  rownames(population$offspring$genotypes$qtl$chr)           <- markerNames
+  colnames(population$offspring$genotypes$qtl$chr)           <- rownames(curScan)
   
   population$offspring$genotypes$qtl$interactions            <- interactions
   rownames(population$offspring$genotypes$qtl$interactions)  <- markerNames
@@ -131,7 +130,7 @@ scan.qtls <- function(population,map=c("genetic","physical"), env, step=0.1,verb
 }
 
 checkForEpistasis <- function(scanResults,originalGeno,marker,env){
-  maxGenoNr <- rownames(scanResults)[which.max(scanResults[,3])]
+  maxGenoNr <- which.max(scanResults[,3])
   results   <- apply(originalGeno, 2, twoGenosModel, marker, originalGeno[,maxGenoNr], env)
   results   <- results[-maxGenoNr] # removing model with env + maxGenoNr +maxGenoNr (overfit!)
   invisible(max(results))
