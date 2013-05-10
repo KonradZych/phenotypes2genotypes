@@ -449,8 +449,10 @@ splitPhenoRowEM.internal <- function(x, overlapInd, proportion, margin, pProb=0.
         if(any(EM$posterior[i,]>pProb)) result[idx[i]] <- genotypes[which.max(EM$posterior[i,])]
       }
     }
-    if((sum(is.na(result))-idw)>overlapInd) result <- NULL
+  }else{
+    result <- NULL
   }
+  if((sum(is.na(result))-idw)>overlapInd) result <- NULL
   invisible(list(result,EM))
 }
 
