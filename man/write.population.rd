@@ -8,13 +8,16 @@
 }
 
 \usage{
-	write.population(population,outputFile="population.txt",verbose=FALSE)
+	write.population(population, offspring = "offspring", founders = "founders", map = "map", verbose = FALSE, debugMode = 0)
 }
 
 \arguments{
  \item{population}{ An object of class \code{population}. See \code{\link{create.population}} for details. }
- \item{outputFile}{ Name of the output file. }
+ \item{offspring}{ Core used to specify names of children phenotypic ("core_phenotypes.txt") genotypic ("core_genotypes.txt") and annotations ("core_annotations.txt") files.}
+ \item{founders}{ Core used to specify names of parental phenotypic ("core_phenotypes.txt") file. }
+ \item{map}{ Core used to specify names of genetic ("map_genetic.txt") and physical ("map_physical.txt") map files. }
  \item{verbose}{ Be verbose. }
+ \item{debugMode}{ 1: Print out checks, 2: print additional time information }
 }
 
 \value{
