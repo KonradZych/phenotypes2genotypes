@@ -340,7 +340,7 @@ bestQTL.internal <- function(cross, population, threshold, flagged, env, verbose
     epiMarkers <- NULL
     ### is there a single significant peak in the data?
     if(sum(peaksMatrix[marker,]==2)==1){ #TODO: Figure out the logic here, Its not logical
-      QTLlod          <- max(yeastPopulation$offspring$genotypes$qtl$lod[marker,])
+      QTLlod          <- max(population$offspring$genotypes$qtl$lod[marker,])
       envInteractions <- population$offspring$genotypes$qtl$interactions[marker,c(1,2)]
       epiInteractions <- population$offspring$genotypes$qtl$interactions[marker,3]
       if(any( envInteractions > (threshold/2))){
