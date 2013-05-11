@@ -28,7 +28,7 @@
       \item{risib}{ - Recombinant inbred line by sibling mating.}
     }
   }
-  \item{nnoWarn}{ If TRUE, no warnings will be produced. }
+  \item{noWarn}{ If TRUE, no warnings will be produced. }
   \item{verbose}{ Be verbose. }
   \item{debugMode}{ Either use 1 or 2, this will modify the amount of information returned to the user. 1) Print out checks, 2) Print additional time information.}
 }
