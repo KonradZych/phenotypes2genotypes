@@ -23,7 +23,7 @@
 #
 
 create.population <- function(offspringPhenotypes, founders, foundersGroups, offspringGenotypes, mapsGenetic, mapsPhysical,
-  populationType=c("riself", "f2", "bc", "risib"), no.warn=FALSE, verbose=FALSE, debugMode=0){
+  populationType=c("riself", "f2", "bc", "risib"), noWarn=FALSE, verbose=FALSE, debugMode=0){
   if(verbose && debugMode==1) cat("create.population starting.\n")
   s <- proc.time()
   population <- NULL
@@ -47,17 +47,17 @@ create.population <- function(offspringPhenotypes, founders, foundersGroups, off
   population <- add.to.populationSub.internal(population, populationType, population$founders$groups, "founders$groups", verbose, debugMode)
 
   if(missing(offspringGenotypes)){
-    if(verbose && !(no.warn))cat("No offspring genotypic data provided. You can supply it later using add.to.population.\n")
+    if(verbose && !(noWarn))cat("No offspring genotypic data provided. You can supply it later using add.to.population.\n")
   }else{
     population <- add.to.populationSub.internal(population, populationType, offspringGenotypes, "offspring$genotypes", verbose, debugMode)
   }
   if(missing(mapsGenetic)){
-    if(verbose && !(no.warn))cat("No genotic map provided. You can supply it later using add.to.population.\n")
+    if(verbose && !(noWarn))cat("No genotic map provided. You can supply it later using add.to.population.\n")
   }else{
     population <- add.to.populationSub.internal(population, populationType, mapsGenetic, "maps$genetic", verbose, debugMode)
   }
   if(missing(mapsPhysical)){
-    if(verbose && !(no.warn))cat("No physical map provided.  You can supply it later using add.to.population.\n")
+    if(verbose && !(noWarn))cat("No physical map provided.  You can supply it later using add.to.population.\n")
   }else{
     population <- add.to.populationSub.internal(population, populationType, mapsPhysical, "maps$physical", verbose, debugMode)
   }
