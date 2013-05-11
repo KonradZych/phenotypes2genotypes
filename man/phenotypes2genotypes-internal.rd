@@ -75,6 +75,7 @@
 \alias{mapMarkers.internal}
 \alias{mergeChromosomes.internal}
 \alias{mergeEnv.internal}
+\alias{numericCheck.internal}
 \alias{printGeno.internal}
 \alias{removeChromosomesSub.internal}
 \alias{scoreMixups.internal}
