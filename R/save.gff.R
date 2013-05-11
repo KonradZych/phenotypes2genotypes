@@ -19,7 +19,7 @@
 # OUTPUT:
 #  NONE
 #
-saveGff <- function(cross, map.physical, ind, gffFileCore="population", verbose=FALSE){
+save.gff <- function(cross, map.physical, ind, gffFileCore="population", verbose=FALSE){
   if(missing(ind)) ind <- 1:nind(cross)
   if(missing(map.physical)) stop("Provide map.physical.")
   if(missing(cross)) stop("Provide an object of class cross.")
