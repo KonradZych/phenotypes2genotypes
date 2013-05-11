@@ -9,17 +9,17 @@
 }
 
 \usage{
-	create.population(offspring_phenotypes, founders, founders_groups, offspring_genotypes, maps_genetic, maps_physical, populationType=c("riself", "f2", "bc", "risib"),
-  no.warn=FALSE, verbose=FALSE, debugMode=0)
+  create.population(offspringPhenotypes, founders, foundersGroups, offspringGenotypes, mapsGenetic, mapsPhysical,
+  populationType=c("riself", "f2", "bc", "risib"), noWarn=FALSE, verbose=FALSE, debugMode=0)
 }
 
 \arguments{
-  \item{offspring_phenotypes}{ A matrix that contains the phenotype data measured on the offspring (required).}
+  \item{offspringPhenotypes}{ A matrix that contains the phenotype data measured on the offspring (required).}
   \item{founders}{ A matrix that contains the phenotype data measured on the founders (required).}
-  \item{founders_groups}{ When multiple measurement for the founders are present this is used to group the founders. The format is a matrix that contains the phenotype data measured on the (required).}
-  \item{offspring_genotypes}{ Matrix containing any known offspring genotype data (optional).}
-  \item{maps_genetic}{ Matrix containing a known genetic map (optional).}
-  \item{maps_physical}{ Matrix containing a known physical map (optional).}
+  \item{foundersGroups}{ When multiple measurement for the founders are present this is used to group the founders. The format is a matrix that contains the phenotype data measured on the (required).}
+  \item{offspringGenotypes}{ Matrix containing any known offspring genotype data (optional).}
+  \item{mapsGenetic}{ Matrix containing a known genetic map (optional).}
+  \item{mapsPhysical}{ Matrix containing a known physical map (optional).}
   \item{populationType}{ Type of population the expression data was obtained from:
     \itemize{
       \item{riself}{ - Recombinant inbred line by selfing.}
@@ -28,7 +28,7 @@
       \item{risib}{ - Recombinant inbred line by sibling mating.}
     }
   }
-  \item{no.warn}{ If TRUE, no warnings will be produced. }
+  \item{nnoWarn}{ If TRUE, no warnings will be produced. }
   \item{verbose}{ Be verbose. }
   \item{debugMode}{ Either use 1 or 2, this will modify the amount of information returned to the user. 1) Print out checks, 2) Print additional time information.}
 }
