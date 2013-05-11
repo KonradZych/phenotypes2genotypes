@@ -8,13 +8,12 @@
 }
 
 \usage{
-	qtl.comparison.plot(cross, cross2, map.physical, chr, ...)
+	qtl.comparison.plot(cross1, cross2, chr, ...)
 }
 
 \arguments{
- \item{cross}{ An object of class \code{cross}. See \code{\link[qtl]{read.cross}} for details.}
+ \item{cross1}{ An object of class \code{cross}. See \code{\link[qtl]{read.cross}} for details.}
  \item{cross2}{ An object of class \code{cross}. See \code{\link[qtl]{read.cross}} for details.}
- \item{map.physical}{ (OPTIONAL) object contining physical locations of (some) markers in the cross objects. It should be provided in the same format as maps for object of class population. See \code{\link{create.population}} for details.}
  \item{chr}{ Specifies the chromosome to be shown (only one chromosome can be plotted at a time.}
  \item{...}{ Arguments passed to scanone function (see \code{\link[qtl]{scanone}}).}
 }
@@ -33,9 +32,8 @@ Plots markers from moth old and new map as points and in the background - compar
 }
 
 \examples{
-	data(yeastPopulation)
 	data(yeastCross)
-	markersCorPlot(yeastCross,yeastPopulation,map="physical")
+	qtl.comparison.plot(yeastCross,yeastCross)
 }
 
 \seealso{
