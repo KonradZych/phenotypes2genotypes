@@ -8,8 +8,9 @@
 }
 
 \usage{
-cross.saturate(population, cross, map=c("genetic","physical"), placeUsing=c("qtl","correlation"), threshold=3, chr, use.orderMarkers=FALSE, verbose=FALSE, debugMode=0)
-	
+cross.saturate(population, cross, map=c("genetic","physical"), placeUsing=c("qtl","correlation"), flagged = c("remove","warn","ignore"), threshold=3,
+  chr, env, use.orderMarkers=FALSE, verbose=FALSE, debugMode=0)
+
 }
 
 \arguments{
@@ -29,11 +30,20 @@ cross.saturate(population, cross, map=c("genetic","physical"), placeUsing=c("qtl
     \item{correlation}{ - position the new markers on the locations with the highest correction to markers on the physical map from cross$maps$physical. }
   }
   }
+\item{flagged}{ 
+  How to handle the markers influenced by epistatic or environmental interactions:
+  \itemize{
+    \item{remove}{ - warn about every marker affected and remove them. }
+    \item{warn}{ - warn about every marker affected but leave them in. }
+    \item{ignore}{ - leave them in. }
+  }
+  }
  \item{threshold}{ Specifies a threshold for the selection of new phenotype markers (see \link{markerPlacementPlot}).}
  \item{chr}{ When specified the algorithm only saturates a subset of chromosomes. If not specified, all the chromosomes will be saturated. }
+ \item{env}{ Vector of environmental conditions - for each of the individuals specifies a condition. Ignored if missing.}
  \item{use.orderMarkers}{ If true the algorithm (after initial saturation) performs an \code{\link[qtl]{orderMarkers}} on the newly created map.}
- \item{debugMode}{ Either use 1 or 2, this will modify the amount of information returned to the user. 1) Print out checks, 2) Print additional time information.}
  \item{verbose}{ Be verbose.}
+ \item{debugMode}{ Either use 1 or 2, this will modify the amount of information returned to the user. 1) Print out checks, 2) Print additional time information.}
 }
 
 \value{
