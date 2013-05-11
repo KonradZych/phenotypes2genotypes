@@ -1,12 +1,8 @@
 \name{generate.biomarkers}
 \alias{generate.biomarkers}
-\alias{use}
-\alias{threshold}
 \alias{overlapInd}
 \alias{proportion}
 \alias{margin}
-\alias{splitMethod}
-\alias{numberOfChromosomes}
 
 \title{Generate discrete biomarkers from the continuous phenotypes}
 
@@ -15,7 +11,7 @@
 }
 
 \usage{
-  generate.biomarkers(population, threshold=0.05, overlapInd = 10, proportion = c(50,50), margin = 15, verbose=FALSE, debugMode=0)
+  generate.biomarkers(population, threshold=0.05, overlapInd = 10, proportion = c(50,50), margin = 15, pProb=0.8, env, verbose=FALSE, debugMode=0)
 }
 
 \arguments{
@@ -24,6 +20,8 @@
   lower that the set threshold, the phenotype is kept in the analysis as being differentially expressed.}
   \item{overlapInd}{ The number of individuals that are allowed in the overlap (undecided region) when assigning genotype encodings.}
   \item{proportion}{ The expected proportion of individuals expected to carrying a certain genotype (e.g. c(50,50) in a recombinant inbred line).}
+  \item{pProb}{ Threshold posterior probability used to assign expression values to the genotypes. If not crossed - empty genotype is assigned.}
+  \item{env}{ Vector of environmental conditions - for each of the individuals specifies a condition. Ignored if missing.}
   \item{margin}{ This specifies how much deviation from the expected proportion is allowed (2 sided). }
   \item{verbose}{ Be verbose. }
   \item{debugMode}{ Either use 1 or 2, this will modify the amount of information returned to the user. 1) Print out checks, 2) Print additional time information.}
