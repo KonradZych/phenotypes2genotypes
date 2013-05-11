@@ -1,5 +1,5 @@
-\name{saveGff}
-\alias{saveGff}
+\name{save.gff}
+\alias{save.gff}
 
 \title{Saving gff files.}
 
@@ -8,14 +8,14 @@
 }
 
 \usage{
-saveGff(cross, population, gffFileCore="population", verbose=FALSE)
+save.gff(cross, map.physical, ind, gffFileCore="population", verbose=FALSE)
 }
 
 \arguments{
 \item{cross}{ An object of class \code{cross}. See \code{\link[qtl]{read.cross}} for details. If not supplied, it will be created using data from the population object }
-\item{population}{ An object of class \code{\link{population}}. See \code{\link{create.population}} for details. }
-\item{gffFileCore}{Name of the gff files core where a physical location of the markers is stored for use in genome viewers. Four files will be saved - one with only
-non-reduntant markers, one with redundat markers included and two with recombination breakpoints between the all/nonredundant markers.}
+\item{map.physical}{ Map with physical locations of the markers. A matrix with three columns - chromosome/ start position/ end position. Just like physical map in population object, see: \code{read.population}}
+\item{ind}{Which individuals should be saved. Numeric vector. If missing - all individuals will be selected.}
+\item{gffFileCore}{Name of the gff files core. For each of the individuals a separated file is created with a name: "core" +"ind_x.gff".}
  \item{verbose}{ Be verbose.}
 }
 
