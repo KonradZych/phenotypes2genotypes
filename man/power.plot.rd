@@ -8,7 +8,7 @@
 }
 
 \usage{
-  power.plot <- (cross1,cross2,qtlThr=5,nPheno=500,verbose=FALSE,...)
+  power.plot(cross1,cross2,qtlThr=5,nPheno=500,verbose=FALSE,...)
 }
 
 \arguments{
@@ -16,6 +16,7 @@
  \item{cross2}{ An object of class \code{cross}. See \code{\link[qtl]{read.cross}} for details.}
  \item{qtlThr}{ Threshold for assessing the significance of the QTL peak.}
  \item{nPheno}{ Nr of phenotypes that will be scanned for QTLs. Phenotypes are selected randomly.}
+ \item{verbose}{ Be verbose. }
  \item{...}{ Arguments passed to scanone function (see \code{\link[qtl]{scanone}}).}
 }
 
