@@ -141,7 +141,7 @@ twoGenosModel <- function(genoRow, markerRow, maxGeno, env, useEnv){
   curRes <- -log10(anova(lm(markerRow~env+maxGeno+genoRow))[[5]])
   output <- curRes[2]
   if(useEnv) output <- curRes[3]
-  invisible(curRes)
+  invisible(useEnv)
 }
 
 #TODO: Add documentation
