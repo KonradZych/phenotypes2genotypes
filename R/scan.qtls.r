@@ -91,7 +91,7 @@ scan.qtls <- function(population,map=c("genetic","physical"), env, step=0.1,verb
       curScanNoPM <- curScan[markernames(returncross),] #ignoring PM in check for epistasis
     },
     error= function(err){
-      print(paste("ERROR in scan.qtls while using scanone:  ",err))
+      stop(paste("ERROR in scan.qtls while using scanone:  ",err))
       sink()            # sink if errored -> otherwise everything is sinked into aa file
       # file is not removed -> contains output that may help with debugging
     },
