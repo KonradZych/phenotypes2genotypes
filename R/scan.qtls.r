@@ -28,9 +28,11 @@ scan.qtls <- function(population,map=c("genetic","physical"), env, step=0.1,verb
   map <- match.arg(map)
 
   if(map=="genetic"){
+    if(is.null(population$maps$genetic)) stop("No genetic map in the population object!")
     population      <- matchMarkers(population, population$maps$genetic, mapType="genetic")
     originalMap     <- population$maps$genetic
   }else{
+    if(is.null(population$maps$physical)) stop("No genetic map in the population object!")
     population      <- matchMarkers(population, population$maps$physical, mapType="physical")
     originalMap     <- population$maps$physical
   }
@@ -45,7 +47,7 @@ scan.qtls <- function(population,map=c("genetic","physical"), env, step=0.1,verb
     returncross <- genotypesToCross.internal(population10pheno,"real","map_genetic")
   },
   error= function(err){
-    print(paste("ERROR in scan.qtls while creating cross:  ",err))
+    stop(paste("ERROR in scan.qtls while creating cross:  ",err))
     sink()            # sink if errored -> otherwise everything is sinked into aa file
     # file is not removed -> contains output that may help with debugging
   },
