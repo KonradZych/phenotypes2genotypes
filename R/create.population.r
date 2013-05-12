@@ -31,7 +31,7 @@ create.population <- function(offspringPhenotypes, founders, foundersGroups, off
   
   if(missing(offspringPhenotypes)) stop("No offspring phenotype data provided!")
   population <- add.to.populationSub.internal(population, populationType, offspringPhenotypes, "offspring$phenotypes", verbose, debugMode)
-
+  
   if(missing(founders)){
     population <- simulateParentalPhenotypes(population, population$offspring$phenotypes, populationType)
   }else{
@@ -44,7 +44,7 @@ create.population <- function(offspringPhenotypes, founders, foundersGroups, off
   
   if(missing(foundersGroups)) stop("No information about founders groups provided!\n")
   if(length(foundersGroups) !=ncol(population$founders$phenotypes)) stop("foundersGroup parameter should have length equal to number of columns in founders phenotype data") 
-  population <- add.to.populationSub.internal(population, populationType, population$founders$groups, "founders$groups", verbose, debugMode)
+  population <- add.to.populationSub.internal(population, populationType, foundersGroups, "founders$groups", verbose, debugMode)
 
   if(missing(offspringGenotypes)){
     if(verbose && !(noWarn))cat("No offspring genotypic data provided. You can supply it later using add.to.population.\n")
