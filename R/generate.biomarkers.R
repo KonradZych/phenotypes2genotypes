@@ -418,7 +418,7 @@ splitPhenoRowEM.internal <- function(x, overlapInd, proportion, margin, pProb=0.
     EM <- normalmixEM(y, k=nrDistributions, lambda= proportion, maxrestarts=1, maxit = 300, fast=FALSE)
   },
   error= function(err){
-    stop(paste("ERROR in splitPhenoRowEM.internal while running EM:  ",err))
+    warning(paste("ERROR in splitPhenoRowEM.internal while running EM:  ",err))
     sink()            # sink if errored -> otherwise everything is sinked into aa file
     # file is not removed -> contains output that may help with debugging
   },
