@@ -452,7 +452,7 @@ splitPhenoRowEM.internal <- function(x, overlapInd, proportion, margin, pProb=0.
   }else{
     result <- NULL
   }
-  if((sum(is.na(result))-idw)>overlapInd) result <- NULL
+  if(!is.null(result)) if((sum(is.na(result))-idw)>overlapInd) result <- NULL
   invisible(list(result,EM))
 }
 
