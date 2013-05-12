@@ -31,7 +31,7 @@ scan.qtls <- function(population,map=c("genetic","physical"), env, step=0.1,verb
     if(is.null(population$maps$genetic)) stop("No genetic map in the population object!")
     population      <- matchMarkers(population, population$maps$genetic, mapType="genetic")
   }else{
-    if(is.null(population$maps$physical)) stop("No genetic map in the population object!")
+    if(is.null(population$maps$physical)) stop("No physical map in the population object!")
     population      <- matchMarkers(population, population$maps$physical, mapType="physical")
   }
   originalMap     <- paste("map_",map,sep="")

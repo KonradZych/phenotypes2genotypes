@@ -8,7 +8,7 @@ map <- read.csv(file="map.csv",header=TRUE,row.names=1)
 population <- create.population(children,parents,c(0,0,0,0,0,0,1,1,1,1,1,1),genotypes,verbose=TRUE)
 population <- find.diff.expressed(population)
 population <- generate.biomarkers(population, threshold=0.1, verbose=T, debug=2)
-population <- scan.qtls(population,verbose=T,step=0)
+population <- scan.qtls(population,verbose=T,step=0, map="physical")
 
 ####THREE WAYS TO ASSIGN CHROMOSOMES
 set.seed(101010)
