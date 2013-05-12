@@ -51,7 +51,7 @@ find.mixups <- function(population,map=c("genetic","physical"),n.qtls=50,thresho
       returncross$pheno <- t(population$offspring$phenotypes)
     },
     error= function(err){
-      print(paste("ERROR in find.mixups while creating cross:  ",err))
+      stop(paste("ERROR in find.mixups while creating cross:  ",err))
       sink()            # sink if errored -> otherwise everything is sinked into aa file
       # file is not removed -> contains output that may help with debugging
     },
@@ -78,7 +78,7 @@ find.mixups <- function(population,map=c("genetic","physical"),n.qtls=50,thresho
       returncross$pheno <- t(population$offspring$phenotypes)
     },
     error= function(err){
-      print(paste("ERROR in find.mixups while creating cross:  ",err))
+      stop(paste("ERROR in find.mixups while creating cross:  ",err))
       sink()            # sink if errored -> otherwise everything is sinked into aa file
       # file is not removed -> contains output that may help with debugging
     },
