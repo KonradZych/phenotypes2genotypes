@@ -100,6 +100,7 @@ scan.qtls <- function(population,map=c("genetic","physical"), env, step=0.1,verb
     })
     
     epistaticInter  <- checkForEpistasis(curScanNoPM,pull.geno(returncross),pull.pheno(returncross)[,i],env)
+    print(epistaticInter)
     curInteractions <- c(curInteractions,epistaticInter)
     interactions    <- rbind(interactions,curInteractions)
 
@@ -132,13 +133,16 @@ scan.qtls <- function(population,map=c("genetic","physical"), env, step=0.1,verb
 
 checkForEpistasis <- function(scanResults,originalGeno,marker,env){
   maxGenoNr <- which.max(scanResults[,3])
-  results   <- apply(originalGeno, 2, twoGenosModel, marker, originalGeno[,maxGenoNr], env)
+  results   <- apply(originalGeno, 2, twoGenosModel, marker, originalGeno[,maxGenoNr], env, useEnv)
+  print(results)
   results   <- results[-maxGenoNr] # removing model with env + maxGenoNr +maxGenoNr (overfit!)
-  invisible(max(results))
+  invisible(max(results,na.rm=T))
 }
 
-twoGenosModel <- function(genoRow, markerRow, maxGeno, env){
-  curRes <- -log10(anova(lm(markerRow~env+maxGeno+genoRow))[[5]][3])
+twoGenosModel <- function(genoRow, markerRow, maxGeno, env, useEnv){
+  curRes <- -log10(anova(lm(markerRow~env+maxGeno+genoRow))[[5]])
+  output <- curRes[2]
+  if(useEnv) output <- curRes[3]
   invisible(curRes)
 }
 
