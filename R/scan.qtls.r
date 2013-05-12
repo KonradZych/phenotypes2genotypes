@@ -30,12 +30,11 @@ scan.qtls <- function(population,map=c("genetic","physical"), env, step=0.1,verb
   if(map=="genetic"){
     if(is.null(population$maps$genetic)) stop("No genetic map in the population object!")
     population      <- matchMarkers(population, population$maps$genetic, mapType="genetic")
-    originalMap     <- population$maps$genetic
   }else{
     if(is.null(population$maps$physical)) stop("No genetic map in the population object!")
     population      <- matchMarkers(population, population$maps$physical, mapType="physical")
-    originalMap     <- population$maps$physical
   }
+  originalMap     <- paste("map_",map,sep="")
   
   population10pheno                      <- population
   population10pheno$offspring$phenotypes <- population10pheno$offspring$phenotypes[1:10,]
@@ -44,7 +43,7 @@ scan.qtls <- function(population,map=c("genetic","physical"), env, step=0.1,verb
   tryCatch({
     aa <- tempfile()
     sink(aa)
-    returncross <- genotypesToCross.internal(population10pheno,"real","map_genetic")
+    returncross <- genotypesToCross.internal(population10pheno,"real",originalMap)
   },
   error= function(err){
     stop(paste("ERROR in scan.qtls while creating cross:  ",err))
