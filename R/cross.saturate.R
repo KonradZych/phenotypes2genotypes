@@ -344,7 +344,7 @@ bestQTL.internal <- function(cross, population, threshold, flagged, env, verbose
       envInteractions <- population$offspring$genotypes$qtl$interactions[marker,c(1,2)]
       epiInteractions <- population$offspring$genotypes$qtl$interactions[marker,3]
       if(flagged!="ignore"){
-        if(any( envInteractions > (threshold/2))){
+        if(any(envInteractions > (threshold/2))){
           envInt <- envInt + 1
           if(flagged=="remove"){
             cat("Marker:",marker,"shows significant association with environent and will be removed.\n")
