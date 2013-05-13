@@ -343,28 +343,32 @@ bestQTL.internal <- function(cross, population, threshold, flagged, env, verbose
       QTLlod          <- max(population$offspring$genotypes$qtl$lod[marker,])
       envInteractions <- population$offspring$genotypes$qtl$interactions[marker,c(1,2)]
       epiInteractions <- population$offspring$genotypes$qtl$interactions[marker,3]
-      if(any( envInteractions > (threshold/2))){
-        envInt <- envInt + 1
-        if(flagged=="remove"){
-          cat("Marker:",marker,"shows significant association with environent and will be removed.\n")
-          output <- rbind(output,c(NA,NA,NA))
+      if(flagged!="ignore"){
+        if(any( envInteractions > (threshold/2))){
+          envInt <- envInt + 1
+          if(flagged=="remove"){
+            cat("Marker:",marker,"shows significant association with environent and will be removed.\n")
+            output <- rbind(output,c(NA,NA,NA))
+          }else if(flagged=="warn"){
+            cat("Marker:",marker,"shows significant association with environent.\n")
+            envMarkers <- c(envMarkers,marker)
+            output <- rbind(output,bestQTLSub.internal(population$offspring$genotypes$qtl,marker))
+          }
+        }else if(epiInteractions > (threshold/2)){
+          epiInt <- epiInt + 1
+          if(flagged=="remove"){
+            cat("Marker:",marker,"is influenced by an epistatic interaction and will be removed.\n")
+            output <- rbind(output,c(NA,NA,NA))
+          }else if(flagged=="warn"){
+            cat("Marker:",marker,"is influenced by an epistatic interaction.\n")
+            epiMarkers <- c(epiMarkers,marker)
+            output <- rbind(output,bestQTLSub.internal(population$offspring$genotypes$qtl,marker))
+          }
         }else{
-          if(flagged=="warn") cat("Marker:",marker,"shows significant association with environent.\n")
-          envMarkers <- c(envMarkers,marker)
-          output <- rbind(output,bestQTLSub.internal(population$offspring$genotypes$qtl,marker))
-        }
-      }else if(epiInteractions > (threshold/2)){
-        epiInt <- epiInt + 1
-        if(flagged=="remove"){
-          cat("Marker:",marker,"is influenced by an epistatic interaction and will be removed.\n")
-          output <- rbind(output,c(NA,NA,NA))
-        }else{
-          if(flagged=="warn") cat("Marker:",marker,"is influenced by an epistatic interaction.\n")
-          epiMarkers <- c(epiMarkers,marker)
           output <- rbind(output,bestQTLSub.internal(population$offspring$genotypes$qtl,marker))
         }
       }else{
-        output <- rbind(output,bestQTLSub.internal(population$offspring$genotypes$qtl,marker))
+          output <- rbind(output,bestQTLSub.internal(population$offspring$genotypes$qtl,marker))
       }
     }else{
       count <- count+1
