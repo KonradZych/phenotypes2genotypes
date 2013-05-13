@@ -8,9 +8,9 @@
 }
 
 \usage{
-cross.saturate(population, cross, map=c("genetic","physical"), placeUsing=c("qtl","correlation"), flagged = c("remove","warn","ignore"), threshold=3,
-  chr, env, use.orderMarkers=FALSE, verbose=FALSE, debugMode=0)
-
+cross.saturate(population, cross, map=c("genetic","physical"), placeUsing=c("qtl",
+  "correlation"), flagged = c("remove","warn","ignore"), threshold=3, chr, env,
+  use.orderMarkers=FALSE, verbose=FALSE, debugMode=0)
 }
 
 \arguments{

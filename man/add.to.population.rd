@@ -11,7 +11,8 @@
 }
 
 \usage{
-  add.to.population(population, dataObject, dataType=c("founders","offspring$phenotypes","founders$group","offspring$genotypes","maps$genetic","maps$physical","annotations"),
+  add.to.population(population, dataObject, dataType=c("founders","offspring$phenotypes",
+  "founders$group", "offspring$genotypes","maps$genetic","maps$physical","annotations"),
   verbose=FALSE,debugMode=0)
 }
 

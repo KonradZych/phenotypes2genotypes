@@ -14,7 +14,10 @@
 }
 
 \usage{
-cross.denovo(population, n.chr, map=c("none", "genetic", "physical"), comparisonMethod = c(sumMajorityCorrelation, majorityCorrelation, meanCorrelation, majorityOfMarkers), assignFunction=c(assignMaximumNoConflicts, assignMaximum), reOrder=TRUE, use.orderMarkers=FALSE, verbose=FALSE, debugMode=0, ...)
+cross.denovo(population, n.chr, map=c("none", "genetic", "physical"), 
+  comparisonMethod = c(sumMajorityCorrelation, majorityCorrelation, meanCorrelation,
+  majorityOfMarkers), assignFunction=c(assignMaximumNoConflicts, assignMaximum),
+  reOrder=TRUE, use.orderMarkers=FALSE, verbose=FALSE, debugMode=0, ...)
 }
 
 \arguments{
@@ -65,7 +68,8 @@ assign number to newly created chromosomes.
 
 \examples{
 	data(yeastPopulation)
-	cross <- cross.denovo(yeastPopulation,n.chr=16,verbose=TRUE,map="physical",comparisonMethod=sumMajorityCorrelation, use.orderMarkers=FALSE)
+	cross <- cross.denovo(yeastPopulation,n.chr=16,verbose=TRUE,map="physical",
+  comparisonMethod=sumMajorityCorrelation, use.orderMarkers=FALSE)
 }
 
 \seealso{

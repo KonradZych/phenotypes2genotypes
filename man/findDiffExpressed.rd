@@ -9,7 +9,8 @@
 }
 
 \usage{
-	find.diff.expressed(population,use=c("ttest","rankprod"),verbose=FALSE,debugMode=0,...)
+  find.diff.expressed(population,use=c("ttest","rankprod"),verbose=FALSE,
+  debugMode=0,...)
 }
 
 \arguments{

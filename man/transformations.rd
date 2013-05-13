@@ -8,7 +8,8 @@
 }
 
 \usage{
-  transformation(x, transformations=c("nothing","log","sqrt","reciprocal","probit","logit"), ..., verbose=TRUE)
+  transformation(x, transformations=c("nothing","log","sqrt","reciprocal","probit",
+    "logit"), ..., verbose=TRUE)
 }
 
 \arguments{

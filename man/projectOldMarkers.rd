@@ -8,7 +8,8 @@
 }
 
 \usage{
-	projectOldMarkers(cross,population,map=c("genetic","physical"),label=c("positions","names","no"),...)
+  projectOldMarkers(cross,population,map=c("genetic","physical"),
+    label=c("positions","names","no"),...)
 }
 
 \arguments{

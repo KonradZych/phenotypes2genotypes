@@ -9,7 +9,8 @@
 }
 
 \usage{
-	markerPlacementPlot(population, placeUsing=c("qtl","correlation"), thrRange=c(1,5,1),cross,verbose=FALSE)
+  markerPlacementPlot(population, placeUsing=c("qtl","correlation"), 
+    thrRange=c(1,5,1),cross,verbose=FALSE)
 }
 
 \arguments{

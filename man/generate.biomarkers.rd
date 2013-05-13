@@ -11,7 +11,9 @@
 }
 
 \usage{
-  generate.biomarkers(population, threshold=0.05, overlapInd = 10, proportion = c(50,50), margin = 15, pProb=0.8, env, verbose=FALSE, debugMode=0)
+  generate.biomarkers(population, threshold=0.05, overlapInd = 10,
+    proportion = c(50,50), margin = 15, pProb=0.8, env,
+    verbose=FALSE, debugMode=0)
 }
 
 \arguments{

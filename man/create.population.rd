@@ -9,8 +9,9 @@
 }
 
 \usage{
-  create.population(offspringPhenotypes, founders, foundersGroups, offspringGenotypes, mapsGenetic, mapsPhysical,
-  populationType=c("riself", "f2", "bc", "risib"), noWarn=FALSE, verbose=FALSE, debugMode=0)
+  create.population(offspringPhenotypes, founders, foundersGroups, offspringGenotypes,
+  mapsGenetic, mapsPhysical, populationType=c("riself", "f2", "bc", "risib"),
+  noWarn=FALSE, verbose=FALSE, debugMode=0)
 }
 
 \arguments{

@@ -8,7 +8,7 @@
 }
 
 \usage{
-	reorganizeMarkersWithin(cross, ordering)
+  reorganizeMarkersWithin(cross, ordering)
 }
 
 \arguments{
@@ -26,14 +26,15 @@
 }
 
 \author{
-	Konrad Zych \email{k.zych@rug.nl}, Danny Arends \email{Danny.Arends@gmail.com}
-	Maintainer: Konrad Zych \email{k.zych@rug.nl}
+  Konrad Zych \email{k.zych@rug.nl}, Danny Arends \email{Danny.Arends@gmail.com}
+  Maintainer: Konrad Zych \email{k.zych@rug.nl}
 }
 
 \examples{
-	data(yeastCross)
-	data(yeastPopulation)
-	assignment <- cross.denovo(yeastPopulation,n.chr=16,verbose=TRUE,map="physical",comparisonMethod=sumMajorityCorrelation, use.orderMarkers=FALSE,reOrder=FALSE)
+  data(yeastCross)
+  data(yeastPopulation)
+  assignment <- cross.denovo(yeastPopulation,n.chr=16,verbose=TRUE,map="physical",
+  comparisonMethod=sumMajorityCorrelation, use.orderMarkers=FALSE,reOrder=FALSE)
   assignment #boring,but expected
   ordering <- assignChrToMarkers(assignment,yeastCross)
   yeastCross <- reorganizeMarkersWithin(yeastCross, ordering)

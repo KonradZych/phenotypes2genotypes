@@ -8,7 +8,8 @@
 }
 
 \usage{
-  fake.population(n.founders = 4, n.offspring = 100, n.markers=100,n.chromosomes=10, type = c("riself", "f2", "bc", "risib"), n.mixups=0, verbose=FALSE,...)
+  fake.population(n.founders = 4, n.offspring = 100, n.markers=100,n.chromosomes=10,
+    type = c("riself", "f2", "bc", "risib"), n.mixups=0, verbose=FALSE,...)
 }
 
 \arguments{

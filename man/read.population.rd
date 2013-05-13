@@ -8,8 +8,9 @@
 }
 
 \usage{
-  read.population(offspring = "offspring", founders = "founders", map = "map", foundersGroups, populationType = c("riself", "f2", "bc", "risib"),
-  readMode = c("normal","HT"), verbose = FALSE, debugMode = 0, ...)
+  read.population(offspring = "offspring", founders = "founders", map = "map",
+    foundersGroups, populationType = c("riself", "f2", "bc", "risib"),
+    readMode = c("normal","HT"), verbose = FALSE, debugMode = 0, ...)
 }
 
 \arguments{
@@ -80,21 +81,22 @@ Founders groups should be c(0,1,0,1,0,1) then. Always use only 0 and 1 to specif
 }
 
 \author{
-	Konrad Zych \email{k.zych@rug.nl}, Danny Arends \email{Danny.Arends@gmail.com}
-	Maintainer: Konrad Zych \email{k.zych@rug.nl}
+  Konrad Zych \email{k.zych@rug.nl}, Danny Arends \email{Danny.Arends@gmail.com}
+  Maintainer: Konrad Zych \email{k.zych@rug.nl}
 }
 
 \examples{
-	\dontrun{
-	### simplest call possible
-	population <- read.population(founders_groups=c(0,0,0,1,1,1))
-	### more informative one
-	population <- read.population(founders_groups=c(0,0,0,1,1,1),verbose=TRUE,debugMode=1)
-	### imagine you prefer parents and children instead of founders and offspring:
-	population <- read.population(offspring="children",founders="parents",founders_groups=c(0,0,0,1,1,1)verbose=TRUE,debugMode=1)
-	### etc.. when you load it, you may want to inspect it:
-	population$founders$phenotypes[1:10,]
-	}
+  \dontrun{
+  ### simplest call possible
+  population <- read.population(founders_groups=c(0,0,0,1,1,1))
+  ### more informative one
+  population <- read.population(founders_groups=c(0,0,0,1,1,1),verbose=TRUE,debugMode=1)
+  ### imagine you prefer parents and children instead of founders and offspring:
+  population <- read.population(offspring="children",founders="parents",founders_groups=c(0,0,0,1,1,1),
+  verbose=TRUE,debugMode=1)
+  ### etc.. when you load it, you may want to inspect it:
+  population$founders$phenotypes[1:10,]
+  }
 }
 
 \seealso{

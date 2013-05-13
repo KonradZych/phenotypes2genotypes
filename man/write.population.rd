@@ -8,7 +8,8 @@
 }
 
 \usage{
-	write.population(population, offspring = "offspring", founders = "founders", map = "map", verbose = FALSE, debugMode = 0)
+  write.population(population, offspring = "offspring", founders = "founders",
+    map = "map", verbose = FALSE, debugMode = 0)
 }
 
 \arguments{
@@ -29,15 +30,15 @@
 }
 
 \author{
-	Konrad Zych \email{k.zych@rug.nl}, Danny Arends \email{Danny.Arends@gmail.com}
-	Maintainer: Konrad Zych \email{k.zych@rug.nl}
+  Konrad Zych \email{k.zych@rug.nl}, Danny Arends \email{Danny.Arends@gmail.com}
+  Maintainer: Konrad Zych \email{k.zych@rug.nl}
 }
 
 \examples{
-	\dontrun{
-		population <- fake.population()
-		write.population(population,verbose=TRUE)
-	}
+  \dontrun{
+    population <- fake.population()
+    write.population(population,verbose=TRUE)
+  }
 }
 
 \seealso{
