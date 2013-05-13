@@ -1,12 +1,20 @@
 citEntry(entry="Article",
-         title = "Pheno2geno -  An R package for genetic maps construction using gene expression data",
-         author = personList(person(given = "Danny", family = "Arends"), person(given ="Konrad", family = "Zych"), person(given ="Ritsert C.",  family = "Jansen")),
+         title = "Pheno2Geno - High-throughput generation of genetic markers and maps from molecular phenotypes",
+         author = personList(
+            person(given = "Danny", family = "Arends"),
+            person(given ="Konrad", family = "Zych"), 
+            person(given = "Yang", family = "Li"), 
+            person(given = "K. Joeri", family = "van der Velde"),
+            person(given = "Ronny V. L.", family = "Joosen"),
+            person(given = "Wilco", family = "Ligterink"),
+            person(given ="Ritsert C.",  family = "Jansen")
+            ),
          journal = "BMC Bioinformatics (in press)",     
          year = "2013",
          volume = "",
          header="To cite pheno2geno in publications use:",
          pages = "",
          textVersion = 
-         paste("Arends D., Zych K., and Jansen R. C. (2011) Pheno2geno -  An R package for",
-               "genetic maps construction using gene expression data. Bioinformatics (in press)")
+         paste("Arends D., Zych K., Li Y., van der Velde K. J., Joosen R. V. L., Ligterink W. and Jansen R. C. (2013)",
+               "Pheno2Geno - High-throughput generation of genetic markers and maps from molecular phenotypes. BMC Bioinformatics (in press)")
          )
