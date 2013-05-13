@@ -15,7 +15,7 @@
 # OUTPUT:
 #  vector with new ordering of chromosomes inside cross object
 ############################################################################################################
-scan.qtls <- function(population,map=c("genetic","physical"), env, step=0.1,verbose=FALSE){
+scan.qtls <- function(population,map=c("genetic","physical"), env, epistasis = c("scan","ignore"),step=0.1,verbose=FALSE){
 
   if(missing(population)) stop("Please provide a population object\n")
   check.population(population)
@@ -26,6 +26,7 @@ scan.qtls <- function(population,map=c("genetic","physical"), env, step=0.1,verb
   if(missing(env)) env <- rep(1,ncol(population$offspring$phenotypes)) #if there is no infor about env -> all of them in the same env
   
   map <- match.arg(map)
+  epistasis <- match.arg(epistasis)
 
   if(map=="genetic"){
     if(is.null(population$maps$genetic)) stop("No genetic map in the population object!")
@@ -99,7 +100,11 @@ scan.qtls <- function(population,map=c("genetic","physical"), env, step=0.1,verb
       file.remove(aa) # no error -> close sink and remove unneeded file
     })
     
-    epistaticInter  <- checkForEpistasis(curScanNoPM,pull.geno(returncross),pull.pheno(returncross)[,i],env,useEnv)
+    if(epistasis=="scan"){
+      epistaticInter  <- checkForEpistasis(curScanNoPM,pull.geno(returncross),pull.pheno(returncross)[,i],env,useEnv)
+    }else{
+      epistaticInter  <- 0
+    }
     curInteractions <- c(curInteractions,epistaticInter)
     interactions    <- rbind(interactions,curInteractions)
 
