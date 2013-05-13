@@ -1,6 +1,6 @@
 citEntry(entry="Article",
          title = "Pheno2geno -  An R package for genetic maps construction using gene expression data",
-         author = personList(person("Danny", "Arends"), person("Konrad", "Zych"), person("Ritsert", "Jansen", "C.")),
+         author = personList(person(given = "Danny", family = "Arends"), person(given ="Konrad", family = "Zych"), person(given ="Ritsert C.",  family = "Jansen")),
          journal = "BMC Bioinformatics (in press)",     
          year = "2013",
          volume = "",
