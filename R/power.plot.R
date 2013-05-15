@@ -64,7 +64,7 @@ power.plot <- function(cross1,cross2,qtlThr=5,nPheno=500,verbose=FALSE,...){
   stronger     <- sum(maxes1[significant]<(maxes2[significant])) #nr of QTLs showubg increase in power
   cat(length(significant),"significant qtls\n")
   cat(stronger,"which is:",stronger/length(significant),"% of significant qtls show increase in power\n")
-  cat(significant2-significant,"new QTLs found\n") # nr of gained QTLs
+  cat(length(significant2)-length(significant),"new QTLs found\n") # nr of gained QTLs
   invisible(list(res1,res2))
 }
 
