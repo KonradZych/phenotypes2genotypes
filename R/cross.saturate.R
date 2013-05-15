@@ -86,7 +86,9 @@ cross.saturate <- function(population, cross, map=c("genetic","physical"), place
 
   #*******ENRICHING ORIGINAL MAP*******
   cross  <- rearrangeMarkers(cross, population, populationType, originalMap, threshold, placeUsing,
-                             flagged, env, addMarkers=TRUE, chr, verbose=verbose)
+                             flagged, env, addMarkers=TRUE, chr, verbose=verbose, debugMode=debugMode)
+  envMarkers <- cross$envMarkers # in case order.markers are used, this info will be erased
+  epiMarkers <- cross$epiMarkers
   endTime1     <- proc.time()
   if(verbose && debugMode==2) cat("Saturation of the original map done in:",(endTime1-startTime1)[3],"seconds.\n")
   
@@ -117,7 +119,8 @@ cross.saturate <- function(population, cross, map=c("genetic","physical"), place
   nrOfNewMarkers           <- sum(nmar(cross))-  nrOfOriginalMarkers 
   percentageOfSaturation   <- (nrOfNewMarkers /nrOfOriginalMarkers )*100
   if(verbose) cat("\ncross.saturate statistics:\n # original markers:",nrOfOriginalMarkers ,"\n # inserted markers: ",nrOfNewMarkers ,"\n saturation (% of markers added): ",percentageOfSaturation,"\n")
-  
+  cross$envMarkers <- envMarkers
+  cross$epiMarkers <- epiMarkers
   invisible(cross)
 }
 
@@ -149,13 +152,13 @@ matchMarkers <- function(population, map, mapType=c("genetic","physical")){
 # OUTPUT:
 #  object of class cross
 ############################################################################################################
-rearrangeMarkers <- function(cross, population, populationType, originalMap, threshold=3, placeUsing, flagged, env, addMarkers=FALSE, chr, verbose=FALSE){
+rearrangeMarkers <- function(cross, population, populationType, originalMap, threshold=3, placeUsing, flagged, env, addMarkers=FALSE, chr, verbose=FALSE, debugMode=0){
   ### addMarkers will be removed - obsolete
 
   if(verbose) cat("old map contains",max(originalMap[,1]),"chromosomes\n")
   
   if(placeUsing=="qtl"){
-    markersOutput      <- bestQTL.internal(cross,population,threshold,flagged,env,verbose)
+    markersOutput      <- bestQTL.internal(cross,population,threshold,flagged,env,verbose,debugMode)
     markersNewPostions <- markersOutput[[1]]
     envMarkers         <- markersOutput[[2]]
     epiMarkers         <- markersOutput[[3]]
@@ -319,7 +322,7 @@ bestQTLSub.internal <- function(qtls,marker){
 # OUTPUT:
 #  vector with new ordering of chromosomes inside cross object
 ############################################################################################################
-bestQTL.internal <- function(cross, population, threshold, flagged, env, verbose=FALSE){
+bestQTL.internal <- function(cross, population, threshold, flagged, env, verbose=FALSE, debugMode=0){
   if(is.null(population$offspring$genotypes$qtl))              stop("No qtl data in population$offspring$genotypes$qtl, run scan.qtls function first.")
   if(is.null(population$offspring$genotypes$qtl$interactions)) stop("Old version of the QTL scan detected. Re-run scan.qtls!")
   
@@ -335,9 +338,10 @@ bestQTL.internal <- function(cross, population, threshold, flagged, env, verbose
   envInt                <- 0 # nr of markers affectted by environmental interaction
   epiInt                <- 0 # nr of markers affectted by epistatic interaction
 
+  envMarkers <- NULL
+  epiMarkers <- NULL
+  
   for(marker in markerNames){
-    envMarkers <- NULL
-    epiMarkers <- NULL
     ### is there a single significant peak in the data?
     if(sum(peaksMatrix[marker,]==2)==1){ #TODO: Figure out the logic here, Its not logical
       QTLlod          <- max(population$offspring$genotypes$qtl$lod[marker,])
