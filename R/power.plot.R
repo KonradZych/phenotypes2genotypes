@@ -61,7 +61,7 @@ power.plot <- function(cross1,cross2,scores,qtlThr=5,nPheno=500,verbose=FALSE,..
   }
   colorNr   <- as.numeric(maxes1>maxes2)+1
   colorCols <- c("green","red")
-  plot(maxes1,maxes2,pch=20,xlab="LOD scores in the original cross",ylab="LOD scores in the saturated cross",main="Figure 3 - QTL detection power.",col=colorCols[colorNr])
+  plot(maxes1,maxes2,pch=20,xlab="LOD scores on the original map",ylab="LOD scores on the saturated map",col=colorCols[colorNr])
   abline(qtlThr-qtlThr,1,col="red") #diagonal line
   abline(v=qtlThr,lty=2,col="grey")   #dotted line showing threshold used for x axis
   abline(h=qtlThr,lty=2,col="grey")  #dotted line showing threshold used for y axis
