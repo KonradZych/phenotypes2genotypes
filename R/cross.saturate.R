@@ -117,7 +117,12 @@ cross.saturate <- function(population, cross, map=c("genetic","physical"), place
   
   nrOfNewMarkers <- sum(nmar(cross))-  nrOfOriginalMarkers 
   percentageOfSaturation   <- (nrOfNewMarkers /nrOfOriginalMarkers )*100
-  if(verbose) cat("\n=== Saturation statistics:\n Number of original markers:",nrOfOriginalMarkers ,"\n Number of inserted markers: ",nrOfNewMarkers ,"\n Saturation (% of markers added): ",percentageOfSaturation,"\n")
+  if(verbose){
+    cat("\n=== Saturation statistics:\n")
+    cat("Number of original markers:      ",nrOfOriginalMarkers ,"\n")
+    cat("Number of inserted markers:      ",nrOfNewMarkers ,"\n")
+    cat("Saturation (% of markers added): ",percentageOfSaturation,"\n\n")
+  }
   cross$envMarkers <- envMarkers
   cross$epiMarkers <- epiMarkers
   invisible(cross)
@@ -165,7 +170,7 @@ rearrangeMarkers <- function(cross, population, populationType, originalMap, thr
     markersNewPostions <- bestCorelated.internal(cross,population,originalMap,threshold,verbose)
   }
   ### markersNewPostions - matrix: rows - markers, columns: chr where marker is mapping - position on chr - LOD/cor score
-  if(verbose) cat(" Selected:\n\t",nrow(markersNewPostions),"markers for further analysis\n\n")
+  if(verbose) cat("Selected:\n\t",nrow(markersNewPostions),"markers for further analysis\n\n")
 
   ### creating a cross object with empty genotypes
   returncross      <- cross
@@ -173,7 +178,6 @@ rearrangeMarkers <- function(cross, population, populationType, originalMap, thr
   
   ### names of original markers
   originalNames <- rownames(originalMap)[which(rownames(originalMap) %in% rownames(population$offspring$genotypes$real))]
-  if(verbose) cat("Reordering markers \n")
   
   for(x in 1:length(returncross$geno)){
     originalNamesFromCurChr <- rownames(originalMap)[which(originalMap[,1]==x)]
@@ -386,13 +390,13 @@ bestQTL.internal <- function(cross, population, threshold, flagged, env, verbose
   #to have same format of the output as in bestcorrelated
   if(verbose){
     cat("\n=== Selection statistics ===\n")
-    cat(" Selecting from:\n\t",sum(nmar(cross)),"candidate markers.\n")
-    cat(" Removed:\n")
+    cat("Selecting from:\n\t",sum(nmar(cross)),"candidate markers.\n")
+    cat("Removed:\n")
     if(flagged=="remove"){
-      cat("\t",envInt,"markers showing significant association with environent.\n")
+      cat("\t",envInt,"markers showing significant association with environment.\n")
       cat("\t",epiInt,"markers influenced by an epistatic interaction.\n")
     }else if(flagged=="warn"){
-      cat("\t",envInt,"markers show significant association with environent.\n")
+      cat("\t",envInt,"markers show significant association with environment.\n")
       cat("\t",epiInt,"markers are influenced by an epistatic interaction.\n")
     }
     cat("\t",noQTL,"markers showing no significant QTL.\n")
