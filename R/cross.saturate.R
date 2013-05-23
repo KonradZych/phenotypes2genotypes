@@ -380,15 +380,16 @@ bestQTL.internal <- function(cross, population, threshold, flagged, env, verbose
   }
   #to have same format of the output as in bestcorrelated
   if(verbose){
+    cat("=== Selection statistics ===\n")
+    cat("\t",noQTL,"markers show no significant QTL.\n")
+    cat("\t",multiQTL,"markers show multiple significant QTL.\n")
     if(flagged=="remove"){
-      cat("Removed:",envInt,"markers showing significant association with environent.\n")
-      cat("Removed:",epiInt,"markers influenced by an epistatic interaction.\n")
+      cat("\t","Removed:",envInt,"markers showing significant association with environent.\n")
+      cat("\t","Removed:",epiInt,"markers influenced by an epistatic interaction.\n")
     }else if(flagged=="warn"){
-      cat(envInt,"markers show significant association with environent.\n")
-      cat(epiInt,"markers are influenced by an epistatic interaction.\n")
+      cat("\t",envInt,"markers show significant association with environent.\n")
+      cat("\t",epiInt,"markers are influenced by an epistatic interaction.\n")
     }
-    cat(envInt,"markers show significant association with environent.\n")
-    cat(epiInt,"markers are influenced by an epistatic interaction.\n")
   }
   rownames(output) <- markerNames
   if(any(is.na(output[,1]))) output <- output[-which(is.na(output[,1])),]
