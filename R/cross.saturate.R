@@ -363,8 +363,6 @@ bestQTL.internal <- function(cross, population, threshold, flagged, env, verbose
     affectedByEnv   <- processInteractions(marker,"environmental",max(envInteractions),threshold/2,flagged)
     affectedByEpi   <- processInteractions(marker,"environmental",max(epiInteractions),threshold/2,flagged)
     
-    if(affectedByEnv) envMarkers <- c(envMarkers,marker)
-    if(affectedByEpi) epiMarkers <- c(epiMarkers,marker)
     if(nPeaks < 1)    noQTL      <- noQTL + 1
     if(nPeaks > 1)    multiQTL   <- multiQTL + 1
     
@@ -374,21 +372,27 @@ bestQTL.internal <- function(cross, population, threshold, flagged, env, verbose
         if(!affectedByEpi){
           curOutput <- bestQTLSub.internal(population$offspring$genotypes$qtl,marker)
         }
+      }else{
+        epiMarkers <- c(epiMarkers,marker)
+        epiInt     <- epiInt + 1
       }
+    }else{
+      envMarkers <- c(envMarkers,marker)
+      envInt     <- envInt + 1
     }
     output <- rbind(output,curOutput)
   }
   #to have same format of the output as in bestcorrelated
   if(verbose){
-    cat("=== Selection statistics ===\n")
-    cat("\t",noQTL,"markers show no significant QTL.\n")
-    cat("\t",multiQTL,"markers show multiple significant QTL.\n")
+    cat("\n=== Selection statistics ===\n")
+    cat("\tRemoved:",noQTL,"markers showing no significant QTL.\n")
+    cat("\tRemoved:",multiQTL,"markers showing multiple significant QTL.\n")
     if(flagged=="remove"){
-      cat("\t","Removed:",envInt,"markers showing significant association with environent.\n")
-      cat("\t","Removed:",epiInt,"markers influenced by an epistatic interaction.\n")
+      cat("\tRemoved:",envInt,"markers showing significant association with environent.\n")
+      cat("\tRemoved:",epiInt,"markers influenced by an epistatic interaction.\n")
     }else if(flagged=="warn"){
-      cat("\t",envInt,"markers show significant association with environent.\n")
-      cat("\t",epiInt,"markers are influenced by an epistatic interaction.\n")
+      cat("\tFlagged:",envInt,"markers show significant association with environent.\n")
+      cat("\tFlagged:",epiInt,"markers are influenced by an epistatic interaction.\n")
     }
   }
   rownames(output) <- markerNames
