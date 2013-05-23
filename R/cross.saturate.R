@@ -76,7 +76,7 @@ cross.saturate <- function(population, cross, map=c("genetic","physical"), place
 
   ### saturating only a subset of chromosomes
   if(missing(chr)){
-    if(verbose) cat("Saturating all the chromosomes in the set\n")
+    if(verbose) cat("Saturating all the chromosomes in the set.\n")
     chr           <- unique(originalMap[,1])
   }else{
     availableChr  <- unique(originalMap[,1])
@@ -90,17 +90,16 @@ cross.saturate <- function(population, cross, map=c("genetic","physical"), place
   envMarkers <- cross$envMarkers # in case order.markers are used, this info will be erased
   epiMarkers <- cross$epiMarkers
   endTime1     <- proc.time()
-  if(verbose && debugMode==2) cat("Saturation of the original map done in:",(endTime1-startTime1)[3],"seconds.\n")
+  if(verbose && debugMode==2) cat("++ Saturation of the original map done in:",(endTime1-startTime1)[3],"seconds.\n")
   
   #*******ORDERING NEW MAP*******
   if(use.orderMarkers){
     if(verbose) cat("Ordering markers inside the cross object\n")
     startTime1  <- proc.time()
-
     tryCatch({
       aa <- tempfile()
       sink(aa)
-      cross       <- orderMarkers(cross,use.ripple=FALSE,verbose=TRUE)
+      cross          <- orderMarkers(cross,use.ripple=FALSE,verbose=TRUE)
     },
     error= function(err){
       stop(paste("ERROR in cross.saturate while ordering markers in cross:  ",err))
@@ -113,12 +112,12 @@ cross.saturate <- function(population, cross, map=c("genetic","physical"), place
     })
     
     endTime1    <- proc.time()
-    if(verbose && debugMode==2)cat("Saving data into cross object done in:",(endTime1-startTime1)[3],"seconds.\n")
+    if(verbose && debugMode==2)cat("++ Saving data into cross object done in:",(endTime1-startTime1)[3],"seconds.\n")
   }
-   
-  nrOfNewMarkers           <- sum(nmar(cross))-  nrOfOriginalMarkers 
+  
+  nrOfNewMarkers <- sum(nmar(cross))-  nrOfOriginalMarkers 
   percentageOfSaturation   <- (nrOfNewMarkers /nrOfOriginalMarkers )*100
-  if(verbose) cat("\ncross.saturate statistics:\n # original markers:",nrOfOriginalMarkers ,"\n # inserted markers: ",nrOfNewMarkers ,"\n saturation (% of markers added): ",percentageOfSaturation,"\n")
+  if(verbose) cat("\n=== Saturation statistics:\n Number of original markers:",nrOfOriginalMarkers ,"\n Number of inserted markers: ",nrOfNewMarkers ,"\n Saturation (% of markers added): ",percentageOfSaturation,"\n")
   cross$envMarkers <- envMarkers
   cross$epiMarkers <- epiMarkers
   invisible(cross)
@@ -155,7 +154,7 @@ matchMarkers <- function(population, map, mapType=c("genetic","physical")){
 rearrangeMarkers <- function(cross, population, populationType, originalMap, threshold=3, placeUsing, flagged, env, addMarkers=FALSE, chr, verbose=FALSE, debugMode=0){
   ### addMarkers will be removed - obsolete
 
-  if(verbose) cat("old map contains",max(originalMap[,1]),"chromosomes\n")
+  if(verbose) cat("Original map contains",max(originalMap[,1]),"chromosomes.\n")
   
   if(placeUsing=="qtl"){
     markersOutput      <- bestQTL.internal(cross,population,threshold,flagged,env,verbose,debugMode)
@@ -166,7 +165,7 @@ rearrangeMarkers <- function(cross, population, populationType, originalMap, thr
     markersNewPostions <- bestCorelated.internal(cross,population,originalMap,threshold,verbose)
   }
   ### markersNewPostions - matrix: rows - markers, columns: chr where marker is mapping - position on chr - LOD/cor score
-  if(verbose) cat("selected",nrow(markersNewPostions),"markers for further analysis\n")
+  if(verbose) cat(" Selected:\n\t",nrow(markersNewPostions),"markers for further analysis\n\n")
 
   ### creating a cross object with empty genotypes
   returncross      <- cross
@@ -314,15 +313,16 @@ bestQTLSub.internal <- function(qtls,marker){
 }
 
 processInteractions <- function(marker,interactionType,interactionVal,threshold,flagged){
+  output <- FALSE
   if(interactionVal > threshold){
     if(flagged=="remove"){
-      cat("Marker:",marker,"shows significant association with",interactionType,"and will be removed.\n")
-      invisible(TRUE)
+      #cat("Marker:",marker,"shows significant association with",interactionType,"and will be removed.\
+      output <- TRUE
     }else if(flagged=="warn"){
       cat("Marker:",marker,"shows significant association",interactionType,"with.\n")
     }
   }
-  invisible(FALSE)
+  invisible(output)
 }
 
 ###########################################################################################################
@@ -360,21 +360,22 @@ bestQTL.internal <- function(cross, population, threshold, flagged, env, verbose
     QTLlod          <- max(population$offspring$genotypes$qtl$lod[marker,])
     envInteractions <- population$offspring$genotypes$qtl$interactions[marker,c(1,2)]
     epiInteractions <- population$offspring$genotypes$qtl$interactions[marker,3]
-    affectedByEnv   <- processInteractions(marker,"environmental",max(envInteractions),threshold/2,flagged)
-    affectedByEpi   <- processInteractions(marker,"environmental",max(epiInteractions),threshold/2,flagged)
-    
-    if(nPeaks < 1)    noQTL      <- noQTL + 1
-    if(nPeaks > 1)    multiQTL   <- multiQTL + 1
+    affectedByEnv   <- processInteractions(marker,"environmental",max(envInteractions),(threshold/2),flagged)
+    affectedByEpi   <- processInteractions(marker,"epistatic",max(epiInteractions),(threshold/2),flagged)
     
     curOutput <- c(NA,NA,NA)
     if(!affectedByEnv){
       if(nPeaks==1){
         if(!affectedByEpi){
           curOutput <- bestQTLSub.internal(population$offspring$genotypes$qtl,marker)
-        }
-      }else{
+        }else{
         epiMarkers <- c(epiMarkers,marker)
         epiInt     <- epiInt + 1
+        }
+      }else if(nPeaks < 1){
+        noQTL      <- noQTL + 1
+      }else{
+        multiQTL   <- multiQTL + 1
       }
     }else{
       envMarkers <- c(envMarkers,marker)
@@ -385,15 +386,17 @@ bestQTL.internal <- function(cross, population, threshold, flagged, env, verbose
   #to have same format of the output as in bestcorrelated
   if(verbose){
     cat("\n=== Selection statistics ===\n")
-    cat("\tRemoved:",noQTL,"markers showing no significant QTL.\n")
-    cat("\tRemoved:",multiQTL,"markers showing multiple significant QTL.\n")
+    cat(" Selecting from:\n\t",sum(nmar(cross)),"candidate markers.\n")
+    cat(" Removed:\n")
     if(flagged=="remove"){
-      cat("\tRemoved:",envInt,"markers showing significant association with environent.\n")
-      cat("\tRemoved:",epiInt,"markers influenced by an epistatic interaction.\n")
+      cat("\t",envInt,"markers showing significant association with environent.\n")
+      cat("\t",epiInt,"markers influenced by an epistatic interaction.\n")
     }else if(flagged=="warn"){
-      cat("\tFlagged:",envInt,"markers show significant association with environent.\n")
-      cat("\tFlagged:",epiInt,"markers are influenced by an epistatic interaction.\n")
+      cat("\t",envInt,"markers show significant association with environent.\n")
+      cat("\t",epiInt,"markers are influenced by an epistatic interaction.\n")
     }
+    cat("\t",noQTL,"markers showing no significant QTL.\n")
+    cat("\t",multiQTL,"markers showing multiple significant QTL.\n")
   }
   rownames(output) <- markerNames
   if(any(is.na(output[,1]))) output <- output[-which(is.na(output[,1])),]
