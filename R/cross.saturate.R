@@ -313,6 +313,18 @@ bestQTLSub.internal <- function(qtls,marker){
   invisible(cur_row)
 }
 
+processInteractions <- function(marker,interactionType,interactionVal,threshold,flagged){
+  if(interactionVal > threshold){
+    if(flagged=="remove"){
+      cat("Marker:",marker,"shows significant association with",interactionType,"and will be removed.\n")
+      invisible(TRUE)
+    }else if(flagged=="warn"){
+      cat("Marker:",marker,"shows significant association",interactionType,"with.\n")
+    }
+  }
+  invisible(FALSE)
+}
+
 ###########################################################################################################
 #                                    *** bestQTL.internal ***
 #
@@ -330,60 +342,51 @@ bestQTL.internal <- function(cross, population, threshold, flagged, env, verbose
   markerNames           <- markernames(cross)
   newGeno               <- pull.geno(cross)
   output                <- NULL
-  count                 <- 0
   
   peaksMatrix           <- getpeaks.internal(abs(population$offspring$genotypes$qtl$lod),threshold)
   rownames(peaksMatrix) <- markerNames
   
   envInt                <- 0 # nr of markers affectted by environmental interaction
   epiInt                <- 0 # nr of markers affectted by epistatic interaction
+  noQTL                 <- 0 # nr of markers with no significant QTLsa
+  multiQTL              <- 0 # nr of markers with multiple significant QTLs
 
   envMarkers <- NULL
   epiMarkers <- NULL
   
   for(marker in markerNames){
     ### is there a single significant peak in the data?
-    if(sum(peaksMatrix[marker,]==2)==1){ #TODO: Figure out the logic here, Its not logical
-      QTLlod          <- max(population$offspring$genotypes$qtl$lod[marker,])
-      envInteractions <- population$offspring$genotypes$qtl$interactions[marker,c(1,2)]
-      epiInteractions <- population$offspring$genotypes$qtl$interactions[marker,3]
-      if(flagged!="ignore"){
-        if(any(envInteractions > (threshold/2))){
-          envInt <- envInt + 1
-          if(flagged=="remove"){
-            cat("Marker:",marker,"shows significant association with environent and will be removed.\n")
-            output <- rbind(output,c(NA,NA,NA))
-          }else if(flagged=="warn"){
-            cat("Marker:",marker,"shows significant association with environent.\n")
-            envMarkers <- c(envMarkers,marker)
-            output <- rbind(output,bestQTLSub.internal(population$offspring$genotypes$qtl,marker))
-          }
-        }else if(epiInteractions > (threshold/2)){
-          epiInt <- epiInt + 1
-          if(flagged=="remove"){
-            cat("Marker:",marker,"is influenced by an epistatic interaction and will be removed.\n")
-            output <- rbind(output,c(NA,NA,NA))
-          }else if(flagged=="warn"){
-            cat("Marker:",marker,"is influenced by an epistatic interaction.\n")
-            epiMarkers <- c(epiMarkers,marker)
-            output <- rbind(output,bestQTLSub.internal(population$offspring$genotypes$qtl,marker))
-          }
-        }else{
-          output <- rbind(output,bestQTLSub.internal(population$offspring$genotypes$qtl,marker))
+    nPeaks          <- sum(peaksMatrix[marker,]==2)
+    QTLlod          <- max(population$offspring$genotypes$qtl$lod[marker,])
+    envInteractions <- population$offspring$genotypes$qtl$interactions[marker,c(1,2)]
+    epiInteractions <- population$offspring$genotypes$qtl$interactions[marker,3]
+    affectedByEnv   <- processInteractions(marker,"environmental",max(envInteractions),threshold/2,flagged)
+    affectedByEpi   <- processInteractions(marker,"environmental",max(epiInteractions),threshold/2,flagged)
+    
+    if(affectedByEnv) envMarkers <- c(envMarkers,marker)
+    if(affectedByEpi) epiMarkers <- c(epiMarkers,marker)
+    if(nPeaks < 1)    noQTL      <- noQTL + 1
+    if(nPeaks > 1)    multiQTL   <- multiQTL + 1
+    
+    curOutput <- c(NA,NA,NA)
+    if(!affectedByEnv){
+      if(nPeaks==1){
+        if(!affectedByEpi){
+          curOutput <- bestQTLSub.internal(population$offspring$genotypes$qtl,marker)
         }
-      }else{
-          output <- rbind(output,bestQTLSub.internal(population$offspring$genotypes$qtl,marker))
       }
-    }else{
-      count <- count+1
-      output <- rbind(output,c(NA,NA,NA))
     }
+    output <- rbind(output,curOutput)
   }
   #to have same format of the output as in bestcorrelated
-  if(verbose && flagged=="remove"){
-    cat("Removed:",envInt,"markers showing significant association with environent.\n")
-    cat("Removed:",epiInt,"markers influenced by an epistatic interaction.\n")
-  }else if(verbose){
+  if(verbose){
+    if(flagged=="remove"){
+      cat("Removed:",envInt,"markers showing significant association with environent.\n")
+      cat("Removed:",epiInt,"markers influenced by an epistatic interaction.\n")
+    }else if(flagged=="warn"){
+      cat(envInt,"markers show significant association with environent.\n")
+      cat(epiInt,"markers are influenced by an epistatic interaction.\n")
+    }
     cat(envInt,"markers show significant association with environent.\n")
     cat(epiInt,"markers are influenced by an epistatic interaction.\n")
   }
