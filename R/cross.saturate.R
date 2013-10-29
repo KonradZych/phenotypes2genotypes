@@ -164,9 +164,10 @@ rearrangeMarkers <- function(cross, population, populationType, originalMap, thr
   if(placeUsing=="qtl"){
     markersOutput      <- bestQTL.internal(cross,population,threshold,flagged,env,verbose,debugMode)
     markersNewPostions <- markersOutput[[1]]
-    markersToBeRemoved <- markersOutput[[2]]
-    envMarkers         <- markersOutput[[3]]
-    epiMarkers         <- markersOutput[[4]]
+    markerNames        <- markersOutput[[2]]
+    markersToBeRemoved <- markersOutput[[3]]
+    envMarkers         <- markersOutput[[4]]
+    epiMarkers         <- markersOutput[[5]]
   }else{
     markersNewPostions <- bestCorelated.internal(cross,population,originalMap,threshold,verbose)
     markersToBeRemoved <- rownames(markersNewPostions)
@@ -179,7 +180,7 @@ rearrangeMarkers <- function(cross, population, populationType, originalMap, thr
   returncross$geno <- vector(length(unique(originalMap[,1])), mode="list")
 
   ### removing phenotypes used as markers
-  returncross$pheno <- returncross$pheno[,-c(markersToBeRemoved)]
+  #returncross$pheno <- returncross$pheno[,-c(markersToBeRemoved)]
   
   ### names of original markers
   originalNames <- rownames(originalMap)[which(rownames(originalMap) %in% rownames(population$offspring$genotypes$real))]
@@ -322,13 +323,13 @@ bestQTLSub.internal <- function(qtls,marker){
 }
 
 processInteractions <- function(marker,interactionType,interactionVal,threshold,flagged){
-  output <- FALSE
+  output <- "keep"
   if(interactionVal > threshold){
-    if(flagged=="remove"){
-      #cat("Marker:",marker,"shows significant association with",interactionType,"and will be removed.\
-      output <- TRUE
-    }else if(flagged=="warn"){
-      cat("Marker:",marker,"shows significant association",interactionType,"with.\n")
+    if(flagged=="warn"){
+      cat("Marker:",marker,"shows significant",interactionType,"association\n")
+      output <- "report"
+    }else if(flagged=="remove"){
+      output <- NULL
     }
   }
   invisible(output)
@@ -371,25 +372,27 @@ bestQTL.internal <- function(cross, population, threshold, flagged, env, verbose
     envInteractions <- population$offspring$genotypes$qtl$interactions[marker,c(1,2)]
     epiInteractions <- population$offspring$genotypes$qtl$interactions[marker,3]
     affectedByEnv   <- processInteractions(marker,"environmental",max(envInteractions),(threshold/2),flagged)
+    if(affectedByEnv=="report" || is.null(affectedByEnv)){
+      envMarkers <- c(envMarkers,marker)
+      envInt     <- envInt + 1
+    }
     affectedByEpi   <- processInteractions(marker,"epistatic",max(epiInteractions),(threshold/2),flagged)
-    
+    if(affectedByEpi=="report" || is.null(affectedByEpi)){
+      epiMarkers <- c(epiMarkers,marker)
+      epiInt     <- epiInt + 1
+    }
+
     curOutput <- c(NA,NA,NA)
-    if(!affectedByEnv){
+    if(!is.null(affectedByEnv)){
       if(nPeaks==1){
-        if(!affectedByEpi){
+        if(!is.null(affectedByEpi)){
           curOutput <- bestQTLSub.internal(population$offspring$genotypes$qtl,marker)
-        }else{
-          epiMarkers <- c(epiMarkers,marker)
-          epiInt     <- epiInt + 1
         }
       }else if(nPeaks < 1){
         noQTL      <- noQTL + 1
       }else{
         multiQTL   <- multiQTL + 1
       }
-    }else{
-      envMarkers <- c(envMarkers,marker)
-      envInt     <- envInt + 1
     }
     output <- rbind(output,curOutput)
   }
@@ -397,13 +400,14 @@ bestQTL.internal <- function(cross, population, threshold, flagged, env, verbose
   if(verbose){
     cat("\n=== Selection statistics ===\n")
     cat("Selecting from:\n\t",sum(nmar(cross)),"candidate markers.\n")
-    cat("Removed:\n")
     if(flagged=="remove"){
+      cat("Removed:\n")
       cat("\t",envInt,"markers showing significant association with environment.\n")
       cat("\t",epiInt,"markers influenced by an epistatic interaction.\n")
     }else if(flagged=="warn"){
       cat("\t",envInt,"markers show significant association with environment.\n")
       cat("\t",epiInt,"markers are influenced by an epistatic interaction.\n")
+      cat("\nRemoved:\n")
     }
     cat("\t",noQTL,"markers showing no significant QTL.\n")
     cat("\t",multiQTL,"markers showing multiple significant QTL.\n")
