@@ -2,7 +2,7 @@
 # scan.qtls.R
 #
 # Copyright (c) 2010-2013 GBIC: Danny Arends, Konrad Zych and Ritsert C. Jansen
-# last modified April, 2013
+# last modified October, 2013
 # first written Mar, 2011
 # Contains: scan.qtls
 #
@@ -25,7 +25,7 @@ scan.qtls <- function(population,map=c("genetic","physical"), env, epistasis = c
   
   if(missing(env)) env <- rep(1,ncol(population$offspring$phenotypes)) #if there is no infor about env -> all of them in the same env
   
-  map <- match.arg(map)
+  map       <- match.arg(map)
   epistasis <- match.arg(epistasis)
 
   if(map=="genetic"){
@@ -35,7 +35,7 @@ scan.qtls <- function(population,map=c("genetic","physical"), env, epistasis = c
     if(is.null(population$maps$physical)) stop("No physical map in the population object!")
     population      <- matchMarkers(population, population$maps$physical, mapType="physical")
   }
-  originalMap     <- paste("map_",map,sep="")
+  originalMap  <- paste("map_",map,sep="")
   
   population10pheno                      <- population
   population10pheno$offspring$phenotypes <- population10pheno$offspring$phenotypes[1:10,]
@@ -71,8 +71,8 @@ scan.qtls <- function(population,map=c("genetic","physical"), env, epistasis = c
 
   for(i in 1:nrow(population$offspring$genotypes$simulated)){
     curlogLikeli <- NULL
-    phenotype <- pull.pheno(returncross)[,i]
-    perc <- round(i*100/nrow(population$offspring$genotypes$simulated))
+    phenotype    <- pull.pheno(returncross)[,i]
+    perc         <- round(i*100/nrow(population$offspring$genotypes$simulated))
     if(perc%%10==0 && !(perc%in%done)){ # bit dirty hack to avoid displaying the same value more than once in verbose mode (this can happen due to rounding)
       e <- proc.time()
       cat("Analysing markers",perc,"% done, estimated time remaining:",(e-s)[3]/perc*(100-perc),"s\n")
