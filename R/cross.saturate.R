@@ -2,7 +2,7 @@
 # cross.saturate.R
 #
 # Copyright (c) 2010-2013 GBIC: Danny Arends, Konrad Zych and Ritsert C. Jansen
-# last modified January, 2013
+# last modified October, 2013
 # first written Mar, 2011
 # Contains: cross.saturate, rearrangeMarkers, bestCorelated.internal
 #           map2mapCorrelationMatrix.internal, map2mapImage
