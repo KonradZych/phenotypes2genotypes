@@ -65,10 +65,10 @@ cross.saturate <- function(population, cross, map=c("genetic","physical"), place
   if(!(all(rownames(population$offspring$genotypes$qtl$lod)%in%rownames(population$offspring$genotypes$simulated)))) stop("QTL scan results don't match with simulated genotypes, please, run scan.qtls function")
   
  if(map=="genetic"){
-    population  <- matchMarkers(population, population$maps$genetic, mapType="genetic")
+    population      <- matchMarkers(population, population$maps$genetic, mapType="genetic")
     originalMap     <- population$maps$genetic
   }else{
-    population  <- matchMarkers(population, population$maps$physical, mapType="physical")
+    population      <- matchMarkers(population, population$maps$physical, mapType="physical")
     originalMap     <- population$maps$physical
   }
   
@@ -89,7 +89,7 @@ cross.saturate <- function(population, cross, map=c("genetic","physical"), place
                              flagged, env, addMarkers=TRUE, chr, verbose=verbose, debugMode=debugMode)
   envMarkers <- cross$envMarkers # in case order.markers are used, this info will be erased
   epiMarkers <- cross$epiMarkers
-  endTime1     <- proc.time()
+  endTime1   <- proc.time()
   if(verbose && debugMode==2) cat("++ Saturation of the original map done in:",(endTime1-startTime1)[3],"seconds.\n")
   
   #*******ORDERING NEW MAP*******
@@ -180,7 +180,7 @@ rearrangeMarkers <- function(cross, population, populationType, originalMap, thr
   returncross$geno <- vector(length(unique(originalMap[,1])), mode="list")
 
   ### removing phenotypes used as markers
-  #returncross$pheno <- returncross$pheno[,-c(markersToBeRemoved)]
+  returncross$pheno <- returncross$pheno[,-which(colnames(returncross$pheno)%in%markersToBeRemoved)]
   
   ### names of original markers
   originalNames <- rownames(originalMap)[which(rownames(originalMap) %in% rownames(population$offspring$genotypes$real))]
