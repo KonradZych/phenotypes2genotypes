@@ -176,9 +176,7 @@ generate.biomarkers.internal <- function(population, threshold, overlapInd, prop
   if(!(is.null(dim(upRegulatedPhenos)))&&(nrow(upRegulatedPhenos)!=0)){
     if(verbose) cat("Selected ",nrow(upRegulatedPhenos),"upregulated potential markers.\n")
     cur                     <- splitPheno.internal(upRegulatedPhenos, overlapInd, proportion, margin, pProb, populationType, 1, 0, 0, verbose)
-    output                  <- rbind(output,cur[[1]])
-    outputEM[[2]]           <- cur[[2]]
-    names(outputEM[[2]])    <- rownames(population$offspring$phenotypes)
+    output                  <- rbind(output,cur)
     
   }else{
     if(verbose) cat("Selected none upregulated potential markers.\n")
@@ -188,9 +186,7 @@ generate.biomarkers.internal <- function(population, threshold, overlapInd, prop
   if(!(is.null(dim(downRegulatedPhenos)))&&(nrow(downRegulatedPhenos)!=0)){
     if(verbose) cat("Selected ",nrow(downRegulatedPhenos),"downregulated potential markers.\n")
     cur                     <- splitPheno.internal(downRegulatedPhenos, overlapInd, proportion, margin, pProb, populationType, 0, 0, 0,verbose)
-    output                  <- rbind(output,cur[[1]])
-    outputEM[[1]]           <- cur[[2]]
-    names(outputEM[[1]])    <- rownames(population$offspring$phenotypes)
+    output                  <- rbind(output,cur)
   }else{
     if(verbose) cat("Selected none downregulated potential markers.\n")
   }
@@ -200,7 +196,6 @@ generate.biomarkers.internal <- function(population, threshold, overlapInd, prop
   if(is.null(dim(output))) stop("No markers selected.")
 
   population$offspring$genotypes$simulated           <- output
-  population$offspring$genotypes$EM                  <- outputEM
   colnames(population$offspring$genotypes$simulated) <- colnames(upRegulatedPhenos)
   invisible(population)
 }
@@ -348,48 +343,28 @@ mergeEnv.internal <- function(population, genoMatrix){
 #
 ############################################################################################################
 splitPheno.internal <- function(offspring, overlapInd, proportion, margin, pProb=0.8, populationType, up, done=0, left=0, verbose=FALSE){
-  output        <- NULL
-  outputEM      <- NULL
-  markerNames   <- NULL
-  s             <- proc.time()
-  printedProc   <- NULL
-  for(x in 1:nrow(offspring)){
-    cur <- splitPhenoRowEM.internal(offspring[x,], overlapInd, proportion, margin, pProb, up, populationType, verbose)
-    if(!(is.null(cur[[1]]))){
-      output      <- rbind(output,cur[[1]])
-      markerNames <- c(markerNames,rownames(offspring)[x])
-   }
-   outputEM    <- rbind(outputEM,cur[[2]])
-    
-    ### information about the progress of the function
-    if(verbose){
-      perc <- round((x+done)*100/nrow(offspring+done+left))
-      if(perc%%10==0 && !(perc%in%printedProc)){
-        e <- proc.time()
-        printedProc <- c(printedProc,perc)
-        te <- ((e-s)[3]/x)*(nrow(offspring)-x+left)
-        cat("Done with: ",perc,"%. Estimated time remaining:",te,"s\n")
-      }
-    }
-  }
-#  cl <- makeCluster(getOption("cl.cores", 2))
-#  results <- parLapply(cl, 1:nrow(offspring), splitPheno.Apply, offspring=offspring, overlapInd=overlapInd, proportion=proportion, margin=margin, pProb=pProb, up=up, populationType = populationType, verbose=verbose)
-# stopCluster(cl)
+  output           <- NULL
+  outputEM         <- NULL
+  markerNames      <- NULL
+  s                <- proc.time()
+  printedProc      <- NULL
+  cl               <- makeCluster(getOption("cl.cores", 2))
+  results          <- parLapply(cl, 1:nrow(offspring), splitPheno.Apply, offspring=offspring, overlapInd=overlapInd, proportion=proportion, margin=margin, pProb=pProb, up=up, populationType = populationType, verbose=verbose)
+  stopCluster(cl)
 
-#  markerNames = lapply(results, "[", 1)
-#  output = lapply(results,"[",2)
-#  outputEM = lapply(results,"[",3)
+  output           <- do.call(rbind,results)
   rownames(output) <- markerNames
-  invisible(list(output,outputEM))
+  invisible(output)
 }
 
 splitPheno.Apply <- function(x, offspring, overlapInd, proportion, margin, pProb, up, populationType, verbose){
   cur <- splitPhenoRowEM.internal(offspring[x,], overlapInd, proportion, margin, pProb, up, populationType, verbose)
-  if(!(is.null(cur[[1]]))){
-    return(list(rownames(offspring)[x], cur[[1]],cur[[2]]))
-  }else{
-    return(list(NULL,NULL, cur[[2]]))
+  if(!(is.null(cur))){
+    output           <- matrix(cur, 1, length(cur))
+    rownames(output) <- rownames(offspring)[x]
+    return(output)
   }
+  return(NULL)
 }
 
 ############################################################################################################
@@ -468,7 +443,7 @@ splitPhenoRowEM.internal <- function(x, overlapInd, proportion, margin, pProb=0.
     result <- NULL
   }
   if(!is.null(result)) if((sum(is.na(result))-idw)>overlapInd) result <- NULL
-  invisible(list(result,EM))
+  invisible(result)
 }
 
 
