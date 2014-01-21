@@ -16,19 +16,12 @@ RankProd package from [www.bioconductor.org](http://www.bioconductor.org/package
 
 Installation
 ------------
-1. Prepare your environment by following these two steps:
-  - Download and Install the R environment
-  - Install the qtl and RankProd packages into the R environment
+The easiest way is to use package devtools. Type in R:
 
-2. Clone our repository...
-
-    git clone git://github.com/KonradZych/phenotypes2genotypes.git  
-
-3. ... or download one of the file archives provided and unzip it.
-
-4. Install into R (from a terminal / commandline):
-
-    R CMD INSTALL phenotypes2genotypes                            
+install.packages("devtools")
+library(devtools)
+install_github(repo="phenotypes2genotypes",username="KonradZych")
+library("pheno2geno")
 
 Starting
 --------
