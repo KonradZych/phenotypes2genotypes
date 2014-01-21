@@ -149,7 +149,6 @@ generate.biomarkers.internal <- function(population, threshold, overlapInd, prop
   populationType          <- class(population)[2]
   if(verbose && debugMode==1) cat("generate.biomarkers.internal starting.\n")
   output                  <- NULL
-  outputEM                <- vector(2,mode="list")
   markerNames             <- NULL 
   
   ### selection step
@@ -344,16 +343,12 @@ mergeEnv.internal <- function(population, genoMatrix){
 ############################################################################################################
 splitPheno.internal <- function(offspring, overlapInd, proportion, margin, pProb=0.8, populationType, up, done=0, left=0, verbose=FALSE){
   output           <- NULL
-  outputEM         <- NULL
-  markerNames      <- NULL
   s                <- proc.time()
   printedProc      <- NULL
   cl               <- makeCluster(getOption("cl.cores", 2))
   results          <- parLapply(cl, 1:nrow(offspring), splitPheno.Apply, offspring=offspring, overlapInd=overlapInd, proportion=proportion, margin=margin, pProb=pProb, up=up, populationType = populationType, verbose=verbose)
   stopCluster(cl)
-
   output           <- do.call(rbind,results)
-  rownames(output) <- markerNames
   invisible(output)
 }
 
