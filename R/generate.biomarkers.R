@@ -26,7 +26,7 @@
 # OUTPUT:
 #  An object of class cross
 #
-generate.biomarkers <- function(population, threshold=0.05, overlapInd = 10, proportion = c(50,50), margin = 15, pProb=0.8, env, verbose=FALSE, debugMode=0){
+generate.biomarkers <- function(population, threshold=0.05, overlapInd = 10, proportion = c(50,50), margin = 15, pProb=0.8, n.cluster=1, env, verbose=FALSE, debugMode=0){
   
   ### checks
   ### check population
@@ -59,9 +59,11 @@ generate.biomarkers <- function(population, threshold=0.05, overlapInd = 10, pro
   #*******CONVERTING CHILDREN PHENOTYPIC DATA TO GENOTYPES*******
   s1 <- proc.time()
   if(!is.null(population$annots)){
-    population <- generate.biomarkers.internal(population, threshold, overlapInd, proportion, margin, pProb, verbose, debugMode)
+    population <- generate.biomarkers.internal(population, threshold=threshold, overlapInd=overlapInd, proportion=proportion, 
+                                               margin=margin, n.cluster=n.cluster, pProb=pProb, verbose=verbose, debugMode=debugMode)
   }else{
-    population <- generate.biomarkers.internal(population, threshold, overlapInd, proportion, margin, pProb, verbose, debugMode)
+    population <- generate.biomarkers.internal(population, threshold=threshold, overlapInd=overlapInd, proportion=proportion, 
+                                               margin=margin, n.cluster=n.cluster, pProb=pProb, verbose=verbose, debugMode=debugMode)
   }
   e1 <- proc.time()
   if(verbose && debugMode==2) cat("Converting phenotypes to genotypes done in:",(e1-s1)[3],"seconds.\n")
@@ -144,7 +146,7 @@ selectTopMarker.internal <- function(markers,pattern,verbose){
 #  object of class population
 #
 ############################################################################################################
-generate.biomarkers.internal <- function(population, threshold, overlapInd, proportion, margin, pProb=0.8, verbose=FALSE, debugMode=0){
+generate.biomarkers.internal <- function(population, threshold, overlapInd, proportion, margin, n.cluster, pProb=0.8, verbose=FALSE, debugMode=0){
   ### initialization
   populationType          <- class(population)[2]
   if(verbose && debugMode==1) cat("generate.biomarkers.internal starting.\n")
@@ -174,7 +176,8 @@ generate.biomarkers.internal <- function(population, threshold, overlapInd, prop
   ### if any of the phenotypes is up-regulated - process them
   if(!(is.null(dim(upRegulatedPhenos)))&&(nrow(upRegulatedPhenos)!=0)){
     if(verbose) cat("Selected ",nrow(upRegulatedPhenos),"upregulated potential markers.\n")
-    cur                     <- splitPheno.internal(upRegulatedPhenos, overlapInd, proportion, margin, pProb, populationType, 1, 0, 0, verbose)
+    cur                     <- splitPheno.internal(upRegulatedPhenos, overlapInd=overlapInd, proportion=proportion, margin=margin, 
+                               pProb=pProb, populationType=populationType, n.cluster=n.cluster, up=TRUE, done=0, left=0, verbose=verbose)
     output                  <- rbind(output,cur)
     
   }else{
@@ -184,7 +187,9 @@ generate.biomarkers.internal <- function(population, threshold, overlapInd, prop
   ### if any of the phenotypes is down-regulated - process them
   if(!(is.null(dim(downRegulatedPhenos)))&&(nrow(downRegulatedPhenos)!=0)){
     if(verbose) cat("Selected ",nrow(downRegulatedPhenos),"downregulated potential markers.\n")
-    cur                     <- splitPheno.internal(downRegulatedPhenos, overlapInd, proportion, margin, pProb, populationType, 0, 0, 0,verbose)
+    cur                     <- splitPheno.internal(downRegulatedPhenos, overlapInd=overlapInd, proportion=proportion, margin=margin, 
+                               pProb=pProb, populationType=populationType, n.cluster=n.cluster, up=FALSE, done=0, left=0, verbose=verbose)
+
     output                  <- rbind(output,cur)
   }else{
     if(verbose) cat("Selected none downregulated potential markers.\n")
@@ -341,11 +346,11 @@ mergeEnv.internal <- function(population, genoMatrix){
 #  list containg genotype matrix and names of selected markers
 #
 ############################################################################################################
-splitPheno.internal <- function(offspring, overlapInd, proportion, margin, pProb=0.8, populationType, up, done=0, left=0, verbose=FALSE){
+splitPheno.internal <- function(offspring, overlapInd, proportion, margin, populationType, up, n.cluster=1, pProb=0.8, done=0, left=0, verbose=FALSE){
   output           <- NULL
   s                <- proc.time()
   printedProc      <- NULL
-  cl               <- makeCluster(getOption("cl.cores", 2))
+  cl               <- makeCluster(getOption("cl.cores", n.cluster))
   results          <- parLapply(cl, 1:nrow(offspring), splitPheno.Apply, offspring=offspring, overlapInd=overlapInd, proportion=proportion, margin=margin, pProb=pProb, up=up, populationType = populationType, verbose=verbose)
   stopCluster(cl)
   output           <- do.call(rbind,results)

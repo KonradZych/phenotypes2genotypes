@@ -12,7 +12,7 @@
 
 \usage{
   generate.biomarkers(population, threshold=0.05, overlapInd = 10,
-    proportion = c(50,50), margin = 15, pProb=0.8, env,
+    proportion = c(50,50), margin = 15, pProb=0.8, n.cluster=1, env,
     verbose=FALSE, debugMode=0)
 }
 
@@ -23,6 +23,7 @@
   \item{overlapInd}{ The number of individuals that are allowed in the overlap (undecided region) when assigning genotype encodings.}
   \item{proportion}{ The expected proportion of individuals expected to carrying a certain genotype (e.g. c(50,50) in a recombinant inbred line).}
   \item{pProb}{ Threshold posterior probability used to assign expression values to the genotypes. If not crossed - empty genotype is assigned.}
+  \item{n.cluster}{ Number of cores to be used .}
   \item{env}{ Vector of environmental conditions - for each of the individuals specifies a condition. Ignored if missing.}
   \item{margin}{ This specifies how much deviation from the expected proportion is allowed (2 sided). }
   \item{verbose}{ Be verbose. }
