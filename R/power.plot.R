@@ -60,7 +60,7 @@ power.plot <- function(cross1,cross2,scores,qtlThr=5,nPheno=500,verbose=FALSE,..
     print(vals)
   }
   colorNr      <- as.numeric(maxes1>maxes2)+1
-  colorCols    <- c("green","grey")
+  colorCols    <- c("blue","red")
   
   plot(maxes1,maxes2,pch=20,cex=0.3,xlab="LOD scores on the original map",ylab="LOD scores on the saturated map",col=colorCols[colorNr],log="xy")
   abline(qtlThr-qtlThr,1,col="red") #diagonal line
