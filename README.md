@@ -18,10 +18,10 @@ Installation
 ------------
 The easiest way is to use package devtools. Type in R:
 
-install.packages("devtools")
-library(devtools)
-install_github(repo="phenotypes2genotypes",username="KonradZych")
-library("pheno2geno")
+    install.packages("devtools")
+    library(devtools)
+    install_github(repo="phenotypes2genotypes",username="KonradZych")
+    library("pheno2geno")
 
 Starting
 --------
