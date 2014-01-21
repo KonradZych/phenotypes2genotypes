@@ -1,4 +1,5 @@
 require(pheno2geno)
+#setwd("~/Github/phenotypes2genotypes/tests")
 children <- read.csv(file="offspring_phenotypes.csv",header=TRUE,row.names=1)
 parents <- read.csv(file="parental_phenotypes.csv",header=TRUE,row.names=1)
 genotypes <- read.csv(file="genotypes.csv",header=TRUE,row.names=1)

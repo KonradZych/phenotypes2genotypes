@@ -358,8 +358,8 @@ splitPheno.internal <- function(offspring, overlapInd, proportion, margin, pProb
     if(!(is.null(cur[[1]]))){
       output      <- rbind(output,cur[[1]])
       markerNames <- c(markerNames,rownames(offspring)[x])
-    }
-    outputEM    <- rbind(outputEM,cur[[2]])
+   }
+   outputEM    <- rbind(outputEM,cur[[2]])
     
     ### information about the progress of the function
     if(verbose){
@@ -372,9 +372,24 @@ splitPheno.internal <- function(offspring, overlapInd, proportion, margin, pProb
       }
     }
   }
-  rownames(output) <- markerNames
+#  cl <- makeCluster(getOption("cl.cores", 2))
+#  results <- parLapply(cl, 1:nrow(offspring), splitPheno.Apply, offspring=offspring, overlapInd=overlapInd, proportion=proportion, margin=margin, pProb=pProb, up=up, populationType = populationType, verbose=verbose)
+# stopCluster(cl)
 
+#  markerNames = lapply(results, "[", 1)
+#  output = lapply(results,"[",2)
+#  outputEM = lapply(results,"[",3)
+  rownames(output) <- markerNames
   invisible(list(output,outputEM))
+}
+
+splitPheno.Apply <- function(x, offspring, overlapInd, proportion, margin, pProb, up, populationType, verbose){
+  cur <- splitPhenoRowEM.internal(offspring[x,], overlapInd, proportion, margin, pProb, up, populationType, verbose)
+  if(!(is.null(cur[[1]]))){
+    return(list(rownames(offspring)[x], cur[[1]],cur[[2]]))
+  }else{
+    return(list(NULL,NULL, cur[[2]]))
+  }
 }
 
 ############################################################################################################
