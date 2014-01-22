@@ -8,12 +8,13 @@
 }
 
 \usage{
-  power.plot(cross1,cross2,qtlThr=5,nPheno=500,verbose=FALSE,...)
+  power.plot(cross1,cross2,scores,qtlThr=5,nPheno=500,verbose=FALSE,...)
 }
 
 \arguments{
  \item{cross1}{ An object of class \code{cross}. See \code{\link[qtl]{read.cross}} for details.}
  \item{cross2}{ An object of class \code{cross}. See \code{\link[qtl]{read.cross}} for details.}
+ \item{scores}{ An object of class scores (result of running of this function). This allows for not recalculating QTL scores everytime user wants to plot them.}
  \item{qtlThr}{ Threshold for assessing the significance of the QTL peak.}
  \item{nPheno}{ Nr of phenotypes that will be scanned for QTLs. Phenotypes are selected randomly.}
  \item{verbose}{ Be verbose. }
@@ -25,7 +26,7 @@ Plots maximal values of QTL peak measured on the same phenotypes in two crosses.
 }
 
 \value{
-	List of maximal values for all the scanned phenotypes.
+	An object of class scores containing all the QTL scores calculated during the run of this function. This can be plugged back into the function to avoid unnecessary recalculation of the scores.
 }
 
 \author{
@@ -34,7 +35,7 @@ Plots maximal values of QTL peak measured on the same phenotypes in two crosses.
 }
 
 \examples{
-	#TO ADD
+	
 }
 
 \seealso{

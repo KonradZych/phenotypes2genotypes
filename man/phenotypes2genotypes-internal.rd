@@ -92,6 +92,9 @@
 \alias{createMix.test}
 \alias{is.integer0}
 
+\alias{processInteractions}
+\alias{splitPheno.Apply}
+
 \title{Internal pheno2geno functions}
 
 \description{
