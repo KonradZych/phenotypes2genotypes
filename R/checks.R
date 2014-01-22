@@ -60,9 +60,9 @@ check.population <- function(x,verbose=FALSE){
   #if(length(class(x))!=2) stop("Incorrect class of the object.\n")
   if(class(x)[1]!="population") stop("Object is not of a class population.\n")
   if(!(class(x)[2] %in% c("riself", "f2", "bc", "risib"))) stop("Type of the population: ",class(x)[2]," not recognized.\n")
-  if(is.null(x$founders$phenotypes) && !("noParents" %in% x$flags) && !("annots" %in% x$flags)) stop("No offspring phenotype data found, this is not a valid object of class population.\n")
+  if(is.null(x$founders$phenotypes) && !("noParents" %in% x$flags) && !("annots" %in% x$flags)) stop("No founders phenotype data found, this is not a valid object of class population.\n")
   if(is.null(x$offspring$phenotypes)) stop("No offspring phenotype data found, this is not a valid object of class population.\n")
-  if(is.null(x$founders$groups) && !("noParents" %in% x$flags) && !("annots" %in% x$flags)) stop("No offspring phenotype data found, this is not a valid object of class population.\n")
+  if(is.null(x$founders$groups) && !("noParents" %in% x$flags) && !("annots" %in% x$flags)) stop("No founders groups information found, this is not a valid object of class population.\n")
 }
 
 ############################################################################################################
