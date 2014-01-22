@@ -23,7 +23,7 @@
 #   An object of class population 
 #
 read.population <- function(offspring = "offspring", founders = "founders", map = "map", foundersGroups, populationType = c("riself", "f2", "bc", "risib"),
-  readMode = c("normal","HT"), verbose = FALSE, debugMode = 0, ...){
+  readMode = c("normal","HT"), threshold=0.05, verbose = FALSE, debugMode = 0, ...){
 
   ### checks
   populationType <- match.arg(populationType)
@@ -49,7 +49,7 @@ read.population <- function(offspring = "offspring", founders = "founders", map 
   }else{
     if(verbose)  cat("File:",fileOffspringPheno,"found and will be processed.\n")
     if(readMode == "normal"){
-      population                      <- applyFunctionToFile(fileOffspringPheno, population, sep="\t", header=TRUE, FUN=normalModeReading)
+      population$offspring$phenotypes <- applyFunctionToFile(fileOffspringPheno, population, sep="\t", header=TRUE, FUN=normalModeReading)
     }else{
       population$offspring$phenotypes <- fileOffspringPheno
     }
@@ -74,7 +74,7 @@ read.population <- function(offspring = "offspring", founders = "founders", map 
     
     ### founders groups should be a sequence of 0s and 1s
     if(any(foundersGroups!=0 && foundersGroups!=1)) stop("Founders groups attribute is incorrect.\n")
-    population                        <- applyFunctionToFile(fileFoundersPheno,population,sep="\t", header=TRUE, verbose=verbose, FUN=normalModeReading)
+    population$founders$phenotypes    <- applyFunctionToFile(fileFoundersPheno,population,sep="\t", header=TRUE, verbose=verbose, dataGroups=foundersGroups, threshold=threshold, FUN=tTestByLine)
     if(length(foundersGroups)         != ncol(population$founders$phenotypes)) stop("Founders groups attribute is incorrect.\n")
   }
   
@@ -142,15 +142,13 @@ applyFunctionToFile <- function(filename, population, header=TRUE, sep="\t", FUN
     headerLine <- readLines(filePointer, n=1)
     header     <- unlist(strsplit(headerLine,sep))
   }
-  res          <- NULL
   lineNR       <- 0
-  
+  res          <- NULL
   ### reading the first non-header line
   curLine <- readLines(filePointer, n=1)
   while(length(curLine) > 0){
     lineNR            <- lineNR + 1
-    if(verbose && lineNR%%10000==0){cat("processing line:",lineNR,"\n")
-    print(curLine)}
+    if(verbose && lineNR%%10000==0)cat("processing line:",lineNR,"\n")
     curLineSplitted   <- strsplit(curLine,sep)[[1]]
     
     ### changing it into a matrix for easier handling
@@ -167,7 +165,7 @@ applyFunctionToFile <- function(filename, population, header=TRUE, sep="\t", FUN
     }
     
     ### execute the function specified by user and rbind results
-    population <-  FUN(curRow, population, lineNR, ...)
+    res <-  rbind(res,FUN(curRow, res, lineNR, ...))
     curLine <- readLines(filePointer, n=1)
   }
   close(filePointer)
@@ -203,10 +201,11 @@ tTestByLine <- function(dataMatrix, population, lineNR, dataGroups, threshold){
 # OUTPUT:
 #   An input matrix.
 #
-normalModeReading <- function(dataMatrix, population, lineNR){
-  population$offspring$phenotypes <- checkAndBind(population$offspring$phenotypes,dataMatrix,lineNR)
-  invisible(population)
+normalModeReading <- function(dataMatrix, res, lineNR){
+  res <- checkAndBind(res,dataMatrix,lineNR)
+  invisible(res)
 }
+
 
 checkAndBind <- function(dataMatrix, toBind, lineNR){
  ### if the population object is not empty then we need to check if we can put it into phenotype matrix 
