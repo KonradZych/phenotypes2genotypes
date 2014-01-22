@@ -75,6 +75,7 @@ read.population <- function(offspring = "offspring", founders = "founders", map 
     ### founders groups should be a sequence of 0s and 1s
     if(any(foundersGroups!=0 && foundersGroups!=1)) stop("Founders groups attribute is incorrect.\n")
     population$founders$phenotypes    <- applyFunctionToFile(fileFoundersPheno,population,sep="\t", header=TRUE, verbose=verbose, dataGroups=foundersGroups, threshold=threshold, FUN=tTestByLine)
+    population$founders$groups        <- foundersGroups
     if(length(foundersGroups)         != ncol(population$founders$phenotypes)) stop("Founders groups attribute is incorrect.\n")
   }
   
@@ -184,6 +185,7 @@ applyFunctionToFile <- function(filename, population, header=TRUE, sep="\t", FUN
 #   An input matrix, if the pval is below the threshold. Otherwise NULL
 #
 tTestByLine <- function(dataMatrix, population, lineNR, dataGroups, threshold){
+  if(ncol(dataMatrix)!=length(dataGroups)) stop("Incorrect line ",lineNR," \n")
   group0    <- as.numeric(dataMatrix[,which(dataGroups == 0)])
   group1    <- as.numeric(dataMatrix[,which(dataGroups == 1)])
   if(length(group0)<3 || length(group1)<3) stop("Not enough observations to perform the t.test.\n")
