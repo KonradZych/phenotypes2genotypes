@@ -49,7 +49,7 @@ read.population <- function(offspring = "offspring", founders = "founders", map 
   }else{
     if(verbose)  cat("File:",fileOffspringPheno,"found and will be processed.\n")
     if(readMode == "normal"){
-      population$offspring$phenotypes <- applyFunctionToFile(fileOffspringPheno, population, sep="\t", header=TRUE, FUN=normalModeReading)
+      population                      <- applyFunctionToFile(fileOffspringPheno, population, sep="\t", header=TRUE, FUN=normalModeReading)
     }else{
       population$offspring$phenotypes <- fileOffspringPheno
     }
@@ -74,9 +74,9 @@ read.population <- function(offspring = "offspring", founders = "founders", map 
     
     ### founders groups should be a sequence of 0s and 1s
     if(any(foundersGroups!=0 && foundersGroups!=1)) stop("Founders groups attribute is incorrect.\n")
-    population$founders$phenotypes    <- applyFunctionToFile(fileFoundersPheno,population,sep="\t", header=TRUE, verbose=verbose, dataGroups=foundersGroups, threshold=threshold, FUN=tTestByLine)
+    population                        <- applyFunctionToFile(fileFoundersPheno,population,sep="\t", header=TRUE, verbose=verbose, dataGroups=foundersGroups, threshold=threshold, FUN=tTestByLine)
     population$founders$groups        <- foundersGroups
-    if(length(foundersGroups)         != ncol(population$founders$phenotypes)) stop("Founders groups attribute is incorrect.\n")
+    if(length(population$founders$groups)   != ncol(population$founders$phenotypes)) stop("Founders groups attribute is incorrect.\n")
   }
   
   class(population) <- c("population",populationType)
@@ -144,14 +144,13 @@ applyFunctionToFile <- function(filename, population, header=TRUE, sep="\t", FUN
     header     <- unlist(strsplit(headerLine,sep))
   }
   lineNR       <- 0
-  res          <- NULL
   ### reading the first non-header line
   curLine <- readLines(filePointer, n=1)
   while(length(curLine) > 0){
     lineNR            <- lineNR + 1
     if(verbose && lineNR%%10000==0)cat("processing line:",lineNR,"\n")
     curLineSplitted   <- strsplit(curLine,sep)[[1]]
-    
+
     ### changing it into a matrix for easier handling
     curRow           <- matrix(as.numeric(curLineSplitted[-1]),1,length(curLineSplitted)-1)
     rownames(curRow) <- lineNR
@@ -166,11 +165,11 @@ applyFunctionToFile <- function(filename, population, header=TRUE, sep="\t", FUN
     }
     
     ### execute the function specified by user and rbind results
-    res <-  rbind(res,FUN(curRow, res, lineNR, ...))
+    population <-  FUN(curRow, population, lineNR, ...)
     curLine <- readLines(filePointer, n=1)
   }
   close(filePointer)
-  invisible(res)
+  invisible(population)
 }
 
 #  tTestByLine
@@ -190,8 +189,8 @@ tTestByLine <- function(dataMatrix, population, lineNR, dataGroups, threshold){
   group1    <- as.numeric(dataMatrix[,which(dataGroups == 1)])
   if(length(group0)<3 || length(group1)<3) stop("Not enough observations to perform the t.test.\n")
   res       <- t.test(group0, group1)
-  if(res$p.value < threshold) return(dataMatrix)
-  invisible(NULL)
+  if(res$p.value < threshold) population$founders$phenotypes <- rbind(population$founders$phenotypes,dataMatrix)
+  invisible(population)
 }
 
 #  normalModeReading
@@ -203,9 +202,9 @@ tTestByLine <- function(dataMatrix, population, lineNR, dataGroups, threshold){
 # OUTPUT:
 #   An input matrix.
 #
-normalModeReading <- function(dataMatrix, res, lineNR){
-  res <- checkAndBind(res,dataMatrix,lineNR)
-  invisible(res)
+normalModeReading <- function(dataMatrix, population, lineNR){
+  population$offspring$phenotypes <- checkAndBind(population$offspring$phenotypes,dataMatrix,lineNR)
+  invisible(population)
 }
 
 
