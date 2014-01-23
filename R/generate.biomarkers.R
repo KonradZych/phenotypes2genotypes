@@ -220,6 +220,7 @@ selectPhenotypes <- function(population, threshold, RPcolumn){
 ### select phenotypes that are suitable for EM algorithm in a line by line fashion
 selectByLine <- function(dataMatrix, population, lineNR, threshold, overlapInd, proportion, margin, pProb){
   #if(verbose && debugMode==1) cat("selectByLine starting.\n")
+  if(!lineNR%%1000) print(lineNR)
   phenoname      <- rownames(dataMatrix)
   populationType <- class(population)[2]
   ### if there is an annotation for that probe - lets use it, if not - do nothing
@@ -241,17 +242,17 @@ selectByLine <- function(dataMatrix, population, lineNR, threshold, overlapInd, 
       ### is there parental information for a certain probe
       if(!is.null(population$founders$RP$pval[phenoname,])){
         ### if it is there but does not pass the threshold - return NULL
-        if(!any(population$founders$RP$pval[phenoname,]>0 && population$founders$RP$pval[phenoname,]<threshold)) invisible(NULL)
+        if(!any(population$founders$RP$pval[phenoname,]>0 && population$founders$RP$pval[phenoname,]<threshold)) invisible(population)
       }else{
-        stop("Founders data present, but not for probe: ",phenoname)
+        invisible(population)
       }
     }else{
-      stop("Founders data present, but not for probe: ",phenoname)
+      invisible(population)
     }
   }else{
     ### analyse variance of the probe - is it even worth touching by EM
     
-    if(!analyseLineVariance(dataMatrix,threshold)) invisible(NULL)
+    if(!analyseLineVariance(dataMatrix,threshold)) invisible(population)
   }
   
   ### split the probe and select [[1]], [[2]] -> info about EM that we cannot store in HT mode
