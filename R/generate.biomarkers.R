@@ -270,7 +270,7 @@ selectByLineApply <- function(dataRowNr, dataMatrix, population, lineNR, thresho
   ### split the probe and select [[1]], [[2]] -> info about EM that we cannot store in HT mode
   result        <- splitPheno.internal(dataRow, overlapInd=overlapInd, proportion=proportion, margin=margin, 
                 pProb=pProb, populationType=populationType, n.cluster=n.cluster, up=FALSE, done=0, left=0)
-  print(result)
+
   ### if the probe is selected (so result != NULL) return both genotype and phenotype
   if(!is.null(result)){
     ### reformatting as a matrix for easier handling
