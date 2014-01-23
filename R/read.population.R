@@ -23,7 +23,7 @@
 #   An object of class population 
 #
 read.population <- function(offspring = "offspring", founders = "founders", map = "map", foundersGroups, populationType = c("riself", "f2", "bc", "risib"),
-  readMode = c("normal","HT"), threshold=0.05, verbose = FALSE, debugMode = 0, ...){
+  readMode = c("normal","HT"), threshold=0.05, verbose = FALSE, debugMode = 0, n.cluster=1, ...){
 
   ### checks
   populationType <- match.arg(populationType)
@@ -74,7 +74,7 @@ read.population <- function(offspring = "offspring", founders = "founders", map 
     
     ### founders groups should be a sequence of 0s and 1s
     if(any(foundersGroups!=0 && foundersGroups!=1)) stop("Founders groups attribute is incorrect.\n")
-    population                        <- applyFunctionToFile(fileFoundersPheno,population,sep="\t", header=TRUE, verbose=verbose, dataGroups=foundersGroups, threshold=threshold, FUN=tTestByLine)
+    population                        <- applyFunctionToFile(fileFoundersPheno,population,sep="\t", header=TRUE, verbose=verbose, dataGroups=foundersGroups, threshold=threshold, n.cluster=n.cluster, FUN=tTestByLine)
     population$founders$groups        <- foundersGroups
     if(length(population$founders$groups)   != ncol(population$founders$phenotypes)) stop("Founders groups attribute is incorrect.\n")
   }
@@ -137,7 +137,7 @@ readSingleFile   <- function(population, filename, fileType, verbose=FALSE, ...)
 # OUTPUT:
 #   A matrix with values from the file.
 #
-applyFunctionToFile <- function(filename, population, header=TRUE, sep="\t", FUN, verbose=FALSE, ...){
+applyFunctionToFile <- function(filename, population, header=TRUE, sep="\t", chunkSize = 10000, FUN, verbose=FALSE, ...){
   filePointer <- file(filename,"r")
   if(header){
     headerLine <- readLines(filePointer, n=1)
@@ -145,28 +145,32 @@ applyFunctionToFile <- function(filename, population, header=TRUE, sep="\t", FUN
   }
   lineNR       <- 0
   ### reading the first non-header line
-  curLine <- readLines(filePointer, n=1)
-  while(length(curLine) > 0){
-    lineNR            <- lineNR + 1
+  curLines <- readLines(filePointer, n=chunkSize)
+  while(length(curLines) > 0){
+    lineNR                  <- lineNR + chunkSize
     if(verbose && lineNR%%10000==0)cat("processing line:",lineNR,"\n")
-    curLineSplitted   <- strsplit(curLine,sep)[[1]]
+    curLineSplitted                 <- strsplit(curLines,sep)
+    curLineSplittedMatrix           <- do.call(rbind,curLineSplitted)
+    curRownames                     <- curLineSplittedMatrix[,1]
+    curLineSplittedMatrix           <- curLineSplittedMatrix[,-1]
+    if(chunkSize==1) curLineSplittedMatrix <- matrix(curLineSplittedMatrix,1,length(curLineSplittedMatrix))
+    rownames(curLineSplittedMatrix) <- curRownames
+    curLineSplittedMatrix           <- apply(curLineSplittedMatrix,c(1,2),as.numeric)
 
     ### changing it into a matrix for easier handling
-    curRow           <- matrix(as.numeric(curLineSplitted[-1]),1,length(curLineSplitted)-1)
-    rownames(curRow) <- lineNR
     
     ### if there is header, use it as colnames
     if(!is.null(header)){
-      if(length(header)!= ncol(curRow)){
-        stop("Incorect length of line: ",lineNR," it is: ",ncol(curRow)," instead of: ",length(header),"\n")
+      if(length(header)!= ncol(curLineSplittedMatrix)){
+        stop("Incorect length of line: ",lineNR," it is: ",ncol(curLineSplittedMatrix)," instead of: ",length(header),"\n")
       }else{
-        colnames(curRow) <- header
+        colnames(curLineSplittedMatrix) <- header
       }
     }
     
     ### execute the function specified by user and rbind results
-    population <-  FUN(curRow, population, lineNR, ...)
-    curLine <- readLines(filePointer, n=1)
+    population <-  FUN(curLineSplittedMatrix, population, lineNR, ...)
+    curLines <- readLines(filePointer, n=chunkSize)
   }
   close(filePointer)
   invisible(population)
@@ -183,14 +187,26 @@ applyFunctionToFile <- function(filename, population, header=TRUE, sep="\t", FUN
 # OUTPUT:
 #   An input matrix, if the pval is below the threshold. Otherwise NULL
 #
-tTestByLine <- function(dataMatrix, population, lineNR, dataGroups, threshold){
-  if(ncol(dataMatrix)!=length(dataGroups)) stop("Incorrect line ",lineNR," \n")
-  group0    <- as.numeric(dataMatrix[,which(dataGroups == 0)])
-  group1    <- as.numeric(dataMatrix[,which(dataGroups == 1)])
-  if(length(group0)<3 || length(group1)<3) stop("Not enough observations to perform the t.test.\n")
-  res       <- t.test(group0, group1)
-  if(res$p.value < threshold) population$founders$phenotypes <- rbind(population$founders$phenotypes,dataMatrix)
+
+tTestByLine <- function(dataMatrix, population, lineNR, dataGroups, threshold, n.cluster=1){
+  #cl                             <- makeCluster(getOption("cl.cores", n.cluster))
+  #result                         <- parApply(dataMatrix, 1, tTestByLineApply, lineNR, dataGroups, threshold )
+  result                         <- apply(dataMatrix, 1, tTestByLineApply, lineNR, dataGroups, threshold )
+  #stopCluster(cl)
+  resultM                        <- do.call(rbind,result)
+  population$founders$phenotypes <- rbind(population$founders$phenotypes,resultM)
   invisible(population)
+}
+
+tTestByLineApply <- function(dataRow, lineNR, dataGroups, threshold){
+  if(length(dataRow)!=length(dataGroups)) stop("Incorrect line ",lineNR," \n")
+  group0     <- as.numeric(dataRow[which(dataGroups == 0)])
+  group1     <- as.numeric(dataRow[which(dataGroups == 1)])
+  if(length(group0)<3 || length(group1)<3) stop("Not enough observations to perform the t.test.\n")
+  res        <- t.test(group0, group1)
+
+  if(res$p.value < threshold) return(dataRow)
+  invisible(NULL)
 }
 
 #  normalModeReading

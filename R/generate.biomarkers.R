@@ -158,8 +158,8 @@ generate.biomarkers.internal <- function(population, threshold, overlapInd, prop
     offspringFile <- population$offspring$phenotypes
     population$offspring$phenotypes <- NULL
     ### in HT mode markers are read from file line by line and processed on the fly
-    population                           <- applyFunctionToFile(offspringFile,sep="\t", header=TRUE, verbose=verbose, FUN=selectByLine, 
-    population=population, threshold=threshold, overlapInd=overlapInd, proportion=proportion, margin=margin, pProb=pProb)
+    population                           <- applyFunctionToFile(offspringFile,sep="\t", header=TRUE, FUN=selectByLine, 
+    population=population, threshold=threshold, overlapInd=overlapInd, proportion=proportion, margin=margin, pProb=pProb, n.cluster=n.cluster, verbose=verbose)
     return(population)
   }else{
     ### checking if any of the phenotypes is down/up-regulated
@@ -216,57 +216,68 @@ selectPhenotypes <- function(population, threshold, RPcolumn){
   invisible(selectedRils)
 }
 
+selectByLine <- function(dataMatrix, population, lineNR, threshold, overlapInd, proportion, margin, pProb, n.cluster){
+  result    <- lapply(1:nrow(dataMatrix),selectByLineApply, dataMatrix, population, lineNR, threshold, overlapInd, proportion, margin, pProb, n.cluster)
+  resultM   <- do.call(rbind,result)
+  population$offspring$genotypes$simulated <- rbind(population$offspring$genotypes$simulated,resultM)
+  if(is.null(population$offspring$phenotypes)){
+      population$offspring$phenotypes <- rbind(population$offspring$phenotypes,dataMatrix)
+  }else if(nrow(population$offspring$phenotypes)<100000){
+      population$offspring$phenotypes <- rbind(population$offspring$phenotypes,dataMatrix)
+   }
+  invisible(population)
+}
+
 
 ### select phenotypes that are suitable for EM algorithm in a line by line fashion
-selectByLine <- function(dataMatrix, population, lineNR, threshold, overlapInd, proportion, margin, pProb){
+selectByLineApply <- function(dataRowNr, dataMatrix, population, lineNR, threshold, overlapInd, proportion, margin, pProb, n.cluster){
   #if(verbose && debugMode==1) cat("selectByLine starting.\n")
-  if(!lineNR%%1000) print(lineNR)
-  phenoname      <- rownames(dataMatrix)
-  populationType <- class(population)[2]
+  dataRow         <- matrix(dataMatrix[dataRowNr,],1,ncol(dataMatrix))
+  dataRowName     <- rownames(dataMatrix)[dataRowNr]
+  populationType  <- class(population)[2]
   ### if there is an annotation for that probe - lets use it, if not - do nothing
   if(!is.null(population$annots)){
     ### if there is an annotation data, the name of the probe should be a number corresponding
     # to a number of a row storing information about the probe in annotation matrix
-    if(!is.numeric(phenoname)){
-      phenoname <- as.numeric(phenoname)
-      if(!is.finite(phenoname)) stop(phenoname," is not a correct name for a probe!")
+    if(!is.numeric(dataRowName)){
+      dataRowName <- as.numeric(dataRowName)
+      if(!is.finite(dataRowName)) stop(dataRowName," is not a correct name for a probe!")
     } ### if it is numeric, we still need to check wheter there is a row like that,
     ### if that is true -> select the names of the probe stored there
-    if(phenoname > 0 && phenoname < nrow(population$annots)) phenoname <- population$annots[phenoname,1]
+    if(dataRowName > 0 && dataRowName < nrow(population$annots)) dataRowName <- population$annots[dataRowName,1]
   }
   
   ### is there parental information
   if(!is.null(population$founders$RP$pval)){
     ### is there parental information for a certain probe
-    if(phenoname%in%rownames(population$founders$RP$pval)){
+    if(dataRowName%in%rownames(population$founders$RP$pval)){
       ### is there parental information for a certain probe
-      if(!is.null(population$founders$RP$pval[phenoname,])){
+      if(!is.null(population$founders$RP$pval[dataRowName,])){
         ### if it is there but does not pass the threshold - return NULL
-        if(!any(population$founders$RP$pval[phenoname,]>0 && population$founders$RP$pval[phenoname,]<threshold)) invisible(population)
+        if(!any(population$founders$RP$pval[dataRowName,]>0 && population$founders$RP$pval[dataRowName,]<threshold)) return(NULL)
       }else{
-        invisible(population)
+        return(NULL)
       }
     }else{
-      invisible(population)
+      return(NULL)
     }
   }else{
     ### analyse variance of the probe - is it even worth touching by EM
     
-    if(!analyseLineVariance(dataMatrix,threshold)) invisible(population)
+    if(!analyseLineVariance(dataRow,threshold)) return(NULL)
   }
   
   ### split the probe and select [[1]], [[2]] -> info about EM that we cannot store in HT mode
-  result                                           <- splitPhenoRowEM.internal(dataMatrix[1,], overlapInd, proportion, margin, pProb, 1, populationType=populationType)
-  
+  result        <- splitPheno.internal(dataRow, overlapInd=overlapInd, proportion=proportion, margin=margin, 
+                pProb=pProb, populationType=populationType, n.cluster=n.cluster, up=FALSE, done=0, left=0)
+  print(result)
   ### if the probe is selected (so result != NULL) return both genotype and phenotype
   if(!is.null(result)){
     ### reformatting as a matrix for easier handling
-    result                                         <- matrix(result,1,ncol(dataMatrix))
-    rownames(result)                               <- rownames(dataMatrix)
-    population$offspring$genotypes$simulated       <- checkAndBind(population$offspring$genotypes$simulated,result,lineNR)
-    population$offspring$phenotypes                <- checkAndBind(population$offspring$phenotypes,dataMatrix,lineNR)
+    result                                         <- matrix(result,1,ncol(result))
+    rownames(result)                               <- rownames(dataRow)
   }
-  invisible(population)
+  invisible(result)
 }
 
 analyseLineVariance <- function(dataRow,threshold){
@@ -286,7 +297,7 @@ analyseLineVariance <- function(dataRow,threshold){
   
   ### is the variance passing the threshold?
   res      <- t.test(meansToTest[1:3], meansToTest[4:6])
-  if(res$p.val < threshold) invisible(TRUE)
+  if(res$p.val < threshold) return(TRUE)
   invisible(FALSE)
 }
 
@@ -352,9 +363,9 @@ splitPheno.internal <- function(offspring, overlapInd, proportion, margin, popul
   output           <- NULL
   s                <- proc.time()
   printedProc      <- NULL
-  cl               <- makeCluster(getOption("cl.cores", n.cluster))
-  results          <- parLapply(cl, 1:nrow(offspring), splitPheno.Apply, offspring=offspring, overlapInd=overlapInd, proportion=proportion, margin=margin, pProb=pProb, up=up, populationType = populationType, verbose=verbose)
-  stopCluster(cl)
+  #cl               <- makeCluster(getOption("cl.cores", n.cluster))
+  results          <- lapply(1:nrow(offspring), splitPheno.Apply, offspring=offspring, overlapInd=overlapInd, proportion=proportion, margin=margin, pProb=pProb, up=up, populationType = populationType, verbose=verbose)
+  #stopCluster(cl)
   output           <- do.call(rbind,results)
   invisible(output)
 }
