@@ -250,11 +250,12 @@ selectByLine <- function(dataMatrix, population, lineNR, threshold, overlapInd, 
     }
   }else{
     ### analyse variance of the probe - is it even worth touching by EM
+    
     if(!analyseLineVariance(dataMatrix,threshold)) invisible(NULL)
   }
   
   ### split the probe and select [[1]], [[2]] -> info about EM that we cannot store in HT mode
-  result                                           <- splitPhenoRowEM.internal(dataMatrix[1,], overlapInd, proportion, margin, pProb, 1, populationType)[[1]]
+  result                                           <- splitPhenoRowEM.internal(dataMatrix[1,], overlapInd, proportion, margin, pProb, 1, populationType=populationType)
   
   ### if the probe is selected (so result != NULL) return both genotype and phenotype
   if(!is.null(result)){
@@ -269,7 +270,7 @@ selectByLine <- function(dataMatrix, population, lineNR, threshold, overlapInd, 
 
 analyseLineVariance <- function(dataRow,threshold){
   if(any(!is.numeric(dataRow))) invisible(FALSE)
-  dataRow <- dataRow[-which(is.na(dataRow))]
+  if(any(is.na(dataRow)))       dataRow <- dataRow[-which(is.na(dataRow))]
   ### code duplication !!! remember to remove it
   half         <- floor(length(dataRow)/2)
   end          <- length(dataRow)
