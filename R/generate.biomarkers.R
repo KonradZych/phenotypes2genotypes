@@ -161,6 +161,7 @@ generate.biomarkers.internal <- function(population, threshold, overlapInd, prop
     ### in HT mode markers are read from file line by line and processed on the fly
     population                           <- applyFunctionToFile(offspringFile,sep="\t", header=TRUE, FUN=selectByLine, 
     population=population, threshold=threshold, overlapInd=overlapInd, proportion=proportion, margin=margin, pProb=pProb, n.cluster=n.cluster, verbose=verbose)
+    colnames(population$offspring$genotypes$simulated) <- colnames(population$offspring$phenotypes)
     return(population)
   }else{
     ### checking if any of the phenotypes is down/up-regulated
