@@ -85,7 +85,7 @@ cross.saturate <- function(population, cross, map=c("genetic","physical"), place
   }
 
   #*******ENRICHING ORIGINAL MAP*******
-  cross  <- rearrangeMarkers(cross, population, populationType, originalMap, threshold, placeUsing,
+  cross      <- rearrangeMarkers(cross, population, populationType, originalMap, threshold, placeUsing,
                              flagged, env, addMarkers=TRUE, chr, verbose=verbose, debugMode=debugMode)
   envMarkers <- cross$envMarkers # in case order.markers are used, this info will be erased
   epiMarkers <- cross$epiMarkers
