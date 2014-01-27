@@ -50,7 +50,7 @@ read.population <- function(offspring = "offspring", founders = "founders", map 
     if(verbose)  cat("File:",fileOffspringPheno,"found and will be processed.\n")
     if(readMode == "normal"){
       population                      <- applyFunctionToFile(fileOffspringPheno, population, sep="\t", header=TRUE, FUN=normalModeReading)
-      if(verbose) cat("Read in",nrow(population$offspring$phenotypes),"phenotypes\n")
+      if(verbose) cat("   + Read in",nrow(population$offspring$phenotypes),"phenotypes\n")
     }else{
       population$offspring$phenotypes <- fileOffspringPheno
     }
@@ -78,7 +78,7 @@ read.population <- function(offspring = "offspring", founders = "founders", map 
     population                        <- applyFunctionToFile(fileFoundersPheno,population,sep="\t", header=TRUE, verbose=verbose, dataGroups=foundersGroups, threshold=threshold, n.cluster=n.cluster, FUN=tTestByLine)
     population$founders$groups        <- foundersGroups
     if(length(population$founders$groups)   != ncol(population$founders$phenotypes)) stop("Founders groups attribute is incorrect.\n")
-    if(verbose) cat("Read in",nrow(population$founders$phenotypes),"phenotypes\n")
+    if(verbose) cat("   + Read in",nrow(population$founders$phenotypes),"phenotypes\n")
   }
   
   class(population) <- c("population",populationType)
@@ -91,7 +91,7 @@ read.population <- function(offspring = "offspring", founders = "founders", map 
   
   ### physical map
   population <- readSingleFile(population, fileMapPhys, "maps$physical", verbose=verbose, header=FALSE)
-
+  
   ### genetic map
   population <- readSingleFile(population, fileMapGen, "maps$genetic", verbose=verbose, header=FALSE)
 
