@@ -275,7 +275,7 @@ selectByLineApply <- function(dataRowNr, dataMatrix, population, lineNR, thresho
   if(!is.null(result)){
     ### reformatting as a matrix for easier handling
     result                                         <- matrix(result,1,ncol(result))
-    rownames(result)                               <- rownames(dataRow)
+    rownames(result)                               <- rownames(dataMatrix)[dataRowNr]
   }
   invisible(result)
 }
