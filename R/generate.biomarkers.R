@@ -71,6 +71,7 @@ generate.biomarkers <- function(population, threshold=0.05, overlapInd = 10, pro
   #*******RETURNING CROSS OBJECT*******
   e<-proc.time()
   if(verbose) cat("generate.biomarkers done in",(e-s)[3],"seconds.\n")
+  if(verbose) cat("Selected",nrow(population$offspring$genotypes$simulated),"markers\n")
   invisible(population)
 }
 
@@ -254,7 +255,7 @@ selectByLineApply <- function(dataRowNr, dataMatrix, population, lineNR, thresho
       ### is there parental information for a certain probe
       if(!is.null(population$founders$RP$pval[dataRowName,])){
         ### if it is there but does not pass the threshold - return NULL
-        if(!any(population$founders$RP$pval[dataRowName,]>0 && population$founders$RP$pval[dataRowName,]<threshold)) return(NULL)
+        if(!any(population$founders$RP$pval[dataRowName,]>0 & population$founders$RP$pval[dataRowName,]<threshold)) return(NULL)
       }else{
         return(NULL)
       }
@@ -263,13 +264,17 @@ selectByLineApply <- function(dataRowNr, dataMatrix, population, lineNR, thresho
     }
   }else{
     ### analyse variance of the probe - is it even worth touching by EM
-    
     if(!analyseLineVariance(dataRow,threshold)) return(NULL)
   }
   
   ### split the probe and select [[1]], [[2]] -> info about EM that we cannot store in HT mode
+  if((population$founders$RP$pval[dataRowName,2]==0)|(population$founders$RP$pval[dataRowName,1]<population$founders$RP$pval[dataRowName,2])){
+    up <-  0
+  }else{
+    up <- 1
+  }
   result        <- splitPheno.internal(dataRow, overlapInd=overlapInd, proportion=proportion, margin=margin, 
-                pProb=pProb, populationType=populationType, n.cluster=n.cluster, up=FALSE, done=0, left=0)
+                pProb=pProb, populationType=populationType, n.cluster=n.cluster, up=up, done=0, left=0)
 
   ### if the probe is selected (so result != NULL) return both genotype and phenotype
   if(!is.null(result)){
