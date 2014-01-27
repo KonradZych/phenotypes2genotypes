@@ -49,7 +49,10 @@ cross.saturate <- function(population, cross, map=c("genetic","physical"), place
   tryCatch({
     aa <- tempfile()
     sink(aa)
-    cross  <- genotypesToCross.internal(population,"simulated",verbose=verbose,debugMode=debugMode)
+    population2pheno <- population
+    population2pheno$offspring$phenotypes <- population2pheno$offspring$phenotypes[1:2,]
+    cross  <- genotypesToCross.internal(population2pheno,"simulated",verbose=verbose,debugMode=debugMode)
+    cross$pheno <- t(population2pheno$offspring$phenotypes)
   },
   error= function(err){
     stop(paste("ERROR in cross.saturate while creating cross:  ",err))
