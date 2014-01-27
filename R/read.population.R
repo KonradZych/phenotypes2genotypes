@@ -150,7 +150,7 @@ applyFunctionToFile <- function(filename, population, header=TRUE, sep="\t", chu
   curLines <- readLines(filePointer, n=chunkSize)
   while(length(curLines) > 0){
     lineNR                  <- lineNR + chunkSize
-    if(verbose && lineNR%%10000==0)cat("processing line:",lineNR,"\n")
+    if(verbose && lineNR%%10000==0) cat("      processing line:",lineNR,"\n")
     curLineSplitted                 <- strsplit(curLines,sep)
     curLineSplittedMatrix           <- do.call(rbind,curLineSplitted)
     curRownames                     <- curLineSplittedMatrix[,1]
