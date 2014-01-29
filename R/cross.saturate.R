@@ -62,8 +62,11 @@ cross.saturate <- function(population, cross, map=c("genetic","physical"), place
   error   = function(err){ stop(paste("ERROR in cross.saturate while creating cross:  ",err)) },
   finally = { sink() })
   
-  if(!(all(rownames(population$offspring$genotypes$simulated)%in%rownames(population$offspring$genotypes$qtl$lod)))) stop("QTL scan results don't match with simulated genotypes, please, run scan.qtls function")
-  if(!(all(rownames(population$offspring$genotypes$qtl$lod)%in%rownames(population$offspring$genotypes$simulated)))) stop("QTL scan results don't match with simulated genotypes, please, run scan.qtls function")
+  markerNames <- rownames(population$offspring$genotypes$simulated)
+  lodNames <- rownames(population$offspring$genotypes$qtl$lod)
+
+  if(!(all(markerNames %in% lodNames))) stop("QTL scan results don't match with simulated genotypes, please, run scan.qtls function")
+  if(!(all(lodNames %in% markerNames))) stop("QTL scan results don't match with simulated genotypes, please, run scan.qtls function")
   
  if(map=="genetic"){
     population      <- matchMarkers(population, population$maps$genetic, mapType="genetic")
@@ -101,28 +104,22 @@ cross.saturate <- function(population, cross, map=c("genetic","physical"), place
       aa <- tempfile()
       sink(aa)
       cross          <- orderMarkers(cross,use.ripple=FALSE,verbose=TRUE)
-    },
-    error= function(err){
-      stop(paste("ERROR in cross.saturate while ordering markers in cross:  ",err))
-      sink()            # sink if errored -> otherwise everything is sinked into aa file
-      # file is not removed -> contains output that may help with debugging
-    },
-    finally={
-      sink()
       file.remove(aa) # no error -> close sink and remove unneeded file
-    })
-    
+    },
+    error= function(err){ stop(paste("ERROR in cross.saturate while ordering markers in cross:  ",err)) },
+    finally={ sink() })
+
     endTime1    <- proc.time()
     if(verbose && debugMode==2)cat("++ Saving data into cross object done in:",(endTime1-startTime1)[3],"seconds.\n")
   }
-  
+
   nrOfNewMarkers <- sum(nmar(cross))-  nrOfOriginalMarkers 
   percentageOfSaturation   <- (nrOfNewMarkers /nrOfOriginalMarkers )*100
   if(verbose){
     cat("\n=== Saturation statistics:\n")
-    cat("Number of original markers:      ",nrOfOriginalMarkers ,"\n")
-    cat("Number of inserted markers:      ",nrOfNewMarkers ,"\n")
-    cat("Saturation (% of markers added): ",percentageOfSaturation,"\n\n")
+    cat("Number of original markers:      ", nrOfOriginalMarkers ,"\n")
+    cat("Number of inserted markers:      ", nrOfNewMarkers ,"\n")
+    cat("Saturation (% of markers added): ", percentageOfSaturation,"\n\n")
   }
   cross$envMarkers <- envMarkers
   cross$epiMarkers <- epiMarkers
