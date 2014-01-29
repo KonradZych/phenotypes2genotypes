@@ -52,19 +52,15 @@ cross.saturate <- function(population, cross, map=c("genetic","physical"), place
 
     populationSubset                      <- population
     populationSubset$offspring$phenotypes <- matrix(0, 5, ncol(population$offspring$phenotypes))
+    colnames(populationSubset$offspring$phenotypes) <- colnames(population$offspring$phenotypes)
+    rownames(populationSubset$offspring$phenotypes) <- 1:5
 
     cross  <- genotypesToCross.internal(populationSubset,"simulated",verbose=verbose,debugMode=debugMode)
     cross$pheno <- t(population$offspring$phenotypes)
-  },
-  error= function(err){
-    stop(paste("ERROR in cross.saturate while creating cross:  ",err))
-    sink()            # sink if errored -> otherwise everything is sinked into aa file
-    # file is not removed -> contains output that may help with debugging
-  },
-  finally={
-    sink()
     file.remove(aa) # no error -> close sink and remove unneeded file
-  })
+  },
+  error   = function(err){ stop(paste("ERROR in cross.saturate while creating cross:  ",err)) },
+  finally = { sink() })
   
   if(!(all(rownames(population$offspring$genotypes$simulated)%in%rownames(population$offspring$genotypes$qtl$lod)))) stop("QTL scan results don't match with simulated genotypes, please, run scan.qtls function")
   if(!(all(rownames(population$offspring$genotypes$qtl$lod)%in%rownames(population$offspring$genotypes$simulated)))) stop("QTL scan results don't match with simulated genotypes, please, run scan.qtls function")

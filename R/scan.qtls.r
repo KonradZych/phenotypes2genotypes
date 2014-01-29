@@ -39,22 +39,18 @@ scan.qtls <- function(population, map=c("genetic","physical"), env, epistasis = 
   
   populationSubset                      <- population
   populationSubset$offspring$phenotypes <- matrix(0, 5, ncol(population$offspring$phenotypes))
-  
+  colnames(populationSubset$offspring$phenotypes) <- colnames(population$offspring$phenotypes)
+  rownames(populationSubset$offspring$phenotypes) <- 1:5
+
   ### creation of the cross so that we can use r/qtl for qtl mapping
   tryCatch({
     aa <- tempfile()
     sink(aa)
     returncross <- genotypesToCross.internal(populationSubset,"real", originalMap)
-  },
-  error= function(err){
-    stop(paste("ERROR in scan.qtls while creating cross:  ",err))
-    sink()            # sink if errored -> otherwise everything is sinked into aa file
-    # file is not removed -> contains output that may help with debugging
-  },
-  finally={
-    sink()
     file.remove(aa) # no error -> close sink and remove unneeded file
-  })
+  },
+  error= function(err){ stop(paste("ERROR in scan.qtls while creating cross:  ",err)) },
+  finally={ sink() })
   
   returncross$pheno <- t(population$offspring$genotypes$simulated)
   returncross       <- calc.genoprob(returncross, step=step)
@@ -87,21 +83,19 @@ scan.qtls <- function(population, map=c("genetic","physical"), env, epistasis = 
     tryCatch({
       aa <- tempfile()
       sink(aa)
-      curScan      <- scanone(returncross, pheno.col=i, model="np")
+      curScan      <- scanone(returncross, pheno.col=i, model="np")  # This results are all used
       curScanNoPM  <- curScan[markernames(returncross),]             # Ignoring Pseudo Markers in check for epistasis
+      file.remove(aa)                                                # No error -> close sink and remove unneeded file
     },
     error= function(err){
       stop(paste("ERROR in scan.qtls while using scanone:  ",err))
-      sink()            # sink if errored -> otherwise everything is sinked into aa file
-      # file is not removed -> contains output that may help with debugging
     },
     finally={
       sink()
-      file.remove(aa) # no error -> close sink and remove unneeded file
     })
     
     if(epistasis=="scan"){
-      epistaticInter  <- checkForEpistasis(curScanNoPM,pull.geno(returncross),pull.pheno(returncross)[,i],env,useEnv)
+      epistaticInter  <- checkForEpistasis(curScanNoPM, pull.geno(returncross), pull.pheno(returncross)[,i], env, useEnv)
     }else{
       epistaticInter  <- 0
     }
