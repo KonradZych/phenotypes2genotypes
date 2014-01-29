@@ -139,7 +139,7 @@ readSingleFile   <- function(population, filename, fileType, verbose=FALSE, ...)
 # OUTPUT:
 #   A matrix with values from the file.
 #
-applyFunctionToFile <- function(filename, population, header=TRUE, sep="\t", chunkSize = 10000, FUN, verbose=FALSE, ...){
+applyFunctionToFile <- function(filename, population, header=TRUE, sep="\t", chunkSize = 50000, FUN, verbose=FALSE, ...){
   filePointer <- file(filename,"r")
   if(header){
     headerLine <- readLines(filePointer, n=1)
