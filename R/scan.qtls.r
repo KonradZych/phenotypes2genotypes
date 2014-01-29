@@ -15,7 +15,7 @@
 # OUTPUT:
 #  vector with new ordering of chromosomes inside cross object
 ############################################################################################################
-scan.qtls <- function(population,map=c("genetic","physical"), env, epistasis = c("scan","ignore"),step=0.1,verbose=FALSE){
+scan.qtls <- function(population, map=c("genetic","physical"), env, epistasis = c("scan","ignore"),step=0.1,verbose=FALSE){
 
   if(missing(population)) stop("Please provide a population object\n")
   check.population(population)
@@ -35,10 +35,10 @@ scan.qtls <- function(population,map=c("genetic","physical"), env, epistasis = c
     if(is.null(population$maps$physical)) stop("No physical map in the population object!")
     population      <- matchMarkers(population, population$maps$physical, mapType="physical")
   }
-  originalMap  <- paste("map_",map,sep="")
+  originalMap  <- paste("map_", map, sep="")
   
   population10pheno                      <- population
-  population10pheno$offspring$phenotypes <- population10pheno$offspring$phenotypes[1:10,]
+  population10pheno$offspring$phenotypes <- population10pheno$offspring$phenotypes[1:10,]       # BUG: If we have less then 10 phenotypes
   
   ### creation of the cross so that we can use r/qtl for qtl mapping
   tryCatch({
@@ -68,11 +68,12 @@ scan.qtls <- function(population,map=c("genetic","physical"), env, epistasis = c
   useEnv            <- TRUE
 
   if(!(length(unique(env))>1)) useEnv <- FALSE
+  npheno <- nrow(population$offspring$genotypes$simulated)
 
-  for(i in 1:nrow(population$offspring$genotypes$simulated)){
+  for(i in 1:npheno){
     curlogLikeli <- NULL
     phenotype    <- pull.pheno(returncross)[,i]
-    perc         <- round(i*100/nrow(population$offspring$genotypes$simulated))
+    perc         <- round(i/npheno * 100)
     if(perc%%10==0 && !(perc%in%done)){ # bit dirty hack to avoid displaying the same value more than once in verbose mode (this can happen due to rounding)
       e <- proc.time()
       cat("Analysing markers",perc,"% done, estimated time remaining:",(e-s)[3]/perc*(100-perc),"s\n")
@@ -88,7 +89,7 @@ scan.qtls <- function(population,map=c("genetic","physical"), env, epistasis = c
       aa <- tempfile()
       sink(aa)
       curScan     <- scanone(returncross,pheno.col=i,model="np")
-      curScanNoPM <- curScan[markernames(returncross),] #ignoring PM in check for epistasis
+      curScanNoPM <- curScan[markernames(returncross),]             # Ignoring Pseudo Markers in check for epistasis
     },
     error= function(err){
       stop(paste("ERROR in scan.qtls while using scanone:  ",err))
@@ -152,6 +153,6 @@ twoGenosModel <- function(genoRow, markerRow, maxGeno, env, useEnv){
 #TODO: Add documentation
 fullScanRow.internal <- function(genoRow, phenoRow, env){
   model <- lm(phenoRow ~ env + genoRow + env:genoRow)
-  return(c(-log10(anova(model)[[5]])[1:3], logLik(model)))
+  return(c(-log10(anova(model)[[5]][1:3]), logLik(model)))
 }
 
