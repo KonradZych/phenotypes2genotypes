@@ -34,45 +34,45 @@ genotypesToCross.internal <- function(population, genotype=c("simulated","real")
   
   #WRITING PHENOTYPIC DATA TO FILE
   population<-writePhenotypes.internal(population, genotype, outputFile, verbose, debugMode)
-  
+
+  realGenotypes <- population$offspring$genotypes$real
+  simGenotypes <- population$offspring$genotypes$simulated
+  geneticMap <- population$maps$genetic
+  physicalMap <- population$maps$physical
+
   #WRITING GENOTYPIC DATA TO FILE
   if(genotype=="real"){
-    if(is.null(population$offspring$genotypes$real)){
-      stop("Use = real chosen, but there is no real genotypic data in population$offspring$genotypes$real\n")
-    }else{
-      genoL <- length(table(population$offspring$genotypes$real))
-      if(orderUsing=="none"){
-        writeGenotypes.internal(population$offspring$genotypes$real, chr=1, outputFile=outputFile, verbose=verbose, debugMode=debugMode)
-        genotypes <- names(table(population$offspring$genotypes$real))
-      }else if(orderUsing=="map_physical"){
-        population$maps$physical <- mapMarkers.internal(population$maps$physical,population$offspring$genotypes$real, mapMode=1, verbose=verbose)
-        if(is.null(population$maps$physical)) stop("No physical map provided in population$maps$physical\n")
-        writeGenotypes.internal(population$offspring$genotypes$real, chr=population$maps$physical[rownames(population$offspring$genotypes$real),1], positions=population$maps$physical[rownames(population$offspring$genotypes$real),2], outputFile=outputFile, verbose=verbose, debugMode=debugMode)
-      }else if(orderUsing=="map_genetic"){
-        population$maps$genetic <- mapMarkers.internal(population$maps$genetic,population$offspring$genotypes$real, mapMode=1, verbose=verbose)
-        if(is.null(population$maps$genetic)) stop("No genetic map provided in population$maps$genetic\n")
-        writeGenotypes.internal(population$offspring$genotypes$real, chr=population$maps$genetic[rownames(population$offspring$genotypes$real),1], positions=population$maps$genetic[rownames(population$offspring$genotypes$real),2], outputFile=outputFile, verbose=verbose, debugMode=debugMode)
-      }
-    
+    if(is.null(realGenotypes)) stop("Use = real chosen, but there is no real genotypic data in population$offspring$genotypes$real\n")
+
+    genoL <- length(table(realGenotypes))
+    if(orderUsing=="none"){
+      writeGenotypes.internal(realGenotypes, chr=1, outputFile=outputFile, verbose=verbose, debugMode=debugMode)
+      genotypes <- names(table(realGenotypes))
+    }else if(orderUsing=="map_physical"){
+      physicalMap <- mapMarkers.internal(physicalMap, realGenotypes, mapMode=1, verbose=verbose)
+      if(is.null(physicalMap)) stop("No physical map provided in population$maps$physical\n")
+      writeGenotypes.internal(realGenotypes, chr=physicalMap[rownames(realGenotypes),1], positions=physicalMap[rownames(realGenotypes),2], outputFile=outputFile, verbose=verbose, debugMode=debugMode)
+    }else if(orderUsing=="map_genetic"){
+      geneticMap <- mapMarkers.internal(geneticMap, realGenotypes, mapMode=1, verbose=verbose)
+      if(is.null(geneticMap)) stop("No genetic map provided in population$maps$genetic\n")
+      writeGenotypes.internal(realGenotypes, chr=geneticMap[rownames(realGenotypes),1], positions=geneticMap[rownames(realGenotypes),2], outputFile=outputFile, verbose=verbose, debugMode=debugMode)
     }
   }else if(genotype=="simulated"){
-    if(is.null(population$offspring$genotypes$simulated)){
-      stop("Use = simulated chosen, but there is no simulated genotypic data in population$offspring$genotypes$simulated\n")
-    }else{
-      genoL <- length(table(population$offspring$genotypes$simulated))
-      if(orderUsing=="none"){
-        writeGenotypes.internal(population$offspring$genotypes$simulated, chr=1, outputFile=outputFile, verbose=verbose, debugMode=debugMode)
-      }else if(orderUsing=="map_physical"){
-        population$maps$physical <- mapMarkers.internal(population$maps$physical,population$offspring$genotypes$simulated, mapMode=1, verbose=verbose)
-        if(is.null(population$maps$physical)) stop("orderUsing = map_physical chosen, but no physical map provided in population$maps$physical\n")
-        writeGenotypes.internal(population$offspring$genotypes$simulated, chr=population$maps$physical[rownames(population$offspring$genotypes$simulated),1], positions=population$maps$physical[rownames(population$offspring$genotypes$simulated),2], outputFile=outputFile, verbose=verbose, debugMode=debugMode)
-      }else if(orderUsing=="map_genetic"){
-        population$maps$genetic <- mapMarkers.internal(population$maps$genetic,population$offspring$genotypes$simulated, mapMode=1, verbose=verbose)
-        if(is.null(population$maps$genetic)) stop("orderUsing = map_physical chosen, but no genetic map provided in population$maps$genetic\n")
-        writeGenotypes.internal(population$offspring$genotypes$simulated, chr=population$maps$genetic[rownames(population$offspring$genotypes$simulated),1], positions=population$maps$genetic[rownames(population$offspring$genotypes$simulated),2], outputFile=outputFile, verbose=verbose, debugMode=debugMode)
-      }
+    if(is.null(simGenotypes)) stop("Use = simulated chosen, but there is no simulated genotypic data in population$offspring$genotypes$simulated\n")
+
+    genoL <- length(table(simGenotypes))
+    if(orderUsing=="none"){
+      writeGenotypes.internal(simGenotypes, chr=1, outputFile=outputFile, verbose=verbose, debugMode=debugMode)
+    }else if(orderUsing=="map_physical"){
+      physicalMap <- mapMarkers.internal(physicalMap, simGenotypes, mapMode=1, verbose=verbose)
+      if(is.null(physicalMap)) stop("orderUsing = map_physical chosen, but no physical map provided in population$maps$physical\n")
+      writeGenotypes.internal(simGenotypes, chr=physicalMap[rownames(simGenotypes),1], positions=physicalMap[rownames(simGenotypes),2], outputFile=outputFile, verbose=verbose, debugMode=debugMode)
+    }else if(orderUsing=="map_genetic"){
+      geneticMap <- mapMarkers.internal(geneticMap, simGenotypes, mapMode=1, verbose=verbose)
+      if(is.null(geneticMap)) stop("orderUsing = map_physical chosen, but no genetic map provided in population$maps$genetic\n")
+      writeGenotypes.internal(simGenotypes, chr=geneticMap[rownames(simGenotypes),1], positions=geneticMap[rownames(simGenotypes),2], outputFile=outputFile, verbose=verbose, debugMode=debugMode)
     }
-  }  
+  }
 
   #READING CROSS FILE INTO R
   populationType <- class(population)[2]
