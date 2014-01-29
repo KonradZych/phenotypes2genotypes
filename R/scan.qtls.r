@@ -37,14 +37,14 @@ scan.qtls <- function(population, map=c("genetic","physical"), env, epistasis = 
   }
   originalMap  <- paste("map_", map, sep="")
   
-  population10pheno                      <- population
-  population10pheno$offspring$phenotypes <- population10pheno$offspring$phenotypes[1:10,]       # BUG: If we have less then 10 phenotypes
+  populationSubset                      <- population
+  populationSubset$offspring$phenotypes <- matrix(0, 5, ncol(population$offspring$phenotypes))
   
   ### creation of the cross so that we can use r/qtl for qtl mapping
   tryCatch({
     aa <- tempfile()
     sink(aa)
-    returncross <- genotypesToCross.internal(population10pheno,"real",originalMap)
+    returncross <- genotypesToCross.internal(populationSubset,"real", originalMap)
   },
   error= function(err){
     stop(paste("ERROR in scan.qtls while creating cross:  ",err))
@@ -57,7 +57,7 @@ scan.qtls <- function(population, map=c("genetic","physical"), env, epistasis = 
   })
   
   returncross$pheno <- t(population$offspring$genotypes$simulated)
-  returncross       <- calc.genoprob(returncross,step=step)
+  returncross       <- calc.genoprob(returncross, step=step)
   s                 <- proc.time()
   lod               <- NULL # LOD scores
   pos               <- NULL # position of the QTL peak on a chromosome
@@ -72,7 +72,6 @@ scan.qtls <- function(population, map=c("genetic","physical"), env, epistasis = 
 
   for(i in 1:npheno){
     curlogLikeli <- NULL
-    phenotype    <- pull.pheno(returncross)[,i]
     perc         <- round(i/npheno * 100)
     if(perc%%10==0 && !(perc%in%done)){ # bit dirty hack to avoid displaying the same value more than once in verbose mode (this can happen due to rounding)
       e <- proc.time()
@@ -80,7 +79,7 @@ scan.qtls <- function(population, map=c("genetic","physical"), env, epistasis = 
       done <- c(done,perc)
     }
     if(useEnv){
-      fullScanResults    <- t(apply(pull.geno(returncross),2,fullScanRow.internal,phenotype,env))
+      fullScanResults    <- t(apply(pull.geno(returncross),2,fullScanRow.internal, pull.pheno(returncross)[,i], env))
       curInteractions    <- c(max(fullScanResults[,1]),max(fullScanResults[,3]))
     }else{
       curInteractions    <- c(0,0)
@@ -88,8 +87,8 @@ scan.qtls <- function(population, map=c("genetic","physical"), env, epistasis = 
     tryCatch({
       aa <- tempfile()
       sink(aa)
-      curScan     <- scanone(returncross,pheno.col=i,model="np")
-      curScanNoPM <- curScan[markernames(returncross),]             # Ignoring Pseudo Markers in check for epistasis
+      curScan      <- scanone(returncross, pheno.col=i, model="np")
+      curScanNoPM  <- curScan[markernames(returncross),]             # Ignoring Pseudo Markers in check for epistasis
     },
     error= function(err){
       stop(paste("ERROR in scan.qtls while using scanone:  ",err))
