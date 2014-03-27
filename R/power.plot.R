@@ -70,9 +70,13 @@ power.plot <- function(cross1,cross2,scores,qtlThr=5,nPheno=500,verbose=FALSE,..
   significant  <- which(maxes1>qtlThr)  #nr of significant QTLs in cross 1
   significant2 <- which(maxes2>qtlThr) #nr of significant QTLs in cross 2
   stronger     <- sum(maxes1[significant]<(maxes2[significant])) #nr of QTLs showubg increase in power
-  cat(length(significant),"significant qtls\n")
+  
+  #verbose output
+  cat("\n##################################\n")
+  cat("Number significant QTLs:\n\t- original cross:",length(significant),"\n\t- new cross:     ",length(significant2),"\n\n")
   cat(stronger,"which is:",stronger/length(significant),"% of significant qtls show increase in power\n")
   cat(length(significant2)-length(significant),"new QTLs found\n") # nr of gained QTLs
+  cat("\n##################################\n")
   
   scores <- list(qtlScores1,qtlScores2)
   class(scores) <- "scores"
