@@ -11,8 +11,8 @@ donothing <- function(x, ...){ invisible(return(x)) }
 msqrt     <- function(x, ...){ invisible(return(sqrt(x))) }
 mlog      <- function(x, ...){ invisible(return(log(x, ...))) }
 reciproce <- function(x, ...){ invisible(return(1/x)) }
-mprobit   <- function(x, ...){ require(VGAM); invisible(return(probit(x, ...))) }
-mlogit    <- function(x, ...){ require(VGAM); invisible(return(logit(x, ...))) }
+mprobit   <- function(x, ...){ invisible(return(probit(x, ...))) }
+mlogit    <- function(x, ...){ invisible(return(logit(x, ...))) }
 
 transformation <- function(x, transformations=c("nothing","log","sqrt","reciprocal","probit","logit"), ... , verbose=TRUE){
   optionsAvailable <- c("nothing","log","sqrt","reciprocal","probit","logit")
