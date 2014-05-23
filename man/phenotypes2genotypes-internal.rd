@@ -86,6 +86,8 @@
 \alias{switchChromosomes.internal}
 \alias{writeGenotypes.internal}
 \alias{writePhenotypes.internal}
+\alias{selectByLineApply}
+\alias{tTestByLineApply}
 
 \alias{check.population}
 \alias{defaultCheck.internal}

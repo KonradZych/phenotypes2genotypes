@@ -8,9 +8,10 @@
 }
 
 \usage{
-  read.population(offspring = "offspring", founders = "founders", map = "map",
-    foundersGroups, populationType = c("riself", "f2", "bc", "risib"),
-    readMode = c("normal","HT"), verbose = FALSE, debugMode = 0, ...)
+  read.population(offspring = "offspring", founders = "founders", map = "map", 
+  foundersGroups, populationType = c("riself", "f2", "bc", "risib"), 
+  readMode = c("normal","HT"), threshold=0.05, verbose = FALSE, debugMode = 0, 
+  n.cluster=1, ...)
 }
 
 \arguments{
@@ -29,10 +30,11 @@
  \item{readMode}{HT, or High-Throughput mode should be used when the very large dataset is processed (at least 10000 probes). Then files are read in chunks intead of at once.
   To avoid R memory limits, only probes showing differential expression between parent are selected. Size of the chunk and threshold for assesing significance can be specified
   (see description of ... parameter).}
+ \item{threshold}{ - threshold for assesing probes that are differentially expressed between parents. 0.05 by default.}
  \item{verbose}{ Be verbose}
  \item{debugMode}{ 1: Print out checks, 2: print additional time information }
+ \item{n.cluster}{ number of cores used for calcuations }
  \item{...}{ Parameters passed to high-throughtput function:    \itemize{
-    \item{threshold}{ - threshold for assesing probes that are differentially expressed between parents. 0.01 by default.}
     \item{transformations}{ - how should the data be transformed (see \code{\link{transformation}})}
     \item{sliceSize}{ - number of lines to be read at once byt HT function. 5000 by default.}
   }}
