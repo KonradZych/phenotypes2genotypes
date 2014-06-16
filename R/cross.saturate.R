@@ -178,7 +178,9 @@ rearrangeMarkers <- function(cross, population, populationType, originalMap, thr
   returncross$geno <- vector(length(unique(originalMap[,1])), mode="list")
 
   ### removing phenotypes used as markers
-  returncross$pheno <- returncross$pheno[,-which(colnames(returncross$pheno)%in%markersToBeRemoved)]
+  if(any(colnames(returncross$pheno)%in%markersToBeRemoved)){
+    returncross$pheno <- returncross$pheno[,-which(colnames(returncross$pheno)%in%markersToBeRemoved)]
+  }
   
   ### names of original markers
   originalNames <- rownames(originalMap)[which(rownames(originalMap) %in% rownames(population$offspring$genotypes$real))]
