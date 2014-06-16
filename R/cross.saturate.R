@@ -163,13 +163,12 @@ rearrangeMarkers <- function(cross, population, populationType, originalMap, thr
     markersOutput      <- bestQTL.internal(cross,population,threshold,flagged,env,verbose,debugMode)
     markersNewPostions <- markersOutput[[1]]
     markerNames        <- markersOutput[[2]]
-    markersToBeRemoved <- markersOutput[[3]]
-    envMarkers         <- markersOutput[[4]]
-    epiMarkers         <- markersOutput[[5]]
+    envMarkers         <- markersOutput[[3]]
+    epiMarkers         <- markersOutput[[4]]
   }else{
     markersNewPostions <- bestCorelated.internal(cross,population,originalMap,threshold,verbose)
-    markersToBeRemoved <- rownames(markersNewPostions)
   }
+  markersToBeRemoved <- rownames(markersNewPostions) #removing phenotypes used for marker creation from phenotype lists
   ### markersNewPostions - matrix: rows - markers, columns: chr where marker is mapping - position on chr - LOD/cor score
   if(verbose) cat("Selected:\n\t",nrow(markersNewPostions),"markers for further analysis\n\n")
 
@@ -352,7 +351,6 @@ bestQTL.internal <- function(cross, population, threshold, flagged, env, verbose
   markerNames           <- markernames(cross)
   newGeno               <- pull.geno(cross)
   output                <- NULL
-  phenotypesToBeRmv     <- NULL ## which phenotypes should not be present in the 
   
   peaksMatrix           <- getpeaks.internal(abs(population$offspring$genotypes$qtl$lod),threshold)
   rownames(peaksMatrix) <- markerNames
@@ -415,7 +413,7 @@ bestQTL.internal <- function(cross, population, threshold, flagged, env, verbose
   rownames(output) <- markerNames
   if(any(is.na(output[,1]))) output <- output[-which(is.na(output[,1])),]
   if(any(is.na(output[,2]))) output <- output[-which(is.na(output[,2])),]
-  invisible(list(output,markerNames,phenotypesToBeRmv,envMarkers,epiMarkers))
+  invisible(list(output,markerNames,envMarkers,epiMarkers))
 }
 
 ###########################################################################################################
