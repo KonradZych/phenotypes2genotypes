@@ -43,9 +43,23 @@ power.plot <- function(cross1,cross2,scores,qtlThr=5,nPheno=500,verbose=FALSE,..
     if(is.null(cross2$geno[[1]]$prob)){
       cross2 <- calc.genoprob(cross2)
     }
-    markers  <- sample(1:nphe(cross1),nPheno)
-    qtlScores1     <- scanone(cross1,pheno.col=markers,verbose=verbose,...)
-    qtlScores2     <- scanone(cross2,pheno.col=markers,verbose=verbose,...)
+    markers        <- sort(sample(1:nphe(cross1),nPheno))
+    qtlScores1     <- as.data.frame(scanone(cross1,pheno.col=markers[1],verbose=verbose,...))
+    qtlScores2     <- as.data.frame(scanone(cross2,pheno.col=markers[1],verbose=verbose,...))
+    s              <- proc.time()[3]
+    if(length(markers)>1){
+      for(markerNr in 2:length(markers)){
+        if(!markerNr%%100){
+          e              <- proc.time()[3]
+          cat("----",markerNr,"markers done in:",e-s,"s, estimated time till end:",(e-s)/markerNr*(length(markers)-markerNr),"\n")
+          
+        }
+        marker         <- markers[markerNr]
+        qtlScores1     <- cbind(qtlScores1,scanone(cross1,pheno.col=marker,verbose=verbose,...)[,3])
+        qtlScores2     <- cbind(qtlScores2,scanone(cross2,pheno.col=marker,verbose=verbose,...)[,3])
+      }
+    }
+    
   }else if(class(scores)=="scores"){
     qtlScores1     <- scores[[1]]
     qtlScores2     <- scores[[2]]
