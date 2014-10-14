@@ -1,6 +1,6 @@
 Package: pheno2geno
-Version: 1.2.1
-Date: May 2014
+Version: 1.3.0
+Date: October 2014
 Title: Pheno2Geno - Generating genetic markers and maps from molecular phenotypes
 Author: Konrad Zych <k.zych@rug.nl> and Danny Arends <danny.arends@gmail.com> 
 Maintainer: Konrad Zych <k.zych@rug.nl>
