@@ -33,16 +33,16 @@
 }
 
 \examples{
-	data(yeastCross)
-	data(yeastPopulation)
-	assignment <- cross.denovo(yeastPopulation,n.chr=16,verbose=TRUE,map="physical",
+	data(testCross)
+	data(testPopulation)
+	assignment <- cross.denovo(testPopulation,n.chr=5,verbose=TRUE,map="genetic",
   comparisonMethod=sumMajorityCorrelation, use.orderMarkers=FALSE,reOrder=FALSE)
   assignment
-  ordering <- assignChrToMarkers(assignment,yeastCross)
+  ordering <- assignChrToMarkers(assignment,testCross)
 }
 
 \seealso{
-  \code{\link{reorganizeMarkersWithin}} - Apply new ordering on the cross object usign ordering vector.
+  \code{\link{reorganizeMarkersWithin}} - Apply new ordering on the cross object using ordering vector.
   \code{\link{cross.saturate}} - Saturate existing map.
   \code{\link{cross.denovo}} - Create de novo genetic map or vector showing how chromosomes should be assigned.
 }

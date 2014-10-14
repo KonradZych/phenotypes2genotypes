@@ -51,9 +51,9 @@ Plots markers from moth old and new map as points and in the background - compar
 }
 
 \examples{
-	data(yeastPopulation)
-	data(yeastCross)
-	markersCorPlot(yeastCross,yeastPopulation,map="physical")
+	data(testPopulation)
+	data(testCross)
+	markersCorPlot(testCross,testPopulation,map="genetic")
 }
 
 \seealso{

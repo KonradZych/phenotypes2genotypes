@@ -36,8 +36,8 @@ result of smoothing genotypping errors some markers may be put on the same posit
 }
 
 \examples{
-	data(yeastPopulation)
-	cross <- cross.saturate(yeastPopulation,map="physical",verbose=TRUE,debugMode=2)
+	data(testPopulation)
+	cross <- cross.saturate(testPopulation,map="genetic",verbose=TRUE,debugMode=2)
 }
 
 \seealso{

@@ -31,9 +31,9 @@
 }
 
 \examples{
-	data(yeastPopulation)
+	data(testPopulation)
 	### plotting only 10 markers for clearer image
-	plotChildrenExpression(yeastPopulation,10:20)
+	plotChildrenExpression(testPopulation,10:20)
 
 }
 

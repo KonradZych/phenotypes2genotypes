@@ -35,8 +35,8 @@ Plots maximal values of QTL peak measured on the same phenotypes in two crosses.
 }
 
 \examples{
-	data(yeastCross)
-  power.plot(yeastCross,yeastCross,nPheno=50)
+	data(testCross)
+  power.plot(testCross,testCross,nPheno=50)
 }
 
 \seealso{

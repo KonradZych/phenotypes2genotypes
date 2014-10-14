@@ -50,13 +50,13 @@ and should be removed from the cross object.
 }
 
 \examples{
-	data(yeastCross)
-	plot.rf(yeastCross, main="riself generate.biomarkers example")
-	cross_ <- reduceChromosomesNumber(yeastCross,5,verb=TRUE)
+	data(testCross)
+	plot.rf(testCross, main="riself generate.biomarkers example")
+	cross_ <- reduceChromosomesNumber(testCross,5,verb=TRUE)
 	plot.rf(cross_, main="Leaving only 5 chromosomes")
-	cross_ <- removeChromosomes(yeastCross,1,verb=TRUE)
+	cross_ <- removeChromosomes(testCross,1,verb=TRUE)
 	plot.rf(cross_, main="Removing chromosome 1")
-	cross_ <- removeTooSmallChromosomes(yeastCross,5,verb=TRUE)
+	cross_ <- removeTooSmallChromosomes(testCross,5,verb=TRUE)
 	plot.rf(cross_, main="Leaving only chromosomes with more than 5 markers")
 }
 

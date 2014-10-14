@@ -31,13 +31,13 @@
 }
 
 \examples{
-  data(yeastCross)
-  data(yeastPopulation)
-  assignment <- cross.denovo(yeastPopulation,n.chr=16,verbose=TRUE,map="physical",
+  data(testCross)
+  data(testPopulation)
+  assignment <- cross.denovo(testPopulation,n.chr=5,verbose=TRUE,map="genetic",
   comparisonMethod=sumMajorityCorrelation, use.orderMarkers=FALSE,reOrder=FALSE)
   assignment #boring,but expected
-  ordering <- assignChrToMarkers(assignment,yeastCross)
-  yeastCross <- reorganizeMarkersWithin(yeastCross, ordering)
+  ordering <- assignChrToMarkers(assignment,testCross)
+  testCross <- reorganizeMarkersWithin(testCross, ordering)
 
 }
 

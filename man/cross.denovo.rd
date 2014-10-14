@@ -67,8 +67,8 @@ assign number to newly created chromosomes.
 }
 
 \examples{
-	data(yeastPopulation)
-	cross <- cross.denovo(yeastPopulation,n.chr=16,verbose=TRUE,map="physical",
+	data(testPopulation)
+	cross <- cross.denovo(testPopulation,n.chr=5,verbose=TRUE,map="genetic",
   comparisonMethod=sumMajorityCorrelation, use.orderMarkers=FALSE)
 }
 

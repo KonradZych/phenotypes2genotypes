@@ -37,8 +37,8 @@
 
 \examples{
   \donttest{
-  data(yeastPopulation)
-  yeastPopulation <- scan.qtls(yeastPopulation,verbose=TRUE,map="physical",step=0)
+  data(testPopulation)
+  testPopulation <- scan.qtls(testPopulation,verbose=TRUE,map="genetic",step=0)
   }
 }
 

@@ -34,8 +34,8 @@
 }
 
 \examples{
-	data(yeastPopulation)
-	plotMarkerDistribution(yeastPopulation,2,2)
+	data(testPopulation)
+	plotMarkerDistribution(testPopulation,2,2)
 }
 
 \seealso{

@@ -33,9 +33,9 @@
 }
 
 \examples{
-  data(yeastPopulation)
-  markers <- pull.biomarkers(yeastPopulation,verbose=TRUE)
-  bestMarker <- pull.biomarkers(yeastPopulation,round(runif(109)),verbose=TRUE)
+  data(testPopulation)
+  markers <- pull.biomarkers(testPopulation,verbose=TRUE)
+  bestMarker <- pull.biomarkers(testPopulation,round(runif(148)),verbose=TRUE)
 }
 
 \seealso{

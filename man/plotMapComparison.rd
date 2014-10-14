@@ -29,9 +29,9 @@
 }
 
 \examples{
-	data(yeastPopulation)
-	data(yeastCross)
-	plotMapComparison(yeastCross,yeastPopulation,map="physical")
+	data(testPopulation)
+	data(testCross)
+	plotMapComparison(testCross,testPopulation,map="genetic")
 }
 
 \seealso{

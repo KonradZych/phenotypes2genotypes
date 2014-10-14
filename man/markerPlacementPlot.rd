@@ -42,10 +42,10 @@ be selected with different threshold values.
 }
 
 \examples{
-	data(yeastCross)
-	data(yeastPopulation)
-	markerPlacementPlot(yeastPopulation,placeUsing="qtl",cross=yeastCross)
-	markerPlacementPlot(yeastPopulation,placeUsing="correlation",cross=yeastCross)
+	data(testCross)
+	data(testPopulation)
+	markerPlacementPlot(testPopulation,placeUsing="qtl",cross=testCross)
+	markerPlacementPlot(testPopulation,placeUsing="correlation",cross=testCross)
 }
 
 \seealso{

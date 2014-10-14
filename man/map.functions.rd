@@ -27,9 +27,9 @@
 }
 
 \examples{
-	data(yeastCross)
-  avg_map_distances(yeastCross)
-  map_distances(yeastCross)
+	data(testCross)
+  avg_map_distances(testCross)
+  map_distances(testCross)
 }
 
 \seealso{

@@ -34,9 +34,9 @@
 }
 
 \examples{
-	data(yeastPopulation)
-	showRPpval(yeastPopulation)
-	plotRPpval(yeastPopulation)
+	data(testPopulation)
+	showRPpval(testPopulation)
+	plotRPpval(testPopulation)
 
 }
 

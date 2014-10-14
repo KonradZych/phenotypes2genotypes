@@ -46,8 +46,8 @@
 }
 
 \examples{
-	data(yeastPopulation)
-	yeastPopulation <- find.diff.expressed(yeastPopulation)
+	data(testPopulation)
+	testPopulation <- find.diff.expressed(testPopulation)
 
 }
 

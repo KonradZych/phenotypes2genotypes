@@ -30,9 +30,9 @@
 }
 
 \examples{
-	data(yeastPopulation)
-	data(yeastCross)
-	projectOldMarkers(yeastCross,yeastPopulation,map="physical")
+	data(testPopulation)
+	data(testCross)
+	projectOldMarkers(testCross,testPopulation,map="genetic")
 }
 
 \seealso{

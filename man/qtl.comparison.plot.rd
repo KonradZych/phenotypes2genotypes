@@ -32,8 +32,8 @@ Plots markers from moth old and new map as points and in the background - compar
 }
 
 \examples{
-	data(yeastCross)
-	qtl.comparison.plot(yeastCross,yeastCross)
+	data(testCross)
+	qtl.comparison.plot(testCross,testCross)
 }
 
 \seealso{

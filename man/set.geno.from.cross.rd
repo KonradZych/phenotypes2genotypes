@@ -39,9 +39,9 @@ This function pull genotypes with a map from the cross object and puts them into
 }
 
 \examples{
-	data(yeastPopulation)
-	data(yeastCross)
-	yeastPopulation <- set.geno.from.cross(yeastCross,yeastPopulation)
+	data(testPopulation)
+	data(testCross)
+	testPopulation <- set.geno.from.cross(testCross,testPopulation)
 }
 
 \seealso{

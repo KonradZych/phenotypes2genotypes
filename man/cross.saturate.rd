@@ -61,8 +61,8 @@ A correlation matrix between those two sets of markers is made, and new markers 
 }
 
 \examples{
-	data(yeastPopulation)
-	cross <- cross.saturate(yeastPopulation,map="physical",verbose=TRUE,debugMode=2)
+	data(testPopulation)
+	cross <- cross.saturate(testPopulation,map="genetic",verbose=TRUE,debugMode=2)
 }
 
 \seealso{

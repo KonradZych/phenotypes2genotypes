@@ -31,9 +31,9 @@
 }
 
 \examples{
-	data(yeastPopulation)
+	data(testPopulation)
 	### plotting 
-	plotParentalExpression(yeastPopulation)
+	plotParentalExpression(testPopulation)
 }
 
 \seealso{
