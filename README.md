@@ -8,7 +8,7 @@ master branch can be installed into R, development branches may contain errors.
 Dependencies
 ------------
 + R software environment from [www.r-project.org](http://www.r-project.org/ "www.r-project.org")
-+ qtl package from [www.rqtl.org](http://www.rqtl.org, "www.rqtl.org") also available on [CRAN](http://cran.r-project.org/web/packages/qtl/index.html "http://cran.r-project.org/web/packages/qtl/index.html")
++ qtl package from [www.rqtl.org](http://www.rqtl.org "www.rqtl.org") also available on [CRAN](http://cran.r-project.org/web/packages/qtl/index.html "http://cran.r-project.org/web/packages/qtl/index.html")
 + mixtools package available on [CRAN](http://cran.r-project.org/web/packages/mixtools/index.html "http://cran.r-project.org/web/packages/mixtools/index.html")
 
 Optional:
