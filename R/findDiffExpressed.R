@@ -28,9 +28,12 @@ find.diff.expressed <- function(population,use=c("ttest","rankprod"),verbose=FAL
   
   s<-proc.time()
   if(use=="rankprod"){
-    tryCatch(require(RankProd), error = stop("Install RankProd package to use Rank Product analysis!\n"))
-    rankProdRes <- RP(population$founders$phenotypes,population$founders$groups,gene.names=rownames(population$founders$phenotypes),...)
-    population$founders$RP <- rankProdRes
+   if (requireNamespace("RankProd", quietly = TRUE)){
+      rankProdRes <- RankProd::RP(population$founders$phenotypes,population$founders$groups,gene.names=rownames(population$founders$phenotypes),...)
+      population$founders$RP <- rankProdRes
+    }else{
+      stop("Install RankProd package to use Rank Product analysis!\n")
+    }
   }else{
     population$founders$RP$pval<- t(rbind(apply(population$founders$phenotypes,1,findUsingTTest.internal,population$founders$groups)))
   }
