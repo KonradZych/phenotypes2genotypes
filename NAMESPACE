@@ -1,4 +1,3 @@
-# Default NAMESPACE created by R
 # Remove the previous line if you edit this file
 
 # Export all names
@@ -13,3 +12,6 @@ import(
   mixtools,
   VGAM
 )
+
+#registering S3 method
+S3method(print, population)
