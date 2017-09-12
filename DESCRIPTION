@@ -6,5 +6,6 @@ Author: Konrad Zych <k.zych@rug.nl> and Danny Arends <danny.arends@gmail.com>
 Maintainer: Konrad Zych <k.zych@rug.nl>
 Description: High-throughput generation of genetic markers from molecular phenotypes for crosses between inbred strains. These markers can be use to saturate existing genetic map or creating a new one.
 Depends: R (>= 2.14.1), graphics, stats, utils, qtl, VGAM, mixtools
+Imports: grDevices
 Suggests: RankProd
 License: GPL-3
