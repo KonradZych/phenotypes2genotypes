@@ -1,15 +1,16 @@
 The pheno2geno package
 ======================
-Pheno2geno is an R package to create genetic maps out of phenotype expression data. 
-Currently supported breeding schemes are: Recombinant Inbred Lines (RIL), F2 and 
-backcross (BC). The master branch is the current stable version and is tagged. The 
+Pheno2geno is an R package to create genetic maps out of phenotype expression data.
+Currently supported breeding schemes are: Recombinant Inbred Lines (RIL), F2 and
+backcross (BC). The master branch is the current stable version and is tagged. The
 master branch can be installed into R, development branches may contain errors.
 
 Dependencies
 ------------
-+ R software environment from [www.r-project.org](http://www.r-project.org/ "www.r-project.org")
-+ qtl package from [www.rqtl.org](http://www.rqtl.org "www.rqtl.org") also available on [CRAN](http://cran.r-project.org/web/packages/qtl/index.html "http://cran.r-project.org/web/packages/qtl/index.html")
-+ mixtools package available on [CRAN](http://cran.r-project.org/web/packages/mixtools/index.html "http://cran.r-project.org/web/packages/mixtools/index.html")
++ R software environment from [www.r-project.org](https://www.r-project.org/ "www.r-project.org")
++ qtl package from [www.rqtl.org](http://www.rqtl.org "www.rqtl.org")
+also available on [CRAN](https://cran.r-project.org/package=qtl "https://cran.r-project.org/package=qtl")
++ mixtools package available on [CRAN](https://cran.r-project.org/package=mixtools "https://cran.r-project.org/package=mixtools")
 
 Optional:
 RankProd package from [www.bioconductor.org](http://www.bioconductor.org/packages/release/bioc/html/RankProd.html "www.bioconductor.org")
@@ -89,6 +90,6 @@ merchantability or fitness for a particular purpose.  See the GNU
 General Public License, version 3, for more details.
 
 A copy of the GNU General Public License, version 3, is available
-at [http://www.r-project.org/Licenses/GPL-3](http://www.r-project.org/Licenses/GPL-3 "GPL-3 Licence")
+at [https://www.r-project.org/Licenses/GPL-3](https://www.r-project.org/Licenses/GPL-3 "GPL-3 Licence")
 
 Copyright (c) 2010-2012 GBIC - Danny Arends, Konrad Zych, Ritsert C. Jansen
