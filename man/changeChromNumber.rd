@@ -10,9 +10,9 @@
 }
 
 \usage{
-	reduceChromosomesNumber(cross, numberOfChromosomes, verbose=FALSE)
-	removeChromosomes(cross, chromosomesToBeRmv, verbose=FALSE)
-	removeTooSmallChromosomes(cross, minNrOfMarkers, verbose=FALSE)
+    reduceChromosomesNumber(cross, numberOfChromosomes, verbose=FALSE)
+    removeChromosomes(cross, chromosomesToBeRmv, verbose=FALSE)
+    removeTooSmallChromosomes(cross, minNrOfMarkers, verbose=FALSE)
 }
 
 \arguments{
@@ -28,36 +28,36 @@
 }
 
 \details{
-There are three functions in pheno2geno to allow the user to manually reduce number of resulting chromosomes. 
+There are three functions in pheno2geno to allow the user to manually reduce number of resulting chromosomes.
 
 \emph{reduceChromosomesNumber}
-This functions removes all chromosomes from the cross object excluding chromosome 1 to numberOfChromosomes. It depends on the ordering 
-of chromosomes inside the cross object (which is based on the length of the chromosomes). 
+This functions removes all chromosomes from the cross object excluding chromosome 1 to numberOfChromosomes. It depends on the ordering
+of chromosomes inside the cross object (which is based on the length of the chromosomes).
 
 \emph{ removeChromosomes}
-This function removes chromosomes from the cross object by name. Because of this it does not depend on the 
+This function removes chromosomes from the cross object by name. Because of this it does not depend on the
 ordering of the chromosomes inside the cross object.
 
 \emph{ removeTooSmallChromosomes}
-This function is used to clean a cross object after using \code{\link{formLinkageGroups}}. FormLinkageGroups can 
-introduce small chromosomes as artifacts. These linkage groups consist of only a few markers with poor quality 
+This function is used to clean a cross object after using \code{\link{formLinkageGroups}}. FormLinkageGroups can
+introduce small chromosomes as artifacts. These linkage groups consist of only a few markers with poor quality
 and should be removed from the cross object.
 }
 
 \author{
-	Konrad Zych \email{k.zych@rug.nl}, Danny Arends \email{Danny.Arends@gmail.com}
-	Maintainer: Konrad Zych \email{k.zych@rug.nl}
+    Konrad Zych \email{k.zych@rug.nl}, Danny Arends \email{Danny.Arends@gmail.com}
+    Maintainer: Konrad Zych \email{k.zych@rug.nl}
 }
 
 \examples{
-	data(testCross)
-	plot.rf(testCross, main="riself generate.biomarkers example")
-	cross_ <- reduceChromosomesNumber(testCross,5,verb=TRUE)
-	plot.rf(cross_, main="Leaving only 5 chromosomes")
-	cross_ <- removeChromosomes(testCross,1,verb=TRUE)
-	plot.rf(cross_, main="Removing chromosome 1")
-	cross_ <- removeTooSmallChromosomes(testCross,5,verb=TRUE)
-	plot.rf(cross_, main="Leaving only chromosomes with more than 5 markers")
+    data(testCross)
+    plotRF(testCross, main="riself generate.biomarkers example")
+    cross_ <- reduceChromosomesNumber(testCross,5,verb=TRUE)
+    plotRF(cross_, main="Leaving only 5 chromosomes")
+    cross_ <- removeChromosomes(testCross,1,verb=TRUE)
+    plotRF(cross_, main="Removing chromosome 1")
+    cross_ <- removeTooSmallChromosomes(testCross,5,verb=TRUE)
+    plotRF(cross_, main="Leaving only chromosomes with more than 5 markers")
 }
 
 \seealso{

@@ -13,5 +13,8 @@ import(
   VGAM
 )
 
+# import rgb from grDevices
+importFrom("grDevices", "rgb")
+
 #registering S3 method
 S3method(print, population)
