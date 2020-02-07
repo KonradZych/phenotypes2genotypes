@@ -38,11 +38,9 @@
 }
 
 \seealso{
-	\itemize{
+  \itemize{
     \item{\code{\link{read.population}}}{ - Load genotype, phenotype, genetic map data files into R environment into a population object.}
     \item{\code{\link{generate.biomarkers}}}{ - Creating genotypes from children phenotypes.}
-    \item{\code{\link{showRPpval}}}{- Printing out p-values calculated by the find.diff.expressed function.}
-    \item{\code{\link{plotRPpval}}}{ - Plotting p-values calculated by the find.diff.expressed function.}
   }
 }
 
