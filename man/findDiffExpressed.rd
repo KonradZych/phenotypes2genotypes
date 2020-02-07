@@ -9,14 +9,13 @@
 }
 
 \usage{
-  find.diff.expressed(population, verbose=FALSE, debugMode=0,...)
+  find.diff.expressed(population, verbose=FALSE, debugMode=0)
 }
 
 \arguments{
  \item{population}{ An object of class \code{\link{population}}. See \code{\link{create.population}} for details. }
  \item{verbose}{ Be verbose.}
  \item{debugMode}{ 1: Print out checks, 2: print additional time information.}
- \item{...}{ Additional arguments passed to RP function.}
 }
 
 \value{

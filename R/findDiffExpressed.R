@@ -19,7 +19,7 @@
 # OUTPUT:
 #  An object of class population containing object of class RP in $founders$RP
 #
-find.diff.expressed <- function(population, verbose=FALSE, debugMode=0, ...){
+find.diff.expressed <- function(population, verbose=FALSE, debugMode=0){
   #checks
   if(missing(population)) stop("provide population object\n")
   check.population(population)
