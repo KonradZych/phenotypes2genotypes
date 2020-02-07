@@ -18,7 +18,7 @@
  \item{offspring}{ Core used to specify names of children phenotypic ("core_phenotypes.txt") genotypic ("core_genotypes.txt") and annotations ("core_annotations.txt") files.}
  \item{founders}{ Core used to specify names of parental phenotypic ("core_phenotypes.txt") file. }
  \item{map}{ Core used to specify names of genetic ("map_genetic.txt") and physical ("map_physical.txt") map files. }
- \item{foundersGroups}{ Specify groups of individuals in founders data, see description below and \code{\link[RankProd]{RP}} for more details }
+ \item{foundersGroups}{ Specify groups of individuals in founders data, see description for more details }
    \item{populationType}{ Type of the population data was obtained from:
    \itemize{
     \item{riself}{ - RILs by selfing.}

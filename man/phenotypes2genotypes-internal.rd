@@ -103,11 +103,6 @@
   Internal pheno2geno functions. These are generally not to be called by the user.
 }
 
-\usage{
-  TODO
-}
-
-
 \author{ 
 	Konrad Zych \email{k.zych@rug.nl}, Danny Arends \email{Danny.Arends@gmail.com}
 	Maintainer: Konrad Zych \email{k.zych@rug.nl}

@@ -54,9 +54,7 @@
       \itemize{
         \item{$phenotypes}{ - Founders phenotype data, stored as a numeric matrix, Rows: phenotypes, Columns: individuals.}
         \item{$groups}{ - Groups a founder belong to when replicates are available, storad as a vector of 0s and 1s, specifying per column which founder phenotype data belongs to which group.}
-        \item{$RP}{ - Results from the t.test or RankProd analysis on the founders phenotype data, by \code{\link{find.diff.expressed}.}
       }
-    }
     }
     \item{$maps}{ - Section in the object which contains all data related to maps:
       \itemize{
