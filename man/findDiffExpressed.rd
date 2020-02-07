@@ -41,7 +41,6 @@
 \examples{
 	data(testPopulation)
 	testPopulation <- find.diff.expressed(testPopulation)
-
 }
 
 \seealso{
