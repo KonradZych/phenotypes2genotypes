@@ -56,7 +56,6 @@
         \item{$groups}{ - Groups a founder belong to when replicates are available, storad as a vector of 0s and 1s, specifying per column which founder phenotype data belongs to which group.}
       }
     }
-    }
     \item{$maps}{ - Section in the object which contains all data related to maps:
       \itemize{
         \item{$genetic}{ Genetic map, stored as a numeric matrix, Rows: markers, 2 Columns [1] Chromosome, [2] Position on chromosome in cM.}
