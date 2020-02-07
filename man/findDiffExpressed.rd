@@ -9,18 +9,11 @@
 }
 
 \usage{
-  find.diff.expressed(population,use=c("ttest","rankprod"),verbose=FALSE,
-  debugMode=0,...)
+  find.diff.expressed(population, verbose=FALSE, debugMode=0,...)
 }
 
 \arguments{
-\item{population}{ An object of class \code{\link{population}}. See \code{\link{create.population}} for details. }
- \item{use}{ Which method should be used for selecting differentially expressed probes:
-  \itemize{
-    \item{ttest}{ - student t-test.}
-    \item{rankprod}{ - Rank Product using RP function from RankProd package. \emph{RankProd package from Bioconductor has to be installed before this option is enabled.}}
-  } 
-  }
+ \item{population}{ An object of class \code{\link{population}}. See \code{\link{create.population}} for details. }
  \item{verbose}{ Be verbose.}
  \item{debugMode}{ 1: Print out checks, 2: print additional time information.}
  \item{...}{ Additional arguments passed to RP function.}

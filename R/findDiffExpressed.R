@@ -19,25 +19,17 @@
 # OUTPUT:
 #  An object of class population containing object of class RP in $founders$RP
 #
-find.diff.expressed <- function(population,use=c("ttest","rankprod"),verbose=FALSE,debugMode=0,...){
+find.diff.expressed <- function(population, verbose=FALSE, debugMode=0, ...){
   #checks
   if(missing(population)) stop("provide population object\n")
   check.population(population)
-  use <- match.arg(use)
+
   if(verbose && debugMode==1) cat("find.diff.expressed starting withour errors in checkpoints.\n")
   
   s<-proc.time()
-  if(use=="rankprod"){
-   if (requireNamespace("RankProd", quietly = TRUE)){
-      rankProdRes <- RankProd::RP(population$founders$phenotypes,population$founders$groups,gene.names=rownames(population$founders$phenotypes),...)
-      population$founders$RP <- rankProdRes
-    }else{
-      stop("Install RankProd package to use Rank Product analysis!\n")
-    }
-  }else{
-    population$founders$RP$pval<- t(rbind(apply(population$founders$phenotypes,1,findUsingTTest.internal,population$founders$groups)))
-  }
+  population$founders$RP$pval<- t(rbind(apply(population$founders$phenotypes,1,findUsingTTest.internal,population$founders$groups)))
   e<-proc.time()
+
   if(verbose && debugMode==2)cat("Differentially expressed genes found in:",(e-s)[3],"seconds.\n")
   invisible(population)
 }

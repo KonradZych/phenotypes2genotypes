@@ -59,13 +59,13 @@ original genetic map consisting of AFLP markers.
   guide to QTL mapping with R/qtl.}  \bold{Springer}.  \url{http://www.rqtl.org/book}
 }
 
-\keyword{ package, qtl }
+\keyword{ package }
 
 \seealso{
   \itemize{
     \item{\code{\link{read.population}}}{ - Load genotype, phenotype, genetic map data files into R environment into a population object.}
     \item{\code{\link{find.diff.expressed}}}{ - Using Rank Product or student t-test analysis to select differentially expressed genes.}
-    \item{ \code{\link{scan.qtls}}}{ - Scanning population data for qtls for use in cross.saturate function.}
+    \item{\code{\link{scan.qtls}}}{ - Scanning population data for qtls for use in cross.saturate function.}
     \item{\code{\link{cross.denovo}}}{ - Create de novo genetic map or vector showing how chromosomes should be assigned.}
     \item{\code{\link{cross.saturate}}}{ - Saturate existing map.}
   }
