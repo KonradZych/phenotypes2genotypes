@@ -38,7 +38,7 @@ add.to.population <- function(population, dataObject, dataType=c("founders","off
   dataType <- match.arg(dataType)
   if(verbose && debugMode==1) cat("add.to.population starting without errors in checkpoints.\n")
   if(length(dataType)>1){
-    if(class(dataObject)!="list") stop("Multiple dataObjects should be provided as list.\n")
+    if(!("list" %in% class(dataObject))) stop("Multiple dataObjects should be provided as list.\n")
     if(length(dataObject)!=length(dataType)) stop("Support dataType for every element of dataObject.\n")
     if(length(dataType)!=length(unique(dataType))) stop("Every element of dataType must be unique!\n")
     for(i in 1:length(dataObject)){
@@ -84,8 +84,8 @@ dataType=c("founders","offspring$phenotypes","founders$groups","offspring$genoty
   populationType <- match.arg(populationType)
   if(missing(dataObject)) stop("dataObject is missing\n")
   if(dataType!="founders$groups"){
-    if(class(dataObject)=="data.frame") dataObject <- as.matrix(dataObject)
-    if(class(dataObject)!="matrix") stop("dataObject should be either a matrix or a date frame")
+    if("data.frame" %in% class(dataObject)) dataObject <- as.matrix(dataObject)
+    if(!("matrix" %in% class(dataObject))) stop("dataObject should be either a matrix or a date frame")
   }
   if(dataType=="founders" || dataType=="offspring$phenotypes"){
     population <- add.to.populationSubPheno.internal(population,dataObject,dataType, verbose, debugMode)
