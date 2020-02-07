@@ -1,11 +1,10 @@
 Package: pheno2geno
-Version: 1.4.0
-Date: 2018-02-11
+Version: 1.4.1
+Date: 2020-02-07
 Title: High-Throughput Generation of Genetic Markers and Maps from Molecular Phenotypes for Crosses Between Inbred Strains
 Author: Konrad Zych <k.zych@rug.nl> and Danny Arends <danny.arends@gmail.com>
-Maintainer: Konrad Zych <k.zych@rug.nl>
+Maintainer: Danny Arends <danny.arends@gmail.com>
 Description: High-throughput generation of genetic markers from molecular phenotypes for crosses between inbred strains. These markers can be use to saturate existing genetic map or creating a new one.
 Depends: R (>= 2.14.1), graphics, stats, utils, qtl, VGAM, mixtools
 Imports: grDevices
-Suggests: RankProd
 License: GPL-3
