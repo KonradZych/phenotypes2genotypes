@@ -24,18 +24,12 @@
 }
 
 \details{
-  This function finds probes differentially expressed between founders using either student t.test or RankProd (\emph{RankProd package from Bioconductor has to be installed before this option is enabled.}).
+  This function finds probes differentially expressed between founders using either student t.test
 }
 
 \author{
 	Konrad Zych \email{k.zych@rug.nl}, Danny Arends \email{Danny.Arends@gmail.com}
 	Maintainer: Konrad Zych \email{k.zych@rug.nl}
-}
-
-\references{
-  Hong F, Breitling R, McEntee CW, Wittner BS, Nemhauser JL, Chory J.(2006) RankProd: 
-  a bioconductor package for detecting differentially expressed genes in meta-analysis. 
-  \emph{Bioinformatics}, \bold{15};22(22):2825-7.
 }
 
 \examples{
@@ -45,7 +39,6 @@
 
 \seealso{
 	\itemize{
-    \item{\code{\link[RankProd]{RP}}}{ - Perform rank product method to identify differentially expressed genes.}
     \item{\code{\link{read.population}}}{ - Load genotype, phenotype, genetic map data files into R environment into a population object.}
     \item{\code{\link{generate.biomarkers}}}{ - Creating genotypes from children phenotypes.}
     \item{\code{\link{showRPpval}}}{- Printing out p-values calculated by the find.diff.expressed function.}
