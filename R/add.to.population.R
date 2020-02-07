@@ -241,7 +241,7 @@ add.to.populationSubMap.internal <- function(population, dataObject, dataType=c(
   if(verbose && debugMode==1) cat("add.to.populationSub.internal starting.\n")
   s <- proc.time()
   dataType <- match.arg(dataType)
-  if(!(!(is.null(dataObject))&&!(is.null(dim(dataObject)))&&class(dataObject)=="matrix")) stop("No data provided for ",dataType,"!\n")
+  if(!(!(is.null(dataObject))&&!(is.null(dim(dataObject)))&&("matrix" %in% class(dataObject)))) stop("No data provided for ",dataType,"!\n")
 
   if(dataType=="maps$genetic" && ncol(dataObject)!=2) cat ("This is not a correct map object.\n")
   if(dataType=="maps$physical" && ncol(dataObject)!=2 && ncol(dataObject)!=3) cat ("This is not a correct map object.\n")
@@ -283,7 +283,7 @@ add.to.populationSubMap.internal <- function(population, dataObject, dataType=c(
 add.to.populationSubAnnots.internal <- function(population, dataObject, verbose=FALSE, debugMode=0){
   if(verbose && debugMode==1) cat("add.to.populationSubAnnots.internal starting.\n")
   s <- proc.time()
-  if(!(!(is.null(dataObject))&&!(is.null(dim(dataObject)))&&class(dataObject)=="matrix")) stop("No data provided for annotations!\n")
+  if(!(!(is.null(dataObject))&&!(is.null(dim(dataObject)))&&("matrix" %in% class(dataObject)))) stop("No data provided for annotations!\n")
   if(ncol(dataObject)!=3) cat ("This is not a correct annotations object.\n")
   ### adding data to population
   population$annots <- dataObject
@@ -293,4 +293,3 @@ add.to.populationSubAnnots.internal <- function(population, dataObject, verbose=
   if(verbose&&debugMode==2)cat("add.to.population for annotations done in:",(e-s)[3],"seconds.\n")
   invisible(population)
 }
-
